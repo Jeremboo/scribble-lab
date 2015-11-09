@@ -1,0 +1,69 @@
+html, body{
+  position:relative;
+  width:100%;
+  height:100%;
+  margin:0;
+  background: #f7f6c5;
+  background: radial-gradient(ellipse at center, #f7f6c5 25%,#f4f3d2 100%);
+}
+.container{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate( -50%, -50% );
+  perspective:400px;
+}
+.cube{
+  transform-origin:50% 50%;
+  transform-style:preserve-3d; 
+  animation:rotate 4s infinite linear;
+}
+.side{
+  position:absolute;
+  display:block;
+  height:200px;
+  width:200px;
+  margin:-100px;
+  border: 1px dashed #C04CFD;
+}
+.face{
+  width : 90%;
+  height : 90%;
+  margin : 5%;
+  border : 2px solid #FC6DAB;
+}
+.side1{
+   transform:translateZ(100px);
+}
+.side2{
+   transform:rotateY(90deg) translateZ(100px);
+}
+.side3{
+   transform:rotateY(180deg) translateZ(100px);
+}
+.side4{
+    transform:rotateY(-90deg) translateZ(100px);
+}
+.side5{
+    transform:rotateX(90deg) translateZ(100px);
+}
+.side6{
+    transform:rotateX(-90deg) translateZ(100px);
+}
+
+@keyframes rotate{
+  0% { transform: rotateX(0deg) rotateY(0deg) }
+  100% { transform: rotateX(360deg) rotateY(360deg) }
+}
+
+.f {
+  font-size: 0.8em;
+  position: fixed;
+  top: 5px;
+  right: 10px;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif; 
+}
+
+.f a {
+  color : #FC6DAB;
+}

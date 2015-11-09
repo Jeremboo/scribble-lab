@@ -1,0 +1,19 @@
+body {
+  margin : 0;
+  padding : 0;
+  overflow: hidden;
+  background-color: white;
+}
+
+.fidelisation {
+  color: #BDC9C9;
+  font-family: 'Arial';
+  font-size: 0.8em;
+  position: fixed;
+  top: 5px;
+  right: 10px;
+}
+
+.fidelisation a {
+  color: #021014;
+}

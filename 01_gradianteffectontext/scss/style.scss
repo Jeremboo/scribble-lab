@@ -1,0 +1,89 @@
+@import "compass";
+
+html, body {
+  position : relative;
+  width: 100%;
+  height: 100%;
+  margin : 0;
+  padding : 0;
+  background-color: #ededed;
+}
+
+.header {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate( -50%, -50% );
+  
+  h1,h2, p {
+    width : 100%;
+    font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif; 
+    text-align: center;
+    margin : 0 auto;
+  }
+
+  h1 {font-size : 6em}
+  h2 {font-size : 4em}
+  p {
+    letter-spacing: -3px;
+    @include animation(margin 5s infinite);
+  }
+  .gradient {
+      @include animation(gradient 5s infinite);
+  }
+}
+
+.gradient {
+  color:transparent;
+  @include background-image(filter-gradient(#003134, #002029, horizontal));
+  @include background-image(linear-gradient(-45deg, #003134 0%, #003134 20%, #005772 20%, #005872 40%, #4d9aa9 40%, #4d9aa9 60%, #0e7286 60%, #0e7286 80%, #002029 80%, #002029 100%));
+  -webkit-background-clip:text;
+  background-clip:text;
+  background-position: center center;
+}
+
+  
+.fidelisation {
+  font-size: 0.8em;
+  position: fixed;
+  top: 5px;
+  right: 10px;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif; 
+  a {
+    color : transparent;
+  }
+}
+
+@include keyframes(gradient){
+  0% {
+    opacity : 0;
+    background-size : 500% 100%;
+  }
+  20% {
+    opacity : 1;
+    background-size : 100% 100%;
+  }
+  90% {
+    opacity : 1;
+    background-size : 100% 100%;
+  }
+  100% {
+    opacity : 0;
+    background-size : 500% 100%;
+  }
+}
+
+@include keyframes(margin){
+  0% {
+    margin : 50px auto;
+  }
+  20% {
+    margin : 0 auto;
+  }
+  90% {
+    margin : 0 auto;
+  }
+  100% {
+    margin : 50px auto;
+  }
+}

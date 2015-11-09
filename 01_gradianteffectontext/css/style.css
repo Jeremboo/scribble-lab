@@ -1,0 +1,159 @@
+html, body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #ededed;
+}
+
+.header {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.header h1, .header h2, .header p {
+  width: 100%;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif;
+  text-align: center;
+  margin: 0 auto;
+}
+.header h1 {
+  font-size: 6em;
+}
+.header h2 {
+  font-size: 4em;
+}
+.header p {
+  letter-spacing: -3px;
+  -moz-animation: margin 5s infinite;
+  -webkit-animation: margin 5s infinite;
+  animation: margin 5s infinite;
+}
+.header .gradient {
+  -moz-animation: gradient 5s infinite;
+  -webkit-animation: gradient 5s infinite;
+  animation: gradient 5s infinite;
+}
+
+.gradient {
+  color: transparent;
+  background-image: filter-gradient(#003134, #002029, horizontal);
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjEuMCIgeTE9IjEuMCIgeDI9IjAuMCIgeTI9IjAuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzAwMzEzNCIvPjxzdG9wIG9mZnNldD0iMjAlIiBzdG9wLWNvbG9yPSIjMDAzMTM0Ii8+PHN0b3Agb2Zmc2V0PSIyMCUiIHN0b3AtY29sb3I9IiMwMDU3NzIiLz48c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzAwNTg3MiIvPjxzdG9wIG9mZnNldD0iNDAlIiBzdG9wLWNvbG9yPSIjNGQ5YWE5Ii8+PHN0b3Agb2Zmc2V0PSI2MCUiIHN0b3AtY29sb3I9IiM0ZDlhYTkiLz48c3RvcCBvZmZzZXQ9IjYwJSIgc3RvcC1jb2xvcj0iIzBlNzI4NiIvPjxzdG9wIG9mZnNldD0iODAlIiBzdG9wLWNvbG9yPSIjMGU3Mjg2Ii8+PHN0b3Agb2Zmc2V0PSI4MCUiIHN0b3AtY29sb3I9IiMwMDIwMjkiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDIwMjkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyYWQpIiAvPjwvc3ZnPiA=');
+  background-size: 100%;
+  background-image: -moz-linear-gradient(135deg, #003134 0%, #003134 20%, #005772 20%, #005872 40%, #4d9aa9 40%, #4d9aa9 60%, #0e7286 60%, #0e7286 80%, #002029 80%, #002029 100%);
+  background-image: -webkit-linear-gradient(135deg, #003134 0%, #003134 20%, #005772 20%, #005872 40%, #4d9aa9 40%, #4d9aa9 60%, #0e7286 60%, #0e7286 80%, #002029 80%, #002029 100%);
+  background-image: linear-gradient(-45deg, #003134 0%, #003134 20%, #005772 20%, #005872 40%, #4d9aa9 40%, #4d9aa9 60%, #0e7286 60%, #0e7286 80%, #002029 80%, #002029 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-position: center center;
+}
+
+.fidelisation {
+  font-size: 0.8em;
+  position: fixed;
+  top: 5px;
+  right: 10px;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif;
+}
+.fidelisation a {
+  color: transparent;
+}
+
+@-moz-keyframes gradient {
+  0% {
+    opacity: 0;
+    background-size: 500% 100%;
+  }
+  20% {
+    opacity: 1;
+    background-size: 100% 100%;
+  }
+  90% {
+    opacity: 1;
+    background-size: 100% 100%;
+  }
+  100% {
+    opacity: 0;
+    background-size: 500% 100%;
+  }
+}
+@-webkit-keyframes gradient {
+  0% {
+    opacity: 0;
+    background-size: 500% 100%;
+  }
+  20% {
+    opacity: 1;
+    background-size: 100% 100%;
+  }
+  90% {
+    opacity: 1;
+    background-size: 100% 100%;
+  }
+  100% {
+    opacity: 0;
+    background-size: 500% 100%;
+  }
+}
+@keyframes gradient {
+  0% {
+    opacity: 0;
+    background-size: 500% 100%;
+  }
+  20% {
+    opacity: 1;
+    background-size: 100% 100%;
+  }
+  90% {
+    opacity: 1;
+    background-size: 100% 100%;
+  }
+  100% {
+    opacity: 0;
+    background-size: 500% 100%;
+  }
+}
+@-moz-keyframes margin {
+  0% {
+    margin: 50px auto;
+  }
+  20% {
+    margin: 0 auto;
+  }
+  90% {
+    margin: 0 auto;
+  }
+  100% {
+    margin: 50px auto;
+  }
+}
+@-webkit-keyframes margin {
+  0% {
+    margin: 50px auto;
+  }
+  20% {
+    margin: 0 auto;
+  }
+  90% {
+    margin: 0 auto;
+  }
+  100% {
+    margin: 50px auto;
+  }
+}
+@keyframes margin {
+  0% {
+    margin: 50px auto;
+  }
+  20% {
+    margin: 0 auto;
+  }
+  90% {
+    margin: 0 auto;
+  }
+  100% {
+    margin: 50px auto;
+  }
+}

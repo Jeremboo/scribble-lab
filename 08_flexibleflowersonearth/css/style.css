@@ -1,0 +1,28 @@
+body, html, canvas {
+  overflow: hidden;
+  background-color: #264653;
+  margin: 0;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif;
+}
+
+.f {
+  color: #2A9D8F;
+  font-family: 'Arial';
+  font-size: 0.8em;
+  position: fixed;
+  top: 5px;
+  right: 10px;
+}
+.f a {
+  color: #E9C46A;
+}
+
+.message {
+  position : absolute;
+  color: #2A9D8F;
+  text-transform : uppercase;
+  text-align : center;
+  width : 100%;
+  bottom : 20%;
+  pointer-events : none;
+}

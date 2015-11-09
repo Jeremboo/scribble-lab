@@ -1,0 +1,34 @@
+html, body {
+  margin:0;
+  overflow: hidden;
+  background-color : #F4F2E5;
+}
+
+.f {
+  color: #1B4656;
+  font-family: 'Arial';
+  font-size: 0.8em;
+  position: fixed;
+  top: 5px;
+  right: 10px;
+}
+
+.f a {
+  color: #0F8E85;
+}
+
+canvas {
+  width : 500px;
+  height : 500px;
+  border: 5px solid #1B4656;
+  /*border-radius : 50%;*/
+  position : absolute;
+  top : 50%;
+  left : 50%;
+  transform: translate( -50%, -50% );
+  background-color : #ABD7C0;
+  background: -webkit-linear-gradient(#609e8b 0%, #abd7c0 70%, #c0e2d0 100%);
+  background: -moz-linear-gradient(#609e8b 0%, #abd7c0 70%, #c0e2d0 100%);
+  background: -o-linear-gradient(#609e8b 0%, #abd7c0 70%, #c0e2d0 100%);
+  background: linear-gradient(#609e8b 0%, #abd7c0 70%, #c0e2d0 100%);
+}
