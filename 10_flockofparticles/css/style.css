@@ -1,0 +1,17 @@
+* {
+  overflow: hidden;
+  background-color: #262322;
+}
+
+.f {
+  color: #F2E5D7;
+  font-family: 'Arial';
+  font-size: 0.8em;
+  position: fixed;
+  top: 5px;
+  right: 10px;
+}
+
+.f a {
+  color: #F46738;
+}
