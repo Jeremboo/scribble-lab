@@ -1,0 +1,20 @@
+html,body {
+  width : 100%;
+  height : 100%;
+  margin : 0;
+  overflow: hidden;
+  background-color: #FFF1D0;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif;
+}
+
+.f {
+  color: #011627;
+  font-size: 0.8em;
+  position: fixed;
+  top: 5px;
+  right: 10px;
+}
+
+.f a {
+  color: #086788;
+}
