@@ -1,0 +1,144 @@
+/* INIT */
+
+$logoSize : 50px;
+$wrapperWidth : $logoSize*6;
+$animationDuration : 3000ms;
+
+html, body, ul {
+  margin : 0;
+  padding : 0;
+}
+html, body{
+  position:relative;
+  width:100%;
+  height:100%;
+  background: #fff;
+  overflow : hidden;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif;
+}
+ul {
+  list-style-type: none;
+}
+a {
+  text-decoration : none;
+}
+
+.f {
+  font-size: 0.8em;
+  position: fixed;
+  top: 5px;
+  right: 10px;
+  color : #070707;
+}
+
+.f a {
+  color : #FFC6C6;
+}
+
+/* FOOTER */
+
+.Footer {
+  position : absolute;
+  top : 50%;
+  right : 5%;
+  transform:translateY( -50% );
+}
+
+.Footer::before {
+  content : '';
+  position : absolute;
+  bottom : 25%;
+  right : 0;
+  width : $wrapperWidth;
+  height : 25%;
+  background-color : #FFC6C6;
+  animation : translate1 $animationDuration infinite;
+}
+
+.Footer-items {
+  width : $wrapperWidth;
+  float : right;
+}
+.Footer-item {
+  display : inline-block;
+  width : $logoSize;
+  height : $logoSize;
+  text-align: center;
+}
+.Footer-link {
+  position : relative;
+  display: block;
+  width : 100%;
+  height : 100%;
+  opacity : 0;
+  animation : translate2 $animationDuration infinite;
+}
+.Footer-item:nth-child(2) .Footer-link {
+  animation-delay : ($animationDuration/50);
+}
+.Footer-item:nth-child(3) .Footer-link {
+  animation-delay : ($animationDuration/50)*2;
+}
+.Footer-item:nth-child(4) .Footer-link {
+  animation-delay : ($animationDuration/50)*3;
+}
+.Footer-item:nth-child(5) .Footer-link {
+  animation-delay : ($animationDuration/50)*4;
+}
+
+.Footer-icon {
+  color : #070707;
+  position: absolute;
+  left : 50%;
+  top : 50%;
+  font-size : 1.6em;
+  transform : translate( -50%, -50% );
+  transition : 0.3s;
+}
+
+.fa-codepen, .fa-linkedin, .fa-envelope { 
+  font-size : 1.4em;
+}
+.fa-linkedin { 
+  font-size : 1.5em;
+}
+.fa-envelope { 
+  font-size : 1.3em;
+}
+
+.Footer-link:hover {  
+  .Footer-icon {
+    top : 30%;
+  }
+  /*.fa-twitter { 
+    color : #3498db;
+  }
+  .fa-google-plus { 
+    color : #E34429;
+  }
+  .fa-github { 
+    color : #9C7A5B;
+  }
+   .fa-linkedin { 
+    color : #34495e;
+  }
+   .fa-codepen { 
+    color : #161616;
+  }*/
+}
+
+
+@keyframes translate1{
+  0% { opacity : 0; margin-right : -7%; }
+  20% { opacity : 1; margin-right : 0; }
+  65% { opacity : 1; margin-right : 0; }
+  85% { opacity : 0; margin-right : 10%; }
+  100% { opacity : 0; margin-right : 10%; }
+}
+@keyframes translate2{
+  2% { opacity : 0; margin-left : 175%; }
+  21% { opacity : 1; margin-left : 0%; }
+  64% { opacity : 1; margin-left : 0%; }
+  80% { opacity : 0; margin-left : -250%; }
+  100% { opacity : 0; margin-left : -250%; }
+}

@@ -5,16 +5,16 @@ var groundSize = 200,
     vel = 10,
     colors = ["#e9c46a","#f4a261","#e76f51"]
 ;
-    
+
     windowWidth = window.innerWidth,
     windowHeight = window.innerHeight,
-    
+
     mouseX = windowWidth/2,
     mouseY = windowHeight/2,
-    
+
     canvas = document.createElement('canvas'),
     context = canvas.getContext("2d"),
-    
+
     dragMode = false,
     ground = null
     flowers = [];
@@ -76,21 +76,21 @@ Flower.prototype.render = function() {
   context.lineWidth = 2;
   context.moveTo(this.points[0],this.points[0]);
   for (var i = 0; i < this.nbrOfStemPoint ; i++) {
-    // -- 
+    // --
     var destX = this.ground.x + (this.ground.r+(this.ampl*i))*Math.cos(this.angle);
     var destY = this.ground.y + (this.ground.r+(this.ampl*i))*Math.sin(this.angle);
-    
+
     // --
     this.stem[i].x += ( destX - this.stem[i].x )*(1-(i/vel));
     this.stem[i].y += ( destY - this.stem[i].y )*(1-(i/vel));
-    
+
     // -- Draw
     context.lineTo(this.stem[i].x, this.stem[i].y);
-    
-    // -- Save 
+
+    // -- Save
     this.points[i].x = destX;
     this.points[i].y = destY;
-  } 
+  }
   context.stroke();
   context.beginPath();
   context.strokeStyle = this.flowerColor;
@@ -117,7 +117,7 @@ function loop(){
 }
 
 function recordMousePosition (e) {
-  if(dragMode){    
+  if(dragMode){
     mouseX = e.x;
     mouseY = e.y;
   }
@@ -125,7 +125,7 @@ function recordMousePosition (e) {
 function enableDrag(e) {
   if(ground.isInside(e.x, e.y)){
     canvas.style.cursor = "pointer";
-    dragMode = true;    
+    dragMode = true;
   }
 }
 function disableDrag() {
@@ -156,5 +156,5 @@ canvas.addEventListener('mouseup', disableDrag);
 ground = new Ground();
 for (var i = 0; i < nbrOfFlower; i++) {
   flowers.push(new Flower());
-} 
+}
 loop();
