@@ -1,0 +1,17 @@
+body, html, canvas {
+  overflow: hidden;
+  background-color: #F4F7F0;
+  margin: 0;
+}
+
+.fidelisation {
+  color: #111;
+  font-family: 'Arial';
+  font-size: 0.8em;
+  position: fixed;
+  top: 5px;
+  right: 10px;
+}
+.fidelisation a {
+  color: #011AA9;
+}
