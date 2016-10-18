@@ -55,7 +55,7 @@ List of my contributions of the **Codevember challenge**.
     <img alt="Day11 - Line who navigates in each random points " src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember11.gif?raw=true" width="200">
   </a>
 
-  <a href="http://codepen.io/Jeremboo/full/LpXNRp">
+  <a href="http://codepen.io/Jeremboo/full/ojQVaq">
     <img alt="Day12 - Scribble, Scrawl, Doodle...." src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember12.gif?raw=true"   width="200">  
   </a>
 
