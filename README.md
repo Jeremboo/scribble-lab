@@ -11,36 +11,81 @@ List of my contributions of the **Codevember challenge**.
 ## [Codevember 2015](http://codevember2015.tumblr.com/)
 
 <p align="center">
-[<img alt="Day1 - Gradien effect on text" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember01.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/rOKgzj)
+  <img alt="codevember01" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember01.gif?raw=true" width="200">
+  [Day1 - Gradien effect on text](http://codepen.io/Jeremboo/full/rOKgzj)
+</p>
 
-[<img alt="Day2 - Cloud of Linked Particles" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember02.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/AKeLF)
+<p align="center">
+  <img alt="codevember02" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember02.gif?raw=true" width="200">
+[Day2 - Cloud of Linked Particles](http://codepen.io/Jeremboo/full/AKeLF)
+</p>
 
-[<img alt="Day3 - Cube 3D only in CSS" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember03.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/wKxzzP)
+<p align="center">
+  <img alt="codevember03" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember03.gif?raw=true" width="200">
+  [Day3 - Cube 3D only in CSS](http://codepen.io/Jeremboo/full/wKxzzP)
+</p>
 
-[<img alt="Day4 - Orchid in 3D with Three.js" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember04.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/GpXpPJ)
+<p align="center">
+  <img alt="codevember04" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember04.gif?raw=true" width="200">
+  [Day4 - Orchid in 3D with Three.js](http://codepen.io/Jeremboo/full/GpXpPJ)
+</p>
 
-[<img alt="Day5 - Moon landscape with canvas" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember05.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/WQKzeQ)
+<p align="center">
+  <img alt="codevember05" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember05.gif?raw=true" width="200">
+  [Day5 - Moon landscape with canvas](http://codepen.io/Jeremboo/full/WQKzeQ)
+</p>
 
-[<img alt="Day6 - Loader animation" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember06.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/pjOKVz)
+<p align="center">
+  <img alt="codevember06" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember06.gif?raw=true" width="200">
+  [Day6 - Loader animation](http://codepen.io/Jeremboo/full/pjOKVz)
+</p>
 
-[<img alt="Day7 - Two ways for drawing a particle trail" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember07.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/XmxNXv)
+<p align="center">
+  <img alt="codevember07" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember07.gif?raw=true" width="200">
+  [Day7 - Two ways for drawing a particle trail](http://codepen.io/Jeremboo/full/XmxNXv)
+</p>
 
-[<img alt="Day8 - Flexible flowers on earth" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember08.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/KdGaLW)
+<p align="center">
+  <img alt="codevember08" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember08.gif?raw=true" width="200">
+  [Day8 - Flexible flowers on earth](http://codepen.io/Jeremboo/full/KdGaLW)
+</p>
 
-[<img alt="Day9 - CSS 3D card moved by mobile accelerometer" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember09.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/OyBaLa)
+<p align="center">
+  <img alt="codevember09" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember09.gif?raw=true" width="200">
+  [Day9 - CSS 3D card moved by mobile accelerometer](http://codepen.io/Jeremboo/full/OyBaLa)
+</p>
 
-[<img alt="Day10 - Flock of Particles" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember10.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/lFHvL)
+<p align="center">
+  <img alt="codevember10" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember10.gif?raw=true" width="200">
+  [Day10 - Flock of Particles](http://codepen.io/Jeremboo/full/lFHvL)
+</p>
 
-[<img alt="Day11 - Line who navigates in each random points" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember11.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/LpXNRp)
+<p align="center">
+  <img alt="codevember11" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember11.gif?raw=true" width="200" align="center">
+  [Day11 - Line who navigates in each random points](http://codepen.io/Jeremboo/full/LpXNRp)
+</p>
 
-[<img alt="Day12 - Scribble, Scrawl, Doodle...." src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember12.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/LpXNRp)
+<p align="center">
+  <img alt="codevember12" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember12.gif?raw=true" width="200">
+  [Day12 - Scribble, Scrawl, Doodle....](http://codepen.io/Jeremboo/full/LpXNRp)
+</p>
 
-[<img alt="Day13 - Appearance of a Title" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember13.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/JYwNRQ)
+<p align="center">
+  <img alt="codevember13" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember13.gif?raw=true" width="200">
+  [Day13 - Appearance of a Title](http://codepen.io/Jeremboo/full/JYwNRQ)
+</p>
 
-[<img alt="Day19 - Appearance of a Footer" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember19.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/XmGJdj)
+<p align="center">
+  <img alt="codevember19" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember19.gif?raw=true" width="200">
+  [Day19 - Appearance of a Footer](http://codepen.io/Jeremboo/full/XmGJdj)
+</p>
 
-[<img alt="Day27 - Particles with streaks" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember27.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/avKJBO)
+<p align="center">
+  <img alt="codevember27" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember27.gif?raw=true" width="200">
+  [Day27 - Particles with streaks](http://codepen.io/Jeremboo/full/avKJBO)
+</p>
 
-[<img alt="Day30 - Test the motion libraries mo.js and vivus.js" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember30.gif?raw=true" width="200">](http://codepen.io/Jeremboo/full/RWddjK)
-
+<p align="center">
+  <img alt="codevember30" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember30.gif?raw=true" width="200">
+  [Day30 - Test the motion libraries mo.js and vivus.js](http://codepen.io/Jeremboo/full/RWddjK)
 </p>
