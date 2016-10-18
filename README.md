@@ -11,9 +11,9 @@ List of my contributions of the **Codevember challenge**.
 ## [Codevember 2015](http://codevember2015.tumblr.com/)
 
 <p align="center">
-  <img alt="codevember01" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember01.gif?raw=true" width="200">
+  
   <a href="http://codepen.io/Jeremboo/full/rOKgzj">
-    Day1 - Gradien effect on text
+    <img alt="Day1 - Gradien effect on text" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember01.gif?raw=true" width="200">
   </a>
 </p>
 
