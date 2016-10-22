@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-arr=(basic canvas webgl);
+arr=(canvas webgl);
 
 # Get path name
 echo ${DIR};
@@ -17,15 +17,11 @@ fi
 # Copy the template with the path name
 cp -R 00_template/ ${DIR};
 # Use the good js file and call app.js only
-if [ -z ${TYPE} ]; then
-  echo "" > ${DIR}/app.js;
-else
+if [ ! -z ${TYPE} ]; then
   # Detect if the template is knowed
   if [[ "${arr[@]}" =~ "${TYPE}" ]]; then
     # Get template type
     cp ${DIR}/app.${TYPE}.js ${DIR}/app.js;
-  else
-    echo "" > ${DIR}/app.js;
   fi
 fi
 # Remove other js files.
