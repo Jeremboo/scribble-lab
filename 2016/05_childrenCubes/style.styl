@@ -1,0 +1,92 @@
+// INIT
+mainColor = #070707
+secondaryColor = #C9F0FF
+bgColor = #433D3A
+
+// INIT
+body, html
+  position: relative;
+  overflow: hidden
+  width: 100%;
+  height: 100%;
+  background-color: bgColor
+  background: radial-gradient(ellipse at center, bgColor 25%, darken(bgColor, 25%) 100%);
+  margin: 0
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif
+
+.f
+  position: fixed
+  bottom: 5px
+  right: 15px
+  font-family: 'Arial'
+  font-size: 0.7rem
+  color: mainColor
+  text-align: center;
+
+  a
+    font-size: 0.8rem
+    color: secondaryColor
+
+center()
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+// START
+cubeSize = 50px;
+
+.sentence {
+  center();
+}
+
+.word {
+  display: flex;
+  justify-content: center;
+}
+
+.container{
+  padding: cubeSize;
+}
+.cube{
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  animation: rotate 4s infinite linear;
+}
+@keyframes rotate{
+  0% { transform: rotateX(0deg) rotateY(0deg) }
+  100% { transform: rotateX(360deg) rotateY(360deg) }
+}
+
+.side{
+  position: absolute;
+  width: cubeSize;
+  height: cubeSize;
+  margin: -(cubeSize * 0.5);
+}
+.side1 { transform: translateZ(cubeSize * 0.5); }
+.side2 { transform: rotateY(90deg) translateZ(cubeSize * 0.5); }
+.side3 { transform: rotateY(180deg) translateZ(cubeSize * 0.5); }
+.side4 { transform:rotateY(-90deg) translateZ(cubeSize * 0.5); }
+.side5 { transform:rotateX(90deg) translateZ(cubeSize * 0.5); }
+.side6 { transform:rotateX(-90deg) translateZ(cubeSize * 0.5); }
+
+.letter {
+  center();
+}
+
+// STYLES
+.basic {
+  border: 2px dashed black;
+  background-color: #f4f3d2;
+
+  .letter {}
+}
+
+.new {
+  border: 1px solid white;
+
+  .letter {
+    color: white;
+  }
+}

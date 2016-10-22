@@ -1,0 +1,20 @@
+// https://vimeo.com/145254398
+
+mixin createWordWithCubes(word)
+  .word
+    each codevemberLetter in word
+      .container
+        .cube
+          - for (var face = 1; face <= 6; face++)
+            .side(class="side" + face)
+              .letter= codevemberLetter
+
+.sentence
+  +createWordWithCubes('CODEVEMBER')
+  +createWordWithCubes('DAY2')
+
+
+<p class="f">
+  <a target="_blank" href="http://www.jeremieboulay.fr">@Jeremboo</a>
+  <br /> ┗|｀O´|┛
+</p>
