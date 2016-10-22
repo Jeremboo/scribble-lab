@@ -6,8 +6,6 @@
 
 (`npm start` alone throw an error)
 
-## Bootstrap a new DAY - TODO
+## Bootstrap a new DAY
 
-`DIR=[path] npm run create`
-
-(`npm start` alone throw an error)
+`DIR=[path] TYPE=[canvas, webgl, basic] npm run create`

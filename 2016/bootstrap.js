@@ -1,6 +1,5 @@
-
 import 'style';
-import 'script';
+import 'app';
 import HTML from 'html';
 
 document.body.insertAdjacentHTML('beforeend', HTML);

@@ -1,3 +1,6 @@
+import THREELib from 'three-js';
+const THREE = THREELib();
+
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707',
 /**/       secondaryColor = '#FF7F16',

@@ -43,7 +43,7 @@ var config = {
       alias: {
         html: path.resolve(__dirname, directory + '/index.haml.html'),
         style: path.resolve(__dirname, directory + '/style.styl'),
-        script: path.resolve(__dirname, directory + '/index.js'),
+        app: path.resolve(__dirname, directory + '/app.js'),
       },
     },
     module: {
