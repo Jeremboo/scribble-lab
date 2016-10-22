@@ -41,7 +41,7 @@ var config = {
     devtool: "inline-source-map",
     resolve: {
       alias: {
-        html: path.resolve(__dirname, directory + '/index.haml.html'),
+        html: path.resolve(__dirname, directory + '/index.pug.html'),
         style: path.resolve(__dirname, directory + '/style.styl'),
         app: path.resolve(__dirname, directory + '/app.js'),
       },
@@ -58,7 +58,7 @@ var config = {
           test: /\.(styl|css)$/,
           loader: 'style!css?sourceMap!stylus'
         },
-        { test: /\.(html|haml)$/, loader: 'haml' }
+        { test: /\.(html|pug)$/, loader: 'pug' },
       ],
     },
     stylus: {
@@ -70,6 +70,7 @@ var config = {
       new webpack.optimize.OccurenceOrderPlugin(),
       new HtmlWebpackPlugin({
         title: dir + ' - Codevember2016',
+        // template: path.resolve(__dirname, directory + '/index.pug.html'),
       }),
     ],
 };

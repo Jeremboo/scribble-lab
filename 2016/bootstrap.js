@@ -2,4 +2,4 @@ import 'style';
 import 'app';
 import HTML from 'html';
 
-document.body.insertAdjacentHTML('beforeend', HTML);
+document.body.insertAdjacentHTML('beforeend', HTML());
