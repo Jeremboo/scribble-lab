@@ -9,6 +9,9 @@
   "author": "Jérémie Boulay <jeremi.boulay@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "mo-js": "^0.288.1",
+    "mojs": "^0.2.0",
+    "mojs-player": "^0.43.15",
     "three-js": "^79.0.0"
   },
   "devDependencies": {
@@ -16,6 +19,7 @@
     "babel-core": "^6.14.0",
     "babel-eslint": "^6.1.2",
     "babel-loader": "^6.2.5",
+    "babel-plugin-transform-object-rest-spread": "^6.16.0",
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-react": "^6.11.1",
     "babel-register": "^6.14.0",
@@ -24,6 +28,7 @@
     "eslint-config-airbnb": "^10.0.1",
     "eslint-plugin-import": "^1.14.0",
     "eslint-plugin-jsx-a11y": "^2.2.1",
+    "eslint-plugin-react": "^6.4.1",
     "html-webpack-plugin": "^2.24.0",
     "postcss-loader": "^0.8.0",
     "poststylus": "^0.2.3",
