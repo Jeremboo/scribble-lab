@@ -3,3 +3,9 @@
 
 # Thumbnails
 ._*
+
+
+# NPM
+
+2016/node_modules/
+2016/npm-debug.log
