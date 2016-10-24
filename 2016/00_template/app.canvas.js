@@ -6,7 +6,7 @@
 /**/ canvas.id = 'canvas';
 /**/ canvas.width = windowWidth;
 /**/ canvas.height = windowHeight;
-/**/ document.body.insertAdjacentHTML('afterBegin', canvas);
+/**/ document.body.insertBefore(canvas, document.body.firstChild);
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
