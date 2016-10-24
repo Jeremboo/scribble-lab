@@ -4,9 +4,9 @@
 /**/ const canvas = document.createElement('canvas');
 /**/ const context = canvas.getContext('2d');
 /**/ canvas.id = 'canvas';
-/**/ canvas.width = window.innerWidth;
-/**/ canvas.height = window.innerHeight;
-/**/ document.body.appendChild(canvas);
+/**/ canvas.width = windowWidth;
+/**/ canvas.height = windowHeight;
+/**/ document.body.insertBefore(canvas, document.body.firstChild);
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
