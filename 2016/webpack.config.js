@@ -56,9 +56,17 @@ var config = {
         },
         {
           test: /\.(styl|css)$/,
-          loader: 'style!css?sourceMap!stylus'
+          loader: 'style!css?sourceMap!stylus',
         },
-        { test: /\.(html|pug)$/, loader: 'pug' },
+        {
+          test: /\.(png|jpe?g|gif|svg)$/,
+          loader: 'file?name=imgs/[hash].[ext]',
+          include: path.resolve(__dirname, './00_inspirations/'),
+        },
+        {
+          test: /\.(html|pug)$/,
+          loader: 'pug',
+        },
       ],
     },
     stylus: {
