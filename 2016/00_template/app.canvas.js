@@ -1,12 +1,12 @@
 /**/ /* ---- CORE ---- */
-/**/ let windowWidth = window.innerWidth,
-/**/   windowHeight = window.innerHeight,
-/**/   canvas = document.createElement('canvas'),
-/**/   context = canvas.getContext("2d");
-/**/ canvas.id = "canvas";
-/**/ canvas.width = window.innerWidth;
-/**/ canvas.height = window.innerHeight;
-/**/ document.body.appendChild(canvas);
+/**/ let windowWidth = window.innerWidth;
+/**/ let windowHeight = window.innerHeight;
+/**/ const canvas = document.createElement('canvas');
+/**/ const context = canvas.getContext("2d");
+/**/ canvas.id = 'canvas';
+/**/ canvas.width = windowWidth;
+/**/ canvas.height = windowHeight;
+/**/ document.body.insertBefore(canvas, document.body.firstChild);
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
