@@ -11,8 +11,11 @@
 /* ---- CREATING ZONE ---- */
 
 import imageUrl from '../00_inspirations/background1.jpg';
+import imageUrl2 from '../00_inspirations/background2.jpg';
 // const imageUrl = '../00_inpiration/background1.JPG';
 
+
+// UTILS
 const createCanvas = (width = window.innerWidth, height = window.innerHeight) => {
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -31,8 +34,8 @@ const randomNoise = (width = window.innerWidth, height = window.innerHeight) => 
   const length = pixels.length;
   let i = 0;
   while (i < length) {
-      pixels[i++] = pixels[i++] = pixels[i++] = (Math.random() * 256) | 0;
-      pixels[i++] = 255;
+    pixels[i++] = pixels[i++] = pixels[i++] = (Math.random() * 256) | 0;
+    pixels[i++] = 255;
   }
   context.putImageData(imageData, 0, 0);
   return canvas;
@@ -54,7 +57,7 @@ const perlinNoise = (width = window.innerWidth, height = window.innerHeight) => 
   return canvas;
 };
 
-const gradientPerlinNoise = (width = window.innerWidth, height = window.innerHeight ) => {
+const gradientPerlinNoise = (width = window.innerWidth, height = window.innerHeight) => {
   const { canvas, context } = createCanvas(width, height);
   const pNoise = perlinNoise(width, height);
   const gradient = context.createLinearGradient(0, 0, width, 0);
@@ -67,52 +70,53 @@ const gradientPerlinNoise = (width = window.innerWidth, height = window.innerHei
   return canvas;
 };
 
-class Text {
-  constructor(text = '', line = 0) {
-    this.text = text;
-    this.line = line;
 
+// CORE
+class ImageTransition {
+  constructor(image = imageUrl) {
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
     this.canvas.width = windowWidth;
     this.canvas.height = windowHeight;
-    this.gradientPerlinNoise = gradientPerlinNoise();
-    this.pixelsGradientPerlinNoise = this.gradientPerlinNoise.getContext('2d').getImageData(0, 0, windowWidth, windowHeight).data;
+    this.transitionPixels = gradientPerlinNoise().getContext('2d').getImageData(0, 0, windowWidth, windowHeight).data;
 
-    this.img = new Image();
+    // Img
+    this.img = false;
     this.imgLoaded = false;
-    this.img.onload = () => {
-      this.imgLoaded = true;
-    };
-    this.img.src = imageUrl;
-    this.size = windowWidth * 0.05;
-    this.pos = {
-      x: windowWidth * 0.5,
-      y: (windowHeight * 0.5) + (this.size * this.line * 1.5),
-    };
+    this.loadImage(image);
 
     this.range = 0;
 
     this.change = this.change.bind(this);
   }
 
-  change() {
-    this.range = 0;
-    this.gradientPerlinNoise = gradientPerlinNoise();
-    this.pixelsGradientPerlinNoise = this.gradientPerlinNoise.getContext('2d').getImageData(0, 0, windowWidth, windowHeight).data;
+  loadImage(image) {
+    // TODO create OldImage
+    if (typeof (image) === 'string') {
+      this.imgLoaded = false;
+      this.img = new Image();
+      this.img.onload = () => {
+        this.imgLoaded = true;
+      };
+      this.img.src = image;
+    } else if (typeof (image) === 'object') {
+      this.img = image;
+      this.imgLoaded = true;
+    } else {
+      console.warn(`ERROR : ${image} is not a path or an Image()`);
+    }
   }
-  // Update values here
-  update() {}
+
+  change(image) {
+    if (image) {
+      this.loadImage(image);
+    }
+    this.range = 0;
+    this.transitionPixels = gradientPerlinNoise().getContext('2d').getImageData(0, 0, windowWidth, windowHeight).data;
+  }
 
   render() {
-    // Draw text (destination)
-    this.ctx.beginPath();
     if (this.imgLoaded) {
-      this.ctx.font = `bold ${this.size}pt CenturyGothic`;
-      this.ctx.textAlign = 'center';
-      this.ctx.fillText(this.text, this.pos.x, this.pos.y);
-      this.ctx.globalCompositeOperation = 'source-in';
-      // Draw image (source)
       this.ctx.drawImage(this.img, 0, 0);
 
       if (this.range < 255) {
@@ -121,7 +125,7 @@ class Text {
         const length = pixels.length;
         let i = 0;
         while (i < length) {
-          const show = (this.range > this.pixelsGradientPerlinNoise[i]) ? 1 : 255;
+          const show = (this.range > this.transitionPixels[i]) ? 1 : 255;
           pixels[i] = (pixels[i++] * show);
           pixels[i] = (pixels[i++] * show);
           pixels[i] = (pixels[i++] * show);
@@ -135,18 +139,49 @@ class Text {
   }
 }
 
-// START
-const codevemberText = new Text('CODEVEMBER', 0);
-const dayText = new Text('day 1', 1);
+class Text extends ImageTransition {
+  constructor(text = '', line = 0, image = imageUrl) {
+    super(image);
+    this.text = text;
+    this.line = line;
 
-document.body.addEventListener('click', () => {
-  codevemberText.change();
-});
+    this.size = windowWidth * 0.05;
+    this.pos = {
+      x: windowWidth * 0.5,
+      y: (windowHeight * 0.5) + (this.size * this.line * 1.5),
+    };
+  }
+
+  render() {
+    // Draw text (destination)
+    if (this.imgLoaded) {
+      this.ctx.font = `bold ${this.size}pt CenturyGothic`;
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText(this.text, this.pos.x, this.pos.y);
+      this.ctx.globalCompositeOperation = 'source-in';
+    }
+    super.render();
+  }
+}
+
+// START
+
+// TODO
+// Load backgroundImage
+// On load show in canvas.
+// Load text with another image loaded
+// Change background image
+// Loop
+
+const background = new ImageTransition();
+const codevemberText = new Text('CODEVEMBER', 0, imageUrl2);
+const dayText = new Text('day 1', 1, imageUrl2);
+
+document.body.addEventListener('click', () => codevemberText.change());
 
 function loop() {
-  codevemberText.update();
+  background.render();
   codevemberText.render();
-  dayText.update();
   dayText.render();
 }
 
