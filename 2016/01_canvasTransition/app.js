@@ -95,6 +95,10 @@ class ImageTransition {
       img.onload = () => {
         img.isReady = true;
         img.range = this.viewedImg ? 0 : 255;
+        img.pos = {
+          x: -(this.canvas.width * 0.5) - (img.width * 0.5),
+          y: -(this.canvas.height * 0.5) - (img.height * 0.5),
+        };
       };
       img.src = image;
     } else if (typeof (image) === 'object') {
@@ -105,6 +109,10 @@ class ImageTransition {
     }
     img.isReady = false;
     img.range = 255;
+    img.pos = {
+      x: -(this.canvas.width * 0.5),
+      y: -(this.canvas.height * 0.5),
+    };
     return img;
   }
 
@@ -128,13 +136,13 @@ class ImageTransition {
 
   render() {
     if (this.viewedImg) {
-      this.ctx.drawImage(this.viewedImg, 0, 0);
+      this.ctx.drawImage(this.viewedImg, this.viewedImg.pos.x, this.viewedImg.pos.y);
 
       if (this.newImg && this.newImg.isReady) {
         const viewedImg = this.ctx.getImageData(0, 0, windowWidth, windowHeight);
         const viewedImgPixels = viewedImg.data;
 
-        this.ctx.drawImage(this.newImg, 0, 0);
+        this.ctx.drawImage(this.newImg, this.newImg.pos.x, this.newImg.pos.y);
         const newImgPixels = this.ctx.getImageData(0, 0, windowWidth, windowHeight).data;
 
         let i = 0;
