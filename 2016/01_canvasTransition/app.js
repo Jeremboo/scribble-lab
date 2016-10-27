@@ -96,8 +96,8 @@ class ImageTransition {
         img.isReady = true;
         img.range = this.viewedImg ? 0 : 255;
         img.pos = {
-          x: -(this.canvas.width * 0.5) - (img.width * 0.5),
-          y: -(this.canvas.height * 0.5) - (img.height * 0.5),
+          x: (this.canvas.width * 0.5) - (img.width * 0.5),
+          y: (this.canvas.height * 0.5) - (img.height * 0.5),
         };
       };
       img.src = image;
@@ -110,8 +110,8 @@ class ImageTransition {
     img.isReady = false;
     img.range = 255;
     img.pos = {
-      x: -(this.canvas.width * 0.5),
-      y: -(this.canvas.height * 0.5),
+      x: 0,
+      y: 0,
     };
     return img;
   }
@@ -141,7 +141,6 @@ class ImageTransition {
       if (this.newImg && this.newImg.isReady) {
         const viewedImg = this.ctx.getImageData(0, 0, windowWidth, windowHeight);
         const viewedImgPixels = viewedImg.data;
-
         this.ctx.drawImage(this.newImg, this.newImg.pos.x, this.newImg.pos.y);
         const newImgPixels = this.ctx.getImageData(0, 0, windowWidth, windowHeight).data;
 
@@ -206,16 +205,31 @@ const loadImage = (url, callback) => {
 // Change background image
 // Loop
 const loopItems = [];
+let background = false;
+let codevemberText = false;
+let day1Text = false;
 
 loadImage(imageUrl1, (firstImage) => {
-  loopItems.push(new ImageTransition(firstImage));
-  loopItems.push(new Text('CODEVEMBER', 0, firstImage, imageUrl2));
-  loopItems.push(new Text('day 1', 1, firstImage, imageUrl2));
+  background = new ImageTransition(firstImage);
+  loopItems.push(background);
+  codevemberText = new Text('CODEVEMBER', 0, firstImage, imageUrl2);
+  loopItems.push(codevemberText);
+  day1Text = new Text('day 1', 1, firstImage, imageUrl2);
+  loopItems.push(day1Text);
   setTimeout(() => {
     canvas.classList.add('_visible');
   }, 500);
 });
 
+setInterval(() => {
+  background.change(imageUrl2);
+  setTimeout(() => {
+    codevemberText.change(imageUrl1);
+  }, 3000);
+  setTimeout(() => {
+    day1Text.change(imageUrl1);
+  }, 4000);
+}, 7000);
 
 function loop() {
   let i;
