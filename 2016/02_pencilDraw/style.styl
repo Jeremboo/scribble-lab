@@ -3,7 +3,7 @@ mainColor = #070707
 secondaryColor = #C9F0FF
 bgColor = #fff
 
-body, html
+body, html, #app
   width: 100%;
   height: 100%;
   overflow: hidden
@@ -33,26 +33,5 @@ body, html
 
 .title, .subtitle
   text-align: center;
-
-
-// http://codepen.io/davidkpiano/pen/wMqXea?editors=1100
-.squiggly
-  animation: squiggly-anim 0.3s infinite;
-
-@keyframes squiggly-anim {
-  0% {
-    filter: url('#squiggly-0');
-  }
-  25% {
-    filter: url('#squiggly-1');
-  }
-  50% {
-    filter: url('#squiggly-2');
-  }
-  75% {
-    filter: url('#squiggly-3');
-  }
-  100% {
-    filter: url('#squiggly-4');
-  }
-}
+  line-height: 1;
+  margin: 0;
