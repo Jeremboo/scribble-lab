@@ -4,7 +4,6 @@ import dat from 'dat-gui';
 
 window.React = React;
 
-// http://codepen.io/davidkpiano/pen/wMqXea
 const CONST = {
   SCALE: 5,
   BASE_FREQUENCY: 0.03,
@@ -126,6 +125,10 @@ ReactDOM.render(
       <h1 className="title">Codevember</h1>
       <p className="subtitle">day 2</p>
     </div>
+    <p className="f">
+      <a target="_blank" href="http://www.jeremieboulay.fr">@Jeremboo</a>
+      <br /> ┗|｀O´|┛
+    </p>
   </SquigglyContainer>,
   document.getElementById('app')
 );
