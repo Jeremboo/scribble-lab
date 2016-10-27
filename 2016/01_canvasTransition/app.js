@@ -14,6 +14,11 @@ import imageUrl1 from '../00_inspirations/background1.jpg';
 import imageUrl2 from '../00_inspirations/background2.jpg';
 // const imageUrl1 = '../00_inpiration/background1.JPG';
 
+const IMAGES = [
+  imageUrl1,
+  imageUrl2,
+];
+
 
 // UTILS
 const createCanvas = (width = window.innerWidth, height = window.innerHeight) => {
@@ -79,6 +84,7 @@ class ImageTransition {
     this.canvas.width = windowWidth;
     this.canvas.height = windowHeight;
     this.transitionPixels = gradientPerlinNoise().getContext('2d').getImageData(0, 0, windowWidth, windowHeight).data;
+    this.transitionEndCallback = v => v;
 
     // Img
     this.viewedImg = this.loadNewImage(image);
@@ -116,10 +122,11 @@ class ImageTransition {
     return img;
   }
 
-  change(image) {
+  change(image, callback = v => v) {
     if (image) {
       if (this.newImg) this.viewedImg = this.newImg;
       this.newImg = this.loadNewImage(image);
+      this.transitionEndCallback = callback;
     }
     this.transitionPixels = gradientPerlinNoise().getContext('2d').getImageData(0, 0, windowWidth, windowHeight).data;
   }
@@ -130,6 +137,7 @@ class ImageTransition {
       if (this.newImg.range >= 255) {
         this.viewedImg = this.newImg;
         this.newImg = false;
+        this.transitionEndCallback();
       }
     }
   }
@@ -188,48 +196,45 @@ class Text extends ImageTransition {
   }
 }
 
-const loadImage = (url, callback) => {
+
+
+// START
+function loadImage(url, callback) {
   const img = new Image();
   img.onload = () => {
     callback(img);
   };
   img.src = url;
-};
+}
+function transitionLoop(key) {
+  const currentImg = IMAGES[key % IMAGES.length];
+  codevemberText.change(currentImg);
+  day1Text.change(currentImg, () => {
+    key++;
+    background.change(
+      IMAGES[key % IMAGES.length],
+      () => transitionLoop(key)
+    );
+  });
+}
 
-// START
-
-// TODO
-// Load backgroundImage
-// On load show in canvas.
-// Load text with another image loaded
-// Change background image
-// Loop
-const loopItems = [];
 let background = false;
 let codevemberText = false;
 let day1Text = false;
+const loopItems = [];
 
-loadImage(imageUrl1, (firstImage) => {
+loadImage(IMAGES[0], (firstImage) => {
   background = new ImageTransition(firstImage);
   loopItems.push(background);
-  codevemberText = new Text('CODEVEMBER', 0, firstImage, imageUrl2);
+  codevemberText = new Text('CODEVEMBER', 0, firstImage);
   loopItems.push(codevemberText);
-  day1Text = new Text('day 1', 1, firstImage, imageUrl2);
+  day1Text = new Text('day 1', 1, firstImage);
   loopItems.push(day1Text);
+  transitionLoop(1);
   setTimeout(() => {
     canvas.classList.add('_visible');
   }, 500);
 });
-
-setInterval(() => {
-  background.change(imageUrl2);
-  setTimeout(() => {
-    codevemberText.change(imageUrl1);
-  }, 3000);
-  setTimeout(() => {
-    day1Text.change(imageUrl1);
-  }, 4000);
-}, 7000);
 
 function loop() {
   let i;
