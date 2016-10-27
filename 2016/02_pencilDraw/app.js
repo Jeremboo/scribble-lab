@@ -1,18 +1,24 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
+import dat from 'dat-gui';
 
 window.React = React;
 
 // http://codepen.io/davidkpiano/pen/wMqXea
+const CONST = {
+  SCALE: 5,
+  BASE_FREQUENCY: 0.03,
+  NUM_OCTAVE: 3,
+  TYPE: 'fractalNoise', // fractalNoise | turbulence
+  FREQ: 50,
+};
 
-const MAX_BASE_FREQUENCY = 100;
-const MAX_NUM_OCTAVE = 10;
-const MAX_SEED = 10;
-const MAX_SCALE = 50;
-const TYPE = 'turbulence'; // fractalNoise | turbulence
-const STITCH_TILES = 'stitch'; // noStitch | stitch
-
-const FREQ = 50;
+const gui = new dat.GUI();
+gui.add(CONST, 'SCALE', 0, 50);
+gui.add(CONST, 'BASE_FREQUENCY', 0, 1.0);
+gui.add(CONST, 'NUM_OCTAVE', 1, 5).step(1);
+gui.add(CONST, 'TYPE', ['fractalNoise', 'turbulence']);
+gui.add(CONST, 'FREQ', 25, 500);
 
 
 const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -24,27 +30,31 @@ class SquigglyContainer extends Component {
 
     this.state = {
       id: 0,
-      baseFrequency: 0.02,
-      numOctaves: 3,
       seed: 0,
       scale: 2,
+      baseFrequency: 0.02,
+      numOctaves: 3,
       type: 'turbulence',
-      stitchTiles: 'noStitch',
     };
+
+    this.loop = this.loop.bind(this);
   }
 
   componentDidMount() {
-    setInterval(() => {
-      this.setState({
-        id: this.state.id + 1,
-        baseFrequency: getRandomFloat(0, MAX_BASE_FREQUENCY),
-        numOctaves: getRandomInt(0, MAX_NUM_OCTAVE),
-        seed: getRandomFloat(0, MAX_SEED),
-        scale: getRandomFloat(0, MAX_SCALE),
-        stitchTiles: STITCH_TILES,
-        type: TYPE,
-      });
-    }, FREQ);
+    this.loop();
+  }
+
+  loop() {
+    const id = this.state.id + 1;
+    this.setState({
+      id,
+      seed: id,
+      scale: CONST.SCALE,
+      baseFrequency: CONST.BASE_FREQUENCY,
+      numOctaves: CONST.NUM_OCTAVE,
+      type: CONST.TYPE,
+    });
+    setTimeout(this.loop, CONST.FREQ);
   }
 
   render() {
@@ -64,11 +74,10 @@ SquigglyContainer.defaultProps = {
 };
 
 const Squiggly = (props) => {
-  const { baseFrequency, numOctaves, stitchTiles, type, seed, scale } = props;
+  const { baseFrequency, numOctaves, type, seed, scale } = props;
   const turbulenceProps = {
     baseFrequency,
     numOctaves,
-    stitchTiles,
     type,
     seed,
   };
@@ -102,7 +111,6 @@ Squiggly.propTypes = {
   seed: PropTypes.number,
   scale: PropTypes.number,
   type: PropTypes.string,
-  stitchTiles: PropTypes.string,
 };
 Squiggly.defaultProps = {
   baseFrequency: 0.02,
@@ -110,7 +118,6 @@ Squiggly.defaultProps = {
   seed: 0,
   scale: 2,
   type: 'turbulence',
-  stitchTiles: 'noStitch',
 };
 
 ReactDOM.render(
