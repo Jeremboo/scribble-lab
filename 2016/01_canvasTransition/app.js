@@ -10,9 +10,9 @@
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
-import imageUrl from '../00_inspirations/background1.jpg';
+import imageUrl1 from '../00_inspirations/background1.jpg';
 import imageUrl2 from '../00_inspirations/background2.jpg';
-// const imageUrl = '../00_inpiration/background1.JPG';
+// const imageUrl1 = '../00_inpiration/background1.JPG';
 
 
 // UTILS
@@ -73,7 +73,7 @@ const gradientPerlinNoise = (width = window.innerWidth, height = window.innerHei
 
 // CORE
 class ImageTransition {
-  constructor(image = imageUrl) {
+  constructor(image = imageUrl1, newImage) {
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
     this.canvas.width = windowWidth;
@@ -81,58 +81,75 @@ class ImageTransition {
     this.transitionPixels = gradientPerlinNoise().getContext('2d').getImageData(0, 0, windowWidth, windowHeight).data;
 
     // Img
-    this.img = false;
-    this.imgLoaded = false;
-    this.loadImage(image);
+    this.viewedImg = this.loadNewImage(image);
+    this.newImg = newImage ? this.loadNewImage(newImage) : false;
 
-    this.range = 0;
 
     this.change = this.change.bind(this);
   }
 
-  loadImage(image) {
-    // TODO create OldImage
+  loadNewImage(image) {
+    let img = false;
     if (typeof (image) === 'string') {
-      this.imgLoaded = false;
-      this.img = new Image();
-      this.img.onload = () => {
-        this.imgLoaded = true;
+      img = new Image();
+      img.onload = () => {
+        img.isReady = true;
+        img.range = this.viewedImg ? 0 : 255;
       };
-      this.img.src = image;
+      img.src = image;
     } else if (typeof (image) === 'object') {
-      this.img = image;
-      this.imgLoaded = true;
+      img = image;
     } else {
       console.warn(`ERROR : ${image} is not a path or an Image()`);
+      return img;
     }
+    img.isReady = false;
+    img.range = 255;
+    return img;
   }
 
   change(image) {
     if (image) {
-      this.loadImage(image);
+      if (this.newImg) this.viewedImg = this.newImg;
+      this.newImg = this.loadNewImage(image);
     }
-    this.range = 0;
     this.transitionPixels = gradientPerlinNoise().getContext('2d').getImageData(0, 0, windowWidth, windowHeight).data;
   }
 
-  render() {
-    if (this.imgLoaded) {
-      this.ctx.drawImage(this.img, 0, 0);
+  update() {
+    if (this.newImg && this.newImg.isReady) {
+      this.newImg.range += 2;
+      if (this.newImg.range >= 255) {
+        this.viewedImg = this.newImg;
+        this.newImg = false;
+      }
+    }
+  }
 
-      if (this.range < 255) {
-        const imageData = this.ctx.getImageData(0, 0, windowWidth, windowHeight);
-        const pixels = imageData.data;
-        const length = pixels.length;
+  render() {
+    if (this.viewedImg) {
+      this.ctx.drawImage(this.viewedImg, 0, 0);
+
+      if (this.newImg && this.newImg.isReady) {
+        const viewedImg = this.ctx.getImageData(0, 0, windowWidth, windowHeight);
+        const viewedImgPixels = viewedImg.data;
+
+        this.ctx.drawImage(this.newImg, 0, 0);
+        const newImgPixels = this.ctx.getImageData(0, 0, windowWidth, windowHeight).data;
+
         let i = 0;
+        const length = viewedImgPixels.length;
         while (i < length) {
-          const show = (this.range > this.transitionPixels[i]) ? 1 : 255;
-          pixels[i] = (pixels[i++] * show);
-          pixels[i] = (pixels[i++] * show);
-          pixels[i] = (pixels[i++] * show);
-          i++;
+          const pixelToShow = (this.newImg.range > this.transitionPixels[i])
+            ? newImgPixels
+            : viewedImgPixels
+          ;
+          viewedImgPixels[i] = pixelToShow[i++];
+          viewedImgPixels[i] = pixelToShow[i++];
+          viewedImgPixels[i] = pixelToShow[i++];
+          viewedImgPixels[i] = pixelToShow[i++];
         }
-        this.ctx.putImageData(imageData, 0, 0);
-        this.range += 1;
+        this.ctx.putImageData(viewedImg, 0, 0);
       }
     }
     context.drawImage(this.canvas, 0, 0);
@@ -140,8 +157,8 @@ class ImageTransition {
 }
 
 class Text extends ImageTransition {
-  constructor(text = '', line = 0, image = imageUrl) {
-    super(image);
+  constructor(text = '', line = 0, image = imageUrl1, image2) {
+    super(image, image2);
     this.text = text;
     this.line = line;
 
@@ -154,7 +171,7 @@ class Text extends ImageTransition {
 
   render() {
     // Draw text (destination)
-    if (this.imgLoaded) {
+    if (this.viewedImg) {
       this.ctx.font = `bold ${this.size}pt CenturyGothic`;
       this.ctx.textAlign = 'center';
       this.ctx.fillText(this.text, this.pos.x, this.pos.y);
@@ -173,15 +190,16 @@ class Text extends ImageTransition {
 // Change background image
 // Loop
 
-const background = new ImageTransition();
-const codevemberText = new Text('CODEVEMBER', 0, imageUrl2);
-const dayText = new Text('day 1', 1, imageUrl2);
-
-document.body.addEventListener('click', () => codevemberText.change());
+const background = new ImageTransition(imageUrl1);
+const codevemberText = new Text('CODEVEMBER', 0, imageUrl1, imageUrl2);
+const dayText = new Text('day 1', 1, imageUrl1, imageUrl2);
 
 function loop() {
+  background.update();
   background.render();
+  codevemberText.update();
   codevemberText.render();
+  dayText.update();
   dayText.render();
 }
 
