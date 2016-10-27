@@ -5,9 +5,11 @@ window.React = React;
 
 // http://codepen.io/davidkpiano/pen/wMqXea
 
+const MAX_BASE_FREQUENCY = 100;
+const MAX_NUM_OCTAVE = 10;
 const MAX_SEED = 10;
 const MAX_SCALE = 50;
-const TYPE = 'fractalNoise'; // fractalNoise | turbulence
+const TYPE = 'turbulence'; // fractalNoise | turbulence
 const STITCH_TILES = 'stitch'; // noStitch | stitch
 
 const FREQ = 50;
@@ -26,6 +28,8 @@ class SquigglyContainer extends Component {
       numOctaves: 3,
       seed: 0,
       scale: 2,
+      type: 'turbulence',
+      stitchTiles: 'noStitch',
     };
   }
 
@@ -33,12 +37,12 @@ class SquigglyContainer extends Component {
     setInterval(() => {
       this.setState({
         id: this.state.id + 1,
-        baseFrequency: getRandomFloat(0, 1),
-        stitchTiles: STITCH_TILES,
-        numOctaves: getRandomInt(0, 10),
+        baseFrequency: getRandomFloat(0, MAX_BASE_FREQUENCY),
+        numOctaves: getRandomInt(0, MAX_NUM_OCTAVE),
         seed: getRandomFloat(0, MAX_SEED),
-        type: TYPE,
         scale: getRandomFloat(0, MAX_SCALE),
+        stitchTiles: STITCH_TILES,
+        type: TYPE,
       });
     }, FREQ);
   }
@@ -60,10 +64,12 @@ SquigglyContainer.defaultProps = {
 };
 
 const Squiggly = (props) => {
-  const { baseFrequency, numOctaves, seed, scale } = props;
+  const { baseFrequency, numOctaves, stitchTiles, type, seed, scale } = props;
   const turbulenceProps = {
     baseFrequency,
     numOctaves,
+    stitchTiles,
+    type,
     seed,
   };
   const displacementMapProps = {
@@ -96,6 +102,7 @@ Squiggly.propTypes = {
   seed: PropTypes.number,
   scale: PropTypes.number,
   type: PropTypes.string,
+  stitchTiles: PropTypes.string,
 };
 Squiggly.defaultProps = {
   baseFrequency: 0.02,
@@ -103,6 +110,7 @@ Squiggly.defaultProps = {
   seed: 0,
   scale: 2,
   type: 'turbulence',
+  stitchTiles: 'noStitch',
 };
 
 ReactDOM.render(
