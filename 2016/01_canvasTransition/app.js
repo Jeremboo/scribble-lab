@@ -181,6 +181,14 @@ class Text extends ImageTransition {
   }
 }
 
+const loadImage = (url, callback) => {
+  const img = new Image();
+  img.onload = () => {
+    callback(img);
+  };
+  img.src = url;
+};
+
 // START
 
 // TODO
@@ -189,18 +197,25 @@ class Text extends ImageTransition {
 // Load text with another image loaded
 // Change background image
 // Loop
+const loopItems = [];
 
-const background = new ImageTransition(imageUrl1);
-const codevemberText = new Text('CODEVEMBER', 0, imageUrl1, imageUrl2);
-const dayText = new Text('day 1', 1, imageUrl1, imageUrl2);
+loadImage(imageUrl1, (firstImage) => {
+  loopItems.push(new ImageTransition(firstImage));
+  loopItems.push(new Text('CODEVEMBER', 0, firstImage, imageUrl2));
+  loopItems.push(new Text('day 1', 1, firstImage, imageUrl2));
+  setTimeout(() => {
+    canvas.classList.add('_visible');
+  }, 500);
+});
+
 
 function loop() {
-  background.update();
-  background.render();
-  codevemberText.update();
-  codevemberText.render();
-  dayText.update();
-  dayText.render();
+  let i;
+  const length = loopItems.length;
+  for (i = 0; i < length; i++) {
+    loopItems[i].update();
+    loopItems[i].render();
+  }
 }
 
 /* ---- CREATING ZONE END ---- */
