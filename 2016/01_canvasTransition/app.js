@@ -133,7 +133,7 @@ class ImageTransition {
 
   update() {
     if (this.newImg && this.newImg.isReady) {
-      this.newImg.range += 2;
+      this.newImg.range += 2.5;
       if (this.newImg.range >= 255) {
         this.viewedImg = this.newImg;
         this.newImg = false;
@@ -177,7 +177,7 @@ class Text extends ImageTransition {
     this.text = text;
     this.line = line;
 
-    this.size = windowWidth * 0.05;
+    this.size = windowWidth * 0.06;
     this.pos = {
       x: windowWidth * 0.5,
       y: (windowHeight * 0.5) + (this.size * this.line * 1.5),

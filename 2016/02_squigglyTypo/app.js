@@ -5,8 +5,8 @@ import dat from 'dat-gui';
 window.React = React;
 
 const CONST = {
-  SCALE: 5,
-  BASE_FREQUENCY: 0.03,
+  SCALE: 15,  // 5
+  BASE_FREQUENCY: 0.04, // 0.03
   NUM_OCTAVE: 3,
   TYPE: 'fractalNoise', // fractalNoise | turbulence
   FREQ: 50,
@@ -121,7 +121,7 @@ Squiggly.defaultProps = {
 
 ReactDOM.render(
   <SquigglyContainer>
-    <div className="content squiggly">
+    <div className="content">
       <h1 className="title">Codevember</h1>
       <p className="subtitle">day 2</p>
     </div>
