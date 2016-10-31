@@ -95,23 +95,24 @@ const traverseArr = (arr, fct) => {
 const getRandomFloat = (min, max) => Math.random() * (max - min) + min;
 
 class Pistil extends THREE.Object3D {
-  constructor() {
+  constructor(positionZ) {
     super();
 
     // ##
     // INIT
-    this.POZ = new THREE.Vector3(0, 0.03, -0.02);
+    this.POZ = new THREE.Vector3(0, 0, 0); // TODO get top into props
     this.ROTATION = new THREE.Euler(Math.random(), Math.random(), Math.random());
     // - var
-    this.segments = 32;
-    this.radiusSegment = 32;
-    this.size = 0.1;
     this.color = getVec4Color(COLORS[0]);
     this.blueColor = getVec4Color([39, 53, 92]);
 
-    this.length = getRandomFloat(3, 6);
+    this.segments = 32;
+    this.radiusSegment = 32;
+    this.size = getRandomFloat(0.01, 0.1);
+    this.length = getRandomFloat(this.size * 10, this.size * 50);
     this.curve = this.createCustomCurve();
     this.pistilHeadPosition = this.curve.getPoints()[this.curve.getPoints().length - 1];
+    this.pistilHeadPosition.z += positionZ;
 
     // - STEM
     // -- geometry
@@ -129,10 +130,11 @@ class Pistil extends THREE.Object3D {
     // });
     // -- mesh
     this.pistilStemMesh = new THREE.Mesh(this.pistilStemGeometry, this.stemShaderMaterial);
+    this.pistilStemMesh.position.z = positionZ;
 
     // - HEAD
     // -- pistilHead geometry/mesh
-    this.pistilHeadGeometry = new THREE.SphereGeometry(this.size * 4, this.radiusSegment, this.segment);
+    this.pistilHeadGeometry = new THREE.SphereGeometry(getRandomFloat(this.size * 3.5, this.size * 5), this.radiusSegment, this.segment);
     // -- material
     this.headMaterial = new THREE.MeshBasicMaterial({ color: 0x324270 });
     // -- mesh
@@ -182,13 +184,14 @@ class PlanetPistil extends THREE.Object3D {
     super();
 
     this.pistils = [];
+    this.size = 2;
 
     this.material = new THREE.MeshBasicMaterial({
       color: new THREE.Color(secondaryColor),
       shading: THREE.FlatShading,
       wireframe: true,
     });
-    this.geometry = new THREE.SphereGeometry(2);
+    this.geometry = new THREE.SphereGeometry(this.size, 32, 32);
     this.mesh = new THREE.Mesh(this.geometry, this.material);
 
     this.add(this.mesh);
@@ -228,7 +231,7 @@ class PlanetPistil extends THREE.Object3D {
   }
 
   createPistil() {
-    const p = new Pistil();
+    const p = new Pistil(this.size);
     this.add(p);
     this.pistils.push(p);
   }
