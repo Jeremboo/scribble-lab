@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 const SquigglyFilter = (props) => {
-  const { i, baseFrequency, numOctaves, type, scale } = props;
+  const { id, i, baseFrequency, numOctaves, type, scale } = props;
   const turbulenceProps = {
     baseFrequency,
     numOctaves,
@@ -13,7 +13,7 @@ const SquigglyFilter = (props) => {
   };
 
   return (
-    <filter id={`squiggly-${i}`} >
+    <filter id={`${id}-${i}`} >
       <feTurbulence
         {...turbulenceProps}
         result="noise"
@@ -29,6 +29,7 @@ const SquigglyFilter = (props) => {
 };
 // TODO see react context
 SquigglyFilter.propTypes = {
+  id: PropTypes.string.isRequired,
   i: PropTypes.number,
   baseFrequency: PropTypes.number,
   numOctaves: PropTypes.number,

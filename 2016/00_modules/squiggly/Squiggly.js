@@ -5,13 +5,11 @@ export default class Squiggly extends Component {
   constructor(props) {
     super(props);
 
+    this.started = false;
+
     this.state = Object.assign({
       i: 0,
       seed: 0,
-      scale: 2,
-      baseFrequency: 0.02,
-      numOctaves: 3,
-      type: 'turbulence',
     }, this.props);
 
     this.loop = this.loop.bind(this);
@@ -19,18 +17,33 @@ export default class Squiggly extends Component {
   }
 
   componentDidMount() {
-    this.loop();
+    this.start();
   }
 
-  // TODO start() stop()
-
-  loop() {
-    this.setState({ i: this.state.i + 1 });
-    setTimeout(this.loop, this.props.freq);
+  componentDidUpdate() {
+    this.start();
   }
 
   getFilterName() {
-    return `url('#squiggly-${this.state.i}')`;
+    return `url('#${this.props.id}-${this.state.i}')`;
+  }
+
+  start() {
+    if (this.props.start) {
+      if (!this.started) {
+        this.started = true;
+        this.loop();
+      }
+    } else {
+      this.started = false;
+    }
+  }
+
+  loop() {
+    if (this.props.start) {
+      this.setState({ i: this.state.i + 1 });
+      setTimeout(this.loop, this.props.freq);
+    }
   }
 
   render() {
@@ -54,12 +67,15 @@ Squiggly.propTypes = {
   numOctaves: PropTypes.number,
   type: PropTypes.string,
   freq: PropTypes.number,
+  start: PropTypes.bool,
 };
 Squiggly.defaultProps = {
-  id: null,
+  id: 'squiggly',
   children: null,
   scale: 2,
   baseFrequency: 0.02,
   numOctaves: 3,
-  type: 'turbulence',
+  type: 'turbulence', // fractalNoise | turbulence
+  freq: 50,
+  start: true,
 };
