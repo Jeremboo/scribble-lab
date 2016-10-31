@@ -49,37 +49,173 @@ const THREE = threeJs();
 /* ---- CREATING ZONE ---- */
 
 const VEL = 0.1;
+const NBR_OF_PISTILS = 30;
+const COLORS = [
+  [249, 183, 112],
+  [246, 150, 122],
+  [255, 156, 148],
+  [255, 208, 129],
+  [190, 214, 170],
+  [135, 118, 178],
+  [105, 156, 166],
+  [149, 193, 188],
+  [214, 147, 153],
+  [175, 115, 147],
+  [194, 156, 178],
+];
+const getRotationMatrix = vectRotation => {
+  const m = new THREE.Matrix4();
+  const m1 = new THREE.Matrix4();
+  const m2 = new THREE.Matrix4();
+  const m3 = new THREE.Matrix4();
+
+  m1.makeRotationX(-vectRotation.x);
+  m2.makeRotationY(-vectRotation.y);
+  m3.makeRotationY(-vectRotation.z);
+
+  m.multiplyMatrices(m1, m2);
+  m.multiply(m3);
+
+  return m;
+};
+const getVec4Color = color => {
+  const r = color[0] / 256;
+  const g = color[1] / 256;
+  const b = color[2] / 256;
+  const v4 = new THREE.Vector4(r, g, b, 1);
+  return v4;
+};
+const traverseArr = (arr, fct) => {
+  const l = arr.length;
+  let i = 0;
+  for (i; i < l; i++) {
+    fct(arr[i]);
+  }
+};
+const getRandomFloat = (min, max) => Math.random() * (max - min) + min;
+
+class Pistil extends THREE.Object3D {
+  constructor() {
+    super();
+
+    // ##
+    // INIT
+    this.POZ = new THREE.Vector3(0, 0.03, -0.02);
+    this.ROTATION = new THREE.Euler(Math.random(), Math.random(), Math.random());
+    // - var
+    this.segments = 32;
+    this.radiusSegment = 32;
+    this.size = 0.1;
+    this.color = getVec4Color(COLORS[0]);
+    this.blueColor = getVec4Color([39, 53, 92]);
+
+    this.length = getRandomFloat(3, 6);
+    this.curve = this.createCustomCurve();
+    this.pistilHeadPosition = this.curve.getPoints()[this.curve.getPoints().length - 1];
+
+    // - STEM
+    // -- geometry
+    this.pistilStemGeometry = new THREE.TubeGeometry(this.curve, this.segments, this.size, this.radiusSegment / 2);
+    // -- material
+    this.stemShaderMaterial = new THREE.MeshBasicMaterial({ color: 0x324270 });
+    // this.stemShaderMaterial = new THREE.ShaderMaterial({
+    //   uniforms: {
+    //     rotationForceMatrix: { type: 'm4', value: new THREE.Matrix4() },
+    //     color: { type: 'v4', value: this.color },
+    //     blueColor: { type: 'v4', value: this.blueColor },
+    //   },
+    //   vertexShader: document.getElementById('pistilVert'),
+    //   fragmentShader: document.getElementById('pistilFrag'),
+    // });
+    // -- mesh
+    this.pistilStemMesh = new THREE.Mesh(this.pistilStemGeometry, this.stemShaderMaterial);
+
+    // - HEAD
+    // -- pistilHead geometry/mesh
+    this.pistilHeadGeometry = new THREE.SphereGeometry(this.size * 4, this.radiusSegment, this.segment);
+    // -- material
+    this.headMaterial = new THREE.MeshBasicMaterial({ color: 0x324270 });
+    // -- mesh
+    this.pistilHeadMesh = new THREE.Mesh(this.pistilHeadGeometry, this.headMaterial);
+    this.pistilHeadObject = new THREE.Object3D();
+    this.pistilHeadObject.add(this.pistilHeadMesh);
+    // -- position
+    this.pistilHeadMesh.position.copy(this.pistilHeadPosition);
+
+    // PISTIL (STEM + HEAD )
+    this.add(this.pistilStemMesh);
+    this.add(this.pistilHeadObject);
+
+    // ##
+    // INIT POSITION & SIZE
+    this.position.copy(this.POZ);
+    this.rotation.copy(this.ROTATION);
+  }
+
+  update(matrixDistRotation) {
+    // this.pistilStemMesh.material.uniforms.rotationForceMatrix.value = matrixDistRotation;
+  }
+
+  createCustomCurve() {
+    const CustomSinCurve = THREE.Curve.create(
+      // custom curve constructor
+      (length, curve) => {
+        this.curve = (curve === undefined) ? 1 : curve;
+        this.length = (length === undefined) ? 1 : length;
+      },
+      // getPoint: t is between 0-1
+      (t) => {
+        const tx = 0;
+        const ty = Math.sin(t * this.curve);
+        const tz = t * this.length;
+
+        return new THREE.Vector3(tx, ty, tz);
+      }
+    );
+    return new CustomSinCurve(this.length, this.curve);
+  }
+}
+
 
 class PlanetPistil extends THREE.Object3D {
   constructor() {
     super();
+
+    this.pistils = [];
 
     this.material = new THREE.MeshBasicMaterial({
       color: new THREE.Color(secondaryColor),
       shading: THREE.FlatShading,
       wireframe: true,
     });
-    this.geometry = new THREE.BoxGeometry(1, 1, 1);
+    this.geometry = new THREE.SphereGeometry(2);
     this.mesh = new THREE.Mesh(this.geometry, this.material);
 
     this.add(this.mesh);
 
     this.update = this.update.bind(this);
     this.setRandomRotation = this.setRandomRotation.bind(this);
+    this.createPistil = this.createPistil.bind(this);
 
     // INIT
     this.setRandomRotation();
     document.body.addEventListener('click', this.setRandomRotation);
+
+    for (let i = 0; i < NBR_OF_PISTILS; i++) {
+      this.createPistil();
+    }
   }
 
   update() {
     // TODO new Euluer
-    const distRotation = this.targetedRotation
-      .clone()
-      .sub(this.rotation.toVector3())
-      .multiplyScalar(VEL)
-    ;
-    this.rotation.setFromVector3(this.rotation.toVector3().add(distRotation));
+    const distRotation = this.targetedRotation.clone().sub(this.rotation.toVector3());
+    const distRotationMatrix = getRotationMatrix(distRotation);
+
+    this.rotation.setFromVector3(this.rotation.toVector3().add(distRotation.multiplyScalar(VEL)));
+
+    traverseArr(this.pistils, pistil => {
+      pistil.update(distRotationMatrix);
+    });
 
     if (Math.random() > 0.99) {
       this.setRandomRotation();
@@ -87,8 +223,14 @@ class PlanetPistil extends THREE.Object3D {
   }
 
   setRandomRotation() {
-    // TODO new Euluer
+    // TODO new THREE.Euler
     this.targetedRotation = new THREE.Vector3(Math.random(), Math.random(), Math.random());
+  }
+
+  createPistil() {
+    const p = new Pistil();
+    this.add(p);
+    this.pistils.push(p);
   }
 }
 
