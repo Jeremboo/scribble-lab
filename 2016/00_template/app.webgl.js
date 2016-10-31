@@ -1,12 +1,13 @@
-import THREELib from 'three-js';
-const THREE = THREELib();
+import threeJs from 'three-js';
+
+const THREE = threeJs();
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#070707',
-/**/       secondaryColor = '#FF7F16',
-/**/       bgColor = '#0C171A';
-/**/ let windowWidth = window.innerWidth,
-/**/     windowHeight = window.innerHeight;
+/**/ const mainColor = '#070707';
+/**/ const secondaryColor = '#C9F0FF';
+/**/ const bgColor = '#ffffff';
+/**/ let windowWidth = window.innerWidth;
+/**/ let windowHeight = window.innerHeight;
 /**/ class Webgl {
 /**/   constructor(w, h) {
 /**/     this.meshCount = 0;
