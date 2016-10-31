@@ -199,6 +199,11 @@ class Text extends ImageTransition {
 
 
 // START
+let background = false;
+let codevemberText = false;
+let day1Text = false;
+const loopItems = [];
+
 function loadImage(url, callback) {
   const img = new Image();
   img.onload = () => {
@@ -210,18 +215,12 @@ function transitionLoop(key) {
   const currentImg = IMAGES[key % IMAGES.length];
   codevemberText.change(currentImg);
   day1Text.change(currentImg, () => {
-    key++;
     background.change(
-      IMAGES[key % IMAGES.length],
-      () => transitionLoop(key)
+      currentImg,
+      () => transitionLoop(key + 1)
     );
   });
 }
-
-let background = false;
-let codevemberText = false;
-let day1Text = false;
-const loopItems = [];
 
 loadImage(IMAGES[0], (firstImage) => {
   background = new ImageTransition(firstImage);
