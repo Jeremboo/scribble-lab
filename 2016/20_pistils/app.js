@@ -48,7 +48,36 @@ const THREE = threeJs();
 /**/
 /* ---- CREATING ZONE ---- */
 
-const VEL = 0.1;
+const pistilVert = `
+  varying vec2 vUv;
+  uniform mat4 rotationForceMatrix;
+  uniform mat4 windForceMatrix;
+
+  void main() {
+    vUv = uv;
+
+    float vel = 1.0 - vUv.x;
+
+    vec4 oldPos = vec4(position, 1.0);
+
+    vec4 targetPos = oldPos * rotationForceMatrix;
+    vec4 pos = oldPos + ((targetPos - oldPos) * vel);
+
+    gl_Position = projectionMatrix * modelViewMatrix * pos;
+  }
+`;
+const pistilFrag = `
+  uniform vec4 blueColor;
+  uniform vec4 color;
+
+  varying vec2 vUv;
+
+  void main() {
+    gl_FragColor = vec4(mix(color.rgb, blueColor.rgb, vUv.x), 1.0);
+  }
+`;
+
+const VEL = 0.05;
 const NBR_OF_PISTILS = 30;
 const COLORS = [
   [249, 183, 112],
@@ -93,6 +122,7 @@ const traverseArr = (arr, fct) => {
   }
 };
 const getRandomFloat = (min, max) => Math.random() * (max - min) + min;
+const getRandomEuler = () => new THREE.Euler(getRandomFloat(0, 6.2831), getRandomFloat(0, 6.2831), getRandomFloat(0, 6.2831));
 
 class Pistil extends THREE.Object3D {
   constructor(positionZ) {
@@ -100,12 +130,6 @@ class Pistil extends THREE.Object3D {
 
     // ##
     // INIT
-    this.POZ = new THREE.Vector3(0, 0, 0); // TODO get top into props
-    this.ROTATION = new THREE.Euler(Math.random(), Math.random(), Math.random());
-    // - var
-    this.color = getVec4Color(COLORS[0]);
-    this.blueColor = getVec4Color([39, 53, 92]);
-
     this.segments = 32;
     this.radiusSegment = 32;
     this.size = getRandomFloat(0.01, 0.1);
@@ -118,16 +142,15 @@ class Pistil extends THREE.Object3D {
     // -- geometry
     this.pistilStemGeometry = new THREE.TubeGeometry(this.curve, this.segments, this.size, this.radiusSegment / 2);
     // -- material
-    this.stemShaderMaterial = new THREE.MeshBasicMaterial({ color: 0x324270 });
-    // this.stemShaderMaterial = new THREE.ShaderMaterial({
-    //   uniforms: {
-    //     rotationForceMatrix: { type: 'm4', value: new THREE.Matrix4() },
-    //     color: { type: 'v4', value: this.color },
-    //     blueColor: { type: 'v4', value: this.blueColor },
-    //   },
-    //   vertexShader: document.getElementById('pistilVert'),
-    //   fragmentShader: document.getElementById('pistilFrag'),
-    // });
+    this.stemShaderMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        rotationForceMatrix: { type: 'm4', value: new THREE.Matrix4() },
+        color: { type: 'v4', value: getVec4Color(COLORS[0]) },
+        blueColor: { type: 'v4', value: getVec4Color([39, 53, 92]) },
+      },
+      vertexShader: pistilVert,
+      fragmentShader: pistilFrag,
+    });
     // -- mesh
     this.pistilStemMesh = new THREE.Mesh(this.pistilStemGeometry, this.stemShaderMaterial);
     this.pistilStemMesh.position.z = positionZ;
@@ -150,12 +173,11 @@ class Pistil extends THREE.Object3D {
 
     // ##
     // INIT POSITION & SIZE
-    this.position.copy(this.POZ);
-    this.rotation.copy(this.ROTATION);
+    this.rotation.copy(getRandomEuler());
   }
 
   update(matrixDistRotation) {
-    // this.pistilStemMesh.material.uniforms.rotationForceMatrix.value = matrixDistRotation;
+    this.pistilStemMesh.material.uniforms.rotationForceMatrix.value = matrixDistRotation;
   }
 
   createCustomCurve() {
@@ -211,7 +233,7 @@ class PlanetPistil extends THREE.Object3D {
 
   update() {
     // TODO new Euluer
-    const distRotation = this.targetedRotation.clone().sub(this.rotation.toVector3());
+    const distRotation = this.targetedRotation.toVector3().sub(this.rotation.toVector3());
     const distRotationMatrix = getRotationMatrix(distRotation);
 
     this.rotation.setFromVector3(this.rotation.toVector3().add(distRotation.multiplyScalar(VEL)));
@@ -221,13 +243,12 @@ class PlanetPistil extends THREE.Object3D {
     });
 
     if (Math.random() > 0.99) {
-      this.setRandomRotation();
+      // this.setRandomRotation();
     }
   }
 
   setRandomRotation() {
-    // TODO new THREE.Euler
-    this.targetedRotation = new THREE.Vector3(Math.random(), Math.random(), Math.random());
+    this.targetedRotation = getRandomEuler();
   }
 
   createPistil() {
