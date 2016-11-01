@@ -79,7 +79,7 @@ const pistilFrag = `
 `;
 
 const VEL = 0.05;
-const NBR_OF_PISTILS = 30;
+const NBR_OF_PISTILS = 10;
 const COLORS = [
   [249, 183, 112],
   [246, 150, 122],
@@ -187,7 +187,22 @@ class Pistil extends THREE.Object3D {
 
     // ##
     // INIT POSITION & SIZE
-    this.rotation.copy(getRandomEuler());
+    this.rot = getRandomEuler()
+    this.rotation.copy(this.rot);
+    // this.position.set(
+    //   positionZ * Math.cos(this.rot.x) * Math.sin(this.rot.y),
+    //   positionZ * Math.sin(this.rot.x) * Math.sin(this.rot.y),
+    //   positionZ * Math.cos(this.rot.y),
+    // );
+  }
+
+  init() {
+    // const m = this.parent.matrix.multiply(new THREE.Matrix4());
+    // console.log(this.parent.matrix);
+    // console.log(this.matrix);
+    // console.log(m)
+    // const pos = new THREE.Vector3().setFromMatrixPosition(m, 'XYZ');
+    // console.log(pos);
   }
 
   update(matrixDistRotation) {
@@ -267,6 +282,7 @@ class PlanetPistil extends THREE.Object3D {
   createPistil() {
     const p = new Pistil(this.size);
     this.add(p);
+    p.init();
     this.pistils.push(p);
   }
 }
