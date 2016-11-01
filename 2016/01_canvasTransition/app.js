@@ -6,19 +6,15 @@
 /**/ canvas.id = 'canvas';
 /**/ canvas.width = windowWidth;
 /**/ canvas.height = windowHeight;
-/**/ document.body.insertBefore(canvas, document.body.firstChild);
+/**/ document.body.append(canvas, document.body.firstChild);
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
-import imageUrl1 from '../00_inspirations/background1.jpg';
-import imageUrl2 from '../00_inspirations/background2.jpg';
-// const imageUrl1 = '../00_inpiration/background1.JPG';
-
 const IMAGES = [
-  imageUrl1,
-  imageUrl2,
+  'http://jeremieboulay.fr/assets/bg3.jpg',
+  'http://jeremieboulay.fr/assets/bg2.jpg',
+  'http://jeremieboulay.fr/assets/bg1.jpg',
 ];
-
 
 // UTILS
 const createCanvas = (width = window.innerWidth, height = window.innerHeight) => {
@@ -32,7 +28,6 @@ const createCanvas = (width = window.innerWidth, height = window.innerHeight) =>
     imageData: context.getImageData(0, 0, width, height),
   };
 };
-
 const randomNoise = (width = window.innerWidth, height = window.innerHeight) => {
   const { canvas, context, imageData } = createCanvas(width, height);
   const pixels = imageData.data;
@@ -45,12 +40,10 @@ const randomNoise = (width = window.innerWidth, height = window.innerHeight) => 
   context.putImageData(imageData, 0, 0);
   return canvas;
 };
-
 const perlinNoise = (width = window.innerWidth, height = window.innerHeight) => {
   const { canvas, context } = createCanvas(width, height);
   const noise = randomNoise(width, height);
   context.save();
-  /* Scale random iterations onto the canvas to generate Perlin noise. */
   let size;
   for (size = 4; size <= width; size *= 2) {
     const x = (Math.random() * (width - size)) | 0;
@@ -61,7 +54,6 @@ const perlinNoise = (width = window.innerWidth, height = window.innerHeight) => 
   context.restore();
   return canvas;
 };
-
 const gradientPerlinNoise = (width = window.innerWidth, height = window.innerHeight) => {
   const { canvas, context } = createCanvas(width, height);
   const pNoise = perlinNoise(width, height);
@@ -71,14 +63,13 @@ const gradientPerlinNoise = (width = window.innerWidth, height = window.innerHei
   context.drawImage(pNoise, 0, 0);
   context.fillStyle = gradient;
   context.fillRect(0, 0, width, height);
-
   return canvas;
 };
 
 
 // CORE
 class ImageTransition {
-  constructor(image = imageUrl1, newImage) {
+  constructor(image, newImage) {
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
     this.canvas.width = windowWidth;
@@ -98,6 +89,7 @@ class ImageTransition {
     let img = false;
     if (typeof (image) === 'string') {
       img = new Image();
+      img.crossOrigin = 'Anonymous';
       img.onload = () => {
         img.isReady = true;
         img.range = this.viewedImg ? 0 : 255;
@@ -133,7 +125,7 @@ class ImageTransition {
 
   update() {
     if (this.newImg && this.newImg.isReady) {
-      this.newImg.range += 2.5;
+      this.newImg.range += 5;
       if (this.newImg.range >= 255) {
         this.viewedImg = this.newImg;
         this.newImg = false;
@@ -172,24 +164,28 @@ class ImageTransition {
 }
 
 class Text extends ImageTransition {
-  constructor(text = '', line = 0, image = imageUrl1, image2) {
+  constructor(text = [''], image, image2) {
     super(image, image2);
-    this.text = text;
-    this.line = line;
+    this.text = (typeof (text) === 'string') ? [text] : text;
 
-    this.size = windowWidth * 0.06;
+    this.size = windowWidth * 0.1;
     this.pos = {
       x: windowWidth * 0.5,
-      y: (windowHeight * 0.5) + (this.size * this.line * 1.5),
+      y: (windowHeight * 0.5),
     };
+
+    this.canvasText = createCanvas(windowWidth, windowHeight);
+    this.canvasText.context.font = `bold ${this.size}px CenturyGothic`;
+    this.canvasText.context.textAlign = 'center';
+    let i;
+    for (i = 0; i < this.text.length; i++) {
+      this.canvasText.context.fillText(this.text[i], this.pos.x, this.pos.y + (this.size * i));
+    }
   }
 
   render() {
-    // Draw text (destination)
     if (this.viewedImg) {
-      this.ctx.font = `bold ${this.size}pt CenturyGothic`;
-      this.ctx.textAlign = 'center';
-      this.ctx.fillText(this.text, this.pos.x, this.pos.y);
+      this.ctx.drawImage(this.canvasText.canvas, 0, 0);
       this.ctx.globalCompositeOperation = 'source-in';
     }
     super.render();
@@ -197,15 +193,14 @@ class Text extends ImageTransition {
 }
 
 
-
 // START
 let background = false;
 let codevemberText = false;
-let day1Text = false;
 const loopItems = [];
 
 function loadImage(url, callback) {
   const img = new Image();
+  img.crossOrigin = 'Anonymous';
   img.onload = () => {
     callback(img);
   };
@@ -213,8 +208,7 @@ function loadImage(url, callback) {
 }
 function transitionLoop(key) {
   const currentImg = IMAGES[key % IMAGES.length];
-  codevemberText.change(currentImg);
-  day1Text.change(currentImg, () => {
+  codevemberText.change(currentImg, () => {
     background.change(
       currentImg,
       () => transitionLoop(key + 1)
@@ -225,10 +219,8 @@ function transitionLoop(key) {
 loadImage(IMAGES[0], (firstImage) => {
   background = new ImageTransition(firstImage);
   loopItems.push(background);
-  codevemberText = new Text('CODEVEMBER', 0, firstImage);
+  codevemberText = new Text(['CODEVEMBER', 'day 1'], firstImage);
   loopItems.push(codevemberText);
-  day1Text = new Text('day 1', 1, firstImage);
-  loopItems.push(day1Text);
   transitionLoop(1);
   setTimeout(() => {
     canvas.classList.add('_visible');
