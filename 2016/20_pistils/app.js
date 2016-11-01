@@ -1,4 +1,5 @@
 import threeJs from 'three-js';
+import canvasTextureTool from '../00_modules/canvasTextureTool';
 
 const THREE = threeJs();
 
@@ -23,10 +24,10 @@ const THREE = threeJs();
 /**/     this.resize = this.resize.bind(this);
 /**/     this.resize(w, h); // set render size
 /**/   }
-/**/   add(mesh) {
-/**/     this.scene.add(mesh);
-/**/     if (!mesh.update) return;
-/**/     this.meshListeners.push(mesh.update);
+/**/   add(obj) {
+/**/     if (obj.mesh) this.scene.add(obj);
+/**/     if (!obj.update) return;
+/**/     this.meshListeners.push(obj.update);
 /**/     this.meshCount++;
 /**/   }
 /**/   update() {
@@ -51,17 +52,17 @@ const THREE = threeJs();
 const pistilVert = `
   varying vec2 vUv;
   uniform mat4 rotationForceMatrix;
-  uniform mat4 windForceMatrix;
+  uniform sampler2D springinessMap;
 
   void main() {
     vUv = uv;
 
-    float vel = 1.0 - vUv.x;
+    vec4 flexTexture = texture2D(springinessMap, vUv);
 
     vec4 oldPos = vec4(position, 1.0);
 
     vec4 targetPos = oldPos * rotationForceMatrix;
-    vec4 pos = oldPos + ((targetPos - oldPos) * vel);
+    vec4 pos = oldPos + ((targetPos - oldPos) * flexTexture.x);
 
     gl_Position = projectionMatrix * modelViewMatrix * pos;
   }
@@ -142,11 +143,24 @@ class Pistil extends THREE.Object3D {
     // -- geometry
     this.pistilStemGeometry = new THREE.TubeGeometry(this.curve, this.segments, this.size, this.radiusSegment / 2);
     // -- material
+    // TODO refactor
+    this.canvasTexture = new canvasTextureTool((context, props) => {
+      const { width, height } = props
+      const gradient = context.createLinearGradient(0, 0, width, 0);
+      gradient.addColorStop(0, 'rgb(0, 0, 0)');
+      gradient.addColorStop(1, 'rgb(255, 255, 255)');
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, width, height);
+    });
+    this.transitionTexture = new THREE.Texture(this.canvasTexture.canvas);
+    this.transitionTexture.needsUpdate = true;
+
     this.stemShaderMaterial = new THREE.ShaderMaterial({
       uniforms: {
         rotationForceMatrix: { type: 'm4', value: new THREE.Matrix4() },
         color: { type: 'v4', value: getVec4Color(COLORS[0]) },
         blueColor: { type: 'v4', value: getVec4Color([39, 53, 92]) },
+        springinessMap: { type: 't', value: this.transitionTexture },
       },
       vertexShader: pistilVert,
       fragmentShader: pistilFrag,
@@ -232,7 +246,6 @@ class PlanetPistil extends THREE.Object3D {
   }
 
   update() {
-    // TODO new Euluer
     const distRotation = this.targetedRotation.toVector3().sub(this.rotation.toVector3());
     const distRotationMatrix = getRotationMatrix(distRotation);
 
