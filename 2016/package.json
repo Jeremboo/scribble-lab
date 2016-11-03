@@ -15,7 +15,8 @@
     "mojs-player": "^0.43.15",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "three-js": "^79.0.0"
+    "three-js": "^79.0.0",
+    "three-orbit-controls": "^72.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.1",
