@@ -41,7 +41,7 @@ export default class Squiggly extends Component {
 
   loop() {
     if (this.props.start) {
-      this.setState({ i: this.state.i + 1 });
+      this.setState({ i: (this.state.i + 1) % 10 });
       setTimeout(this.loop, this.props.freq);
     }
   }
@@ -74,7 +74,7 @@ Squiggly.defaultProps = {
   children: null,
   scale: 2,
   baseFrequency: 0.02,
-  numOctaves: 3,
+  numOctaves: 2,
   type: 'turbulence', // fractalNoise | turbulence
   freq: 50,
   start: true,
