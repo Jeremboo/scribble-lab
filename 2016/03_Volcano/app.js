@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import dat from 'dat-gui';
 
 import SquigglySVG from '../00_modules/squiggly/SquigglySVG.js';
 
