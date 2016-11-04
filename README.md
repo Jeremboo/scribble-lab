@@ -5,7 +5,17 @@ List of my contributions of the **Codevember challenge**.
 ## [Codevember 2016](http://codevember.xyz/)
 
 <p align="center">
-  Soon
+  <a href="http://codepen.io/Jeremboo/full/ORKroY/">
+    <img alt="Day1 - Perlin Noise Canvas transition" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember01.gif?raw=true" width="200">
+  </a>
+
+  <a href="http://codepen.io/Jeremboo/pen/jVNVqr">
+    <img alt="Day2 - React Squiggly Component with SVG filters" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember02.gif?raw=true" width="200">
+  </a>
+
+  <a href="http://codepen.io/Jeremboo/pen/QGLGNN">
+    <img alt="Day3 - Tiny SVG Volcano animated with React Squiggly Component" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember03.gif?raw=true" width="200">
+  </a>
 </p>
 
 ## [Codevember 2015](http://codevember2015.tumblr.com/)
