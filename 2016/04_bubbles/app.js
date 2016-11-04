@@ -1,43 +1,61 @@
-const canvas = document.getElementById("canvas"),
-      context = canvas.getContext("2d"),
-      colorPallete = ["#ff1783", "#17c9ff", "#36ff40"];
+/**/ /* ---- CORE ---- */
+/**/ const canvas = document.createElement('canvas');
+/**/ const context = canvas.getContext('2d');
+/**/ canvas.id = 'canvas';
+/**/ let windowWidth = canvas.width = window.innerWidth;
+/**/ let windowHeight = canvas.height = window.innerHeight;
+/**/ let origin = { x: 100, y: windowHeight * 0.5 };
+/**/ document.body.append(canvas, document.body.firstChild);
+/**/ window.onresize = () => {
+/**/  windowWidth = canvas.width = window.innerWidth;
+/**/  windowHeight = canvas.height = window.innerHeight;
+/**/  origin = { x: 100, y: windowHeight * 0.5 };
+/**/ };
+/**/ /* ---- CORE END ---- */
+/* ---- CREATING ZONE ---- */
 
+const AMPL = 0.15;
+const MAX_SIZE = 20;
 
-var width = canvas.width = window.innerWidth,
-    height = canvas.height = window.innerHeight,
-    origin = {x: width / 2, y: height / 2},
-    mouse = {x: width / 2, y: height / 2},
-    balls = [],
-    count = 0,
-    randomCount = 1;
+const getRandomFloat = (min, max) => (Math.random() * (max - min) + min);
 
-window.onresize = () =>{
-  width = canvas.width = window.innerWidth;
-  height = canvas.height = window.innerHeight;
-  origin = {x: width / 2, y: height / 2};
-}
+const colorPallete = ["#ff1783", "#17c9ff", "#36ff40"];
+let balls = [];
+let count = 0;
+let randomCount = 1;
+
 
 class Ball{
   constructor(){
     this.x = origin.x;
     this.y = origin.y;
-    this.angle = Math.PI * 2 * Math.random();
-    this.vx = (1.3 + Math.random() * .3) * Math.cos(this.angle);
-    this.vy = (1.3 + Math.random() * .3) * Math.sin(this.angle);
-    this.r = 6 + 3 * Math.random();
+    this.angle = Math.PI * 2 * getRandomFloat(1 - AMPL, 1 + AMPL);
+    this.r = MAX_SIZE * Math.random();
+    this.vx = Math.cos(this.angle) * (this.r * 0.15);
+    this.vy = Math.sin(this.angle) * (this.r * 0.15);
     this.color = colorPallete[Math.floor(Math.random() * colorPallete.length)];
+    this.died = false;
   }
 
   update(){
     this.x += this.vx;
     this.y += this.vy;
-    this.r -= .01;
+    this.r -= 0.1;
+    if ((this.r - 0.1) <= 0.1) {
+      this.r = 0.1;
+      this.died = true;
+    }
+  }
+
+  render() {
+    context.fillStyle = this.color;
+    context.beginPath();
+    context.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
+    context.fill();
   }
 }
 
-loop();
 function loop(){
-  context.clearRect(0, 0, width, height);
   if(count === randomCount){
     balls.push(new Ball());
     count = 0;
@@ -46,41 +64,23 @@ function loop(){
   count++;
   for(var i = 0; i < balls.length; i++){
     var b = balls[i];
-    context.fillStyle = b.color;
-    context.beginPath();
-    context.arc(b.x, b.y, b.r, 0, Math.PI * 2, false);
-    context.fill();
     b.update();
+    b.render();
   }
-
-  origin.x += (mouse.x - origin.x) * .15;
-  origin.y += (mouse.y - origin.y) * .15;
-
-  context.fillStyle = "#ffdd02";
-  context.beginPath();
-  context.arc(origin.x, origin.y, 40, 0, Math.PI * 2, false);
-  context.fill();
-
-  removeBall();
-  requestAnimationFrame(loop);
-}
-
-function removeBall(){
-  for(var i = 0; i < balls.length; i++){
-    var b = balls[i];
-    if(
-      b.x + b.r < 0 ||
-      b.x - b.r > width ||
-      b.y + b.r < 0 ||
-      b.y - b.r > height ||
-      b.r < 0
-    ){
-      balls.splice(i, 1);
-    }
-  }
+  balls = balls.filter(b => (!b.died));
 }
 
 window.addEventListener("mousemove", function(e){
-  mouse.x = e.clientX;
-  mouse.y = e.clientY;
+  // TODO
 }, false);
+
+
+/* ---- CREATING ZONE END ---- */
+/**/ /* ---- LOOP ---- */
+/**/ function _loop(){
+/**/   context.clearRect(0,0, windowWidth, windowHeight);
+/**/   loop();
+/**/ 	 requestAnimationFrame(_loop);
+/**/ }
+/**/ _loop();
+/**/ /* ---- LOOP END ---- */
