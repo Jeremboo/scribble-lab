@@ -1,6 +1,6 @@
 // INIT
-mainColor = #070707
-secondaryColor = #C9F0FF
+mainColor = #f4f3d2
+secondaryColor = #F1515C
 bgColor = #433D3A
 
 // INIT
@@ -33,6 +33,9 @@ center()
   left: 50%;
   transform: translate(-50%, -50%);
 
+random(min,max)
+  return floor(math(0, 'random')*(max - min + 1) + min)
+
 // START
 cubeSize = 50px;
 
@@ -51,11 +54,6 @@ cubeSize = 50px;
 .cube{
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
-  animation: rotate 4s infinite linear;
-}
-@keyframes rotate{
-  0% { transform: rotateX(0deg) rotateY(0deg) }
-  100% { transform: rotateX(360deg) rotateY(360deg) }
 }
 
 .side{
@@ -73,20 +71,25 @@ cubeSize = 50px;
 
 .letter {
   center();
+  font-size: 2.1em;
+  font-weight: 600;
 }
 
-// STYLES
-.basic {
-  border: 2px dashed black;
-  background-color: #f4f3d2;
+for i in (0..30)
+  .container:nth-child({i + 1}) .cube
+    animation: rotate+i 2s infinite linear;
 
-  .letter {}
-}
+  keyframe-name = (rotate+i)
+  rotX = 360 * random(-1, 1);
+  rotY = 360 * random(-1, 1);
 
-.new {
-  border: 1px solid white;
+  if rotX == 0 && rotY == 0
+      if random(-1, 1)
+        rotX = -360
+      else
+        rotX = 360
 
-  .letter {
-    color: white;
+  @keyframes {keyframe-name} {
+    0% { transform: rotateX(0deg) rotateY(0deg) }
+    100% { transform: rotateX((rotX)deg) rotateY((rotY)deg) }
   }
-}
