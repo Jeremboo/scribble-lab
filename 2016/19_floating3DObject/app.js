@@ -53,17 +53,51 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 /**/
 /* ---- CREATING ZONE ---- */
 
+const shaderVert = `
+  varying vec2 vUv;
+
+  void main()
+  {
+    vUv = uv;
+    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const shaderFrag = `
+  float nbrOfStripes = 12.0;
+  float edge = 0.8;
+  float speed = 0.1;
+
+  uniform float i;
+
+  varying vec2 vUv;
+
+  void main() {
+    float vel = vUv.x + (i * speed);
+    vec3 stripes = vec3(step(edge, abs(fract(vel * nbrOfStripes))));
+    gl_FragColor = vec4(stripes, 1.0);
+  }
+`;
 // OBJECTS
 class Block extends THREE.Object3D {
   constructor() {
     super();
 
-    this.i = 0;
+    this.i = 0.0;
 
     this.material = new THREE.MeshBasicMaterial({
       color: new THREE.Color(secondaryColor),
       shading: THREE.FlatShading,
     });
+    this.material = new THREE.ShaderMaterial({
+      uniforms: {
+        i: { type: 'f', value: 1.0 },
+      },
+      vertexShader: shaderVert,
+      fragmentShader: shaderFrag,
+    });
+
     this.geometry = new THREE.BoxGeometry(2, 2, 2);
     this.mesh = new THREE.Mesh(this.geometry, this.material);
 
@@ -75,6 +109,7 @@ class Block extends THREE.Object3D {
   update() {
     this.i += 0.05;
     this.position.y = (Math.cos(this.i) * 0.05) - 1;
+    this.mesh.material.uniforms.i.value = this.i;
   }
 }
 
