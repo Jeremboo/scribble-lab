@@ -15,12 +15,13 @@
 // http://inconvergent.net/shepherding-random-numbers/
 
 /* ---- SETTINGS ---- */
-const numberParticlesStart = 500;
-const particleSpeed = 0.1;
-const velocity = 0.99;
+const numberParticlesStart = 1000;
+const particleSpeed = 0.3;
+const velocity = 0.9;
+const circleWidth = 50;
 
 /* ---- INIT ---- */
-const particles = [];
+let particles = [];
 
 const getRandomFloat = (min, max) => (Math.random() * (max - min) + min);
 
@@ -37,7 +38,7 @@ function Particle (x, y) {
     max : getRandomFloat(10, 100)/10
   }
 
-  this.color = 'rgba(52, 52, 52, 0.1)';
+  this.color = 'rgba(255, 255, 255, 0.05)';
 }
 Particle.prototype.render = function() {
   context.beginPath();
@@ -103,11 +104,22 @@ function loop() {
 }
 
 /* ---- START ---- */
-for (let i = 0; i < numberParticlesStart; i++) {
-  particles.push(new Particle(
-    windowWidth * 0.5,
-    windowHeight * 0.5,
-));
+function init() {
+  let i;
+  for (i = 0; i < numberParticlesStart; i++) {
+    const angle = Math.random() * 360;
+    particles.push(new Particle(
+      windowWidth * 0.5 + (Math.cos(angle) * circleWidth),
+      windowHeight * 0.5 - (Math.sin(angle) * circleWidth),
+  ));
+  }
 }
+init();
+
+window.addEventListener('click', () => {
+  particles = [];
+  context.clearRect(0,0, windowWidth, windowHeight);
+  init();
+});
 
 loop();
