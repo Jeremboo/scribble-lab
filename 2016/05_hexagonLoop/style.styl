@@ -1,7 +1,7 @@
 // INIT
-mainColor = #070707
-secondaryColor = #C9F0FF
-bgColor = #fff
+mainColor = #080708
+secondaryColor = #DF2935
+bgColor = #E6E8E6
 
 body, html
   width: 100%;
@@ -25,20 +25,22 @@ body, html
     color: secondaryColor
 
 size = 300px;
-duration = 10s;
+nbr = 11 // impair number
+duration = nbr * 0.5 + 0s;
 
 .center
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  animation: zIndex duration infinite linear;
 
 // http://csshexagon.com/
 .hexagon {
   width: size;
   height: (size / 1.733102253);
   background-color: secondaryColor;
-  animation: scale duration infinite linear;
+  animation: scale duration infinite ease-in-out;
   transform: scale(0);
 
   &:before,
@@ -74,12 +76,29 @@ duration = 10s;
     width: 0;
     border-top: (size / 3.4602076125) solid bgColor;
 
-for i in (1..8)
-  .center:nth-child({i}) .hexagon
-    animation-delay: (duration / 8) * i;
+for i in (0..nbr)
+  .center:nth-child({i + 1})
+    animation-delay: (duration * 0.1) * i;
+    .hexagon
+      animation-delay: (duration * 0.1) * i;
 
 @keyframes scale {
-  0% { transform: scale(0) }
-  80% { transform: scale(1) }
-  100% { transform: scale(1) }
+  0% {
+    transform: scale(0);
+  }
+  80% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes zIndex {
+  0% {
+    z-index: nbr;
+  }
+  100% {
+    z-index: 1;
+  }
 }
