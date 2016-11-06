@@ -5,7 +5,7 @@ const THREE = threeJs();
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#C9F0FF';
-/**/ const bgColor = '#ffffff';
+/**/ const bgColor = '#070707';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Webgl {
@@ -48,17 +48,18 @@ const THREE = threeJs();
 /**/
 /* ---- CREATING ZONE ---- */
 
-// OBJECTS
-class Example extends THREE.Object3D {
-  constructor() {
+import img from '../00_inspirations/rainbow.png';
+
+// // OBJECTS
+class Panorama extends THREE.Object3D {
+  constructor(img, depth) {
     super();
 
     this.material = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(secondaryColor),
-      shading: THREE.FlatShading,
-      wireframe: true,
+      map: THREE.ImageUtils.loadTexture(img),
     });
-    this.geometry = new THREE.BoxGeometry(1, 1, 1);
+    this.geometry = new THREE.SphereGeometry(depth, 100, 40);
+    this.geometry.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
     this.mesh = new THREE.Mesh(this.geometry, this.material);
 
     this.add(this.mesh);
@@ -67,16 +68,15 @@ class Example extends THREE.Object3D {
   }
 
   update() {
-    this.rotation.x += 0.03;
-    this.rotation.y += 0.03;
+    this.rotation.y += 0.05;
   }
 }
 
 // START
-const ex = new Example();
+// TODO use canvas to texture
+const pano1 = new Panorama(img, 1.5);
+webgl.add(pano1);
 
-// ADDS
-webgl.add(ex);
 
 /* ---- CREATING ZONE END ---- */
 /**/

@@ -1,0 +1,32 @@
+// INIT
+mainColor = #A7AEB8
+secondaryColor = #FBFAF6
+bgColor = #fff
+
+body, html
+  width: 100%;
+  height: 100%;
+  overflow: hidden
+  background-color: bgColor
+  margin: 0
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif
+
+.f
+  position: fixed
+  bottom: 5px
+  right: 15px
+  font-family: 'Arial'
+  font-size: 0.7rem
+  color: mainColor
+  text-align: center;
+
+  a
+    font-size: 0.8rem
+    color: secondaryColor
+
+canvas
+  opacity: 0;
+
+._visible
+  transition: opacity 0.2s;
+  opacity: 1;

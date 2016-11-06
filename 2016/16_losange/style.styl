@@ -1,0 +1,85 @@
+// INIT
+mainColor = #070707
+secondaryColor = #C9F0FF
+bgColor = #fff
+
+body, html
+  width: 100%;
+  height: 100%;
+  overflow: hidden
+  background-color: bgColor
+  margin: 0
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif
+
+.f
+  position: fixed
+  bottom: 5px
+  right: 15px
+  font-family: 'Arial'
+  font-size: 0.7rem
+  color: mainColor
+  text-align: center;
+
+  a
+    font-size: 0.8rem
+    color: secondaryColor
+
+size = 300px;
+duration = 10s;
+
+.center
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+// http://csshexagon.com/
+.hexagon {
+  width: size;
+  height: (size / 1.733102253);
+  background-color: secondaryColor;
+  animation: scale duration infinite linear;
+  transform: scale(0);
+
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    border-left: (size * 0.5) solid transparent;
+    border-right: (size * 0.5) solid transparent;
+  }
+
+  &:before {
+    bottom: 100%;
+    border-bottom: (size / 3.4602076125) solid secondaryColor;
+  }
+
+  &:after {
+    top: 100%;
+    width: 0;
+    border-top: (size / 3.4602076125) solid secondaryColor;
+  }
+}
+
+.center:nth-child(odd) .hexagon
+  background-color: bgColor;
+
+  &:before
+    bottom: 100%;
+    border-bottom: (size / 3.4602076125) solid bgColor;
+
+  &:after
+    top: 100%;
+    width: 0;
+    border-top: (size / 3.4602076125) solid bgColor;
+
+for i in (1..8)
+  .center:nth-child({i}) .hexagon
+    animation-delay: (duration / 8) * i;
+
+@keyframes scale {
+  0% { transform: scale(0) }
+  80% { transform: scale(1) }
+  100% { transform: scale(1) }
+}
