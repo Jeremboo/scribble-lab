@@ -1,28 +1,5 @@
 import './canvasTextureTool.styl';
 
-// export default class CanvasTextureTool {
-//   constructor(update = f => f, props = { w: 256, h: 256 }) {
-//     this.canvas = document.createElement('canvas');
-//     this.canvas.id = 'canvas-texture';
-//     this.canvas.className = 'CanvasTextureTool-canvas';
-//     this.ctx = this.canvas.getContext('2d');
-//
-//     this.width = this.canvas.width = props.w;
-//     this.height = this.canvas.height = props.h;
-//     this.update = () => update(this);
-//     update(this);
-//
-//     this.canvasWrapper = document.getElementById('canvas-texture-wrapper');
-//     if (!this.canvasWrapper) {
-//       this.canvasWrapper = document.createElement('div');
-//       this.canvasWrapper.id = 'canvas-texture-wrapper';
-//       this.canvasWrapper.className = 'CanvasTextureTool-wrapper';
-//       document.body.appendChild(this.canvasWrapper);
-//     }
-//     this.canvasWrapper.appendChild(this.canvas);
-//   }
-// }
-
 // TODO
 // noiseTexture
 // perlinNoiseTexture
@@ -31,29 +8,66 @@ import './canvasTextureTool.styl';
 // customTexture
 //fusionTexture // superpose
 
-const CanvasTextureTool = (onUpdate = f => f, props = { width: 256, height: 256 }) => {
+const CanvasTextureTool = (THREE, { width = 256, height = 256, onUpdate = f => f } = {}) => {
+
   const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
   canvas.id = 'canvas-texture';
   canvas.className = 'CanvasTextureTool-canvas';
+  canvas.width = width;
+  canvas.height = height;
 
-  canvas.width = props.width;
-  canvas.height = props.height;
-  const update = () => onUpdate(ctx, props);
+  const ctx = canvas.getContext('2d');
+
+  const update = () => onUpdate(ctx, { width, height });
   update();
 
-  // let canvasWrapper = document.getElementById('canvas-texture-wrapper');
-  // if (!canvasWrapper) {
-  //   canvasWrapper = document.createElement('div');
-  //   canvasWrapper.id = 'canvas-texture-wrapper';
-  //   canvasWrapper.className = 'CanvasTextureTool-wrapper';
-  //   document.body.appendChild(canvasWrapper);
-  // }
-  // canvasWrapper.appendChild(canvas);
+  let texture = false;
+  let material = false;
+  if (THREE) {
+    texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+    material = new THREE.ShaderMaterial({
+      uniforms: {
+        texture: { type: 't', value: texture }
+      },
+      // TODO create glsl files
+      vertexShader: `
+        varying vec2 vUv;
+
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix *
+                        modelViewMatrix *
+                        vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec2 vUv;
+        uniform sampler2D texture;
+        uniform vec4 color;
+
+        void main() {
+          gl_FragColor = texture2D(texture, vUv);
+        }
+      `,
+      side: THREE.DoubleSide,
+    });
+  }
+
+  let canvasWrapper = document.getElementById('canvas-texture-wrapper');
+  if (!canvasWrapper) {
+    canvasWrapper = document.createElement('div');
+    canvasWrapper.id = 'canvas-texture-wrapper';
+    canvasWrapper.className = 'CanvasTextureTool-wrapper';
+    document.body.appendChild(canvasWrapper);
+  }
+  canvasWrapper.appendChild(canvas);
 
   return {
     update,
     canvas,
+    texture,
+    material,
   };
 };
 export default CanvasTextureTool;
