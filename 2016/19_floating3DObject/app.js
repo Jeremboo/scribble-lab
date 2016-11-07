@@ -15,7 +15,7 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 /**/     this.meshListeners = [];
 /**/     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 /**/     this.renderer.setPixelRatio(window.devicePixelRatio);
-/**/     // this.renderer.setClearColor(new THREE.Color('rgba(0, 0, 0, 0)'));
+/**/     // this.renderer.setClearColor(new THREE.Color(bgColor)));
 /**/     this.scene = new THREE.Scene();
 /**/     this.camera = new THREE.PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.controls = new OrbitControls(this.camera, this.renderer.domElement);

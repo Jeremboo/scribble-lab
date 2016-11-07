@@ -144,14 +144,14 @@ class Pistil extends THREE.Object3D {
     this.pistilStemGeometry = new THREE.TubeGeometry(this.curve, this.segments, this.size, this.radiusSegment / 2);
     // -- material
     // TODO refactor
-    this.canvasTexture = new canvasTextureTool((context, props) => {
+    this.canvasTexture = new canvasTextureTool(THREE, { onUpdate: (context, props) => {
       const { width, height } = props
       const gradient = context.createLinearGradient(0, 0, width, 0);
       gradient.addColorStop(0, 'rgb(0, 0, 0)');
       gradient.addColorStop(1, 'rgb(255, 255, 255)');
       context.fillStyle = gradient;
       context.fillRect(0, 0, width, height);
-    });
+    }});
     this.transitionTexture = new THREE.Texture(this.canvasTexture.canvas);
     this.transitionTexture.needsUpdate = true;
 
