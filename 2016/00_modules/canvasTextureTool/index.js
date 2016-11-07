@@ -6,10 +6,9 @@ import './canvasTextureTool.styl';
 // gradientTexture
 // perlinGradientNoiseTexture
 // customTexture
-//fusionTexture // superpose
+// fusionTexture // superpose
 
 const CanvasTextureTool = (THREE, { width = 256, height = 256, onUpdate = f => f } = {}) => {
-
   const canvas = document.createElement('canvas');
   canvas.id = 'canvas-texture';
   canvas.className = 'CanvasTextureTool-canvas';
@@ -25,7 +24,7 @@ const CanvasTextureTool = (THREE, { width = 256, height = 256, onUpdate = f => f
     texture.needsUpdate = true;
     material = new THREE.ShaderMaterial({
       uniforms: {
-        texture: { type: 't', value: texture }
+        texture: { type: 't', value: texture },
       },
       // TODO create glsl files
       vertexShader: `
@@ -51,20 +50,17 @@ const CanvasTextureTool = (THREE, { width = 256, height = 256, onUpdate = f => f
     });
   }
 
-  const update = (data) => {
-    // TODO check if is an object
-    const props = Object.assign({ width, height }, data);
-
+  const update = (data = {}) => {
+    const props = Object.assign(
+      { width, height },
+      typeof (data) === 'object' ? data : { data }
+    );
     onUpdate(ctx, props);
-
     if (THREE) {
       texture.needsUpdate = true;
-      material.uniforms.texture.value = texture;
-      return texture;
     }
   };
   update();
-
 
   let canvasWrapper = document.getElementById('canvas-texture-wrapper');
   if (!canvasWrapper) {

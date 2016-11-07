@@ -60,18 +60,18 @@ class CanvasTest extends THREE.Object3D {
       const { width, height, increment } = props;
       const columns = 20;
       const columnWidth = width / (columns * 0.5);
-      context.clearRect(0,0, width, height);
+      context.clearRect(0, 0, width, height);
       context.beginPath();
       context.lineWidth = columnWidth * 0.25;
+      context.strokeStyle = 'rgba(0, 0, 0, 0.1)';
       let i;
       for (i = 0; i < columns; i++) {
         const dist = (columnWidth * i) + (increment % columnWidth);
-        context.moveTo(-10, dist);
-        context.lineTo(dist, -10);
+        context.moveTo(-columnWidth, dist);
+        context.lineTo(dist, -columnWidth);
       }
-      context.strokeStyle = "rgba(0, 0, 0, 0.1)";
       context.stroke();
-    }});
+    } });
 
     this.material = this.canvasTexture.material;
     this.geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -84,8 +84,6 @@ class CanvasTest extends THREE.Object3D {
 
   update() {
     this.canvasTexture.update({ increment: this.i++ });
-    this.rotation.x += 0.03;
-    this.rotation.y += 0.03;
   }
 }
 
