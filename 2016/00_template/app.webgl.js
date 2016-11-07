@@ -5,16 +5,16 @@ const THREE = threeJs();
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#C9F0FF';
-/**/ const bgColor = '#ffffff';
+/**/ const bgColor = false // 'rgb(0, 0, 0)';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Webgl {
 /**/   constructor(w, h) {
 /**/     this.meshCount = 0;
 /**/     this.meshListeners = [];
-/**/     this.renderer = new THREE.WebGLRenderer({ antialias: true });
+/**/     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 /**/     this.renderer.setPixelRatio(window.devicePixelRatio);
-/**/     this.renderer.setClearColor(new THREE.Color(bgColor));
+/**/     if (bgColor) this.renderer.setClearColor(new THREE.Color(bgColor));
 /**/     this.scene = new THREE.Scene();
 /**/     this.camera = new THREE.PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 10);
