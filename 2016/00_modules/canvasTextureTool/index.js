@@ -18,9 +18,6 @@ const CanvasTextureTool = (THREE, { width = 256, height = 256, onUpdate = f => f
 
   const ctx = canvas.getContext('2d');
 
-  const update = () => onUpdate(ctx, { width, height });
-  update();
-
   let texture = false;
   let material = false;
   if (THREE) {
@@ -53,6 +50,21 @@ const CanvasTextureTool = (THREE, { width = 256, height = 256, onUpdate = f => f
       side: THREE.DoubleSide,
     });
   }
+
+  const update = (data) => {
+    // TODO check if is an object
+    const props = Object.assign({ width, height }, data);
+
+    onUpdate(ctx, props);
+
+    if (THREE) {
+      texture.needsUpdate = true;
+      material.uniforms.texture.value = texture;
+      return texture;
+    }
+  };
+  update();
+
 
   let canvasWrapper = document.getElementById('canvas-texture-wrapper');
   if (!canvasWrapper) {

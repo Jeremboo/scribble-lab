@@ -55,16 +55,22 @@ class CanvasTest extends THREE.Object3D {
   constructor() {
     super();
 
-    console.log("test")
-
+    this.i = 0;
     this.canvasTexture = new CanvasTextureTool(THREE, { onUpdate: (context, props) => {
-      const { width, height } = props
-      console.log("ll")
-      const gradient = context.createLinearGradient(0, 0, width, 0);
-      gradient.addColorStop(0, 'rgb(0, 0, 0)');
-      gradient.addColorStop(1, 'rgb(255, 255, 255)');
-      context.fillStyle = gradient;
-      context.fillRect(0, 0, width, height);
+      const { width, height, increment } = props;
+      const columns = 20;
+      const columnWidth = width / (columns * 0.5);
+      context.clearRect(0,0, width, height);
+      context.beginPath();
+      context.lineWidth = columnWidth * 0.25;
+      let i;
+      for (i = 0; i < columns; i++) {
+        const dist = (columnWidth * i) + (increment % columnWidth);
+        context.moveTo(-10, dist);
+        context.lineTo(dist, -10);
+      }
+      context.strokeStyle = "rgba(0, 0, 0, 0.1)";
+      context.stroke();
     }});
 
     this.material = this.canvasTexture.material;
@@ -77,6 +83,7 @@ class CanvasTest extends THREE.Object3D {
   }
 
   update() {
+    this.canvasTexture.update({ increment: this.i++ });
     this.rotation.x += 0.03;
     this.rotation.y += 0.03;
   }
