@@ -7,7 +7,7 @@ import CanvasTextureTool from '../00_modules/canvasTextureTool';
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#C9F0FF';
-/**/ const bgColor = false // 'rgb(0, 0, 0)';
+/**/ const bgColor = false; // 'rgb(0, 0, 0)';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Webgl {

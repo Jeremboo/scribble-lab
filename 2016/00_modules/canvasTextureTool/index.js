@@ -22,32 +22,7 @@ const CanvasTextureTool = (THREE, { width = 256, height = 256, onUpdate = f => f
   if (THREE) {
     texture = new THREE.Texture(canvas);
     texture.needsUpdate = true;
-    material = new THREE.ShaderMaterial({
-      uniforms: {
-        texture: { type: 't', value: texture },
-      },
-      // TODO create glsl files
-      vertexShader: `
-        varying vec2 vUv;
-
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix *
-                        modelViewMatrix *
-                        vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec2 vUv;
-        uniform sampler2D texture;
-        uniform vec4 color;
-
-        void main() {
-          gl_FragColor = texture2D(texture, vUv);
-        }
-      `,
-      side: THREE.DoubleSide,
-    });
+    material = new THREE.MeshBasicMaterial({ map: texture, overdraw: true });
   }
 
   const update = (data = {}) => {
@@ -62,14 +37,14 @@ const CanvasTextureTool = (THREE, { width = 256, height = 256, onUpdate = f => f
   };
   update();
 
-  let canvasWrapper = document.getElementById('canvas-texture-wrapper');
-  if (!canvasWrapper) {
-    canvasWrapper = document.createElement('div');
-    canvasWrapper.id = 'canvas-texture-wrapper';
-    canvasWrapper.className = 'CanvasTextureTool-wrapper';
-    document.body.appendChild(canvasWrapper);
-  }
-  canvasWrapper.appendChild(canvas);
+  // let canvasWrapper = document.getElementById('canvas-texture-wrapper');
+  // if (!canvasWrapper) {
+  //   canvasWrapper = document.createElement('div');
+  //   canvasWrapper.id = 'canvas-texture-wrapper';
+  //   canvasWrapper.className = 'CanvasTextureTool-wrapper';
+  //   document.body.appendChild(canvasWrapper);
+  // }
+  // canvasWrapper.appendChild(canvas);
 
   return {
     update,
