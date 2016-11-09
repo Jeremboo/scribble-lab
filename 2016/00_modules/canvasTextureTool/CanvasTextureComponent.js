@@ -6,12 +6,14 @@ export default class CanvasTextureComponent extends Component {
   }
 
   render() {
-    const { canvas } = this.props;
+    const { canvasTextures } = this.props;
+    console.log(canvasTextures);
     return (
       <ul>
-        {canvas.map((canv, index) =>
+        {canvasTextures.map((canvasTexture, index) =>
           <li key={index}>
-            {canv}
+            {console.log(canvasTexture.canvas)}
+            {canvasTexture.canvas}
           </li>)
         }
       </ul>

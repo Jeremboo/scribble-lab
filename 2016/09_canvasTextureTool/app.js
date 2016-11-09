@@ -2,8 +2,10 @@ import threeJs from 'three-js';
 import CanvasTextureTool from '../00_modules/canvasTextureTool';
 
 const THREE = threeJs();
-const OrbitControls = require('three-orbit-controls')(THREE);
-const canvasTextureTool = new CanvasTextureTool(THREE);
+const canvasTT = CanvasTextureTool(THREE);
+const OrbitControls = require('three-orbit-controls')(THREE)
+
+
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#ffffff';
@@ -51,7 +53,24 @@ const canvasTextureTool = new CanvasTextureTool(THREE);
 /**/
 /* ---- CREATING ZONE ---- */
 
-const CUBE_SIZE = 20;
+const COLUMN_NUMBER = 34;
+const CUBE_SIZE = 3;
+
+const drawCanvasStripes = (context, props, specificPosFunc) => {
+  const { width, height, increment } = props;
+  const columnWidth = width / (COLUMN_NUMBER * 0.5);
+  context.beginPath();
+  context.fillStyle = bgColor;
+  context.fillRect(0, 0, width, height);
+  context.lineWidth = columnWidth * 0.15;
+  context.strokeStyle = mainColor;
+  let i;
+  for (i = 0; i <= COLUMN_NUMBER; i++) {
+    const dist = (columnWidth * i) - (increment % columnWidth);
+    specificPosFunc(dist, columnWidth);
+  }
+  context.stroke();
+}
 
 // OBJECTS
 class Block extends THREE.Object3D {
@@ -59,13 +78,19 @@ class Block extends THREE.Object3D {
     super();
 
     this.i = 0.0;
-    this.textures = [];
+    this.canvasTextures = [];
     this.materials = [];
 
     let i;
     for (i = 0; i < 6; i++) {
-      this.textures.push(canvasTextureTool.createCanvas());
-      this.materials.push(this.textures[i].material);
+      this.canvasTextures.push(canvasTT.createTexture());
+      this.canvasTextures[i].drawCustomCanvas({}, (context, props) => {
+        drawCanvasStripes(context, props, (dist, columnWidth) => {
+          context.moveTo(-columnWidth, dist);
+          context.lineTo(dist, -columnWidth);
+        });
+      });
+      this.materials.push(this.canvasTextures[i].getMaterial());
     }
 
     this.geometry = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE, 20, 20);
@@ -87,13 +112,14 @@ class Block extends THREE.Object3D {
 
   update() {
     this.i += 0.25;
-    const dist = (Math.cos(this.i * 0.2) * 0.1) - 1;
+    const dist = (Math.cos(this.i * 0.2) * 0.1) - 1
     this.mesh.position.y = dist;
     this.floor.scale.set(dist, dist, dist);
 
     let i;
-    for (i = 0; i < 6; i++) {
-      this.textures[i].update();
+    const length = this.canvasTextures.length;
+    for (i = 0; i < length; i++) {
+      this.canvasTextures[i].update({ increment: this.i });
     }
   }
 }

@@ -1,8 +1,3 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-
-import CanvasTexture from './CanvasTexture';
-import CanvasTextureComponent from './CanvasTextureComponent';
 import './canvasTextureTool.styl';
 
 // TODO
@@ -13,31 +8,61 @@ import './canvasTextureTool.styl';
 // customTexture
 // fusionTexture // superpose
 
+const createCanvas = (width = window.innerWidth, height = window.innerHeight) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d');
+  return {
+    canvas,
+    context,
+  };
+};
+
 const CanvasTextureTool = THREE => {
 
   // TODO error message if THREE is not here.
 
   // INIT
-  const canvas = [];
+  const canvasArr = [];
   const canvasWrapper = document.createElement('div');
-  const render = () => {
-    ReactDOM.render(
-      <CanvasTextureComponent canvas={canvas} />,
-      canvasWrapper
-    );
-  };
 
   // DOM RENDER WITH REACT
   canvasWrapper.id = 'canvas-texture-wrapper';
   canvasWrapper.className = 'CanvasTextureTool-wrapper';
   document.body.appendChild(canvasWrapper);
-  render();
 
   return {
-    createCanvas: (props = {}) => {
-      canvas.push(<CanvasTexture {...props} THREE={THREE} />);
-      console.log(canvas[0]);
-      render();
+    createCanvasTexture: ({ width = 256, height = 256, onUpdate = f => f, name = `canvas-${canvasArr.length}` } = {}) => {
+      // canvas
+      const { canvas, context } = createCanvas(width, height);
+      canvas.className = 'CanvasTextureTool-canvas';
+
+      // three.js texture and material
+      const texture = new THREE.Texture(canvas);
+      texture.needsUpdate = true;
+      const material = new THREE.MeshBasicMaterial({ map: texture, overdraw: true });
+
+      // update for loop
+      const update = (data = {}) => {
+        const props = Object.assign(
+          { width, height },
+          typeof (data) === 'object' ? data : { data }
+        );
+        onUpdate(context, props);
+        texture.needsUpdate = true;
+      };
+      update();
+
+      // show in dom
+      canvasWrapper.appendChild(canvas);
+
+      // save and return
+      const props = {
+        name, canvas, context, texture, material, update,
+      };
+      canvasArr.push(props);
+      return props;
     },
   };
 };
