@@ -23,6 +23,9 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 /**/     this.scene = new THREE.Scene();
 /**/     this.camera = new THREE.PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 10);
+        //  this.controls = new OrbitControls(this.camera);
+        //  this.controls.enableDamping = true;
+        //  this.controls.dampingFactor = 0.5;
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
 /**/     this.resize = this.resize.bind(this);
@@ -56,40 +59,44 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 const COLUMN_NUMBER = 34;
 const CUBE_SIZE = 3;
 
-const drawCanvasStripes = (context, props, specificPosFunc) => {
-  const { width, height, increment } = props;
-  const columnWidth = width / (COLUMN_NUMBER * 0.5);
-  context.beginPath();
-  context.fillStyle = bgColor;
-  context.fillRect(0, 0, width, height);
-  context.lineWidth = columnWidth * 0.15;
-  context.strokeStyle = mainColor;
-  let i;
-  for (i = 0; i <= COLUMN_NUMBER; i++) {
-    const dist = (columnWidth * i) - (increment % columnWidth);
-    specificPosFunc(dist, columnWidth);
-  }
-  context.stroke();
-}
-
 // OBJECTS
 class Block extends THREE.Object3D {
   constructor() {
     super();
 
-    this.i = 0.0;
     this.canvasTextures = [];
     this.materials = [];
 
     let i;
     for (i = 0; i < 6; i++) {
-      this.canvasTextures.push(canvasTT.createCanvasTexture());
-      this.canvasTextures[i].drawCustomCanvas({}, (context, props) => {
-        drawCanvasStripes(context, props, (dist, columnWidth) => {
-          context.moveTo(-columnWidth, dist);
-          context.lineTo(dist, -columnWidth);
-        });
+      const cT = canvasTT.createCanvasTexture();
+      this.canvasTextures.push(cT);
+      cT.drawCustomCanvas({},  (context, props) => {
+        context.rect(0, 0, props.width, props.height);
+        context.fillStyle = '#DBDBDB';
+        context.fill();
+        // http://codepen.io/jbpenrath/pen/gLObej
+        let mouseDown = false;
+        const paint = e => {
+          if (mouseDown) {
+            context.beginPath();
+            context.arc(e.offsetX, e.offsetY, 10, 0, 2 * Math.PI, false);
+            context.fillStyle = '#ED2B05';
+            context.fill();
+            context.closePath();
+            cT.texture.needsUpdate = true;
+          }
+        };
+        cT.canvas.onmousedown = e => {
+          mouseDown = true;
+          paint(e);
+        };
+        cT.canvas.onmouseup = () => {
+          mouseDown = false;
+        };
+        cT.canvas.onmousemove = paint;
       });
+      cT.update();
       this.materials.push(this.canvasTextures[i].material);
     }
 
@@ -99,28 +106,13 @@ class Block extends THREE.Object3D {
     this.mesh.rotation.set(1.52, 0, 0);
     this.add(this.mesh);
 
-    this.floorGeometry = new THREE.PlaneGeometry(CUBE_SIZE + 0.1, CUBE_SIZE + 0.1, 1);
-    this.floorMaterial = new THREE.MeshBasicMaterial({ color: '#0001E6', side: THREE.DoubleSide });
-    this.floor = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
-    this.floor.position.set(-0.15, -CUBE_SIZE, 0.2);
-    this.floor.rotation.set(1.52, 0, 0);
-    this.add(this.floor);
-
     this.rotation.set(0.25, 0.7, 0);
     this.update = this.update.bind(this);
   }
 
   update() {
-    this.i += 0.25;
-    const dist = (Math.cos(this.i * 0.2) * 0.1) - 1
-    this.mesh.position.y = dist;
-    this.floor.scale.set(dist, dist, dist);
-
-    let i;
-    const length = this.canvasTextures.length;
-    for (i = 0; i < length; i++) {
-      this.canvasTextures[i].update({ increment: this.i });
-    }
+    this.mesh.rotation.x += 0.01;
+    this.mesh.rotation.y += 0.01;
   }
 }
 
