@@ -1,25 +1,13 @@
 import CanvasTexture from './CanvasTexture';
 import './canvasTextureTool.styl';
 
-const createCanvas = (width = window.innerWidth, height = window.innerHeight) => {
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext('2d');
-  return {
-    canvas,
-    context,
-  };
-};
-
 const CanvasTextureTool = THREE => {
-
   // TODO error message if THREE is not here.
 
   // INIT
   const canvasArr = [];
   const canvasNameArr = [];
-  const canvasWrapper = document.createElement('div');
+  const canvasWrapper = document.createElement('ul');
 
   // DOM RENDER WITH REACT
   canvasWrapper.id = 'canvas-texture-wrapper';
@@ -38,8 +26,8 @@ const CanvasTextureTool = THREE => {
       const HTML = `
         <li class="CanvasTexture">
           <button id="${name}-open" class="CanvasTexture-button">${name}</button>
-          <div id="${name}-window" class="CanvasTexture-window">
-            <button id="${name}-close" class="CanvasTexture-button_close">x</button>
+          <div id="${name}-window" class="CanvasTexture-window CanvasTexture-hidden">
+            <button id="${name}-close" class="CanvasTexture-close">x</button>
           </div>
         </li>
       `;
@@ -50,12 +38,12 @@ const CanvasTextureTool = THREE => {
       const closeBtn = document.getElementById(`${name}-close`);
       const canvasWindow = document.getElementById(`${name}-window`);
       openBtn.addEventListener('click', () => {
-        openBtn.classList.add('CanvasTextureTool-hidden');
-        canvasWindow.classList.remove('CanvasTextureTool-hidden');
+        openBtn.classList.add('CanvasTexture-hidden');
+        canvasWindow.classList.remove('CanvasTexture-hidden');
       });
       closeBtn.addEventListener('click', () => {
-        openBtn.classList.remove('CanvasTextureTool-hidden');
-        canvasWindow.classList.add('CanvasTextureTool-hidden');
+        openBtn.classList.remove('CanvasTexture-hidden');
+        canvasWindow.classList.add('CanvasTexture-hidden');
       });
       canvasWindow.appendChild(canvasTexure.canvas);
 
