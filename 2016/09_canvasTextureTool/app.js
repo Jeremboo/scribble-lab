@@ -83,14 +83,14 @@ class Block extends THREE.Object3D {
 
     let i;
     for (i = 0; i < 6; i++) {
-      this.canvasTextures.push(canvasTT.createTexture());
+      this.canvasTextures.push(canvasTT.createCanvasTexture());
       this.canvasTextures[i].drawCustomCanvas({}, (context, props) => {
         drawCanvasStripes(context, props, (dist, columnWidth) => {
           context.moveTo(-columnWidth, dist);
           context.lineTo(dist, -columnWidth);
         });
       });
-      this.materials.push(this.canvasTextures[i].getMaterial());
+      this.materials.push(this.canvasTextures[i].material);
     }
 
     this.geometry = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE, 20, 20);

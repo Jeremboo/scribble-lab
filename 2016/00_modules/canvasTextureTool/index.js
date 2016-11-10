@@ -1,12 +1,5 @@
+import CanvasTexture from './CanvasTexture';
 import './canvasTextureTool.styl';
-
-// TODO
-// noiseTexture
-// perlinNoiseTexture
-// gradientTexture
-// perlinGradientNoiseTexture
-// customTexture
-// fusionTexture // superpose
 
 const createCanvas = (width = window.innerWidth, height = window.innerHeight) => {
   const canvas = document.createElement('canvas');
@@ -25,6 +18,7 @@ const CanvasTextureTool = THREE => {
 
   // INIT
   const canvasArr = [];
+  const canvasNameArr = [];
   const canvasWrapper = document.createElement('div');
 
   // DOM RENDER WITH REACT
@@ -33,36 +27,42 @@ const CanvasTextureTool = THREE => {
   document.body.appendChild(canvasWrapper);
 
   return {
-    createCanvasTexture: ({ width = 256, height = 256, onUpdate = f => f, name = `canvas-${canvasArr.length}` } = {}) => {
-      // canvas
-      const { canvas, context } = createCanvas(width, height);
-      canvas.className = 'CanvasTextureTool-canvas';
+    createCanvasTexture: (name = `canvas-${canvasArr.length}`, width = 256, height = 256) => {
+      if (canvasNameArr.indexOf(name) !== -1) {
+        console.log('Err: Cannot have the same name', name);
+        return;
+      }
+      const canvasTexure = new CanvasTexture(THREE, width, height);
 
-      // three.js texture and material
-      const texture = new THREE.Texture(canvas);
-      texture.needsUpdate = true;
-      const material = new THREE.MeshBasicMaterial({ map: texture, overdraw: true });
+      // HTML
+      const HTML = `
+        <li class="CanvasTexture">
+          <button id="${name}-open" class="CanvasTexture-button">${name}</button>
+          <div id="${name}-window" class="CanvasTexture-window">
+            <button id="${name}-close" class="CanvasTexture-button_close">x</button>
+          </div>
+        </li>
+      `;
+      canvasWrapper.insertAdjacentHTML('beforeend', HTML);
 
-      // update for loop
-      const update = (data = {}) => {
-        const props = Object.assign(
-          { width, height },
-          typeof (data) === 'object' ? data : { data }
-        );
-        onUpdate(context, props);
-        texture.needsUpdate = true;
-      };
-      update();
+      // ACTIONS
+      const openBtn = document.getElementById(`${name}-open`);
+      const closeBtn = document.getElementById(`${name}-close`);
+      const canvasWindow = document.getElementById(`${name}-window`);
+      openBtn.addEventListener('click', () => {
+        openBtn.classList.add('CanvasTextureTool-hidden');
+        canvasWindow.classList.remove('CanvasTextureTool-hidden');
+      });
+      closeBtn.addEventListener('click', () => {
+        openBtn.classList.remove('CanvasTextureTool-hidden');
+        canvasWindow.classList.add('CanvasTextureTool-hidden');
+      });
+      canvasWindow.appendChild(canvasTexure.canvas);
 
-      // show in dom
-      canvasWrapper.appendChild(canvas);
-
-      // save and return
-      const props = {
-        name, canvas, context, texture, material, update,
-      };
-      canvasArr.push(props);
-      return props;
+      // SAVE
+      canvasArr.push(canvasTexure);
+      canvasNameArr.push(name);
+      return canvasTexure;
     },
   };
 };
