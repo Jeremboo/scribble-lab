@@ -8,9 +8,9 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#ffffff';
-/**/ const secondaryColor = '#C9F0FF';
-/**/ const bgColor = '#0001FF';
+/**/ const mainColor = '#323031';
+/**/ const secondaryColor = '#DB3A34';
+/**/ const bgColor = '#FFC857';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Webgl {
@@ -72,7 +72,7 @@ class Block extends THREE.Object3D {
       this.canvasTextures.push(cT);
       cT.drawCustomCanvas({},  (context, props) => {
         context.rect(0, 0, props.width, props.height);
-        context.fillStyle = '#DBDBDB';
+        context.fillStyle = bgColor;
         context.fill();
         // http://codepen.io/jbpenrath/pen/gLObej
         let mouseDown = false;
@@ -80,7 +80,7 @@ class Block extends THREE.Object3D {
           if (mouseDown) {
             context.beginPath();
             context.arc(e.offsetX, e.offsetY, 10, 0, 2 * Math.PI, false);
-            context.fillStyle = '#ED2B05';
+            context.fillStyle = mainColor;
             context.fill();
             context.closePath();
             cT.texture.needsUpdate = true;
@@ -130,8 +130,8 @@ webgl.add(new Block());
 /**/ window.addEventListener('resize', onResize);
 /**/ window.addEventListener('orientationchange', onResize);
 /**/ /* ---- LOOP ---- */
-/**/ function _loop(){
+/**/ function _loop() {
 /**/ 	webgl.update();
 /**/ 	requestAnimationFrame(_loop);
 /**/ }
-/**/ // _loop();
+/**/  _loop();
