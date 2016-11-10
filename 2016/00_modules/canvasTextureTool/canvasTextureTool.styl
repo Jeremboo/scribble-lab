@@ -13,9 +13,8 @@ button {
   outline: none;
 }
 
-main = #F42B03;
-darken = #ED2B05;
-darken2 = #94210A;
+main = #5A7EFE;
+darken = darken(main, 35);
 
 .CanvasTextureTool {
   &-wrapper {
@@ -47,31 +46,52 @@ darken2 = #94210A;
   }
 
   &-button {
-    background-color: main;
-    border-radius: 10px;
+    max-width: 150px;
     padding: 6px 16px;
+    border-radius: 2px;
+    background-color: main;
+    color: white;
     overflow: hidden;
     font-size: 0.8em;
     transition: 0.2s;
+    cursor: pointer;
+    transform: translateX(0);
 
     &:hover {
-      cursor: pointer;
-      background-color: darken2;
+      max-width: 999px;
+      background-color: darken;
+      transform: translateX(-8px);
+      padding: 6px 32px;
     }
   }
 
   &-close {
     position: absolute;
-    top: 0;
-    right: 0;
-    background-color: darken;
+    width: 20px;
+    height: 20px;
+    top: 5px;
+    right: 5px;
+    background-color: main;
     color: white;
-    border-bottom-left-radius: 6px;
-    transition: 0.2s;
+    border-radius: 2px
+    transition: 0.4s;
+
+    &:after {
+      content: ('x');
+      position: absolute;
+      top: 46%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
 
     &:hover {
+      width: 22px;
+      height: 22px;
+      top: 4px;
+      right: 4px;
       cursor: pointer;
-      background-color: darken2;
+      padding: 4px 8px;
+      background-color: darken;
     }
   }
 }

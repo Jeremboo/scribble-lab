@@ -56,7 +56,6 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 /**/
 /* ---- CREATING ZONE ---- */
 
-const COLUMN_NUMBER = 34;
 const CUBE_SIZE = 3;
 
 // OBJECTS
@@ -135,4 +134,4 @@ webgl.add(new Block());
 /**/ 	webgl.update();
 /**/ 	requestAnimationFrame(_loop);
 /**/ }
-/**/ _loop();
+/**/ // _loop();

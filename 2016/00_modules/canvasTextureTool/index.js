@@ -27,7 +27,7 @@ const CanvasTextureTool = THREE => {
         <li class="CanvasTexture">
           <button id="${name}-open" class="CanvasTexture-button">${name}</button>
           <div id="${name}-window" class="CanvasTexture-window CanvasTexture-hidden">
-            <button id="${name}-close" class="CanvasTexture-close">x</button>
+            <button id="${name}-close" class="CanvasTexture-close"></button>
           </div>
         </li>
       `;
