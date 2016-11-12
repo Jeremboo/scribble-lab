@@ -21,6 +21,8 @@ const numberParticlesStart = 2000;
 const particleSpeed = 0.3;
 const velocity = 0.1;
 
+const mainColor = 'RGBA(238, 198, 67, 0.8)';
+const maskColor = 'rgba(133, 31, 236, 0.02)';
 /* ---- INIT ---- */
 let particles = [];
 
@@ -31,10 +33,9 @@ class Particle {
   constructor() {
     this.x = 0;
     this.y = 0;
-    this.increment = Math.random();
+    this.increment = Math.random() * Math.PI * 2;
     this.circleWidth = getRandomFloat(1, windowWidth);
-    this.angle = Math.random();
-    this.color = 'RGBA(226, 232, 192, 1.00)';
+    this.color = mainColor;
   }
 
   render() {
@@ -44,8 +45,6 @@ class Particle {
     context.fill();
   }
 
-  // windowWidth * 0.5 + (Math.cos(angle) * circleWidth),
-  // windowHeight * 0.5 - (Math.sin(angle) * circleWidth)
   update() {
     this.increment++;
     this.x = origin.x + (Math.cos(this.increment) * this.circleWidth);
@@ -59,7 +58,7 @@ function loop() {
   const length = particles.length;
   context.beginPath();
   context.rect(0, 0, windowWidth, windowHeight)
-  context.fillStyle = 'RGBA(68, 55, 66, 0.02)';
+  context.fillStyle = maskColor;
   context.fill();
   context.closePath();
   for (i = 0; i < length; i++) {
