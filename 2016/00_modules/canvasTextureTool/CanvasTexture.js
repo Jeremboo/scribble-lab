@@ -1,11 +1,3 @@
-// TODO
-// noiseTexture
-// perlinNoiseTexture
-// gradientTexture
-// perlinGradientNoiseTexture
-// customTexture
-// fusionTexture // superpose
-
 export default class CanvasTexture {
   constructor(THREE, width = 256, height = 256) {
     this.state = { width, height };
@@ -31,7 +23,7 @@ export default class CanvasTexture {
   }
 
   drawCustomCanvas(props, onUpdate) {
-    this.update = (props) => {
+    this.update = () => {
       onUpdate(this.context, Object.assign({}, this.state, props));
       this.texture.needsUpdate = true;
     };

@@ -2,7 +2,7 @@ import threeJs from 'three-js';
 import CanvasTextureTool from '../00_modules/canvasTextureTool';
 
 const THREE = threeJs();
-const canvasTT = CanvasTextureTool(THREE);
+const canvasTT = new CanvasTextureTool(THREE);
 const OrbitControls = require('three-orbit-controls')(THREE)
 
 

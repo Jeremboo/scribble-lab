@@ -1,22 +1,11 @@
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-button {
-  white-space:nowrap;
-  text-overflow: ellipsis;
-  border: none;
-  font: inherit;
-  line-height: normal;
-  outline: none;
-}
-
 main = #084C61;
 darken = darken(main, 35);
 
 .CanvasTextureTool {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
   &-wrapper {
     position: fixed;
     top: 5vw;
@@ -43,6 +32,15 @@ darken = darken(main, 35);
   &-window {
     position: relative;
     pointer-events: auto;
+  }
+
+  &-button, &-close {
+    white-space:nowrap;
+    text-overflow: ellipsis;
+    border: none;
+    font: inherit;
+    line-height: normal;
+    outline: none;
   }
 
   &-button {
