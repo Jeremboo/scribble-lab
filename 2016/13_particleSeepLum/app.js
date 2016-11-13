@@ -16,11 +16,12 @@
 Math.sqr = (a) => a * a;
 
 /* ---- SETTINGS ---- */
-const numberParticlesStart = 500;
-const particleSpeed = 0.01;
-const velocity = 0.9;
-const noiseAmpl = 0.5;
-const targetNoiseAmpl = 200;
+const NBR_PARTICLES_START = 500;
+const P_SPEED = 0.03;
+const VEL = 0.9;
+const NOISE_AMPL = 0.5;
+const DIST_AMPL = 80;
+const DIST_FREQ = 0.995;
 
 /* ---- INIT ---- */
 let particles = [];
@@ -35,41 +36,46 @@ function Particle(x, y) {
 
   this.targetedPos = { x: this.x, y: this.y };
   this.savedPos = { x: this.x, y: this.y };
-  this.vel = { x: 0, y: 0 };
   this.force = { x: 0, y: 0 };
+  this.vel = { x: 0, y: 0 };
 
   this.color = 'rgba(255, 255, 255, 0.5)';
 }
+
 Particle.prototype.render = function() {
   context.beginPath();
-  const f =  Math.sqrt(Math.sqr(this.force.x) + Math.sqr(this.force.y));
-  //context.fillStyle = `rgba(255, 255, 255, ${f})`;
-  context.fillStyle = `rgba(255, 255, 255, 1)`;
-  context.arc(this.x, this.y, 1 + (f * 2), 0, Math.PI * 2);
+  const f =  Math.sqrt(Math.sqr(this.force.x) + Math.sqr(this.force.y)) - 0.5;
+  context.fillStyle = `rgba(255, 255, 255, ${f})`;
+  // context.fillStyle = `rgba(255, 255, 255, 1)`;
+  context.arc(this.x, this.y, 1 + f, 0, Math.PI * 2);
   context.fill();
 };
 Particle.prototype.update = function() {
-  if (Math.random() > 0.999) {
-    this.targetedPos.x = this.x + getRandomFloat(-targetNoiseAmpl, targetNoiseAmpl);
-    this.targetedPos.y = this.y + getRandomFloat(-targetNoiseAmpl, targetNoiseAmpl);
+  if (Math.random() > DIST_FREQ) {
+    this.updadeTargetPos();
   }
 
-  this.vel.x += getRandomFloat(-noiseAmpl, noiseAmpl);
-  this.vel.y += getRandomFloat(-noiseAmpl, noiseAmpl);
+  this.vel.x = (this.vel.x * VEL) + getRandomFloat(-NOISE_AMPL, NOISE_AMPL);
+  this.vel.y = (this.vel.y * VEL) + getRandomFloat(-NOISE_AMPL, NOISE_AMPL);
 
-  const newPos = {
-    x: (this.targetedPos.x - this.x) * particleSpeed,
-    y: (this.targetedPos.y - this.y) * particleSpeed,
-  };
+  this.force.x = (this.targetedPos.x - this.savedPos.x) * P_SPEED;
+  this.force.y = (this.targetedPos.y - this.savedPos.y) * P_SPEED;
 
-  this.force.x = newPos.x;
-  this.force.y = newPos.y;
-
+  this.savedPos.x += this.force.x;
+  this.savedPos.y += this.force.y;
   this.x += this.force.x + this.vel.x;
   this.y += this.force.y + this.vel.y;
+};
 
-  this.vel.x *= velocity;
-  this.vel.y *= velocity;
+Particle.prototype.toDepart = function(x, y) {
+  // TODO IF dist between to points < 400
+    this.updadeTargetPos();
+};
+Particle.prototype.updadeTargetPos = function() {
+  this.savedPos.x = this.x;
+  this.savedPos.y = this.y;
+  this.targetedPos.x = this.x + getRandomFloat(-DIST_AMPL, DIST_AMPL);
+  this.targetedPos.y = this.y + getRandomFloat(-DIST_AMPL, DIST_AMPL);
 };
 
 Particle.prototype.setPosition = function(pos, coor) {
@@ -80,11 +86,19 @@ Particle.prototype.setPosition = function(pos, coor) {
   }
 };
 
+document.addEventListener('mousemove', (e) => {
+  let i;
+  const length = particles.length;
+  for (i = 0; i < length; i++) {
+    particles[i].toDepart(e.clientX, e.clientY);
+  }
+});
+
 /* ---- Functions ----*/
 function loop() {
   let i;
-  increment++;
   const length = particles.length;
+  increment++;
   context.beginPath();
   context.rect(0, 0, windowWidth, windowHeight)
   context.fillStyle = 'rgba(0, 0, 0, 0.1)';
@@ -100,7 +114,7 @@ function loop() {
 /* ---- START ---- */
 function init() {
   let i;
-  for (i = 0; i < numberParticlesStart; i++) {
+  for (i = 0; i < NBR_PARTICLES_START; i++) {
     particles.push(new Particle(
       getRandomFloat(0, windowWidth),
       getRandomFloat(0, windowHeight),
