@@ -1,0 +1,27 @@
+// INIT
+mainColor = #084C61
+secondaryColor = #FFC857
+bgColor = #177E89
+bgColorDarken = darken(bgColor, 5);
+
+body, html
+  width: 100%;
+  height: 100%;
+  overflow: hidden
+  background: bgColor
+  background: linear-gradient(to bottom,  bgColor 70%, bgColorDarken 100%);
+  margin: 0
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif
+
+.f
+  position: fixed
+  bottom: 5px
+  right: 15px
+  font-family: 'Arial'
+  font-size: 0.7rem
+  color: mainColor
+  text-align: center;
+
+  a
+    font-size: 0.8rem
+    color: secondaryColor

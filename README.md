@@ -16,6 +16,38 @@ List of my contributions of the **Codevember challenge**.
   <a href="http://codepen.io/Jeremboo/pen/QGLGNN">
     <img alt="Day3 - Tiny SVG Volcano animated with React Squiggly Component" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember03.gif?raw=true" width="200">
   </a>
+  
+   <a href="https://codepen.io/Jeremboo/pen/RowOGV">
+    <img alt="Day4 - Fire with Gooey effect" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember04.gif?raw=true" width="200">
+  </a>
+  
+   <a href="https://codepen.io/Jeremboo/pen/aBbmZv">
+    <img alt="Day5 - Hexagon loop only in CSS" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember05.gif?raw=true" width="200">
+  </a>
+  
+   <a href="https://codepen.io/Jeremboo/pen/GNgdNm">
+    <img alt="Day6 - Random Alphabet Cubes" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember06.gif?raw=true" width="200">
+  </a>
+  
+  <a href="https://codepen.io/Jeremboo/pen/zoGNMJ">
+    <img alt="Day7 - Floating striped box in webgl" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember07.gif?raw=true" width="200">
+  </a>
+  
+  <a href="https://codepen.io/Jeremboo/pen/ENVaMY">
+    <img alt="Day8 - Particle Trails" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember08.gif?raw=true" width="200">
+  </a>
+  
+  <a href="https://codepen.io/Jeremboo/pen/ENKKyz">
+    <img alt="Day12 - Stroboscopique Mandala" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember12.gif?raw=true" width="200">
+  </a>
+  
+  <a href="https://codepen.io/Jeremboo/pen/GNqvJP">
+    <img alt="Day14 - Tremulous Particles" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember14.gif?raw=true" width="200">
+  </a>
+  
+    <a href="https://codepen.io/Jeremboo/pen/qqabKY">
+    <img alt="Day15 - Three.js Canvas Texture Tool" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember15.gif?raw=true" width="200">
+  </a>
 </p>
 
 ## [Codevember 2015](http://codevember2015.tumblr.com/)
