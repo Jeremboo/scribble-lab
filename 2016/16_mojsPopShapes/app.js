@@ -1,8 +1,4 @@
-import mojs from 'mo-js';
-import MojsPlayer from 'mojs-player';
-
-
-const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const elEchoes = document.getElementById('echoes');
 const elShapes = document.getElementById('shapes');
 
@@ -10,12 +6,10 @@ const SHAPES = [
   {
     shape:      'rect',
     stroke:     '#FA6B6E',
-  },
-  {
+  },{
     shape:      'circle',
     stroke:     'rgb(80, 103, 186)',
-  },
-  {
+  },{
     shape:      'polygon',
     stroke:     'rgb(240, 142, 26)',
   },
@@ -104,7 +98,20 @@ const popShapes = (x = (window.innerWidth / 2), y = (window.innerHeight / 2)) =>
 };
 
 // START
+
+const margin = 100;
+
+function pop(i = 3) {
+  popShapes(getRandomInt(margin, window.innerWidth - margin),getRandomInt(margin, window.innerHeight - margin)).play();
+  if (i !== 0) {
+    setTimeout(() => {
+      pop(i - 1);
+    }, 200);
+  }
+}
+pop();
+
 document.body.addEventListener('click', (e) => { popShapes(e.clientX, e.clientY).play(); });
 
-const player = new MojsPlayer({ add: popShapes() });
-//new MojsPlayer({ add: createShape(0) });
+// const player = new MojsPlayer({ add: popShapes() });
+// new MojsPlayer({ add: createShape(0) });
