@@ -5,7 +5,7 @@ const THREE = threeJs();
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#C9F0FF';
-/**/ const bgColor = '#070707';
+/**/ const bgColor = '#2F2F2F';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Webgl {
@@ -50,20 +50,22 @@ const THREE = threeJs();
 
 import img from '../00_inspirations/rainbow.png';
 
-// // OBJECTS
-class Panorama extends THREE.Object3D {
+class Optic extends THREE.Object3D {
   constructor(img, depth) {
     super();
-
-    this.material = new THREE.MeshBasicMaterial({
-      map: THREE.ImageUtils.loadTexture(img),
-    });
+    this.material = new THREE.MeshBasicMaterial();
     this.geometry = new THREE.SphereGeometry(depth, 100, 40);
     this.geometry.applyMatrix(new THREE.Matrix4().makeScale(-1, 1, 1));
     this.mesh = new THREE.Mesh(this.geometry, this.material);
 
-    this.add(this.mesh);
+    this.textureLoader = new THREE.TextureLoader();
+    this.textureLoader.crossOrigin = 'Anonymous';
+    this.textureLoader.load(img, texture => {
+      this.mesh.material.map = texture;
+      this.mesh.material.needsUpdate = true;
+    });
 
+    this.add(this.mesh);
     this.update = this.update.bind(this);
   }
 
@@ -73,9 +75,8 @@ class Panorama extends THREE.Object3D {
 }
 
 // START
-// TODO use canvas to texture
-const pano1 = new Panorama(img, 1.5);
-webgl.add(pano1);
+const optic = new Optic(img, 2.5);
+webgl.add(optic);
 
 
 /* ---- CREATING ZONE END ---- */
