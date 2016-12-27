@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Fast generator of sketches",
   "scripts": {
-    "start": "webpack-dev-server --progress --inline --hot --port 3333 --config ./webpack.config.js --content-base $DIR --history-api-fallback",
+    "start": "node scripts/start.js",
     "create:group": ". ./scripts/createGroup.sh",
     "create:sketch": ". ./scripts/createSketch.sh & npm start"
   },
@@ -12,7 +12,6 @@
   "dependencies": {
     "dat-gui": "^0.5.0",
     "mo-js": "^0.288.1",
-    "mojs": "^0.2.0",
     "mojs-player": "^0.43.15",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
@@ -36,10 +35,12 @@
     "eslint-plugin-react": "^6.4.1",
     "file-loader": "^0.9.0",
     "html-webpack-plugin": "^2.24.0",
+    "ip": "^1.1.4",
     "postcss-loader": "^0.8.0",
     "poststylus": "^0.2.3",
     "pug": "^2.0.0-beta6",
     "pug-loader": "^2.3.0",
+    "readline-sync": "^1.4.5",
     "style-loader": "^0.13.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^2.1.1",

@@ -1,51 +1,29 @@
 var fs = require("fs");
 var path = require('path');
+var ip = require('ip');
 var webpack = require('webpack');
 var poststylus = require('poststylus');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
+var myLocalIp = 'http://' + ip.address() + ':3333/';
 var node_modules = path.resolve(__dirname, './node_modules');
 
+// DIRECTORY TEST
+var directory = process.env.DIR;
 
-var dir = process.env.DIR;
-var directory = false;
-var directories = fs.readdirSync('./sketches/');
-
-if (!dir) {
-  throw 'No path defined. please use `DIR=[PATH] npm start`';
-}
-
-// TODO use fs.open() or fs.exists()
-fs.open('./sketches/' + dir, 'r' , function(err, fd) {
-    if (err && err.code === 'ENOENT') {
-      console.log('doesnt exist')
-    }
-});
-
-for( var i = 0; i < directories.length ; i++) {
-  if (directories[i] === dir) {
-    directory = path.resolve(__dirname, './' + directories[i]);
-    break;
-  }
-}
-
-if (!directory) {
-  throw ('The ' + directory +
-  ' is not created. Pleaser use `DIR=' + process.env.DIR +
-  ' npm run create`');
-}
-
+// WEBPACK CONFIG
 var config = {
     entry: [
       'webpack/hot/dev-server',
-      'webpack-dev-server/client?http://localhost:3333',
+      'webpack-dev-server/client?' + myLocalIp,
       path.resolve(__dirname, './bootstrap.js')
     ],
     output: {
-        path: directory + '/',
+        path: path.resolve(__dirname, directory + '/'),
         filename: 'bundle.js',
     },
-    devtool: "inline-source-map",
+    debug: true,
+    devtool: "eval-source-map",
     resolve: {
       alias: {
         html: path.resolve(__dirname, directory + '/index.pug.html'),
@@ -83,8 +61,9 @@ var config = {
     },
     plugins: [
       new webpack.optimize.OccurenceOrderPlugin(),
+      new webpack.HotModuleReplacementPlugin(),
       new HtmlWebpackPlugin({
-        title: dir + ' - Codevember2016',
+        title: directory,
         // template: path.resolve(__dirname, directory + '/index.pug.html'),
       }),
     ],
