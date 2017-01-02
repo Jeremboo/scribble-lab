@@ -4,7 +4,7 @@
   "description": "Fast generator of sketches",
   "scripts": {
     "start": "node scripts/start.js",
-    "create:group": ". ./scripts/createGroup.sh",
+    "create:group": "node scripts/createGroup.js",
     "create:sketch": ". ./scripts/createSketch.sh & npm start"
   },
   "author": "Jérémie Boulay <jeremi.boulay@gmail.com>",
@@ -27,6 +27,7 @@
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-react": "^6.11.1",
     "babel-register": "^6.14.0",
+    "camelcase": "^4.0.0",
     "css-loader": "^0.23.1",
     "eslint": "^3.4.0",
     "eslint-config-airbnb": "^10.0.1",
