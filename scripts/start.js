@@ -1,28 +1,18 @@
 const fs = require('fs');
-const readlineSync = require('readline-sync');
-const path = require('path');
 
+const askWitchChildDir = require('./utils').askWitchChildDir;
 
 // DIRECTORY TEST
 let dirPath = process.env.DIR;
 
 if (!dirPath) {
+  // Select a dir in command line
   dirPath = 'sketches/';
-  // WITCH GROUP ?
-  const groups = fs.readdirSync(dirPath);
-  if (groups[0] === '.DS_Store') groups.splice(0, 1); // TODO a revoir
-  if (groups[0] === '00_WIP') groups.splice(0, 1); // TODO a revoir
-  const group = groups[readlineSync.keyInSelect(groups, 'Witch group ? : ')];
-  dirPath += `${group}/`;
-
-  // WITCH SKETCH ?
-  const sketches = fs.readdirSync(`./sketches/${group}/`);
-  if (sketches[0] === '.DS_Store') sketches.splice(0, 1); // TODO a revoir
-  const sketch = sketches[readlineSync.keyInSelect(sketches, 'Witch sketch ? : ')];
-  dirPath += `${sketch}/`;
+  dirPath += `${askWitchChildDir(dirPath, 'group')}/`;
+  dirPath += `${askWitchChildDir(dirPath, 'sketch')}/`;
 }
 
-// TEST IF THE PATH EXIST
+// Test the path
 try {
   const fd = fs.openSync(dirPath, 'r');
 } catch (err) {
