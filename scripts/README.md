@@ -4,15 +4,17 @@
 
 `DIR=[path] npm start`
 
-(`npm start` alone throw an error)
+## Bootstrap a new Sketch
 
-## Bootstrap a new DAY
+`DIR=[path] npm run create:sketch`
 
-`DIR=[path] TYPE=[canvas, webgl, basic] npm run create`
+## Bootstrap a new Group
 
+`DIR=[path] npm run create:group`
 
 ## TODO
 
-- Auto generate/update the README.md and the sketches.json
-- build app.pixi.js
+- title = name into data.json and not the path.
+- Auto generate/update the README.md
 - build HTML preview
+- build app.pixi.js
