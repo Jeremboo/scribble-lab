@@ -1,87 +1,138 @@
-# Codevember
+# Scribble lab
 
-List of my contributions of the **Codevember challenge**.
+Just a regroupment of some searches, tests, experiments around javascript or CSS and their frameworks.
 
-## [Codevember 2016](http://codevember.xyz/)
+---
 
-<p align="center">
-  <a href="http://codepen.io/Jeremboo/full/ORKroY/">
-    <img alt="Day1 - Perlin Noise Canvas transition" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember01.gif?raw=true" width="200">
-  </a>
 
-  <a href="http://codepen.io/Jeremboo/pen/jVNVqr">
-    <img alt="Day2 - React Squiggly Component with SVG filters" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember02.gif?raw=true" width="200">
-  </a>
+## Codevember 2015
 
-  <a href="http://codepen.io/Jeremboo/pen/QGLGNN">
-    <img alt="Day3 - Tiny SVG Volcano animated with React Squiggly Component" src="https://github.com/Jeremboo/codevember/blob/master/2016/00_gifs/codevember03.gif?raw=true" width="200">
-  </a>
-</p>
-
-## [Codevember 2015](http://codevember2015.tumblr.com/)
+My contributions of the Codevember challenge in 2015. See the [link](http://codevember2015.tumblr.com/) to the tumblr
 
 <p align="center">
   <a href="http://codepen.io/Jeremboo/full/rOKgzj">
-    <img alt="Day1 - Gradien effect on text" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember01.gif?raw=true" width="200">
+    <img alt="01_gradianteffectontext" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/01_gradianteffectontext/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/AKeLF">
-    <img alt="Day2 - Cloud of Linked Particles" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember02.gif?raw=true" width="200">
+    <img alt="02_cloudoflinkedparticles" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/02_cloudoflinkedparticles/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/wKxzzP">
-    <img alt="Day3 - Cube 3D only in CSS" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember03.gif?raw=true" width="200">
+    <img alt="03_cube3donlyincss" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/03_cube3donlyincss/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/GpXpPJ">
-    <img alt="Day4 - Orchid in 3D with Three.js" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember04.gif?raw=true" width="200">
+    <img alt="04_orchidin3dwiththreejs" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/04_orchidin3dwiththreejs/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/WQKzeQ">
-    <img alt="Day5 - Moon landscape with canvas" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember05.gif?raw=true" width="200">
+    <img alt="05_moonlandscapewithcanvas" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/05_moonlandscapewithcanvas/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/pjOKVz">
-    <img alt="Day6 - Loader animation" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember06.gif?raw=true" width="200">  
+    <img alt="06_loaderanimation" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/06_loaderanimation/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/XmxNXv">
-    <img alt="Day7 - Two ways for drawing a particle trail" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember07.gif?raw=true" width="200">
+    <img alt="07_twowaysfordrawingaparticletrail" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/07_twowaysfordrawingaparticletrail/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/KdGaLW">
-    <img alt="Day8 - Flexible flowers on earth" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember08.gif?raw=true" width="200">  
+    <img alt="08_flexibleflowersonearth" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/08_flexibleflowersonearth/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/OyBaLa">
-    <img alt="Day9 - CSS 3D card moved by mobile accelerometer" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember09.gif?raw=true" width="200">
+    <img alt="09_css3dcardmovedbymobileaccelerometer" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/09_css3dcardmovedbymobileaccelerometer/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/lFHvL">
-    <img alt="Day10 - Flock of Particles" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember10.gif?raw=true" width="200">  
+    <img alt="10_flockofparticles" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/10_flockofparticles/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/LpXNRp">
-    <img alt="Day11 - Line who navigates in each random points " src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember11.gif?raw=true" width="200">
+    <img alt="11_linewhonavigatesineachrandompoints" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/11_linewhonavigatesineachrandompoints/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/ojQVaq">
-    <img alt="Day12 - Scribble, Scrawl, Doodle...." src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember12.gif?raw=true"   width="200">  
+    <img alt="12_scribblescrawldoodle" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/12_scribblescrawldoodle/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/JYwNRQ">
-    <img alt="Day13 - Appearance of a Title" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember13.gif?raw=true" width="200">  
+    <img alt="13_appearanceofatitle" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/13_appearanceofatitle/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/XmGJdj">
-    <img alt="Day19 - Appearance of a Footer" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember19.gif?raw=true" width="200">  
+    <img alt="19_appearanceofafooter" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/19_appearanceofafooter/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/avKJBO">
-    <img alt="Day27 - Particles with streaks" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember27.gif?raw=true" width="200">  
+    <img alt="27_particleswithstreaks" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/27_particleswithstreaks/preview.gif?raw=true" width="200">
   </a>
-
+          
   <a href="http://codepen.io/Jeremboo/full/RWddjK">
-    <img alt="Day30 - Test the motion libraries mo.js and vivus.js" src="https://github.com/Jeremboo/codevember/blob/master/2015/00_gifs/codevember30.gif?raw=true" width="200">
+    <img alt="30_testthemotionlibrariesmojsandvivusjs" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2015/30_testthemotionlibrariesmojsandvivusjs/preview.gif?raw=true" width="200">
   </a>
-</p>
+          </p>
+
+## Codevember 2016
+
+My contributions of the Codevember challenge in 2016. See the [website](http://codevember.xyz/)
+
+<p align="center">
+  <a href="http://codepen.io/Jeremboo/full/ORKroY/">
+    <img alt="01_canvasTransition" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/01_canvasTransition/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="http://codepen.io/Jeremboo/pen/jVNVqr">
+    <img alt="02_squigglyTypo" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/02_squigglyTypo/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="http://codepen.io/Jeremboo/pen/QGLGNN">
+    <img alt="03_Volcano" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/03_Volcano/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="https://codepen.io/Jeremboo/pen/RowOGV">
+    <img alt="04_FireGooeyEffect" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/04_FireGooeyEffect/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="https://codepen.io/Jeremboo/pen/aBbmZv">
+    <img alt="05_hexagonLoop" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/05_hexagonLoop/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="http://codepen.io/Jeremboo/pen/GNgdNm">
+    <img alt="06_childrenCubes" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/06_childrenCubes/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="https://codepen.io/Jeremboo/pen/zoGNMJ">
+    <img alt="07_floating3DObject" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/07_floating3DObject/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="https://codepen.io/Jeremboo/pen/ENVaMY">
+    <img alt="08_generativeTrays" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/08_generativeTrays/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="https://codepen.io/Jeremboo/pen/ENKKyz">
+    <img alt="12_particlesMandala" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/12_particlesMandala/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="https://codepen.io/Jeremboo/pen/GNqvJP">
+    <img alt="14_tremulousParticle" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/14_tremulousParticle/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="https://codepen.io/Jeremboo/pen/qqabKY">
+    <img alt="15_canvasTextureTool" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/15_canvasTextureTool/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="http://codepen.io/Jeremboo/pen/RGBxBO">
+    <img alt="16_mojsShapesPop" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/16_mojsShapesPop/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="http://codepen.io/Jeremboo/pen/jVweKo">
+    <img alt="25_raindow" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/25_raindow/preview.gif?raw=true" width="200">
+  </a>
+          
+  <a href="http://codepen.io/Jeremboo/pen/JbrWgq">
+    <img alt="28_particlesRotations" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/28_particlesRotations/preview.gif?raw=true" width="200">
+  </a>
+          </p>

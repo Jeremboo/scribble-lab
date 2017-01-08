@@ -39,10 +39,12 @@ const askWitchChildDir = (dirPath, dirType) => {
 
 
 const createDataJSON = (name, path) => {
-  const description = ask('Description : ');
+  const description = ask(`Description to ${name}: `);
+  const link = ask(`External link ? : `);
   const data = {
     name,
     path,
+    link,
     preview: `${path}/preview.gif`,
     description,
     date: new Date(),
