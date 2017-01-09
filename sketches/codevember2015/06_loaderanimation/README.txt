@@ -1,4 +1,4 @@
-A Pen created at CodePen.io. You can find this one at http://codepen.io/Jeremboo/pen/pjOKVz.
+A Pen created at CodePen.io. You can find this one at http://codepen.io/Jeremboo/full/pjOKVz.
 
  #Codevember _ Day 6 :
 

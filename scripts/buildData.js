@@ -8,9 +8,8 @@ let readme = `# Scribble lab
 
 Just a regroupment of some searches, tests, experiments around javascript or CSS and their frameworks.
 
----
-`;
-const addLine = text => { readme += `/n/n ${text}`; };
+---`;
+const addLine = text => { readme += `\n\n ${text}`; };
 
 const groupsName = fs.readdirSync(path);
 let i;

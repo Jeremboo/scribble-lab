@@ -1,3 +1,3 @@
-A Pen created at CodePen.io. You can find this one at http://codepen.io/Jeremboo/pen/ojQVaq.
+A Pen created at CodePen.io. You can find this one at http://codepen.io/Jeremboo/full/ojQVaq.
 
  Lines who navigates point by point. Each line have random size, color, speed, points...

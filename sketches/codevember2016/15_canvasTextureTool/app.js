@@ -74,7 +74,7 @@ class Block extends THREE.Object3D {
         context.rect(0, 0, props.width, props.height);
         context.fillStyle = bgColor;
         context.fill();
-        // http://codepen.io/jbpenrath/pen/gLObej
+        // http://codepen.io/jbpenrath/full/gLObej
         let mouseDown = false;
         const paint = e => {
           if (mouseDown) {
