@@ -9,7 +9,7 @@ let readme = `# Scribble lab
 Just a regroupment of some searches, tests, experiments around javascript or CSS and their frameworks.
 
 ---`;
-const addLine = text => { readme += `\n\n ${text}`; };
+const addLine = text => { readme += `\n\n${text}`; };
 
 const groupsName = fs.readdirSync(path);
 let i;
@@ -20,7 +20,7 @@ for (i = 0; i < groupsName.length ; i++) {
   if (fs.existsSync(dataPath)) {
     const groupData = JSON.parse(fs.readFileSync(dataPath));
     if (groupData.visible) {
-      addLine(`## ${groupData.link ? `[${groupData.name}](${groupData.link})` : groupData.name}`);
+      addLine(`##${groupData.link ? `[${groupData.name}](${groupData.link})` : groupData.name}`);
       addLine(groupData.description);
       addLine('<p align="center">');
       groupData.projects = [];
@@ -36,10 +36,9 @@ for (i = 0; i < groupsName.length ; i++) {
 
           if (fs.existsSync(sketchData.preview) && sketchData.visible) {
             readme += `
-    <a href="${sketchData.link ? sketchData.link : '/'}">
-      <img alt="${sketchData.name}" src="https://github.com/Jeremboo/codevember/blob/master/${sketchData.preview}?raw=true" width="200">
-    </a>
-            `;
+  <a href="${sketchData.link ? sketchData.link : '/'}">
+    <img alt="${sketchData.name}" src="https://github.com/Jeremboo/codevember/blob/master/${sketchData.preview}?raw=true" width="200">
+  </a>`;
           }
           // if (!sketchData.visible) {
           //   // sketchData.date = new Date(`${groupsName[i].slice(groupsName[i].length - 4, groupsName[i].length)}-11-${sketchesName[j].slice(0, 2)}`);
@@ -55,7 +54,7 @@ for (i = 0; i < groupsName.length ; i++) {
       }
       data.push(groupData);
 
-      addLine('</p>');
+      readme += '\n</p>';
     }
   }
 }
