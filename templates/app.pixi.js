@@ -38,6 +38,10 @@ import { autoDetectRenderer, Graphics } from 'pixi.js';
 /**/   }
 /**/   resizeHandler(w, h) {
 /**/     this.renderer.resize(w, h);
+/**/     let i = this.renderableCount;
+/**/     while (--i >= 0) {
+/**/       if (this.renderables[i].resize) this.renderables[i].resize();
+/**/     }
 /**/   }
 /**/ }
 /**/ const renderer = new Renderer(windowWidth, windowHeight);
@@ -61,6 +65,11 @@ class Example extends Graphics {
   update() {
     this.rotation += 0.03;
   }
+
+  resize() {
+    this.x = windowWidth * 0.5;
+    this.y = windowHeight * 0.5;
+  }
 }
 
 // START
@@ -76,7 +85,7 @@ renderer.add(ex);
 /**/ function onResize() {
 /**/   windowWidth = window.innerWidth;
 /**/   windowHeight = window.innerHeight;
-/**/   renderer.resize(windowWidth, windowHeight);
+/**/   renderer.resizeHandler(windowWidth, windowHeight);
 /**/ }
 /**/ window.addEventListener('resize', onResize);
 /**/ window.addEventListener('orientationchange', onResize);
