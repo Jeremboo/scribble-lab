@@ -1,9 +1,9 @@
-import { autoDetectRenderer, Graphics } from 'pixi.js';
+import { autoDetectRenderer, Graphics, Container } from 'pixi.js';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '0xC9F0FF';
-/**/ const bgColor = false; // 'rgb(0, 0, 0)';
+/**/ const bgColor = false; // '0xffffff';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Renderer {
@@ -13,18 +13,21 @@ import { autoDetectRenderer, Graphics } from 'pixi.js';
 /**/     this.renderer = autoDetectRenderer(width, height, {
 /**/       antialias: true, transparent: true, resolution: 1,
 /**/     });
-/**/     // if (bgColor) this.renderer.setClearColor(new THREE.Color(bgColor));
+/**/     if (bgColor) this.renderer.backgroundColor = bgColor;
 /**/     this.dom = this.renderer.view;
+/**/     this.scene = new Container();
 /**/     this.animate = this.animate.bind(this);
 /**/     this.resizeHandler = this.resizeHandler.bind(this);
 /**/   }
 /**/   add(renderable) {
 /**/     this.renderableCount++;
+/**/     this.scene.addChild(renderable);
 /**/     return this.renderables.push(renderable);
 /**/   }
 /**/   remove(renderable) {
 /**/     const idx = this.renderables.indexOf(renderable);
 /**/     if (idx < 0) {
+/**/       this.scene.removeChild(renderable);
 /**/       this.renderables.slice(idx, 1);
 /**/       this.renderableCount--;
 /**/     }
@@ -33,7 +36,7 @@ import { autoDetectRenderer, Graphics } from 'pixi.js';
 /**/     let i = this.renderableCount;
 /**/     while (--i >= 0) {
 /**/       this.renderables[i].update();
-/**/       this.renderer.render(this.renderables[i]);
+/**/       this.renderer.render(this.scene);
 /**/     }
 /**/   }
 /**/   resizeHandler(w, h) {
