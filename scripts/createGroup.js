@@ -1,15 +1,7 @@
-const fs = require('fs');
-const camelCase = require('camelcase');
-
-const ask = require('./utils').ask;
-const createDir = require('./utils').createDir;
-const createDataJSON = require('./utils').createDataJSON;
+const { createDir, createDataJSON } = require('./utils');
 
 // Create directory
-const name = ask('Group name : ');
-const nameToCamelCase = camelCase(name);
-const path = `sketches/${nameToCamelCase}`;
-createDir(path);
+const { name, path } = createDir('sketches/', 'Group');
 
 // Create json file
 createDataJSON(name, path);

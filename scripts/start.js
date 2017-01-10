@@ -1,21 +1,15 @@
-const fs = require('fs');
-
-const askWitchChildDir = require('./utils').askWitchChildDir;
-const testDirPath = require('./utils').testDirPath;
+const { askWitchChildDir, pathExist } = require('./utils');
 
 // DIRECTORY TEST
 let dirPath = process.env.DIR;
 
-if (!dirPath) {
+if (!dirPath || !pathExist(dirPath)) {
   // Select a dir in command line
   dirPath = 'sketches/';
   dirPath += `${askWitchChildDir(dirPath, 'group')}/`;
   dirPath += `${askWitchChildDir(dirPath, 'sketch')}/`;
 }
 
-// Test the path
-testDirPath(dirPath);
-
 // START WEBPACK
-process.env.DIR = `${dirPath}`;
+process.env.DIR = dirPath;
 require('./startWebpack')();
