@@ -36,4 +36,5 @@ createDataJSON(name, path);
 
 // NPM START
 process.env.DIR = path;
+process.env.NAME = name;
 require('./startWebpack')();

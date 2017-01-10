@@ -10,6 +10,7 @@ var node_modules = path.resolve(__dirname, './node_modules');
 
 // DIRECTORY TEST
 var directory = process.env.DIR;
+var name = process.env.NAME;
 
 // WEBPACK CONFIG
 var config = {
@@ -46,7 +47,7 @@ var config = {
         {
           test: /\.(png|jpe?g|gif|svg)$/,
           loader: 'file?name=imgs/[hash].[ext]',
-          include: path.resolve(__dirname, './00_inspirations/'),
+          include: path.resolve(__dirname, './assets/'),
         },
         {
           test: /\.(html|pug)$/,
@@ -63,7 +64,7 @@ var config = {
       new webpack.optimize.OccurenceOrderPlugin(),
       new webpack.HotModuleReplacementPlugin(),
       new HtmlWebpackPlugin({
-        title: directory,
+        title: name,
         // template: path.resolve(__dirname, directory + '/index.pug.html'),
       }),
     ],
