@@ -1,5 +1,5 @@
 import { autoDetectRenderer, Graphics, Container } from 'pixi.js';
-import Rope from '../../../modules/Rope';
+import Rope from 'Rope';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#0D0106';

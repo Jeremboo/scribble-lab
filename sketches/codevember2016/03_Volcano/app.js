@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 
-import SquigglySVG from '../00_modules/squiggly/SquigglySVG.js';
+import SquigglySVG from 'Squiggly/SquigglySVG.js';
 
 window.React = React;
 

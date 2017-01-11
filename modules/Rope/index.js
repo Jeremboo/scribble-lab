@@ -1,7 +1,7 @@
 import { Container, Texture, Point, Graphics, mesh } from 'pixi.js';
-import ropePattern from '../../assets/ropePattern.png';
-import ropeBegin from '../../assets/ropeBegin.png';
-import ropeEnd from '../../assets/ropeEnd.png';
+import ropePattern from 'ropePattern.png';
+import ropeBegin from 'ropeBegin.png';
+import ropeEnd from 'ropeEnd.png';
 
 const GRAVITY = {
   x: 0,

@@ -1,5 +1,5 @@
 import React from 'react';
-import Squiggly from './Squiggly.js';
+import Squiggly from './index.js';
 import SquigglyFilter from './SquigglyFilter.component.js';
 
 export default class SquigglySVG extends Squiggly {

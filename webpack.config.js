@@ -39,6 +39,13 @@ var config = {
           test: /\.jsx?$/,
           exclude: node_modules,
           loader: 'babel',
+          query: {
+            plugins: [
+              [ "module-resolver", {
+                'root': ['./modules', './assets'],
+              }],
+            ]
+          },
         },
         {
           test: /\.(styl|css)$/,
