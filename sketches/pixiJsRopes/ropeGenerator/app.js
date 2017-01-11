@@ -1,4 +1,5 @@
 import { autoDetectRenderer, Graphics, Container } from 'pixi.js';
+import { radians, easing, getDistBetweenTwoVec2 } from 'utils';
 import Rope from 'Rope';
 
 /**/ /* ---- CORE ---- */
@@ -57,14 +58,12 @@ import Rope from 'Rope';
 /* ---- CREATING ZONE ---- */
 
 
-// Utils
-const radians = degrees => degrees * Math.PI / 180;
-
 class Marker extends Graphics {
   constructor(x, y) {
     super();
 
     this.position = { x, y };
+    this.rotation = Math.random() * 10;
     this.size = 10;
 
     this.beginFill(bgColor, 0);
@@ -81,15 +80,33 @@ class Marker extends Graphics {
 
   showMarker(x, y) {
     this.position = { x, y };
-    this.scale.x = this.scale.y = 1;
+    this.animateScale(1);
   }
 
   hideMarker() {
-    this.scale.x = this.scale.y = 0;
+    this.animateScale(0);
+  }
+
+  animateScale(value) {
+    this.isAnimated = true;
+    this.targetedScale = value;
   }
 
   update() {
-    this.rotation += 0.07;
+    this.rotation += 0.1;
+
+    // AnimateScale
+    if (this.isAnimated) {
+      easing(this.targetedScale, this.scale.x, {
+        vel: 0.2,
+        update: v => {
+          this.scale.x = this.scale.y = v;
+        },
+        callback: () => {
+          this.isAnimated = false;
+        },
+      });
+    }
   }
 }
 
@@ -134,6 +151,15 @@ class RopeFabric {
     this.mouseStartMarker.hideMarker();
     this.mouseEndMarker.hideMarker();
     this.line.clear();
+
+    const { dist } = getDistBetweenTwoVec2(
+      e.x,
+      e.y,
+      this.mouseStartMarker.x,
+      this.mouseStartMarker.y
+    );
+    console.log(dist)
+    this.createRope(e.x, e.y, dist);
   }
 
   onMouseDown(e) {
@@ -157,6 +183,10 @@ class RopeFabric {
 // START
 const ropeFabric = new RopeFabric();
 ropeFabric.createRope(100, 100);
+
+easing(10, 100, {
+  update: f => console.log('update', f)
+});
 // ADDS
 
 /* ---- CREATING ZONE END ---- */
