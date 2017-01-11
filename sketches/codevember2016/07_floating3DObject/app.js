@@ -1,10 +1,10 @@
-import threeJs from 'three-js';
+import {
+  WebGLRenderer, Scene, PerspectiveCamera, Object3D, BoxGeometry,
+  MultiMaterial, PlaneGeometry, MeshBasicMaterial, Mesh, DoubleSide,
+} from 'three';
+import ThreeTextureTool from 'threejs-texture-tool';
 
-const THREE = threeJs();
-const OrbitControls = require('three-orbit-controls')(THREE)
-
-import CanvasTextureTool from '../00_modules/canvasTextureTool';
-
+const textureTool = new ThreeTextureTool();
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#ffffff';
@@ -16,11 +16,10 @@ import CanvasTextureTool from '../00_modules/canvasTextureTool';
 /**/   constructor(w, h) {
 /**/     this.meshCount = 0;
 /**/     this.meshListeners = [];
-/**/     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+/**/     this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
 /**/     this.renderer.setPixelRatio(window.devicePixelRatio);
-/**/     // this.renderer.setClearColor(new THREE.Color(bgColor)));
-/**/     this.scene = new THREE.Scene();
-/**/     this.camera = new THREE.PerspectiveCamera(50, w / h, 1, 1000);
+/**/     this.scene = new Scene();
+/**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 10);
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
@@ -69,41 +68,45 @@ const drawCanvasStripes = (context, props, specificPosFunc) => {
     specificPosFunc(dist, columnWidth);
   }
   context.stroke();
-}
+};
 
 // OBJECTS
-class Block extends THREE.Object3D {
+class Block extends Object3D {
   constructor() {
     super();
 
     this.i = 0.0;
-    this.diagonalStripeTexture = new CanvasTextureTool(THREE, { onUpdate: (context, props) => {
+    this.diagonalStripeTexture = textureTool.createCanvasTexture();
+    this.diagonalStripeTexture.drawCustomCanvas({ increment: this.i }, (context, props) => {
       drawCanvasStripes(context, props, (dist, columnWidth) => {
         context.moveTo(-columnWidth, dist);
         context.lineTo(dist, -columnWidth);
       });
-    } });
-    this.diagonalReverseStripeTexture = new CanvasTextureTool(THREE, { onUpdate: (context, props) => {
+    });
+    this.diagonalReverseStripeTexture = textureTool.createCanvasTexture();
+    this.diagonalReverseStripeTexture.drawCustomCanvas({ increment: this.i }, (context, props) => {
       const { width } = props;
       drawCanvasStripes(context, props, (dist, columnWidth) => {
         context.moveTo(width - dist, -columnWidth);
         context.lineTo(width + columnWidth, dist);
       });
-    } });
-    this.verticalStripeTexture = new CanvasTextureTool(THREE, { onUpdate: (context, props) => {
+    });
+    this.verticalStripeTexture = textureTool.createCanvasTexture();
+    this.verticalStripeTexture.drawCustomCanvas({ increment: this.i }, (context, props) => {
       const { height } = props;
       drawCanvasStripes(context, props, dist => {
         context.moveTo(dist, height);
         context.lineTo(dist, 0);
       });
-    } });
-    this.horizontalStripeTexture = new CanvasTextureTool(THREE, { onUpdate: (context, props) => {
-      const { width } = props;
+    });
+    this.horizontalStripeTexture = textureTool.createCanvasTexture();
+    this.horizontalStripeTexture.drawCustomCanvas({ increment: this.i }, (context, props) => {
+      const { height } = props;
       drawCanvasStripes(context, props, dist => {
-        context.moveTo(0, dist);
-        context.lineTo(width, dist);
+        context.moveTo(dist, height);
+        context.lineTo(dist, 0);
       });
-    } });
+    });
 
     this.materials = [];
     this.materials.push(this.horizontalStripeTexture.material);
@@ -113,15 +116,15 @@ class Block extends THREE.Object3D {
     this.materials.push(this.horizontalStripeTexture.material);
     this.materials.push(this.verticalStripeTexture.material);
 
-    this.geometry = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE, 20, 20);
-    this.material = new THREE.MeshFaceMaterial(this.materials);
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.geometry = new BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE, 20, 20);
+    this.material = new MultiMaterial(this.materials);
+    this.mesh = new Mesh(this.geometry, this.material);
     this.mesh.rotation.set(1.52, 0, 0);
     this.add(this.mesh);
 
-    this.floorGeometry = new THREE.PlaneGeometry(CUBE_SIZE + 0.1, CUBE_SIZE + 0.1, 1);
-    this.floorMaterial = new THREE.MeshBasicMaterial({ color: '#0001E6', side: THREE.DoubleSide });
-    this.floor = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
+    this.floorGeometry = new PlaneGeometry(CUBE_SIZE + 0.1, CUBE_SIZE + 0.1, 1);
+    this.floorMaterial = new MeshBasicMaterial({ color: '#0001E6', side: DoubleSide });
+    this.floor = new Mesh(this.floorGeometry, this.floorMaterial);
     this.floor.position.set(-0.15, -CUBE_SIZE, 0.2);
     this.floor.rotation.set(1.52, 0, 0);
     this.add(this.floor);
@@ -135,6 +138,7 @@ class Block extends THREE.Object3D {
     const dist = (Math.cos(this.i * 0.2) * 0.1) - 1
     this.mesh.position.y = dist;
     this.floor.scale.set(dist, dist, dist);
+    // TODO fix threejs-texture-tool
     this.verticalStripeTexture.update({ increment: this.i });
     this.horizontalStripeTexture.update({ increment: this.i });
     this.diagonalStripeTexture.update({ increment: this.i });
@@ -157,7 +161,7 @@ webgl.add(new Block());
 /**/ window.addEventListener('resize', onResize);
 /**/ window.addEventListener('orientationchange', onResize);
 /**/ /* ---- LOOP ---- */
-/**/ function _loop(){
+/**/ function _loop() {
 /**/ 	webgl.update();
 /**/ 	requestAnimationFrame(_loop);
 /**/ }

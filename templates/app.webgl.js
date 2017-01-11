@@ -1,6 +1,7 @@
-import threeJs from 'three-js';
-
-const THREE = threeJs();
+import {
+  WebGLRenderer, Scene, PerspectiveCamera, Object3D, BoxGeometry,
+  MeshBasicMaterial, Mesh, Color, FlatShading,
+} from 'three';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
@@ -12,11 +13,11 @@ const THREE = threeJs();
 /**/   constructor(w, h) {
 /**/     this.meshCount = 0;
 /**/     this.meshListeners = [];
-/**/     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+/**/     this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
 /**/     this.renderer.setPixelRatio(window.devicePixelRatio);
-/**/     if (bgColor) this.renderer.setClearColor(new THREE.Color(bgColor));
-/**/     this.scene = new THREE.Scene();
-/**/     this.camera = new THREE.PerspectiveCamera(50, w / h, 1, 1000);
+/**/     if (bgColor) this.renderer.setClearColor(new Color(bgColor));
+/**/     this.scene = new Scene();
+/**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 10);
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
@@ -49,17 +50,17 @@ const THREE = threeJs();
 /* ---- CREATING ZONE ---- */
 
 // OBJECTS
-class Example extends THREE.Object3D {
+class Example extends Object3D {
   constructor() {
     super();
 
-    this.material = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(secondaryColor),
-      shading: THREE.FlatShading,
+    this.material = new MeshBasicMaterial({
+      color: new Color(secondaryColor),
+      shading: FlatShading,
       wireframe: true,
     });
-    this.geometry = new THREE.BoxGeometry(1, 1, 1);
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.geometry = new BoxGeometry(1, 1, 1);
+    this.mesh = new Mesh(this.geometry, this.material);
 
     this.add(this.mesh);
 
@@ -90,7 +91,7 @@ webgl.add(ex);
 /**/ window.addEventListener('resize', onResize);
 /**/ window.addEventListener('orientationchange', onResize);
 /**/ /* ---- LOOP ---- */
-/**/ function _loop(){
+/**/ function _loop() {
 /**/ 	webgl.update();
 /**/ 	requestAnimationFrame(_loop);
 /**/ }
