@@ -1,13 +1,11 @@
 import { Container, Texture, Point, Graphics, mesh } from 'pixi.js';
-import { getDistBetweenTwoVec2, canvasBuilder, applyImageToCanvas } from 'utils';
+import { canvasBuilder, applyImageToCanvas, existingValueBy } from 'utils';
+import rope from 'rope.png';
 import ropePattern from 'ropePattern.png';
 import ropeBegin from 'ropeBegin.png';
 import ropeEnd from 'ropeEnd.png';
 
-const GRAVITY = {
-  x: 0,
-  y: 8,
-};
+const GRAVITY = { x: 0, y: 8 };
 const SPRING = 0.9;
 const TENTION = 0.5;
 const VEL = 0.1;
@@ -16,14 +14,14 @@ const ROPE_SEGMENT_LENGTH = 30;
 const ROPE_WIDTH = 10;
 
 export default class Rope extends Container {
-  constructor(x = 0, y = 0, length = 10, color = 0xf4cd6a) {
+  constructor(x = 0, y = 0, length = 60, color = 0xf4cd6a, textured = true) {
     super();
 
     this.texture = null;
-    this.nbrOfNodes = length / ROPE_SEGMENT_LENGTH;
+    this.nbrOfNodes = Math.round(length / ROPE_SEGMENT_LENGTH) + 1;
     this.points = [];
     this.oldPoints = [];
-    this.attachedPoints = new Map();
+    this.attachedPoints = [];
     this.count = 0;
 
     for (let i = 0; i < this.nbrOfNodes; i++) {
@@ -42,16 +40,17 @@ export default class Rope extends Container {
 
     this.update = this.update.bind(this);
 
-    this.g = new Graphics();
-
-    this.attachPoint(0, x, y);
-
-    this.buildRopeTexture(() => {
-      this.rope = new mesh.Rope(this.texture, this.points);
-      this.rope.tint = color;
-      this.addChild(this.rope);
+    if (textured) {
+      this.buildRopeTexture(() => {
+        this.rope = new mesh.Rope(this.texture, this.points);
+        this.rope.tint = color;
+        this.addChild(this.rope);
+      });
+    } else {
+      this.g = new Graphics();
       this.addChild(this.g);
-    });
+    }
+    this.attachPoint(0, x, y);
   }
 
   buildRopeTexture(callback) {
@@ -74,6 +73,8 @@ export default class Rope extends Container {
       }
       context.drawImage(cRopeEnd, ropeWidth - ROPE_WIDTH, 0);
 
+      // this.texture = Texture.fromImage(rope);
+      // this.texture = Texture.fromImage(canvas.toDataURL());
       this.texture = Texture.fromCanvas(canvas);
       callback();
     })
@@ -82,13 +83,29 @@ export default class Rope extends Container {
     });
   }
 
+  attachPoint(idx, x, y) {
+    const existingValue = existingValueBy(this.attachedPoints, value => (value.idx === idx));
+    if (!existingValue) {
+      this.attachedPoints.push({ idx, x, y });
+    } else {
+      this.attachedPoints[this.attachedPoints.indexOf(existingValue)] = { idx, x, y };
+    }
+  }
+
+  detachPoint(idx) {
+    const existingValue = existingValueBy(this.attachedPoints, value => (value.idx === idx));
+    if (existingValue) {
+      this.attachedPoints.splice(this.attachedPoints.indexOf(existingValue), 1);
+    } else {
+      console.log(`ERROR : The point ${idx} is not attached`);
+    }
+  }
+
   update() {
     // http://codepen.io/chribbe/pen/aHhdE?editors=0010
     for (let i = 1; i < this.nbrOfNodes; i++) {
-      const previous = {
-        x: this.points[i].x,
-        y: this.points[i].y,
-      };
+      this.oldPoints[i].x = this.points[i].x;
+      this.oldPoints[i].y = this.points[i].y;
 
       // gravity
       this.points[i].x += GRAVITY.x;
@@ -98,48 +115,36 @@ export default class Rope extends Container {
       this.points[i].x += (this.points[i].x - this.oldPoints[i].x) * VEL;
       this.points[i].y += (this.points[i].y - this.oldPoints[i].y) * VEL;
 
-      this.oldPoints[i].x = previous.x;
-      this.oldPoints[i].y = previous.y;
-
       // tention
-      const dist = getDistBetweenTwoVec2(
-        this.points[i].x,
-        this.points[i].y,
-        this.points[i - 1].x,
-        this.points[i - 1].y,
-      );
-      const f = dist.dist - ROPE_SEGMENT_LENGTH;
-      const fx = (dist.x / dist.dist) * SPRING * f;
-      const fy = (dist.y / dist.dist) * SPRING * f;
+      const x = this.points[i].x - this.points[i - 1].x;
+      const y = this.points[i].y - this.points[i - 1].y;
+      const dist = Math.sqrt(Math.sqr(y) + Math.sqr(x));
+      const f = (dist - ROPE_SEGMENT_LENGTH) * SPRING;
+      const fx = (x / dist) * f;
+      const fy = (y / dist) * f;
       this.points[i].x -= fx;
       this.points[i].y -= fy;
       this.points[i - 1].x += fx * TENTION;
       this.points[i - 1].y += fy * TENTION;
     }
 
-    // Update attached point
-    for (const [key, value] of this.attachedPoints.entries()) {
-      this.points[key].x = value.x;
-      this.points[key].y = value.y;
+    // UPDATE ATTACHED POINTS
+    for (let j = 0; j < this.attachedPoints.length; j++) {
+      const attachedPoint = this.attachedPoints[j];
+      this.points[attachedPoint.idx].x = attachedPoint.x; // + (Math.cos(this.i) * 300);
+      this.points[attachedPoint.idx].y = attachedPoint.y; // + (Math.sin(this.i) * 300);
     }
 
-    // this.renderPoints();
-  }
-
-  attachPoint(idx, x, y) {
-    this.attachedPoints.set(idx, { x, y });
-  }
-
-  detachPoint(idx) {
-    this.attachPoints.delete(idx);
+    if (this.g) this.renderPoints();
   }
 
   renderPoints() {
-     this.g.clear();
-
-    for (let i = 0; i < this.points.length; i++) {
-      this.g.beginFill(0xff00ff);
-      this.g.drawCircle(this.points[i].x, this.points[i].y, 3);
+    this.g.clear();
+    this.g.moveTo(this.points[0].x, this.points[0].y);
+    for (let i = 1; i < this.points.length; i++) {
+      this.g.beginFill(0xffffff, 0);
+      this.g.lineStyle(1, 0x48E5C2, 1);
+      this.g.lineTo(this.points[i].x, this.points[i].y);
       this.g.endFill();
     }
   }

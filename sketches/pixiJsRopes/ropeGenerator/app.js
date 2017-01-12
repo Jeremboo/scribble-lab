@@ -1,5 +1,5 @@
 import { autoDetectRenderer, Graphics, Container } from 'pixi.js';
-import { radians, easing, getDistBetweenTwoVec2 } from 'utils';
+import { radians, easing, getDistBetweenTwoVec2, getRandomInt } from 'utils';
 import Rope from 'Rope';
 
 /**/ /* ---- CORE ---- */
@@ -158,8 +158,8 @@ class RopeFabric {
       this.mouseStartMarker.x,
       this.mouseStartMarker.y
     );
-    console.log(dist)
-    this.createRope(e.x, e.y, dist);
+
+    if (dist > 30) this.createRope(e.x, e.y, dist);
   }
 
   onMouseDown(e) {
@@ -182,12 +182,10 @@ class RopeFabric {
 
 // START
 const ropeFabric = new RopeFabric();
-ropeFabric.createRope(100, 100);
 
-easing(10, 100, {
-  update: f => console.log('update', f)
-});
-// ADDS
+// for (let j = 0; j < 50; j++) {
+//   ropeFabric.createRope(j * 10 + 300, 200, getRandomInt(220, 500));
+// }
 
 /* ---- CREATING ZONE END ---- */
 /**/

@@ -11,9 +11,14 @@ export const getDistBetweenTwoVec2 = (x1, y1, x2, y2) => {
 
 export const radians = degrees => degrees * Math.PI / 180;
 
+export const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+// ARRAY
+export const existingValueBy = (arr, comparator) =>
+  arr.filter(value => comparator(value))[0]
+;
 
 // CANVAS
-
 export const canvasBuilder = (width = window.innerWidth, height = window.innerHeight) => {
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -73,4 +78,12 @@ export const RAFeasing = (target, value, { vel = 0.03, update = f => f, callback
     return;
   }
   requestAnimationFrame(easing.bind(this, target, newValue, { vel, update, callback }));
+};
+
+export const testPerf = (fct, ...params) => {
+  const t0 = performance.now();
+  const result = fct(...params);
+  const t1 = performance.now();
+  console.log(`PERF === ${t1 - t0} ms.`);
+  return result;
 };
