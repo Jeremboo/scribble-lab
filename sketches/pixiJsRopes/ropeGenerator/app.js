@@ -168,8 +168,8 @@ class RopeFabric {
     this.mouseEndMarker.showMarker(e.x, e.y);
   }
 
-  createRope(x, y, length, color) {
-    const rope = new Rope(x, y, length, color);
+  createRope(x, y, length, props) {
+    const rope = new Rope(x, y, length, props);
     renderer.add(rope);
   }
 
@@ -182,10 +182,9 @@ class RopeFabric {
 
 // START
 const ropeFabric = new RopeFabric();
-
-// for (let j = 0; j < 50; j++) {
-//   ropeFabric.createRope(j * 10 + 300, 200, getRandomInt(220, 500));
-// }
+for (let j = 0; j < 50; j++) {
+  ropeFabric.createRope(j * 10 + 200, 200, getRandomInt(220, 500), { textured: false });
+}
 
 /* ---- CREATING ZONE END ---- */
 /**/

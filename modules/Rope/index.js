@@ -14,7 +14,7 @@ const ROPE_SEGMENT_LENGTH = 30;
 const ROPE_WIDTH = 10;
 
 export default class Rope extends Container {
-  constructor(x = 0, y = 0, length = 60, color = 0xf4cd6a, textured = true) {
+  constructor(x = 0, y = 0, length = 60, { color = 0xf4cd6a, textured = true } = {}) {
     super();
 
     this.texture = null;
@@ -50,6 +50,7 @@ export default class Rope extends Container {
       this.g = new Graphics();
       this.addChild(this.g);
     }
+
     this.attachPoint(0, x, y);
   }
 
