@@ -40,8 +40,8 @@ import Rope from 'Rope';
 /**/     let i = this.renderableCount;
 /**/     while (--i >= 0) {
 /**/       this.renderables[i].update();
-/**/       this.renderer.render(this.scene);
 /**/     }
+/**/     this.renderer.render(this.scene);
 /**/   }
 /**/   resizeHandler(w, h) {
 /**/     this.renderer.resize(w, h);
@@ -182,9 +182,6 @@ class RopeFabric {
 
 // START
 const ropeFabric = new RopeFabric();
-for (let j = 0; j < 50; j++) {
-  ropeFabric.createRope(j * 10 + 200, 200, getRandomInt(220, 500), { textured: false });
-}
 
 /* ---- CREATING ZONE END ---- */
 /**/
