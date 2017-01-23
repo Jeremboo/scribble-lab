@@ -36,8 +36,8 @@ import { autoDetectRenderer, Graphics, Container } from 'pixi.js';
 /**/     let i = this.renderableCount;
 /**/     while (--i >= 0) {
 /**/       this.renderables[i].update();
-/**/       this.renderer.render(this.scene);
 /**/     }
+/**/     this.renderer.render(this.scene);
 /**/   }
 /**/   resizeHandler(w, h) {
 /**/     this.renderer.resize(w, h);
