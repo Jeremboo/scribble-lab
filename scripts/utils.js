@@ -12,6 +12,44 @@ const removeInstanceFromArray = (arr, instance) => {
 };
 
 /**
+ * DIRECTORY
+ * require('fs');
+ * require('camelcase');
+ */
+
+/**
+  * test if a path exist
+  * @param  {String} path  the path to test
+  * @return {Boolean}      answer
+  */
+const pathExist = path => {
+  if (!fs.existsSync(path)) {
+    console.log(`ERROR : ${path} does not exist !`);
+    return false;
+  }
+  return true;
+};
+
+/**
+ * Create a directory into the path passed into parameter
+ * @param  {String} parentPath    valid parent path
+ * @param  {String} dirName       name of the directory
+ * @return {Object.String.String} name and path
+ */
+const createDir = (parentPath, name) => {
+  const nameToCamelCase = camelCase(name);
+  const path = `${parentPath}${nameToCamelCase}`;
+
+  if (fs.existsSync(path)) {
+    console.log(`ERROR : ${path} already exist !`);
+    return false;
+  }
+
+  fs.mkdirSync(path);
+  return { name, path };
+};
+
+/**
  * ASK
  * require('readline-sync');
  * require('fs');
@@ -73,44 +111,22 @@ const askBool = (question, defaultValue = true) => {
   return askBool(question, defaultValue);
 };
 
-
-/**
- * DIRECTORY
- * require('fs');
- * require('camelcase');
- */
-
-/**
-  * test if a path exist
-  * @param  {String} path  the path to test
-  * @return {Boolean}      answer
-  */
-const pathExist = path => {
-  if (!fs.existsSync(path)) {
-    console.log(`ERROR : ${path} does not exist !`);
-    return false;
-  }
-  return true;
-};
-
 /**
  * Create a directory into the path passed into parameter
- * @param  {String} parentPath valid parent path
- * @param  {String} [type='']  name of the type of path
- * @return {Object}            name and pathName
+ * and ask for the path name
+ * @param  {String} parentPath    valid parent path
+ * @param  {String} [type='']     name of the type of path
+ * @return {Object.String.String} dirName and path
  */
-const createDir = (parentPath, type = '') => {
+const askToCreateDir = (parentPath, type = '') => {
   const name = ask(`${type} name : `);
-  const nameToCamelCase = camelCase(name);
-  const path = `${parentPath}${nameToCamelCase}`;
 
-  if (!fs.existsSync(path)) {
-    fs.mkdirSync(path);
-  } else {
-    console.log(`ERROR : ${path} already exist ! Please write another.`);
-    return createDir(parentPath, type);
+  const result = createDir(parentPath, name);
+  if (result) {
+    return result;
   }
-  return { name, path };
+  console.log('ERROR : Please write another');
+  return askToCreateDir(parentPath, type);
 };
 
 /**
@@ -155,6 +171,7 @@ module.exports = {
   askWitchChoice,
   askWitchChildDir,
   askBool,
+  askToCreateDir,
   pathExist,
   createDir,
   createDataJSON,

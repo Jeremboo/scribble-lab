@@ -1,7 +1,7 @@
 const fs = require('fs');
 const copyDir = require('copy-dir');
 
-const { askWitchChoice, askWitchChildDir, pathExist, createDir, createDataJSON } = require('./utils');
+const { askWitchChoice, askWitchChildDir, pathExist, askToCreateDir, createDataJSON } = require('./utils');
 
 // WITCH REPO
 let dirPath = process.env.DIR;
@@ -19,7 +19,7 @@ const templateFiles = fs.readdirSync(templatePath);
 const types = templateFiles.filter(fileName => (fileName.indexOf('app.') !== -1));
 
 // CREATE DIR
-const { path, name } = createDir(dirPath, 'Sketch');
+const { path, name } = askToCreateDir(dirPath, 'Sketch');
 
 // CLONE TEMPLATE AND KEEP THE GOOD APP
 const typeFileName = askWitchChoice(types, 'template');
