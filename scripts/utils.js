@@ -37,8 +37,7 @@ const pathExist = path => {
  * @return {Object.String.String} name and path
  */
 const createDir = (parentPath, name) => {
-  const nameToCamelCase = camelCase(name);
-  const path = `${parentPath}${nameToCamelCase}`;
+  const path = `${parentPath}${name}/`;
 
   if (fs.existsSync(path)) {
     console.log(`ERROR : ${path} already exist !`);
@@ -79,9 +78,11 @@ const askWitchChoice = (arr, type = '') =>
  * @return {String}         directory path selected
  */
 const askWitchChildDir = (dirPath, type) => {
-  const dir = fs.readdirSync(dirPath);
-  removeInstanceFromArray(dir, '.DS_Store');
-  removeInstanceFromArray(dir, 'data.json');
+  const dir = fs.readdirSync(dirPath).filter(directory => !(
+    directory[0] === '.' ||
+    directory[0] === '_' ||
+    directory === 'data.json'
+  ));
   return askWitchChoice(dir, type);
 };
 
@@ -120,8 +121,9 @@ const askBool = (question, defaultValue = true) => {
  */
 const askToCreateDir = (parentPath, type = '') => {
   const name = ask(`${type} name : `);
+  const nameToCamelCase = camelCase(name);
 
-  const result = createDir(parentPath, name);
+  const result = createDir(parentPath, nameToCamelCase);
   if (result) {
     return result;
   }
@@ -148,7 +150,7 @@ const createDataJSON = (name, path) => {
     path,
     link,
     visible,
-    preview: `${path}/preview.gif`,
+    preview: `${path}preview.gif`,
     description,
     date: new Date(),
     tags: [],

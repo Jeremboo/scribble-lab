@@ -8,4 +8,5 @@
 node_modules/
 npm-debug.log
 
-sketches/00_WIP/
+sketches/-test/*
+!sketches/-test/.keep

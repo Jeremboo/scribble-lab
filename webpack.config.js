@@ -1,4 +1,4 @@
-var fs = require("fs");
+var fs = require('fs');
 var path = require('path');
 var ip = require('ip');
 var webpack = require('webpack');
@@ -6,11 +6,13 @@ var poststylus = require('poststylus');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var myLocalIp = 'http://' + ip.address() + ':3333/';
-var node_modules = path.resolve(__dirname, './node_modules');
 
-// DIRECTORY TEST
-var directory = process.env.DIR;
+// DIRECTORIES
+var assets = path.resolve(__dirname, process.env.GROUP_PATH + '/_assets/');
+var modules = path.resolve(__dirname, process.env.GROUP_PATH + '/_modules/');
+var sketch_path = process.env.SKETCH_PATH;
 var name = process.env.NAME;
+var node_modules = path.resolve(__dirname, './node_modules');
 
 // WEBPACK CONFIG
 var config = {
@@ -20,16 +22,16 @@ var config = {
       path.resolve(__dirname, './bootstrap.js')
     ],
     output: {
-        path: path.resolve(__dirname, directory + '/'),
+        path: path.resolve(__dirname, sketch_path + '/'),
         filename: 'bundle.js',
     },
     debug: true,
-    devtool: "eval-source-map",
+    devtool: 'eval-source-map',
     resolve: {
       alias: {
-        html: path.resolve(__dirname, directory + '/index.pug.html'),
-        style: path.resolve(__dirname, directory + '/style.styl'),
-        app: path.resolve(__dirname, directory + '/app.js'),
+        html: path.resolve(__dirname, sketch_path + '/index.pug.html'),
+        style: path.resolve(__dirname, sketch_path + '/style.styl'),
+        app: path.resolve(__dirname, sketch_path + '/app.js'),
       },
     },
     module: {
@@ -41,8 +43,8 @@ var config = {
           loader: 'babel',
           query: {
             plugins: [
-              [ "module-resolver", {
-                'root': ['./modules', './assets'],
+              [ 'module-resolver', {
+                'root': [modules, assets, './modules/', './assets/'],
               }],
             ]
           },
@@ -54,7 +56,7 @@ var config = {
         {
           test: /\.(png|jpe?g|gif|svg)$/,
           loader: 'file?name=imgs/[hash].[ext]',
-          include: path.resolve(__dirname, './assets/'),
+          include: [ './assets/', assets ],
         },
         {
           test: /\.(html|pug)$/,
@@ -72,7 +74,7 @@ var config = {
       new webpack.HotModuleReplacementPlugin(),
       new HtmlWebpackPlugin({
         title: name,
-        // template: path.resolve(__dirname, directory + '/index.pug.html'),
+        // template: path.resolve(__dirname, sketch_path + '/index.pug.html'),
       }),
     ],
 };
