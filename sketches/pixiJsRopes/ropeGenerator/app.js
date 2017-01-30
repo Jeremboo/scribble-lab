@@ -1,6 +1,7 @@
 import { autoDetectRenderer, Graphics, Container } from 'pixi.js';
-import { radians, easing, getDistBetweenTwoVec2, getRandomInt } from 'utils';
+import { getDistBetweenTwoVec2 } from 'utils';
 import Rope from 'Rope';
+import Marker from 'Marker';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#0D0106';
@@ -58,62 +59,11 @@ import Rope from 'Rope';
 /* ---- CREATING ZONE ---- */
 
 
-class Marker extends Graphics {
-  constructor(x, y) {
-    super();
-
-    this.position = { x, y };
-    this.rotation = Math.random() * 10;
-    this.size = 10;
-
-    this.beginFill(bgColor, 0);
-    this.lineStyle(2, secondaryColor);
-    this.circle = this.arc(0, 0, this.size, 0, radians(325));
-    this.endFill();
-
-    this.hideMarker();
-  }
-
-  move(x, y) {
-    this.position = { x, y };
-  }
-
-  showMarker(x, y) {
-    this.position = { x, y };
-    this.animateScale(1);
-  }
-
-  hideMarker() {
-    this.animateScale(0);
-  }
-
-  animateScale(value) {
-    this.isAnimated = true;
-    this.targetedScale = value;
-  }
-
-  update() {
-    this.rotation += 0.1;
-
-    // AnimateScale
-    if (this.isAnimated) {
-      easing(this.targetedScale, this.scale.x, {
-        vel: 0.2,
-        update: v => {
-          this.scale.x = this.scale.y = v;
-        },
-        callback: () => {
-          this.isAnimated = false;
-        },
-      });
-    }
-  }
-}
-
 // OBJECTS
 class RopeFabric {
   constructor() {
     this.isDragging = false;
+    this.ropes = [];
     this.mouseStartMarker = new Marker();
     renderer.add(this.mouseStartMarker);
     this.mouseEndMarker = new Marker();
@@ -131,8 +81,12 @@ class RopeFabric {
     document.addEventListener('mouseup', this.onMouseUp);
   }
 
+  // EVENTS
   onMouseMove(e) {
-    if (this.isDragging) {
+    if (this.pointAttachedToMouse) {
+      this.pointAttachedToMouse.x = e.x;
+      this.pointAttachedToMouse.y = e.y;
+    } else if (this.isDragging) {
       this.mouseEndMarker.move(e.x, e.y);
       this.line.clear();
       this.line.beginFill(secondaryColor, 0);
@@ -147,32 +101,50 @@ class RopeFabric {
   }
 
   onMouseUp(e) {
-    this.isDragging = false;
-    this.mouseStartMarker.hideMarker();
-    this.mouseEndMarker.hideMarker();
-    this.line.clear();
+    if (this.isDragging) {
+      this.isDragging = false;
+      this.mouseStartMarker.hideMarker();
+      this.mouseEndMarker.hideMarker();
+      this.line.clear();
 
-    const { dist } = getDistBetweenTwoVec2(
-      e.x,
-      e.y,
-      this.mouseStartMarker.x,
-      this.mouseStartMarker.y
-    );
-
-    if (dist > 30) this.createRope(e.x, e.y, dist);
+      this.createRope(
+        { x: e.x, y: e.y },
+        this.mouseStartMarker.position
+      );
+    }
   }
 
   onMouseDown(e) {
-    this.isDragging = true;
-    this.mouseStartMarker.showMarker(e.x, e.y);
-    this.mouseEndMarker.showMarker(e.x, e.y);
+    if (this.pointAttachedToMouse) {
+      this.pointAttachedToMouse = false;
+    } else {
+      this.isDragging = true;
+      this.mouseStartMarker.showMarker(e.x, e.y);
+      this.mouseEndMarker.showMarker(e.x, e.y);
+    }
   }
 
-  createRope(x, y, length, props) {
-    const rope = new Rope(x, y, length, props);
-    renderer.add(rope);
+  // ROPE
+  createRope(p1, p2, props = {}) {
+    const { dist } = getDistBetweenTwoVec2(p1.x, p1.y, p2.x, p2.y);
+    if (dist > 30) {
+      const rope = new Rope(p1, p2, props);
+      this.ropes.push(rope);
+      renderer.add(rope);
+
+      this.attachPointToMouse(rope, 0, p1.x, p1.y);
+    }
   }
 
+  attachPointToMouse(rope, pointIdx, x, y) {
+    this.pointAttachedToMouse = rope.attachPoint(pointIdx, x, y);
+  }
+
+  detachPointToMouse() {
+    this.pointAttachedToMouse = false;
+  }
+
+  // UX
   addMarker(x, y) {
     const marker = new Marker(x, y);
     renderer.add(marker);

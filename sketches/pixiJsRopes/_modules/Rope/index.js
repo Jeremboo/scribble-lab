@@ -1,5 +1,5 @@
 import { Container, Texture, Point, Graphics, mesh } from 'pixi.js';
-import { canvasBuilder, applyImageToCanvas, existingValueBy } from 'utils';
+import { canvasBuilder, applyImageToCanvas, existingValueBy, getDistBetweenTwoVec2 } from 'utils';
 import rope from 'rope.png';
 import ropePattern from 'ropePattern.png';
 import ropeBegin from 'ropeBegin.png';
@@ -14,32 +14,38 @@ const ROPE_SEGMENT_LENGTH = 30;
 const ROPE_WIDTH = 10;
 
 export default class Rope extends Container {
-  constructor(x = 0, y = 0, length = 60, { color = 0xf4cd6a, textured = true } = {}) {
+  constructor(p1, p2, { color = 0xf4cd6a, textured = true } = {}) {
     super();
+    if (!p1.x || !p1.y || !p2.x || !p2.y) {
+      console.warging('the two first parameters must be vector2');
+      return;
+    }
 
     this.texture = null;
-    this.nbrOfNodes = Math.round(length / ROPE_SEGMENT_LENGTH) + 1;
+    this.nbrOfNodes = 0;
     this.points = [];
     this.oldPoints = [];
     this.attachedPoints = [];
     this.count = 0;
 
-    for (let i = 0; i < this.nbrOfNodes; i++) {
-      this.points.push(new Point(
-        (i * ROPE_SEGMENT_LENGTH) + x,
-        y
-      ));
-      this.oldPoints.push(new Point(
-        (i * ROPE_SEGMENT_LENGTH) + x,
-        y
-      ));
+    // Normalize and place point to the line
+    // http://math.stackexchange.com/questions/175896/finding-a-point-along-a-line-a-certain-distance-away-from-another-point
+    const { dist } = getDistBetweenTwoVec2(p1.x, p1.y, p2.x, p2.y);
+    const u = {
+      x: (p1.x - p2.x) / dist,
+      y: (p1.y - p2.y) / dist,
+    };
+    let distToP1 = 0;
+    while (distToP1 < dist) {
+      this.addPoint(
+        p1.x - (distToP1 * u.x),
+        p1.y - (distToP1 * u.y),
+      );
+      distToP1 = this.nbrOfNodes * ROPE_SEGMENT_LENGTH;
     }
+    this.addPoint(p2.x, p2.y);
 
-    this.position.x = 0;
-    this.position.y = 0;
-
-    this.update = this.update.bind(this);
-
+    // DEBUG
     if (textured) {
       this.buildRopeTexture(() => {
         this.rope = new mesh.Rope(this.texture, this.points);
@@ -51,7 +57,13 @@ export default class Rope extends Container {
       this.addChild(this.g);
     }
 
-    this.attachPoint(0, x, y);
+    this.update = this.update.bind(this);
+  }
+
+  addPoint(x, y) {
+    this.nbrOfNodes++;
+    this.points.push(new Point(x, y));
+    this.oldPoints.push(new Point(x, y));
   }
 
   buildRopeTexture(callback) {
@@ -84,13 +96,15 @@ export default class Rope extends Container {
     });
   }
 
-  attachPoint(idx, x, y) {
-    const existingValue = existingValueBy(this.attachedPoints, value => (value.idx === idx));
-    if (!existingValue) {
-      this.attachedPoints.push({ idx, x, y });
+  attachPoint(idx, x = 0, y = 0) {
+    let point = existingValueBy(this.attachedPoints, value => (value.idx === idx));
+    if (!point) {
+      point = { idx, x, y };
+      this.attachedPoints.push(point);
     } else {
-      this.attachedPoints[this.attachedPoints.indexOf(existingValue)] = { idx, x, y };
+      this.attachedPoints[this.attachedPoints.indexOf(point)] = { idx, x, y };
     }
+    return point;
   }
 
   detachPoint(idx) {
