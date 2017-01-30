@@ -3,8 +3,12 @@
   "path": "sketches/pixiJsRopes/ropeGenerator",
   "link": "",
   "visible": true,
-  "preview": "sketches/pixiJsRopes/ropeGenerator/preview.gif",
-  "description": "Random robe generator (color, size, height).",
+  "preview": "/preview.gif", 
+  "description": "Random rope generator (color, size, height).",
   "date": "2017-01-10T10:22:18.068Z",
-  "tags": []
+  "tags": [
+    "rope",
+    "gravity",
+    "generator"
+  ]
 }

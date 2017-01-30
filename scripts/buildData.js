@@ -3,17 +3,26 @@ const { createDataJSON, ask } = require('./utils.js');
 
 
 let path = 'sketches/';
+const groupsName = fs.readdirSync(path);
 const data = [];
 let readme = `# Scribble lab
 
 Just a regroupment of some searches, tests, experiments around javascript or CSS and their frameworks.
 
 ---`;
-const addLine = text => { readme += `\n\n${text}`; };
 
-const groupsName = fs.readdirSync(path);
+const addLine = text => { readme += `\n\n${text}`; };
+const addPreview = (previewPath, name, link = '/') => {
+  if (fs.existsSync(previewPath)) {
+    readme += `
+  <a href="${link}">
+    <img alt="${name}" src="https://github.com/Jeremboo/codevember/blob/master/${previewPath}?raw=true" width="200">
+  </a>`;
+  }
+};
+
 let i;
-for (i = 0; i < groupsName.length ; i++) {
+for (i = 0; i < groupsName.length; i++) {
   const groupPath = `${path}${groupsName[i]}`;
   const dataPath = `${groupPath}/data.json`;
 
@@ -34,22 +43,28 @@ for (i = 0; i < groupsName.length ; i++) {
         if (fs.existsSync(sketchDataPath)) {
           const sketchData = JSON.parse(fs.readFileSync(sketchDataPath));
 
-          if (fs.existsSync(sketchData.preview) && sketchData.visible) {
-            readme += `
-  <a href="${sketchData.link ? sketchData.link : '/'}">
-    <img alt="${sketchData.name}" src="https://github.com/Jeremboo/codevember/blob/master/${sketchData.preview}?raw=true" width="200">
-  </a>`;
-          }
-          // if (!sketchData.visible) {
-          //   // sketchData.date = new Date(`${groupsName[i].slice(groupsName[i].length - 4, groupsName[i].length)}-11-${sketchesName[j].slice(0, 2)}`);
-          //   // sketchData.link =  ask(`${sketchData.name} link ?`);
-          //   sketchData.visible = true;
-          //   fs.writeFileSync(
-          //     sketchDataPath,
-          //     JSON.stringify(sketchData, null, 2), 'utf8'
-          //   );
+          // TODO get all .gif files to make into an array
+          // if (fs.existsSync(sketchPath + '/preview.gif')) {
+          //   sketchData.preview = '/preview.gif';
+          // } else {
+          //   delete sketchData.preview;
           // }
-          // groupData.projects.push(sketchData);
+          // fs.writeFileSync(
+          //   sketchDataPath,
+          //   JSON.stringify(sketchData, null, 2), 'utf8'
+          // );
+
+          if (sketchData.preview && sketchData.visible) {
+            const typeOfPreviewInfo = typeof (sketchData.preview);
+            if (typeOfPreviewInfo === 'string') {
+              addPreview(sketchData.path + sketchData.preview, sketchData.name, sketchData.link);
+            } else if (typeOfPreviewInfo === 'array') {
+              let k;
+              for (k = 0; k < sketchData.preview.length; k++) {
+                addPreview(sketchData.path + sketchData.preview[k], sketchData.name, sketchData.link);
+              }
+            }
+          }
         }
       }
       data.push(groupData);

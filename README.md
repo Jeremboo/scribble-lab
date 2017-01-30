@@ -107,3 +107,13 @@ My contributions of the Codevember challenge in 2016.
     <img alt="28_particlesRotations" src="https://github.com/Jeremboo/codevember/blob/master/sketches/codevember2016/28_particlesRotations/preview.gif?raw=true" width="200">
   </a>
 </p>
+
+##Pixi.js ropes
+
+Generate and handle ropes with Pixi.js
+
+<p align="center">
+  <a href="">
+    <img alt="Rope generator" src="https://github.com/Jeremboo/codevember/blob/master/sketches/pixiJsRopes/ropeGenerator/preview.gif?raw=true" width="200">
+  </a>
+</p>

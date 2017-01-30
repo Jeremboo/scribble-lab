@@ -1,7 +1,7 @@
 {
   "name": "06_loaderanimation",
   "path": "sketches/codevember2015/06_loaderanimation",
-  "preview": "sketches/codevember2015/06_loaderanimation/preview.gif",
+  "preview": "/preview.gif",
   "description": "CSS loader animation",
   "date": "2015-11-06T00:00:00.000Z",
   "tags": [],

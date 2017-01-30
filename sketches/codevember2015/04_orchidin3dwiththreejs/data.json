@@ -1,7 +1,7 @@
 {
   "name": "04_orchidin3dwiththreejs",
   "path": "sketches/codevember2015/04_orchidin3dwiththreejs",
-  "preview": "sketches/codevember2015/04_orchidin3dwiththreejs/preview.gif",
+  "preview": "/preview.gif",
   "description": "3D object loaded by three.jss",
   "date": "2015-11-04T00:00:00.000Z",
   "tags": [],

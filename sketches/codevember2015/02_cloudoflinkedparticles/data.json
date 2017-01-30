@@ -1,7 +1,7 @@
 {
   "name": "02_cloudoflinkedparticles",
   "path": "sketches/codevember2015/02_cloudoflinkedparticles",
-  "preview": "sketches/codevember2015/02_cloudoflinkedparticles/preview.gif",
+  "preview": "/preview.gif",
   "description": "Cloud of linked particles from Canvas",
   "date": "2015-11-02T00:00:00.000Z",
   "tags": [],
