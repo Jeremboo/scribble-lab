@@ -1,17 +1,10 @@
 import { Container, Texture, Point, Graphics, mesh } from 'pixi.js';
 import { canvasBuilder, applyImageToCanvas, existingValueBy, getDistBetweenTwoVec2 } from 'utils';
+import props from 'props';
 import rope from 'rope.png';
 import ropePattern from 'ropePattern.png';
 import ropeBegin from 'ropeBegin.png';
 import ropeEnd from 'ropeEnd.png';
-
-const GRAVITY = { x: 0, y: 8 };
-const SPRING = 0.9;
-const TENTION = 0.5;
-const VEL = 0.1;
-
-const ROPE_SEGMENT_LENGTH = 30;
-const ROPE_WIDTH = 10;
 
 export default class Rope extends Container {
   constructor(p1, p2, { color = 0xf4cd6a, textured = true } = {}) {
@@ -41,7 +34,7 @@ export default class Rope extends Container {
         p1.x - (distToP1 * u.x),
         p1.y - (distToP1 * u.y),
       );
-      distToP1 = this.nbrOfNodes * ROPE_SEGMENT_LENGTH;
+      distToP1 = this.nbrOfNodes * props.SEGMENT_LENGTH;
     }
     this.addPoint(p2.x, p2.y);
 
@@ -69,22 +62,22 @@ export default class Rope extends Container {
   buildRopeTexture(callback) {
     let canvasRopePattern = null;
     let canvasRopeBegin = null;
-    applyImageToCanvas(ropePattern, ROPE_WIDTH, ROPE_WIDTH).then(cRopePattern => {
+    applyImageToCanvas(ropePattern, props.ROPE_WIDTH, props.ROPE_WIDTH).then(cRopePattern => {
       canvasRopePattern = cRopePattern;
-      return applyImageToCanvas(ropeBegin, ROPE_WIDTH, ROPE_WIDTH);
+      return applyImageToCanvas(ropeBegin, props.ROPE_WIDTH, props.ROPE_WIDTH);
     }).then(cRopeBegin => {
       canvasRopeBegin = cRopeBegin;
-      return applyImageToCanvas(ropeEnd, ROPE_WIDTH, ROPE_WIDTH);
+      return applyImageToCanvas(ropeEnd, props.ROPE_WIDTH, props.ROPE_WIDTH);
     }).then(cRopeEnd => {
       // build rope
-      const ropeWidth = this.nbrOfNodes * ROPE_SEGMENT_LENGTH;
-      const { canvas, context } = canvasBuilder(ropeWidth, ROPE_WIDTH);
+      const ropeWidth = this.nbrOfNodes * props.SEGMENT_LENGTH;
+      const { canvas, context } = canvasBuilder(ropeWidth, props.ROPE_WIDTH);
       const nbrOfRopePattern = (ropeWidth / canvasRopePattern.height) - 1;
       context.drawImage(canvasRopeBegin, 0, 0);
       for (let i = 1; i < nbrOfRopePattern; i++) {
-        context.drawImage(canvasRopePattern, i * ROPE_WIDTH, 0);
+        context.drawImage(canvasRopePattern, i * props.ROPE_WIDTH, 0);
       }
-      context.drawImage(cRopeEnd, ropeWidth - ROPE_WIDTH, 0);
+      context.drawImage(cRopeEnd, ropeWidth - props.ROPE_WIDTH, 0);
 
       // this.texture = Texture.fromImage(rope);
       // this.texture = Texture.fromImage(canvas.toDataURL());
@@ -118,29 +111,38 @@ export default class Rope extends Container {
 
   update() {
     // http://codepen.io/chribbe/pen/aHhdE?editors=0010
+    // gravity
     for (let i = 1; i < this.nbrOfNodes; i++) {
-      this.oldPoints[i].x = this.points[i].x;
-      this.oldPoints[i].y = this.points[i].y;
+      this.points[i].x += props.GRAVITY_X;
+      this.points[i].y += props.GRAVITY_Y;
+    }
 
-      // gravity
-      this.points[i].x += GRAVITY.x;
-      this.points[i].y += GRAVITY.y;
+    for (let i = 1; i < this.nbrOfNodes; i++) {
+      // this.oldPoints[i].x = this.points[i].x;
+      // this.oldPoints[i].y = this.points[i].y;
+
+      const oldP = {
+        x: this.points[i].x,
+        y: this.points[i].y,
+      };
 
       // friction
-      this.points[i].x += (this.points[i].x - this.oldPoints[i].x) * VEL;
-      this.points[i].y += (this.points[i].y - this.oldPoints[i].y) * VEL;
+      this.points[i].x += (this.points[i].x - this.oldPoints[i].x) * props.VEL;
+      this.points[i].y += (this.points[i].y - this.oldPoints[i].y) * props.VEL;
+
+      this.oldPoints[i] = oldP;
 
       // tention
       const x = this.points[i].x - this.points[i - 1].x;
       const y = this.points[i].y - this.points[i - 1].y;
       const dist = Math.sqrt(Math.sqr(y) + Math.sqr(x));
-      const f = (dist - ROPE_SEGMENT_LENGTH) * SPRING;
+      const f = (dist - props.SEGMENT_LENGTH) * props.TENTION;
       const fx = (x / dist) * f;
       const fy = (y / dist) * f;
       this.points[i].x -= fx;
       this.points[i].y -= fy;
-      this.points[i - 1].x += fx * TENTION;
-      this.points[i - 1].y += fy * TENTION;
+      this.points[i - 1].x += fx * props.SPRING;
+      this.points[i - 1].y += fy * props.SPRING;
     }
 
     // UPDATE ATTACHED POINTS

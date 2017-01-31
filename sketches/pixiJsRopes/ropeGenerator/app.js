@@ -76,9 +76,9 @@ class RopeFabric {
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
 
-    document.addEventListener('mousemove', this.onMouseMove);
-    document.addEventListener('mousedown', this.onMouseDown);
-    document.addEventListener('mouseup', this.onMouseUp);
+    renderer.dom.addEventListener('mousemove', this.onMouseMove);
+    renderer.dom.addEventListener('mousedown', this.onMouseDown);
+    renderer.dom.addEventListener('mouseup', this.onMouseUp);
   }
 
   // EVENTS
