@@ -1,4 +1,4 @@
-import { autoDetectRenderer, Graphics, Container } from 'pixi.js';
+import { autoDetectRenderer, Graphics, Container, interaction } from 'pixi.js';
 import { getDistBetweenTwoVec2 } from 'utils';
 import Rope from 'Rope';
 import Marker from 'Marker';
@@ -103,8 +103,8 @@ class RopeFabric {
   onMouseUp(e) {
     if (this.isDragging) {
       this.isDragging = false;
-      this.mouseStartMarker.hideMarker();
-      this.mouseEndMarker.hideMarker();
+      this.mouseStartMarker.hide();
+      this.mouseEndMarker.hide();
       this.line.clear();
 
       this.createRope(
@@ -119,8 +119,8 @@ class RopeFabric {
       this.pointAttachedToMouse = false;
     } else {
       this.isDragging = true;
-      this.mouseStartMarker.showMarker(e.x, e.y);
-      this.mouseEndMarker.showMarker(e.x, e.y);
+      this.mouseStartMarker.show(e.x, e.y);
+      this.mouseEndMarker.show(e.x, e.y);
     }
   }
 

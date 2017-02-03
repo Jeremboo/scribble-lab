@@ -6,6 +6,8 @@ import ropePattern from 'ropePattern.png';
 import ropeBegin from 'ropeBegin.png';
 import ropeEnd from 'ropeEnd.png';
 
+import Marker from '../Marker';
+
 export default class Rope extends Container {
   constructor(p1, p2, { color = 0xf4cd6a, textured = true } = {}) {
     super();
@@ -20,6 +22,7 @@ export default class Rope extends Container {
     this.oldPoints = [];
     this.attachedPoints = [];
     this.count = 0;
+    this.interacitonDist = props.SEGMENT_LENGTH / 2;
 
     // Normalize and place point to the line
     // http://math.stackexchange.com/questions/175896/finding-a-point-along-a-line-a-certain-distance-away-from-another-point
@@ -38,12 +41,20 @@ export default class Rope extends Container {
     }
     this.addPoint(p2.x, p2.y);
 
+    // MARKER
+    this.marker = new Marker(0, 0, 5);
+
     // DEBUG
     if (textured) {
       this.buildRopeTexture(() => {
         this.rope = new mesh.Rope(this.texture, this.points);
+        this.rope.interactive = true;
+        this.rope.buttonMode = true;
+        this.rope.on('pointerover', this.onCursorOver);
+        this.rope.on('pointerout', this.onCursorOut);
         this.rope.tint = color;
         this.addChild(this.rope);
+        this.addChild(this.marker);
       });
     } else {
       this.g = new Graphics();
@@ -51,8 +62,12 @@ export default class Rope extends Container {
     }
 
     this.update = this.update.bind(this);
+    this.onCursorOver = this.onCursorOver.bind(this);
+    this.onCursorOut = this.onCursorOut.bind(this);
+    this.updateCursorPosition = this.updateCursorPosition.bind(this);
   }
 
+  // INIT
   addPoint(x, y) {
     this.nbrOfNodes++;
     this.points.push(new Point(x, y));
@@ -84,11 +99,10 @@ export default class Rope extends Container {
       this.texture = Texture.fromCanvas(canvas);
       callback();
     })
-    .catch(err => {
-      console.log(err);
-    });
+    .catch(console.log);
   }
 
+  // CORE
   attachPoint(idx, x = 0, y = 0) {
     let point = existingValueBy(this.attachedPoints, value => (value.idx === idx));
     if (!point) {
@@ -109,6 +123,44 @@ export default class Rope extends Container {
     }
   }
 
+  // MOUSE EFFECTS
+  onCursorOver() {
+    this.rope.on('mousemove', this.updateCursorPosition);
+    this.over = true;
+  }
+
+  onCursorOut() {
+    this.rope.off('mousemove', this.updateCursorPosition);
+    this.marker.hide(() => {
+      this.over = false;
+    });
+  }
+
+  updateCursorPosition(e) {
+    this.marker.hide();
+
+    let i = this.points.length - 1;
+    let positioned = false;
+
+    while (!positioned && i >= 0) {
+      const { dist } = getDistBetweenTwoVec2(
+        e.data.global.x,
+        e.data.global.y,
+        this.points[i].x,
+        this.points[i].y
+      );
+
+      if (dist < this.interacitonDist) {
+        positioned = true;
+        this.marker.show(this.points[i].x, this.points[i].y);
+        this.points[i].y -= 1;
+        this.points[i].x += 1;
+      }
+      i--;
+    }
+  }
+
+  // RENDERING
   update() {
     // http://codepen.io/chribbe/pen/aHhdE?editors=0010
     // gravity
@@ -118,18 +170,13 @@ export default class Rope extends Container {
     }
 
     for (let i = 1; i < this.nbrOfNodes; i++) {
-      // this.oldPoints[i].x = this.points[i].x;
-      // this.oldPoints[i].y = this.points[i].y;
-
+      // friction
       const oldP = {
         x: this.points[i].x,
         y: this.points[i].y,
       };
-
-      // friction
       this.points[i].x += (this.points[i].x - this.oldPoints[i].x) * props.VEL;
       this.points[i].y += (this.points[i].y - this.oldPoints[i].y) * props.VEL;
-
       this.oldPoints[i] = oldP;
 
       // tention
@@ -152,6 +199,7 @@ export default class Rope extends Container {
       this.points[attachedPoint.idx].y = attachedPoint.y; // + (Math.sin(this.i) * 300);
     }
 
+    if (this.over) this.marker.update();
     if (this.g) this.renderPoints();
   }
 
