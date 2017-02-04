@@ -64,6 +64,7 @@ import Marker from 'Marker';
 class RopeFabric {
   constructor() {
     this.ropes = [];
+    this.ropeAttachedToMouse = false;
     this.pointAttachedToMouse = false;
     this.mouseStartMarker = new Marker();
     renderer.add(this.mouseStartMarker);
@@ -153,7 +154,7 @@ class RopeFabric {
       this.ropes.push(rope);
       renderer.add(rope);
 
-      this.attachPointToMouse(rope, 0, p1.x, p1.y);
+      this.attachRopeToMouse(rope, 0, p1.x, p1.y);
     }
   }
 
@@ -173,13 +174,17 @@ class RopeFabric {
   }
 
   // CORE
-  attachPointToMouse(rope, pointIdx, x, y) {
+  attachRopeToMouse(rope, pointIdx, x, y) {
     props.mouseEvent = MOVING;
+    rope.removeListener();
     this.pointAttachedToMouse = rope.attachPoint(pointIdx, x, y);
+    this.ropeAttachedToMouse = rope;
   }
 
   detachPointToMouse() {
     props.mouseEvent = NONE;
+    this.ropeAttachedToMouse.addListener();
+    this.ropeAttachedToMouse = false;
     this.pointAttachedToMouse = false;
   }
 }

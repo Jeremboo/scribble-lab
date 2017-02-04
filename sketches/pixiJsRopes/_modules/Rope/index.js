@@ -49,9 +49,6 @@ export default class Rope extends Container {
       this.buildRopeTexture(() => {
         this.rope = new mesh.Rope(this.texture, this.points);
         this.rope.interactive = true;
-        this.rope.buttonMode = true;
-        this.rope.on('pointerover', this.onCursorOver);
-        this.rope.on('pointerout', this.onCursorOut);
         this.rope.tint = color;
         this.addChild(this.rope);
         this.addChild(this.marker);
@@ -120,6 +117,21 @@ export default class Rope extends Container {
       this.attachedPoints.splice(this.attachedPoints.indexOf(existingValue), 1);
     } else {
       console.log(`ERROR : The point ${idx} is not attached`);
+    }
+  }
+
+  // LISTENERS
+  addListener() {
+    this.rope.buttonMode = true;
+    this.rope.on('pointerover', this.onCursorOver);
+    this.rope.on('pointerout', this.onCursorOut);
+  }
+
+  removeListener() {
+    if (this.rope) {
+      this.rope.buttonMode = false;
+      this.rope.off('pointerover', this.onCursorOver);
+      this.rope.off('pointerout', this.onCursorOut);
     }
   }
 
