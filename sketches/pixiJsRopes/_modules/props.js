@@ -1,5 +1,11 @@
 import dat from 'dat-gui';
 
+export const NONE = 0;
+// Rope is drawing
+export const DRAWING = 1;
+// Rope is moving
+export const MOVING = 2;
+
 const props = {
   GRAVITY_X: 0,
   GRAVITY_Y: 5,
@@ -8,6 +14,7 @@ const props = {
   VEL: 0.75,
   SEGMENT_LENGTH: 15,
   ROPE_WIDTH: 10,
+  mouseEvent: NONE,
 };
 
 const gui = new dat.GUI();

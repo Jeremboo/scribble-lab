@@ -1,5 +1,6 @@
 import { autoDetectRenderer, Graphics, Container, interaction } from 'pixi.js';
 import { getDistBetweenTwoVec2 } from 'utils';
+import props, { NONE, DRAWING, MOVING } from 'props';
 import Rope from 'Rope';
 import Marker from 'Marker';
 
@@ -59,11 +60,11 @@ import Marker from 'Marker';
 /* ---- CREATING ZONE ---- */
 
 
-// OBJECTS
+// TODO add comments
 class RopeFabric {
   constructor() {
-    this.isDragging = false;
     this.ropes = [];
+    this.pointAttachedToMouse = false;
     this.mouseStartMarker = new Marker();
     renderer.add(this.mouseStartMarker);
     this.mouseEndMarker = new Marker();
@@ -71,10 +72,10 @@ class RopeFabric {
     this.line = new Graphics();
     renderer.add(this.line);
 
-
     this.onMouseMove = this.onMouseMove.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
+    this.drawConstructorLine = this.drawConstructorLine.bind(this);
 
     renderer.dom.addEventListener('mousemove', this.onMouseMove);
     renderer.dom.addEventListener('mousedown', this.onMouseDown);
@@ -83,52 +84,72 @@ class RopeFabric {
 
   // EVENTS
   onMouseMove(e) {
-    if (this.pointAttachedToMouse) {
-      this.pointAttachedToMouse.x = e.x;
-      this.pointAttachedToMouse.y = e.y;
-    } else if (this.isDragging) {
-      this.mouseEndMarker.move(e.x, e.y);
-      this.line.clear();
-      this.line.beginFill(secondaryColor, 0);
-      this.line.lineStyle(2, secondaryColor);
-      this.line.moveTo(
-        this.mouseStartMarker.position.x,
-        this.mouseStartMarker.position.y,
-      );
-      this.line.lineTo(e.x, e.y);
-      this.line.endFill();
+    switch (props.mouseEvent) {
+      case DRAWING:
+        this.drawConstructorLine(
+          this.mouseStartMarker.position.x,
+          this.mouseStartMarker.position.y,
+          e.x, e.y,
+        );
+        break;
+      case MOVING:
+        this.pointAttachedToMouse.x = e.x;
+        this.pointAttachedToMouse.y = e.y;
+        break;
+      case NONE:
+        break;
+      default:
+        console.log('ERROR:onMouseMove');
+        break;
     }
   }
 
   onMouseUp(e) {
-    if (this.isDragging) {
-      this.isDragging = false;
-      this.mouseStartMarker.hide();
-      this.mouseEndMarker.hide();
-      this.line.clear();
+    switch (props.mouseEvent) {
+      case DRAWING:
+        props.mouseEvent = NONE;
+        this.mouseStartMarker.hide();
+        this.mouseEndMarker.hide();
+        this.line.clear();
 
-      this.createRope(
-        { x: e.x, y: e.y },
-        this.mouseStartMarker.position
-      );
+        this.createRope(
+          { x: e.x, y: e.y },
+          this.mouseStartMarker.position,
+        );
+        break;
+      case MOVING:
+        break;
+      case NONE:
+        break;
+      default:
+        console.log('ERROR:onMouseUp');
+        break;
     }
   }
 
   onMouseDown(e) {
-    if (this.pointAttachedToMouse) {
-      this.pointAttachedToMouse = false;
-    } else {
-      this.isDragging = true;
-      this.mouseStartMarker.show(e.x, e.y);
-      this.mouseEndMarker.show(e.x, e.y);
+    switch (props.mouseEvent) {
+      case DRAWING:
+        break;
+      case MOVING:
+        this.detachPointToMouse();
+        break;
+      case NONE:
+        props.mouseEvent = DRAWING;
+        this.mouseStartMarker.show(e.x, e.y);
+        this.mouseEndMarker.show(e.x, e.y);
+        break;
+      default:
+        console.log('ERROR:onMouseDown');
+        break;
     }
   }
 
-  // ROPE
-  createRope(p1, p2, props = {}) {
+  // GRAPHIC
+  createRope(p1, p2, ropeProps = {}) {
     const { dist } = getDistBetweenTwoVec2(p1.x, p1.y, p2.x, p2.y);
     if (dist > 30) {
-      const rope = new Rope(p1, p2, props);
+      const rope = new Rope(p1, p2, ropeProps);
       this.ropes.push(rope);
       renderer.add(rope);
 
@@ -136,18 +157,30 @@ class RopeFabric {
     }
   }
 
+  drawConstructorLine(x1, y1, x2, y2) {
+    this.line.clear();
+    this.line.beginFill(secondaryColor, 0);
+    this.line.lineStyle(2, secondaryColor);
+    this.line.moveTo(x1, y1);
+    this.line.lineTo(x2, y2);
+    this.line.endFill();
+    this.mouseEndMarker.move(x2, y2);
+  }
+
+  addMarker(x, y) {
+    const marker = new Marker(x, y);
+    renderer.add(marker);
+  }
+
+  // CORE
   attachPointToMouse(rope, pointIdx, x, y) {
+    props.mouseEvent = MOVING;
     this.pointAttachedToMouse = rope.attachPoint(pointIdx, x, y);
   }
 
   detachPointToMouse() {
+    props.mouseEvent = NONE;
     this.pointAttachedToMouse = false;
-  }
-
-  // UX
-  addMarker(x, y) {
-    const marker = new Marker(x, y);
-    renderer.add(marker);
   }
 }
 
