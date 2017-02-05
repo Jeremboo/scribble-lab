@@ -8,10 +8,10 @@ export const MOVING = 2;
 
 const props = {
   GRAVITY_X: 0,
-  GRAVITY_Y: 5,
+  GRAVITY_Y: 2,
   SPRING: 0.4,
-  TENTION: 1,
-  VEL: 0.75,
+  TENTION: 0.8,
+  VEL: 0.85,
   SEGMENT_LENGTH: 15,
   ROPE_WIDTH: 10,
   mouseEvent: NONE,

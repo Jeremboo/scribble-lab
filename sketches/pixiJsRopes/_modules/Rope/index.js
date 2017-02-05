@@ -194,16 +194,15 @@ export default class Rope extends Container {
     // http://codepen.io/chribbe/pen/aHhdE?editors=0010
     // gravity
     for (let i = 1; i < this.nbrOfNodes; i++) {
-      this.points[i].x += props.GRAVITY_X;
-      this.points[i].y += props.GRAVITY_Y;
-    }
-
-    for (let i = 1; i < this.nbrOfNodes; i++) {
       // friction
       const oldP = {
         x: this.points[i].x,
         y: this.points[i].y,
       };
+
+      this.points[i].x += props.GRAVITY_X;
+      this.points[i].y += props.GRAVITY_Y;
+
       this.points[i].x += (this.points[i].x - this.oldPoints[i].x) * props.VEL;
       this.points[i].y += (this.points[i].y - this.oldPoints[i].y) * props.VEL;
       this.oldPoints[i] = oldP;
