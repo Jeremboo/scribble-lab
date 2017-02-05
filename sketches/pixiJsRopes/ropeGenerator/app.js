@@ -136,6 +136,14 @@ class RopeFabric {
         this.detachPointToMouse();
         break;
       case NONE:
+        if (props.ropeOverred) {
+          this.attachRopeToMouse(
+            props.ropeOverred,
+            props.ropeOverred.idxPointOverred,
+            e.x, e.y
+          );
+          break;
+        }
         props.mouseEvent = DRAWING;
         this.mouseStartMarker.show(e.x, e.y);
         this.mouseEndMarker.show(e.x, e.y);
@@ -174,11 +182,20 @@ class RopeFabric {
   }
 
   // CORE
-  attachRopeToMouse(rope, pointIdx, x, y) {
-    props.mouseEvent = MOVING;
-    rope.removeListener();
-    this.pointAttachedToMouse = rope.attachPoint(pointIdx, x, y);
-    this.ropeAttachedToMouse = rope;
+  attachRopeToMouse(rope, pointIdx = -1, x, y) {
+    if (pointIdx === -1) {
+      console.log('ERROR : the point does not exist');
+      return;
+    }
+
+    if (rope.pointIsAttached(pointIdx)) {
+      rope.detachPoint(pointIdx);
+    } else {
+      props.mouseEvent = MOVING;
+      rope.removeListener();
+      this.pointAttachedToMouse = rope.attachPoint(pointIdx, x, y);
+      this.ropeAttachedToMouse = rope;
+    }
   }
 
   detachPointToMouse() {

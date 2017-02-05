@@ -15,6 +15,7 @@ const props = {
   SEGMENT_LENGTH: 15,
   ROPE_WIDTH: 10,
   mouseEvent: NONE,
+  ropeOverred: false,
 };
 
 const gui = new dat.GUI();

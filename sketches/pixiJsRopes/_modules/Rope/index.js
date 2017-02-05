@@ -1,6 +1,6 @@
 import { Container, Texture, Point, Graphics, mesh } from 'pixi.js';
 import { canvasBuilder, applyImageToCanvas, existingValueBy, getDistBetweenTwoVec2 } from 'utils';
-import props from 'props';
+import props, { NONE, DRAWING, MOVING } from 'props';
 import rope from 'rope.png';
 import ropePattern from 'ropePattern.png';
 import ropeBegin from 'ropeBegin.png';
@@ -48,7 +48,6 @@ export default class Rope extends Container {
     if (textured) {
       this.buildRopeTexture(() => {
         this.rope = new mesh.Rope(this.texture, this.points);
-        this.rope.interactive = true;
         this.rope.tint = color;
         this.addChild(this.rope);
         this.addChild(this.marker);
@@ -120,9 +119,14 @@ export default class Rope extends Container {
     }
   }
 
+  pointIsAttached(idx) {
+    return this.attachedPoints.indexOf(idx) !== -1;
+  }
+
   // LISTENERS
   addListener() {
     this.rope.buttonMode = true;
+    this.rope.interactive = true;
     this.rope.on('pointerover', this.onCursorOver);
     this.rope.on('pointerout', this.onCursorOut);
   }
@@ -130,8 +134,10 @@ export default class Rope extends Container {
   removeListener() {
     if (this.rope) {
       this.rope.buttonMode = false;
+      this.rope.interactive = false;
       this.rope.off('pointerover', this.onCursorOver);
       this.rope.off('pointerout', this.onCursorOut);
+      this.onCursorOut();
     }
   }
 
@@ -139,6 +145,7 @@ export default class Rope extends Container {
   onCursorOver() {
     this.rope.on('mousemove', this.updateCursorPosition);
     this.over = true;
+    props.ropeOverred = this;
   }
 
   onCursorOut() {
@@ -146,10 +153,13 @@ export default class Rope extends Container {
     this.marker.hide(() => {
       this.over = false;
     });
+    props.ropeOverred = false;
+    this.idxPointOverred = false;
   }
 
   updateCursorPosition(e) {
     this.marker.hide();
+    this.idxPointOverred = false;
 
     let i = this.points.length - 1;
     let positioned = false;
@@ -167,6 +177,7 @@ export default class Rope extends Container {
         this.marker.show(this.points[i].x, this.points[i].y);
         this.points[i].y -= 1;
         this.points[i].x += 1;
+        this.idxPointOverred = i;
       }
       i--;
     }
