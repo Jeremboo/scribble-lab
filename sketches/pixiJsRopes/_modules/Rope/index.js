@@ -23,6 +23,7 @@ export default class Rope extends Container {
     this.attachedPoints = [];
     this.count = 0;
     this.interacitonDist = props.SEGMENT_LENGTH / 2;
+    this.idxPointOverred = -1;
 
     // Normalize and place point to the line
     // http://math.stackexchange.com/questions/175896/finding-a-point-along-a-line-a-certain-distance-away-from-another-point
@@ -60,6 +61,7 @@ export default class Rope extends Container {
     this.update = this.update.bind(this);
     this.onCursorOver = this.onCursorOver.bind(this);
     this.onCursorOut = this.onCursorOut.bind(this);
+    this.getAttachedPoint = this.getAttachedPoint.bind(this);
     this.updateCursorPosition = this.updateCursorPosition.bind(this);
   }
 
@@ -100,7 +102,7 @@ export default class Rope extends Container {
 
   // CORE
   attachPoint(idx, x = 0, y = 0) {
-    let point = existingValueBy(this.attachedPoints, value => (value.idx === idx));
+    let point = this.getAttachedPoint(idx);
     if (!point) {
       point = { idx, x, y };
       this.attachedPoints.push(point);
@@ -119,8 +121,12 @@ export default class Rope extends Container {
     }
   }
 
-  pointIsAttached(idx) {
-    return this.attachedPoints.indexOf(idx) !== -1;
+  getAttachedPoint(idx) {
+    const point = existingValueBy(this.attachedPoints, value => (value.idx === idx));
+    if (typeof (point) === 'undefined') {
+      return false;
+    }
+    return point;
   }
 
   // LISTENERS
@@ -154,12 +160,12 @@ export default class Rope extends Container {
       this.over = false;
     });
     props.ropeOverred = false;
-    this.idxPointOverred = false;
+    this.idxPointOverred = -1;
   }
 
   updateCursorPosition(e) {
     this.marker.hide();
-    this.idxPointOverred = false;
+    this.idxPointOverred = -1;
 
     let i = this.points.length - 1;
     let positioned = false;

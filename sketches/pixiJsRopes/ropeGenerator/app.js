@@ -182,13 +182,12 @@ class RopeFabric {
   }
 
   // CORE
-  attachRopeToMouse(rope, pointIdx = -1, x, y) {
+  attachRopeToMouse(rope, pointIdx, x, y) {
     if (pointIdx === -1) {
-      console.log('ERROR : the point does not exist');
       return;
     }
 
-    if (rope.pointIsAttached(pointIdx)) {
+    if (rope.getAttachedPoint(pointIdx)) {
       rope.detachPoint(pointIdx);
     } else {
       props.mouseEvent = MOVING;
