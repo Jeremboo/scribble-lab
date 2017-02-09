@@ -8,5 +8,5 @@
 node_modules/
 npm-debug.log
 
-sketches/-test/*
-!sketches/-test/.keep
+scribbles/-test/*
+!scribbles/-test/.keep

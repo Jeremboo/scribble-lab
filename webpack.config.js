@@ -10,7 +10,7 @@ var myLocalIp = 'http://' + ip.address() + ':3333/';
 // DIRECTORIES
 var assets = path.resolve(__dirname, process.env.GROUP_PATH + '/_assets/');
 var modules = path.resolve(__dirname, process.env.GROUP_PATH + '/_modules/');
-var sketch_path = process.env.SKETCH_PATH;
+var scribble_path = process.env.SKETCH_PATH;
 var name = process.env.NAME;
 var node_modules = path.resolve(__dirname, './node_modules');
 
@@ -22,16 +22,16 @@ var config = {
       path.resolve(__dirname, './bootstrap.js')
     ],
     output: {
-        path: path.resolve(__dirname, sketch_path + '/'),
+        path: path.resolve(__dirname, scribble_path + '/'),
         filename: 'bundle.js',
     },
     debug: true,
     devtool: 'eval-source-map',
     resolve: {
       alias: {
-        html: path.resolve(__dirname, sketch_path + '/index.pug.html'),
-        style: path.resolve(__dirname, sketch_path + '/style.styl'),
-        app: path.resolve(__dirname, sketch_path + '/app.js'),
+        html: path.resolve(__dirname, scribble_path + '/index.pug.html'),
+        style: path.resolve(__dirname, scribble_path + '/style.styl'),
+        app: path.resolve(__dirname, scribble_path + '/app.js'),
       },
     },
     module: {
@@ -74,7 +74,7 @@ var config = {
       new webpack.HotModuleReplacementPlugin(),
       new HtmlWebpackPlugin({
         title: name,
-        // template: path.resolve(__dirname, sketch_path + '/index.pug.html'),
+        // template: path.resolve(__dirname, scribble_path + '/index.pug.html'),
       }),
     ],
 };

@@ -2,7 +2,7 @@ const fs = require('fs');
 const { createDataJSON, ask } = require('./utils.js');
 
 
-let path = 'sketches/';
+let path = 'scribbles/';
 const groupsName = fs.readdirSync(path);
 const data = [];
 let readme = `# Scribble lab
@@ -33,35 +33,35 @@ for (i = 0; i < groupsName.length; i++) {
       addLine(groupData.description);
       addLine('<p align="center">');
       groupData.projects = [];
-      const sketchesName = fs.readdirSync(groupPath);
+      const scribblesName = fs.readdirSync(groupPath);
 
       let j;
-      for (j = 0; j < sketchesName.length ; j++) {
-        const sketchPath = `${path}${groupsName[i]}/${sketchesName[j]}`;
-        const sketchDataPath = `${sketchPath}/data.json`;
+      for (j = 0; j < scribblesName.length ; j++) {
+        const scribblePath = `${path}${groupsName[i]}/${scribblesName[j]}`;
+        const scribbleDataPath = `${scribblePath}/data.json`;
 
-        if (fs.existsSync(sketchDataPath)) {
-          const sketchData = JSON.parse(fs.readFileSync(sketchDataPath));
+        if (fs.existsSync(scribbleDataPath)) {
+          const scribbleData = JSON.parse(fs.readFileSync(scribbleDataPath));
 
           // TODO get all .gif files to make into an array
-          // if (fs.existsSync(sketchPath + '/preview.gif')) {
-          //   sketchData.preview = '/preview.gif';
+          // if (fs.existsSync(scribblePath + '/preview.gif')) {
+          //   scribbleData.preview = '/preview.gif';
           // } else {
-          //   delete sketchData.preview;
+          //   delete scribbleData.preview;
           // }
           // fs.writeFileSync(
-          //   sketchDataPath,
-          //   JSON.stringify(sketchData, null, 2), 'utf8'
+          //   scribbleDataPath,
+          //   JSON.stringify(scribbleData, null, 2), 'utf8'
           // );
 
-          if (sketchData.preview && sketchData.visible) {
-            const typeOfPreviewInfo = typeof (sketchData.preview);
+          if (scribbleData.preview && scribbleData.visible) {
+            const typeOfPreviewInfo = typeof (scribbleData.preview);
             if (typeOfPreviewInfo === 'string') {
-              addPreview(sketchData.path + sketchData.preview, sketchData.name, sketchData.link);
+              addPreview(scribbleData.path + scribbleData.preview, scribbleData.name, scribbleData.link);
             } else if (typeOfPreviewInfo === 'array') {
               let k;
-              for (k = 0; k < sketchData.preview.length; k++) {
-                addPreview(sketchData.path + sketchData.preview[k], sketchData.name, sketchData.link);
+              for (k = 0; k < scribbleData.preview.length; k++) {
+                addPreview(scribbleData.path + scribbleData.preview[k], scribbleData.name, scribbleData.link);
               }
             }
           }

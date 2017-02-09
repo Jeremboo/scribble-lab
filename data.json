@@ -1,7 +1,7 @@
 [
   {
     "name": "Codevember 2015",
-    "path": "sketches/codevember2015",
+    "path": "scribbles/codevember2015",
     "description": "My contributions of the Codevember challenge in 2015.",
     "date": "2015-11-01T00:00:01.686Z",
     "tags": [],
@@ -11,7 +11,7 @@
   },
   {
     "name": "Codevember 2016",
-    "path": "sketches/codevember2016",
+    "path": "scribbles/codevember2016",
     "description": "My contributions of the Codevember challenge in 2016.",
     "date": "2016-11-01T00:00:01.686Z",
     "tags": [],
@@ -21,10 +21,10 @@
   },
   {
     "name": "Pixi.js ropes",
-    "path": "sketches/pixiJsRopes",
+    "path": "scribbles/pixiJsRopes",
     "link": "",
     "visible": true,
-    "preview": "sketches/pixiJsRopes/preview.gif",
+    "preview": "scribbles/pixiJsRopes/preview.gif",
     "description": "Generate and handle ropes with Pixi.js",
     "date": "2017-01-10T10:21:04.943Z",
     "tags": [],

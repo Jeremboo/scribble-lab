@@ -6,7 +6,7 @@
 
 ## Bootstrap a new Sketch
 
-`DIR=[path] npm run create:sketch`
+`DIR=[path] npm run create:scribble`
 
 ## Bootstrap a new Group
 
@@ -15,6 +15,4 @@
 ## TODO
 
 - title = name into data.json and not the path.
-- Auto generate/update the README.md
 - build HTML preview
-- build app.pixi.js

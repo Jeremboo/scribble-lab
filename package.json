@@ -1,11 +1,11 @@
 {
-  "name": "sketch-generator",
+  "name": "scribble-lab",
   "version": "0.0.1",
-  "description": "Fast generator of sketches",
+  "description": "My own prototyping tool to scribbling some ideas with many available frameworks.",
   "scripts": {
     "start": "node scripts/start.js",
     "create:group": "node scripts/createGroup.js",
-    "create:sketch": "node scripts/createSketch.js",
+    "create:scribble": "node scripts/createScribble.js",
     "build:data": "node scripts/buildData.js"
   },
   "author": "Jérémie Boulay <jeremi.boulay@gmail.com>",

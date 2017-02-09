@@ -3,28 +3,28 @@ const path = require('path');
 const { askWitchChildDir, pathExist } = require('./utils');
 
 // DIRECTORY TO TEST
-let sketchPath = process.env.DIR;
+let scribblePath = process.env.DIR;
 
-if (!sketchPath || !pathExist(sketchPath)) {
+if (!scribblePath || !pathExist(scribblePath)) {
   // Select a dir in command line
-  sketchPath = 'sketches/';
-  sketchPath += `${askWitchChildDir(sketchPath, 'group')}/`;
-  sketchPath += `${askWitchChildDir(sketchPath, 'sketch')}/`;
+  scribblePath = 'scribbles/';
+  scribblePath += `${askWitchChildDir(scribblePath, 'group')}/`;
+  scribblePath += `${askWitchChildDir(scribblePath, 'scribble')}/`;
 }
 
 // Get the group path
-const groupPath = path.dirname(sketchPath);
+const groupPath = path.dirname(scribblePath);
 
 // Get data
-const dataPath = `${sketchPath}/data.json`;
-let name = 'A sketch';
+const dataPath = `${scribblePath}/data.json`;
+let name = 'A scribble';
 if (fs.existsSync(dataPath)) {
-  const sketchData = JSON.parse(fs.readFileSync(dataPath));
-  name = sketchData.name;
+  const scribbleData = JSON.parse(fs.readFileSync(dataPath));
+  name = scribbleData.name;
 }
 
 // START WEBPACK
 process.env.GROUP_PATH = groupPath;
-process.env.SKETCH_PATH = sketchPath;
+process.env.SKETCH_PATH = scribblePath;
 process.env.NAME = name;
 require('./startWebpack')();
