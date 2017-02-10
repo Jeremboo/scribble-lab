@@ -2,7 +2,7 @@
   "name": "seaAndBoat",
   "path": "scribbles/seaAndBoat/",
   "link": "",
-  "visible": true,
+  "visible": false,
   "preview": "scribbles/seaAndBoat/preview.gif",
   "description": "3d infinite sea with a boat",
   "date": "2017-02-09T23:07:08.459Z",

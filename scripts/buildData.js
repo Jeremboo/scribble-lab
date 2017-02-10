@@ -58,9 +58,10 @@ for (i = 0; i < groupsName.length; i++) {
             const typeOfPreviewInfo = typeof (scribbleData.preview);
             if (typeOfPreviewInfo === 'string') {
               addPreview(scribbleData.path + scribbleData.preview, scribbleData.name, scribbleData.link);
-            } else if (typeOfPreviewInfo === 'array') {
+            } else if (typeOfPreviewInfo === 'object') {
               let k;
               for (k = 0; k < scribbleData.preview.length; k++) {
+                // TODO make a different name
                 addPreview(scribbleData.path + scribbleData.preview[k], scribbleData.name, scribbleData.link);
               }
             }

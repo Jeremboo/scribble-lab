@@ -113,7 +113,13 @@ My contributions of the Codevember challenge in 2016.
 Generate and handle ropes with Pixi.js
 
 <p align="center">
-  <a href="">
+  <a href="http://codepen.io/Jeremboo/full/QGVaYa">
     <img alt="Rope generator" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/ropeGenerator/preview.gif?raw=true" width="200">
+  </a>
+  <a href="http://codepen.io/Jeremboo/full/QGVaYa">
+    <img alt="Rope generator" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/ropeGenerator/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="http://codepen.io/Jeremboo/full/QGVaYa">
+    <img alt="Rope generator" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/ropeGenerator/preview2.gif?raw=true" width="200">
   </a>
 </p>
