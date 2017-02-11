@@ -1,7 +1,7 @@
 {
   "name": "Pixi.js ropes",
   "path": "scribbles/pixiJsRopes",
-  "link": "",
+  "link": "http://codepen.io/Jeremboo/full/QGVaYa",
   "visible": true,
   "preview": "scribbles/pixiJsRopes/preview.gif",
   "description": "Generate and handle ropes with Pixi.js",

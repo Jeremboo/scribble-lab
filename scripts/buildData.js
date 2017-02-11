@@ -1,10 +1,48 @@
 const fs = require('fs');
-const { createDataJSON, ask } = require('./utils.js');
+const { getFilteredDirList } = require('./utils');
+
+const path = 'scribbles/';
+const groupsName = getFilteredDirList(path);
+let data = [];
+
+/*
+  GET GROUPS DATA AND SORT BY DATE
+*/
+const sortByDate = (arr) => arr.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+let i, j;
+for (i = 0; i < groupsName.length; i++) {
+  const groupPath = `${path}${groupsName[i]}`;
+  const dataPath = `${groupPath}/data.json`;
+
+  if (fs.existsSync(dataPath)) {
+    const groupData = JSON.parse(fs.readFileSync(dataPath));
+
+    groupData.scribbles = [];
+    const scribblesName = getFilteredDirList(groupPath);
+    const scribbles = [];
+
+    for (j = 0; j < scribblesName.length; j++) {
+      const scribblePath = `${path}${groupsName[i]}/${scribblesName[j]}`;
+      const scribbleDataPath = `${scribblePath}/data.json`;
+
+      if (fs.existsSync(scribbleDataPath)) {
+        const scribbleData = JSON.parse(fs.readFileSync(scribbleDataPath));
+        scribbles.push(scribbleData);
+      }
+    }
+    groupData.scribbles = sortByDate(scribbles);
+    data.push(groupData);
+  }
+}
+data = sortByDate(data);
+fs.writeFileSync('./data.json', JSON.stringify(data, null, 2), 'utf8');
+
+/*
+  WRITE THE README
+*/
 
 
-let path = 'scribbles/';
-const groupsName = fs.readdirSync(path);
-const data = [];
 let readme = `# Scribble lab
 
 Just a regroupment of some searches, tests, experiments around javascript or CSS and their frameworks.
@@ -21,58 +59,29 @@ const addPreview = (previewPath, name, link = '/') => {
   }
 };
 
-let i;
-for (i = 0; i < groupsName.length; i++) {
-  const groupPath = `${path}${groupsName[i]}`;
-  const dataPath = `${groupPath}/data.json`;
+for (i = 0; i < data.length; i++) {
+  const group = data[i];
+  if (group.visible) {
+    addLine(`##${group.link ? `[${group.name}](${group.link})` : group.name}`);
+    addLine(group.description);
+    addLine('<p align="center">');
 
-  if (fs.existsSync(dataPath)) {
-    const groupData = JSON.parse(fs.readFileSync(dataPath));
-    if (groupData.visible) {
-      addLine(`##${groupData.link ? `[${groupData.name}](${groupData.link})` : groupData.name}`);
-      addLine(groupData.description);
-      addLine('<p align="center">');
-      groupData.projects = [];
-      const scribblesName = fs.readdirSync(groupPath);
-
-      let j;
-      for (j = 0; j < scribblesName.length ; j++) {
-        const scribblePath = `${path}${groupsName[i]}/${scribblesName[j]}`;
-        const scribbleDataPath = `${scribblePath}/data.json`;
-
-        if (fs.existsSync(scribbleDataPath)) {
-          const scribbleData = JSON.parse(fs.readFileSync(scribbleDataPath));
-
-          // TODO get all .gif files to make into an array
-          // if (fs.existsSync(scribblePath + '/preview.gif')) {
-          //   scribbleData.preview = '/preview.gif';
-          // } else {
-          //   delete scribbleData.preview;
-          // }
-          // fs.writeFileSync(
-          //   scribbleDataPath,
-          //   JSON.stringify(scribbleData, null, 2), 'utf8'
-          // );
-
-          if (scribbleData.preview && scribbleData.visible) {
-            const typeOfPreviewInfo = typeof (scribbleData.preview);
-            if (typeOfPreviewInfo === 'string') {
-              addPreview(scribbleData.path + scribbleData.preview, scribbleData.name, scribbleData.link);
-            } else if (typeOfPreviewInfo === 'object') {
-              let k;
-              for (k = 0; k < scribbleData.preview.length; k++) {
-                // TODO make a different name
-                addPreview(scribbleData.path + scribbleData.preview[k], scribbleData.name, scribbleData.link);
-              }
-            }
+    for (j = 0; j < group.scribbles.length; j++) {
+      const scribble = group.scribbles[j];
+      if (scribble.preview && scribble.visible) {
+        const typeOfPreviewInfo = typeof (scribble.preview);
+        if (typeOfPreviewInfo === 'string') {
+          addPreview(scribble.path + scribble.preview, scribble.name, scribble.link);
+        } else if (typeOfPreviewInfo === 'object') {
+          let k;
+          for (k = 0; k < scribble.preview.length; k++) {
+            // TODO mame a different name
+            addPreview(scribble.path + scribble.preview[k], scribble.name, scribble.link);
           }
         }
       }
-      data.push(groupData);
-
-      readme += '\n</p>';
     }
   }
+  readme += '\n</p>';
 }
-fs.writeFileSync('./data.json', JSON.stringify(data, null, 2), 'utf8');
 fs.writeFileSync('./README.md', readme, 'utf8');

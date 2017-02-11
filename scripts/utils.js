@@ -48,6 +48,15 @@ const createDir = (parentPath, name) => {
   return { name, path };
 };
 
+// TODO use regex
+const getFilteredDirList = (path) => fs.readdirSync(path).filter(directory => !(
+  directory[0] === '.' ||
+  directory[0] === '-' ||
+  directory[0] === '_' ||
+  directory === 'data.json'
+  ))
+;
+
 /**
  * ASK
  * require('readline-sync');
@@ -78,11 +87,7 @@ const askWitchChoice = (arr, type = '') =>
  * @return {String}         directory path selected
  */
 const askWitchChildDir = (dirPath, type) => {
-  const dir = fs.readdirSync(dirPath).filter(directory => !(
-    directory[0] === '.' ||
-    directory[0] === '_' ||
-    directory === 'data.json'
-  ));
+  const dir = getFilteredDirList(dirPath);
   return askWitchChoice(dir, type);
 };
 
@@ -176,5 +181,6 @@ module.exports = {
   askToCreateDir,
   pathExist,
   createDir,
+  getFilteredDirList,
   createDataJSON,
 };

@@ -1,13 +1,56 @@
 [
   {
-    "name": "Codevember 2015",
-    "path": "scribbles/codevember2015",
-    "description": "My contributions of the Codevember challenge in 2015.",
-    "date": "2015-11-01T00:00:01.686Z",
+    "name": "seaAndBoat",
+    "path": "scribbles/seaAndBoat/",
+    "link": "",
+    "visible": false,
+    "preview": "scribbles/seaAndBoat/preview.gif",
+    "description": "3d infinite sea with a boat",
+    "date": "2017-02-09T23:07:08.459Z",
     "tags": [],
-    "link": "http://codevember2015.tumblr.com/",
+    "scribbles": [
+      {
+        "name": "sea",
+        "path": "scribbles/seaAndBoat/sea/",
+        "link": "",
+        "visible": true,
+        "preview": "scribbles/seaAndBoat/sea/preview.gif",
+        "description": "",
+        "date": "2017-02-09T23:07:41.305Z",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "name": "Pixi.js ropes",
+    "path": "scribbles/pixiJsRopes",
+    "link": "http://codepen.io/Jeremboo/full/QGVaYa",
     "visible": true,
-    "projects": []
+    "preview": "scribbles/pixiJsRopes/preview.gif",
+    "description": "Generate and handle ropes with Pixi.js",
+    "date": "2017-01-10T10:21:04.943Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "Rope generator",
+        "path": "scribbles/pixiJsRopes/ropeGenerator",
+        "link": "http://codepen.io/Jeremboo/full/QGVaYa",
+        "visible": true,
+        "preview": [
+          "/preview.gif",
+          "/preview1.gif",
+          "/preview2.gif"
+        ],
+        "description": "Pixi.js Random rope generator",
+        "date": "2017-01-10T10:22:18.068Z",
+        "tags": [
+          "rope",
+          "gravity",
+          "generator",
+          "pixi.js"
+        ]
+      }
+    ]
   },
   {
     "name": "Codevember 2016",
@@ -17,17 +60,318 @@
     "tags": [],
     "link": "http://codevember.xyz/",
     "visible": true,
-    "projects": []
+    "scribbles": [
+      {
+        "name": "28_particlesRotations",
+        "path": "scribbles/codevember2016/28_particlesRotations",
+        "preview": "/preview.gif",
+        "description": "",
+        "date": "2016-11-28T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/JbrWgq",
+        "visible": true
+      },
+      {
+        "name": "25_raindow",
+        "path": "scribbles/codevember2016/25_raindow",
+        "preview": "/preview.gif",
+        "description": "",
+        "date": "2016-11-25T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/jVweKo",
+        "visible": true
+      },
+      {
+        "name": "16_mojsShapesPop",
+        "path": "scribbles/codevember2016/16_mojsShapesPop",
+        "preview": "/preview.gif",
+        "description": "",
+        "date": "2016-11-16T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/RGBxBO",
+        "visible": true
+      },
+      {
+        "name": "15_canvasTextureTool",
+        "path": "scribbles/codevember2016/15_canvasTextureTool",
+        "preview": "/preview.gif",
+        "description": "",
+        "date": "2016-11-15T00:00:00.000Z",
+        "tags": [],
+        "link": "https://codepen.io/Jeremboo/full/qqabKY",
+        "visible": true
+      },
+      {
+        "name": "14_tremulousParticle",
+        "path": "scribbles/codevember2016/14_tremulousParticle",
+        "preview": "/preview.gif",
+        "description": "",
+        "date": "2016-11-14T00:00:00.000Z",
+        "tags": [],
+        "link": "https://codepen.io/Jeremboo/full/GNqvJP",
+        "visible": true
+      },
+      {
+        "name": "12_particlesMandala",
+        "path": "scribbles/codevember2016/12_particlesMandala",
+        "preview": "/preview.gif",
+        "description": "",
+        "date": "2016-11-12T00:00:00.000Z",
+        "tags": [],
+        "link": "https://codepen.io/Jeremboo/full/ENKKyz",
+        "visible": true
+      },
+      {
+        "name": "08_generativeTrays",
+        "path": "scribbles/codevember2016/08_generativeTrays",
+        "preview": "/preview.gif",
+        "description": "",
+        "date": "2016-11-08T00:00:00.000Z",
+        "tags": [],
+        "link": "https://codepen.io/Jeremboo/full/ENVaMY",
+        "visible": true
+      },
+      {
+        "name": "07_floating3DObject",
+        "path": "scribbles/codevember2016/07_floating3DObject",
+        "preview": "/preview.gif",
+        "description": "three.js 3D Object",
+        "date": "2016-11-07T00:00:00.000Z",
+        "tags": [],
+        "link": "https://codepen.io/Jeremboo/full/zoGNMJ",
+        "visible": true
+      },
+      {
+        "name": "06_childrenCubes",
+        "path": "scribbles/codevember2016/06_childrenCubes",
+        "preview": "/preview.gif",
+        "description": "cUBES ANIMATION",
+        "date": "2016-11-06T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/GNgdNm",
+        "visible": true
+      },
+      {
+        "name": "05_hexagonLoop",
+        "path": "scribbles/codevember2016/05_hexagonLoop",
+        "preview": "/preview.gif",
+        "description": "CSS  loop animation",
+        "date": "2016-11-05T00:00:00.000Z",
+        "tags": [],
+        "link": "https://codepen.io/Jeremboo/full/aBbmZv",
+        "visible": true
+      },
+      {
+        "name": "04_FireGooeyEffect",
+        "path": "scribbles/codevember2016/04_FireGooeyEffect",
+        "preview": "/preview.gif",
+        "description": "Gooey Effect to make fire",
+        "date": "2016-11-04T00:00:00.000Z",
+        "tags": [],
+        "link": "https://codepen.io/Jeremboo/full/RowOGV",
+        "visible": true
+      },
+      {
+        "name": "03_Volcano",
+        "path": "scribbles/codevember2016/03_Volcano",
+        "preview": "/preview.gif",
+        "description": "SVG draw animated by squiggly effect",
+        "date": "2016-11-03T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/QGLGNN",
+        "visible": true
+      },
+      {
+        "name": "02_squigglyTypo",
+        "path": "scribbles/codevember2016/02_squigglyTypo",
+        "preview": "/preview.gif",
+        "description": "Squiggly Typo with CSS filter",
+        "date": "2016-11-02T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/jVNVqr",
+        "visible": true
+      },
+      {
+        "name": "01_canvasTransition",
+        "path": "scribbles/codevember2016/01_canvasTransition",
+        "preview": "/preview.gif",
+        "description": "Canvas transition in perlin noise",
+        "date": "2016-11-01T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/ORKroY/",
+        "visible": true
+      }
+    ]
   },
   {
-    "name": "Pixi.js ropes",
-    "path": "scribbles/pixiJsRopes",
-    "link": "",
-    "visible": true,
-    "preview": "scribbles/pixiJsRopes/preview.gif",
-    "description": "Generate and handle ropes with Pixi.js",
-    "date": "2017-01-10T10:21:04.943Z",
+    "name": "Codevember 2015",
+    "path": "scribbles/codevember2015",
+    "description": "My contributions of the Codevember challenge in 2015.",
+    "date": "2015-11-01T00:00:01.686Z",
     "tags": [],
-    "projects": []
+    "link": "http://codevember2015.tumblr.com/",
+    "visible": true,
+    "scribbles": [
+      {
+        "name": "30_testthemotionlibrariesmojsandvivusjs",
+        "path": "scribbles/codevember2015/30_testthemotionlibrariesmojsandvivusjs",
+        "preview": "/preview.gif",
+        "description": "test of mojs and vivsu.js",
+        "date": "2015-11-30T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/RWddjK",
+        "visible": true
+      },
+      {
+        "name": "27_particleswithstreaks",
+        "path": "scribbles/codevember2015/27_particleswithstreaks",
+        "preview": "/preview.gif",
+        "description": "",
+        "date": "2015-11-27T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/avKJBO",
+        "visible": true
+      },
+      {
+        "name": "19_appearanceofafooter",
+        "path": "scribbles/codevember2015/19_appearanceofafooter",
+        "preview": "/preview.gif",
+        "description": "Footer animation",
+        "date": "2015-11-19T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/XmGJdj",
+        "visible": true
+      },
+      {
+        "name": "13_appearanceofatitle",
+        "path": "scribbles/codevember2015/13_appearanceofatitle",
+        "preview": "/preview.gif",
+        "description": "Title animation",
+        "date": "2015-11-13T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/JYwNRQ",
+        "visible": true
+      },
+      {
+        "name": "12_scribblescrawldoodle",
+        "path": "scribbles/codevember2015/12_scribblescrawldoodle",
+        "preview": "/preview.gif",
+        "description": "dzjvizvrlhgzmqg",
+        "date": "2015-11-12T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/ojQVaq",
+        "visible": true
+      },
+      {
+        "name": "11_linewhonavigatesineachrandompoints",
+        "path": "scribbles/codevember2015/11_linewhonavigatesineachrandompoints",
+        "preview": "/preview.gif",
+        "description": "Libe who navigates in each random points",
+        "date": "2015-11-11T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/LpXNRp",
+        "visible": true
+      },
+      {
+        "name": "10_flockofparticles",
+        "path": "scribbles/codevember2015/10_flockofparticles",
+        "preview": "/preview.gif",
+        "description": "Flock of Particles",
+        "date": "2015-11-10T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/lFHvL",
+        "visible": true
+      },
+      {
+        "name": "09_css3dcardmovedbymobileaccelerometer",
+        "path": "scribbles/codevember2015/09_css3dcardmovedbymobileaccelerometer",
+        "preview": "/preview.gif",
+        "description": "Css 3D card moved by mobile accelerometer of mouse",
+        "date": "2015-11-09T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/OyBaLa",
+        "visible": true
+      },
+      {
+        "name": "08_flexibleflowersonearth",
+        "path": "scribbles/codevember2015/08_flexibleflowersonearth",
+        "preview": "/preview.gif",
+        "description": "Flexible flower on eath",
+        "date": "2015-11-08T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/KdGaLW",
+        "visible": true
+      },
+      {
+        "name": "07_twowaysfordrawingaparticletrail",
+        "path": "scribbles/codevember2015/07_twowaysfordrawingaparticletrail",
+        "preview": "/preview.gif",
+        "description": "Test of trail effect, two way to drawing that",
+        "date": "2015-11-07T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/XmxNXv",
+        "visible": true
+      },
+      {
+        "name": "06_loaderanimation",
+        "path": "scribbles/codevember2015/06_loaderanimation",
+        "preview": "/preview.gif",
+        "description": "CSS loader animation",
+        "date": "2015-11-06T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/pjOKVz",
+        "visible": true
+      },
+      {
+        "name": "05_moonlandscapewithcanvas",
+        "path": "scribbles/codevember2015/05_moonlandscapewithcanvas",
+        "preview": "/preview.gif",
+        "description": "landscape builded in canas",
+        "date": "2015-11-05T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/WQKzeQ",
+        "visible": true
+      },
+      {
+        "name": "04_orchidin3dwiththreejs",
+        "path": "scribbles/codevember2015/04_orchidin3dwiththreejs",
+        "preview": "/preview.gif",
+        "description": "3D object loaded by three.jss",
+        "date": "2015-11-04T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/GpXpPJ",
+        "visible": true
+      },
+      {
+        "name": "03_cube3donlyincss",
+        "path": "scribbles/codevember2015/03_cube3donlyincss",
+        "preview": "/preview.gif",
+        "description": "3D cude only in CSS",
+        "date": "2015-11-03T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/wKxzzP",
+        "visible": true
+      },
+      {
+        "name": "02_cloudoflinkedparticles",
+        "path": "scribbles/codevember2015/02_cloudoflinkedparticles",
+        "preview": "/preview.gif",
+        "description": "Cloud of linked particles from Canvas",
+        "date": "2015-11-02T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/AKeLF",
+        "visible": true
+      },
+      {
+        "name": "01_gradianteffectontext",
+        "path": "scribbles/codevember2015/01_gradianteffectontext",
+        "preview": "/preview.gif",
+        "description": "CSS gradient effect on backgroud -clip property like codevember logo",
+        "date": "2015-11-01T00:00:00.000Z",
+        "tags": [],
+        "link": "http://codepen.io/Jeremboo/full/rOKgzj",
+        "visible": true
+      }
+    ]
   }
 ]
