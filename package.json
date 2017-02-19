@@ -11,7 +11,7 @@
   "author": "Jérémie Boulay <jeremi.boulay@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "dat-gui": "^0.5.0",
+    "dat.gui": "^0.6.1",
     "mo-js": "^0.288.1",
     "mojs-player": "^0.43.15",
     "pixi.js": "^4.3.2",

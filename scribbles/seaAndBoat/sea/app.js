@@ -1,25 +1,34 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Object3D,
   ShaderMaterial, Mesh, Color, PlaneBufferGeometry,
-  TextureLoader, REPEAT_WRAPPING, DoubleSide
+  TextureLoader, REPEAT_WRAPPING, DoubleSide, FogExp2,
+  AmbientLight, Fog, HemisphereLight
 } from 'three';
 
 import OrbitControls from 'OrbitControl';
 
+import props from 'props';
+
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#C9F0FF';
-/**/ const bgColor = false // 'rgb(0, 0, 0)';
+/**/ const bgColor = 0xffffff;
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Webgl {
 /**/   constructor(w, h) {
 /**/     this.meshCount = 0;
 /**/     this.meshListeners = [];
-/**/     this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
+// /**/     this.renderer = new WebGLRenderer({
+//            antialias: false,
+//            alpha: true
+//          });
+/**/     this.renderer = new WebGLRenderer();
 /**/     this.renderer.setPixelRatio(window.devicePixelRatio);
 /**/     if (bgColor) this.renderer.setClearColor(new Color(bgColor));
 /**/     this.scene = new Scene();
+         // this.scene.fog = new FogExp2(0xeff1b5, 0.0025);
+         this.scene.fog = new Fog(props.FOG_COLOR, props.FOG_FAR * props.FOG_NEAR, props.FOG_FAR);
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 10);
 /**/     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -42,6 +51,7 @@ import OrbitControls from 'OrbitControl';
 /**/     while (--i >= 0) {
 /**/       this.meshListeners[i].apply(this, null);
 /**/     }
+/**/     this.scene.fog = new Fog(props.FOG_COLOR, props.FOG_FAR * props.FOG_NEAR, props.FOG_FAR)
 /**/     this.renderer.render(this.scene, this.camera);
 /**/   }
 /**/   resize(w, h) {
@@ -62,11 +72,13 @@ const vertexShader = `
 varying vec2 vUv;
 
 uniform float uTime;
+uniform float uScale;
+uniform float uAmplitude;
 
 float calculateSurface(float x, float z) {
     float y = 0.0;
-    y += (sin(x * 1.0 / SCALE + uTime * 1.0) + sin(x * 2.3 / SCALE + uTime * 1.5) + sin(x * 3.3 / SCALE + uTime * 0.4)) / 3.0;
-    y += (sin(z * 0.2 / SCALE + uTime * 1.8) + sin(z * 1.8 / SCALE + uTime * 1.8) + sin(z * 2.8 / SCALE + uTime * 0.8)) / 3.0;
+    y += (sin(x * 1.0 / uScale + uTime * 1.0) + sin(x * 2.3 / uScale + uTime * 1.5) + sin(x * 3.3 / uScale + uTime * 0.4)) * uAmplitude;
+    y += (sin(z * 0.2 / uScale + uTime * 2.5) + sin(z * 1.8 / uScale + uTime * 1.8) + sin(z * 2.8 / uScale + uTime * 0.8)) * uAmplitude;
     return y;
 }
 
@@ -88,6 +100,9 @@ varying vec2 vUv;
 uniform sampler2D uMap;
 uniform float uTime;
 uniform vec3 uColor;
+uniform vec3 fogColor;
+uniform float fogNear;
+uniform float fogFar;
 
 void main() {
     vec2 uv = vUv * 10.0 + vec2(uTime * -0.05);
@@ -100,8 +115,18 @@ void main() {
     vec4 tex2 = texture2D(uMap, uv * 1.0 + vec2(0.2));
 
     vec3 blue = uColor;
-
     gl_FragColor = vec4(blue + vec3(tex1.a * 0.9 - tex2.a * 0.02), 1.0);
+
+    // FOG
+    #ifdef USE_FOG
+        #ifdef USE_LOGDEPTHBUF_EXT
+            float depth = gl_FragDepthEXT / gl_FragCoord.w;
+        #else
+            float depth = gl_FragCoord.z / gl_FragCoord.w;
+        #endif
+        float fogFactor = smoothstep( fogNear, fogFar, depth );
+        gl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );
+    #endif
 }
 `;
 
@@ -116,14 +141,21 @@ class Sea extends Object3D {
     const uniforms = {
       uMap: { type: 't', value: null },
       uTime: { type: 'f', value: 0 },
-      uColor: { type: 'f', value: new Color('#0051da') },
+      uColor: { type: 'f', value: new Color(props.COLOR) },
+      uScale: { type: 'f', value: props.SCALE },
+      uAmplitude: { type: 'f', value: props.AMPL },
+      // http://stackoverflow.com/questions/37243172/how-to-add-fog-to-texture-in-shader-three-js-r76/37365516#37365516
+      fogColor: { type: 'f', value: new Color(props.FOG_COLOR) },
+      fogNear: { type: 'f', value: props.FOG_NEAR },
+      fogFar: { type: 'f', value: props.FOG_FAR },
     };
 
     this.customMaterial = new ShaderMaterial({
-      uniforms: uniforms,
-      vertexShader: vertexShader,
-      fragmentShader: fragmentShader,
+      uniforms,
+      vertexShader,
+      fragmentShader,
       side: DoubleSide,
+      fog: true,
     });
 
     const textureLoader = new TextureLoader();
@@ -139,15 +171,18 @@ class Sea extends Object3D {
   }
 
   update() {
-    this.customMaterial.uniforms.uTime.value += 0.01;
+    this.customMaterial.uniforms.uTime.value += props.SPEED;
+    this.customMaterial.uniforms.uScale.value = props.SCALE;
+    this.customMaterial.uniforms.uAmplitude.value = props.AMPL;
+    this.customMaterial.uniforms.uColor.value = new Color(props.COLOR);
   }
 }
 
 // START
-const sea = new Sea();
-
+var light = new HemisphereLight( 0xffffbb, 0x080820, 1 );
+webgl.add( light );
 // ADDS
-webgl.add(sea);
+webgl.add(new Sea());
 
 /* ---- CREATING ZONE END ---- */
 /**/

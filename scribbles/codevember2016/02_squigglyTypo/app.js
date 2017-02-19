@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import dat from 'dat-gui';
+import dat from 'dat.gui';
 
 window.React = React;
 
