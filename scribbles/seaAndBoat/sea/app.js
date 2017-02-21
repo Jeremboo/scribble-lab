@@ -9,6 +9,8 @@ import OrbitControls from 'OrbitControl';
 
 import props from 'props';
 
+import water from 'water.png';
+
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#C9F0FF';
@@ -19,18 +21,14 @@ import props from 'props';
 /**/   constructor(w, h) {
 /**/     this.meshCount = 0;
 /**/     this.meshListeners = [];
-// /**/     this.renderer = new WebGLRenderer({
-//            antialias: false,
-//            alpha: true
-//          });
-/**/     this.renderer = new WebGLRenderer();
+/**/     this.renderer = new WebGLRenderer({ antialias: false, alpha: true });
 /**/     this.renderer.setPixelRatio(window.devicePixelRatio);
-/**/     if (bgColor) this.renderer.setClearColor(new Color(bgColor));
+         this.renderer.setClearColor(new Color(props.FOG_COLOR));
 /**/     this.scene = new Scene();
          // this.scene.fog = new FogExp2(0xeff1b5, 0.0025);
          this.scene.fog = new Fog(props.FOG_COLOR, props.FOG_FAR * props.FOG_NEAR, props.FOG_FAR);
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
-/**/     this.camera.position.set(0, 0, 10);
+/**/     this.camera.position.set(0, 5, 10);
 /**/     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 /**/     this.controls.enableDamping = true;
 /**/     this.controls.dampingFactor = 0.1;
@@ -51,6 +49,7 @@ import props from 'props';
 /**/     while (--i >= 0) {
 /**/       this.meshListeners[i].apply(this, null);
 /**/     }
+         this.renderer.setClearColor(new Color(props.FOG_COLOR));
 /**/     this.scene.fog = new Fog(props.FOG_COLOR, props.FOG_FAR * props.FOG_NEAR, props.FOG_FAR)
 /**/     this.renderer.render(this.scene, this.camera);
 /**/   }
@@ -159,7 +158,7 @@ class Sea extends Object3D {
     });
 
     const textureLoader = new TextureLoader();
-    textureLoader.load('https://cinemont.com/tutorials/zelda/water.png', (texture) => {
+    textureLoader.load(water, (texture) => {
       this.customMaterial.uniforms.uMap.value = texture;
       texture.wrapS = texture.wrapT = REPEAT_WRAPPING;
     });
@@ -179,8 +178,6 @@ class Sea extends Object3D {
 }
 
 // START
-var light = new HemisphereLight( 0xffffbb, 0x080820, 1 );
-webgl.add( light );
 // ADDS
 webgl.add(new Sea());
 

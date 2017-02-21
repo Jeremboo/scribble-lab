@@ -5,9 +5,9 @@ const props = {
   AMPL: 0.3,
   SPEED: 0.01,
   COLOR: '#90A2BF',
-  FOG_COLOR: '#DD0606',
+  FOG_COLOR: '#313131',
   FOG_NEAR: 0.1,
-  FOG_FAR: 10,
+  FOG_FAR: 32,
 };
 
 const gui = new GUI();
