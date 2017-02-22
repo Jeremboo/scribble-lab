@@ -8,8 +8,14 @@ import {
 import OrbitControls from 'OrbitControl';
 
 import props from 'props';
-
 import water from 'water.png';
+
+import { createImageTexture } from 'threejs-texture-tool/src/index.js';
+
+// http://yiwenl.github.io/Sketches/exps/12/
+// http://film.livyatanim.com/film.html
+// https://threejs.org/examples/#webgl_shaders_ocean
+// https://www.youtube.com/watch?v=iHIBt4L9NAI
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
@@ -115,6 +121,7 @@ void main() {
 
     vec3 blue = uColor;
     gl_FragColor = vec4(blue + vec3(tex1.a * 0.9 - tex2.a * 0.02), 1.0);
+    // gl_FragColor = vec4(vec3(tex1), 1.0);
 
     // FOG
     #ifdef USE_FOG
@@ -137,8 +144,16 @@ class Sea extends Object3D {
     this.geometry = new PlaneBufferGeometry(50, 50, 20, 20);
     this.geometry.rotateX(-Math.PI / 2);
 
+    const imgT = createImageTexture(water, { name: 'water', onLoad: iTex => {
+      iTex.texture.wrapS =
+      iTex.texture.wrapT =
+      iTex.uniform.value.wrapS =
+      iTex.uniform.value.wrapT =
+      REPEAT_WRAPPING;
+    } });
+
     const uniforms = {
-      uMap: { type: 't', value: null },
+      uMap: imgT.uniform,
       uTime: { type: 'f', value: 0 },
       uColor: { type: 'f', value: new Color(props.COLOR) },
       uScale: { type: 'f', value: props.SCALE },
@@ -155,12 +170,6 @@ class Sea extends Object3D {
       fragmentShader,
       side: DoubleSide,
       fog: true,
-    });
-
-    const textureLoader = new TextureLoader();
-    textureLoader.load(water, (texture) => {
-      this.customMaterial.uniforms.uMap.value = texture;
-      texture.wrapS = texture.wrapT = REPEAT_WRAPPING;
     });
 
     this.mesh = new Mesh(this.geometry, this.customMaterial);
