@@ -1,5 +1,6 @@
 const readlineSync = require('readline-sync');
 const fs = require('fs');
+const path = require('path');
 const camelCase = require('camelcase');
 
 
@@ -48,8 +49,25 @@ const createDir = (parentPath, name) => {
   return { name, path };
 };
 
+/**
+ * ask a question to select a child directory from a path
+ * @param  {String} parentPath valid parent path
+ * @param  {String} type    type of values to select
+ * @return {String}         directory path selected
+ */
+const createDirsDepth = (parentPath, arr) => {
+  let i;
+  let recurcivePath = `${parentPath}`;
+  const length = arr.length;
+  for (i = 0; i < length; i++) {
+    createDir(recurcivePath, arr[i]);
+    recurcivePath += `${arr[i]}/`;
+  }
+  return recurcivePath;
+};
+
 // TODO use regex
-const getFilteredDirList = (path) => fs.readdirSync(path).filter(directory => !(
+const getFilteredDirList = (dirPath) => fs.readdirSync(dirPath).filter(directory => !(
   directory[0] === '.' ||
   directory[0] === '-' ||
   directory[0] === '_' ||
@@ -137,12 +155,12 @@ const askToCreateDir = (parentPath, type = '') => {
 };
 
 /**
- * CREATE FILE
- * require('fs');
+ * PRIVATE
  */
 
 /**
  * create JSON file
+ * require('fs');
  * @param  {String} name the file name
  * @param  {String} path the parent path
  */
@@ -181,6 +199,7 @@ module.exports = {
   askToCreateDir,
   pathExist,
   createDir,
+  createDirsDepth,
   getFilteredDirList,
   createDataJSON,
 };

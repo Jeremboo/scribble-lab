@@ -10,3 +10,5 @@ npm-debug.log
 
 scribbles/-test/*
 !scribbles/-test/.keep
+
+public/

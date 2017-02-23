@@ -1,4 +1,4 @@
-import dat from 'dat.gui';
+import dat from 'dat.gui/build/dat.gui';
 
 export const NONE = 0;
 // Rope is drawing

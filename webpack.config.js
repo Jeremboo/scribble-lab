@@ -17,6 +17,7 @@ var node_modules = path.resolve(__dirname, './node_modules');
 // WEBPACK CONFIG
 var config = {
     entry: [
+      'babel-polyfill',
       'webpack/hot/dev-server',
       'webpack-dev-server/client?' + myLocalIp,
       path.resolve(__dirname, './bootstrap.js')
@@ -71,7 +72,7 @@ var config = {
     },
     plugins: [
       new webpack.optimize.OccurenceOrderPlugin(),
-      new webpack.HotModuleReplacementPlugin(),
+      new webpack.optimize.DedupePlugin(),
       new HtmlWebpackPlugin({
         title: name,
         // template: path.resolve(__dirname, scribble_path + '/index.pug.html'),
