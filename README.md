@@ -3,6 +3,18 @@
 Just a regroupment of some searches, tests, experiments around javascript or CSS and their frameworks.
 
 ---
+
+##Sea, Fog and Boat
+
+3D infinite sea inspirated by the work of [Nathan Grodon](https://cinemont.com/) on [Wind Waker Graphics Analiysis](https://medium.com/@gordonnl/wind-waker-graphics-analysis-a0b575a31127#.r6fmvc396) and [The Ocean](https://medium.com/@gordonnl/the-ocean-170fdfd659f1#.jdhpe2tmg)
+
+<p align="center">
+  <a href="">
+    <img alt="Sea, fog and boat" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/seaAndBoat/sea//preview.gif?raw=true" width="200">
+  </a>
+  <a href="">
+    <img alt="Sea, fog and boat" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/seaAndBoat/sea//preview2.gif?raw=true" width="200">
+  </a>
 </p>
 
 ##[Pixi.js ropes](http://codepen.io/Jeremboo/full/QGVaYa)

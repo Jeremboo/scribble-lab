@@ -1,10 +1,10 @@
 {
-  "name": "Sea and boat",
+  "name": "Sea, fog and boat",
   "path": "scribbles/seaAndBoat/sea/",
   "link": "",
   "visible": true,
-  "preview": "scribbles/seaAndBoat/sea/preview.gif",
-  "description": "Sea inspirated by the work of [Nathan Grodon](https://cinemont.com/) on [Wind Waker Graphics Analiysis](https://medium.com/@gordonnl/wind-waker-graphics-analysis-a0b575a31127#.r6fmvc396) and [The Ocean](https://medium.com/@gordonnl/the-ocean-170fdfd659f1#.jdhpe2tmg)",
+  "preview": ["/preview.gif", "/preview2.gif"],
+  "description": "Add params to the work of Nathan",
   "date": "2017-02-09T23:07:41.305Z",
   "tags": ["three.js", "webgl", "zelda", "sea", "fog", "boat"]
 }

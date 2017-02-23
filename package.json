@@ -19,7 +19,7 @@
     "react-dom": "^15.3.2",
     "three": "^0.83.0",
     "three-orbit-controls": "^72.0.0",
-    "threejs-texture-tool": "^0.4.0"
+    "threejs-texture-tool": "^0.4.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.1",
