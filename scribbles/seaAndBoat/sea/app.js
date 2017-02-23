@@ -10,7 +10,7 @@ import OrbitControls from 'OrbitControl';
 import props from 'props';
 import water from 'water.png';
 
-import { createImageTexture } from 'threejs-texture-tool/src/index.js';
+import { createImageTexture } from 'threejs-texture-tool';
 
 // http://yiwenl.github.io/Sketches/exps/12/
 // http://film.livyatanim.com/film.html
@@ -29,10 +29,9 @@ import { createImageTexture } from 'threejs-texture-tool/src/index.js';
 /**/     this.meshListeners = [];
 /**/     this.renderer = new WebGLRenderer({ antialias: false, alpha: true });
 /**/     this.renderer.setPixelRatio(window.devicePixelRatio);
-         this.renderer.setClearColor(new Color(props.FOG_COLOR));
+/**/     this.renderer.setClearColor(new Color(props.FOG_COLOR));
 /**/     this.scene = new Scene();
-         // this.scene.fog = new FogExp2(0xeff1b5, 0.0025);
-         this.scene.fog = new Fog(props.FOG_COLOR, props.FOG_FAR * props.FOG_NEAR, props.FOG_FAR);
+/**/     this.scene.fog = new Fog(props.FOG_COLOR, props.FOG_FAR * props.FOG_NEAR, props.FOG_FAR);
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 5, 10);
 /**/     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -55,7 +54,7 @@ import { createImageTexture } from 'threejs-texture-tool/src/index.js';
 /**/     while (--i >= 0) {
 /**/       this.meshListeners[i].apply(this, null);
 /**/     }
-         this.renderer.setClearColor(new Color(props.FOG_COLOR));
+/**/     this.renderer.setClearColor(new Color(props.FOG_COLOR));
 /**/     this.scene.fog = new Fog(props.FOG_COLOR, props.FOG_FAR * props.FOG_NEAR, props.FOG_FAR)
 /**/     this.renderer.render(this.scene, this.camera);
 /**/   }
@@ -119,9 +118,11 @@ void main() {
     vec4 tex1 = texture2D(uMap, uv * 1.0);
     vec4 tex2 = texture2D(uMap, uv * 1.0 + vec2(0.2));
 
-    vec3 blue = uColor;
-    gl_FragColor = vec4(blue + vec3(tex1.a * 0.9 - tex2.a * 0.02), 1.0);
-    // gl_FragColor = vec4(vec3(tex1), 1.0);
+    // vec3 alpha = vec3(tex1.a - tex2.a * 0.1);
+    // gl_FragColor = vec4(uColor + alpha, 1.0);
+
+    vec3 alpha = vec3(tex1.a);
+    gl_FragColor = vec4(vec3((tex1.xyz * alpha) + (uColor * (1.0 - alpha))), 1.0);
 
     // FOG
     #ifdef USE_FOG
@@ -144,13 +145,16 @@ class Sea extends Object3D {
     this.geometry = new PlaneBufferGeometry(50, 50, 20, 20);
     this.geometry.rotateX(-Math.PI / 2);
 
-    const imgT = createImageTexture(water, { name: 'water', onLoad: iTex => {
-      iTex.texture.wrapS =
-      iTex.texture.wrapT =
-      iTex.uniform.value.wrapS =
-      iTex.uniform.value.wrapT =
-      REPEAT_WRAPPING;
-    } });
+    const imgT = createImageTexture(water, {
+      name: 'water',
+      onLoad: iTex => {
+        iTex.texture.wrapS =
+        iTex.texture.wrapT =
+        iTex.uniform.value.wrapS =
+        iTex.uniform.value.wrapT =
+        REPEAT_WRAPPING;
+      }
+    });
 
     const uniforms = {
       uMap: imgT.uniform,
