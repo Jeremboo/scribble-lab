@@ -59,6 +59,7 @@ body, html
   -webkit-border-radius: 5px;
   text-align: center;
   border: 0;
+  display: none;
 }
 
 #text {
@@ -67,6 +68,28 @@ body, html
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
+
+  charSize = 30px;
+  .character {
+    display: block;
+    position: relative;
+    width: charSize;
+    height: charSize;
+
+    // hack
+    .marker {
+      position: absolute;
+      width: charSize * 0.5;
+      height: charSize * 0.5;
+      border-radius: charSize * 0.25
+    }
+
+    span {
+      center();
+      font-size: charSize * 1.5;
+    }
+  }
 }
 #wrapper {
   width: 100%;

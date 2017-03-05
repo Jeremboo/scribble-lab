@@ -58,9 +58,17 @@ const write = document.getElementById('write');
 const text = document.getElementById('text');
 function traceCharacter(character, position) {
   write.innerHTML += character;
-  // const letter = document.createElement('span');
-  // letter.innerHTML = character;
-  // text.appendChild(letter);
+  const letter = document.createElement('div');
+  letter.classList.add('character');
+  const turbulenceZone = document.createElement('div');
+  turbulenceZone.classList.add('marker');
+  turbulenceZone.style.left = `${position.x * 100}%`;
+  turbulenceZone.style.top = `${position.y * 100}%`;
+  letter.appendChild(turbulenceZone);
+  const char = document.createElement('span');
+  char.innerHTML = character;
+  letter.appendChild(char);
+  text.appendChild(letter);
   console.log('trace character : ', character, position);
 }
 
@@ -126,6 +134,7 @@ function keyTouched(e) {
   if (key.classList.contains('delete')) {
     const html = write.innerHTML;
     write.innerHTML = html.substr(0, html.length - 1);
+    if (text.lastChild) text.removeChild(text.lastChild);
     return false;
   }
 
