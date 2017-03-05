@@ -3,13 +3,18 @@ mainColor = #070707
 secondaryColor = #C9F0FF
 bgColor = #fff
 
+*
+  margin: 0;
+  padding: 0;
+
 body, html
   width: 100%;
   height: 100%;
   overflow: hidden
   background-color: bgColor
-  margin: 0
   font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif
+  font: 71%/1.5 Verdana, Sans-Serif;
+  background: #eee;
 
 .f
   position: fixed
@@ -23,3 +28,85 @@ body, html
   a
     font-size: 0.8rem
     color: secondaryColor
+
+
+
+#container {
+  margin: 100px auto;
+  width: 688px;
+}
+
+#write {
+  margin: 0 0 5px;
+  padding: 5px;
+  width: 671px;
+  height: 200px;
+  font: 1em/1.5 Verdana, Sans-Serif;
+  background: #fff;
+  border: 1px solid #f9f9f9;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+#keyboard {
+  position: fixed;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+
+  li {
+      float: left;
+      margin: 0 5px 5px 0;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      background: #fff;
+      border: 1px solid #f9f9f9;
+      -moz-border-radius: 5px;
+      -webkit-border-radius: 5px;
+
+      &:hover {
+        position: relative;
+        top: 1px;
+        left: 1px;
+        border-color: #e5e5e5;
+        cursor: pointer;
+      }
+  }
+
+  .tab, .delete {
+    width: 70px;
+  }
+  .capslock {
+    width: 80px;
+  }
+  .return {
+    width: 77px;
+  }
+  .left-shift {
+    width: 95px;
+  }
+  .right-shift {
+    width: 109px;
+  }
+  .lastitem {
+    margin-right: 0;
+  }
+  .uppercase {
+    text-transform: uppercase;
+  }
+  .space {
+    clear: left;
+    width: 681px;
+  }
+  .on {
+    display: none;
+  }
+}
+
+.capslock, .tab, .left-shift {
+  clear: left;
+}
