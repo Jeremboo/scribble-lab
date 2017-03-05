@@ -6,7 +6,6 @@ const compiler = webpack(require('../webpack.config.js'));
 const server = new WebpackDevServer(compiler, {
   // contentBase: `/${dirPath}`,
   hot: true,
-  // inline: true,
   historyApiFallback: true,
 });
 

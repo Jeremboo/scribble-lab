@@ -11,7 +11,6 @@ const config = require('../webpack.config');
 config.entry = [
   'babel-polyfill',
   path.resolve(__dirname, '../bootstrap.js'),
-  // path.resolve(__dirname, `../${process.env.SKETCH_PATH}/app.js`),
 ];
 config.debug = false;
 config.devtool = '';

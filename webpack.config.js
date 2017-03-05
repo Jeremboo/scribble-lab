@@ -72,6 +72,7 @@ var config = {
     },
     plugins: [
       new webpack.optimize.OccurenceOrderPlugin(),
+      new webpack.HotModuleReplacementPlugin(),
       new webpack.optimize.DedupePlugin(),
       new HtmlWebpackPlugin({
         title: name,
