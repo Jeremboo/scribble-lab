@@ -54,10 +54,25 @@ function addMarker(x, y, color = 'red') {
  * CHARACTERS
  ************
  */
+const write = document.getElementById('write');
+const text = document.getElementById('text');
 function traceCharacter(character, position) {
-  console.log('trace character : ', position);
+  write.innerHTML += character;
+  // const letter = document.createElement('span');
+  // letter.innerHTML = character;
+  // text.appendChild(letter);
+  console.log('trace character : ', character, position);
 }
 
+/**
+ ************
+ * UX
+ ************
+ */
+const textZone = document.getElementById('text');
+textZone.addEventListener('touchstart', () => {
+  document.getElementById('wrapper').classList.toggle('hidden');
+});
 
 /**
  ************
@@ -65,7 +80,6 @@ function traceCharacter(character, position) {
  ************
  */
 // https://code.tutsplus.com/tutorials/creating-a-keyboard-with-css-and-jquery--net-5774
-const write = document.getElementById('write');
 const keys = document.querySelectorAll('#keyboard li');
 const letters = document.getElementsByClassName('letter');
 const symbols = document.querySelectorAll('.symbol span');
@@ -135,7 +149,6 @@ function keyTouched(e) {
 
   /* ADD CHARACTED WITH SPECIFIC DATA */
   const { x, y } = getPositionInViewport(key);
-  addMarker(x, y);
   const touchPosition = {
     x: e.clientX || e.touches[0].clientX,
     y: e.clientY || e.touches[0].clientY,
@@ -144,10 +157,8 @@ function keyTouched(e) {
 
   traceCharacter(character, {
     x: (touchPosition.x - x) / key.offsetWidth,
-    y: (touchPosition.y - y) / key.offsetWidth
+    y: (touchPosition.y - y) / key.offsetWidth,
   });
-
-  write.innerHTML += character;
   return true;
 }
 
