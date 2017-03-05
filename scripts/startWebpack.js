@@ -2,9 +2,11 @@ const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const compiler = webpack(require('../webpack.config.js'));
 
+// Create webpack dev server
 const server = new WebpackDevServer(compiler, {
   // contentBase: `/${dirPath}`,
   hot: true,
+  // inline: true,
   historyApiFallback: true,
 });
 
