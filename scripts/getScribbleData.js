@@ -24,7 +24,7 @@ module.exports = () => {
     name = scribbleData.name;
   }
 
-  // START WEBPACK
+  // SAVE FOR WEBPACK
   process.env.GROUP_PATH = groupPath;
   process.env.SKETCH_PATH = scribblePath;
   process.env.NAME = name;
