@@ -76,7 +76,7 @@ var config = {
       new webpack.optimize.DedupePlugin(),
       new HtmlWebpackPlugin({
         title: name,
-        // template: path.resolve(__dirname, scribble_path + '/index.pug.html'),
+        template: path.resolve(__dirname, './index.html'),
       }),
     ],
 };
