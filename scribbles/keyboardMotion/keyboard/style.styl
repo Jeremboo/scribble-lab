@@ -29,8 +29,6 @@ body, html
     font-size: 0.8rem
     color: secondaryColor
 
-
-
 #container {
   margin: 100px auto;
   width: 688px;
@@ -105,8 +103,30 @@ body, html
   .on {
     display: none;
   }
+
+  .off, .on {
+    pointer-events: none;
+  }
 }
 
 .capslock, .tab, .left-shift {
   clear: left;
+}
+
+
+// HELPERS
+.marker {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  background-color: red;
+  transform: translate(-50%, -50%);
+
+  &.green {
+    background-color: green;
+  }
+
+  &.blue {
+    background-color: blue;
+  }
 }

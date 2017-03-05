@@ -9,7 +9,61 @@
 // Tuto virtual keyboard: https://www.codeproject.com/Articles/13748/JavaScript-Virtual-Keyboard
 // Touch event handling : http://tutorials.jenkov.com/responsive-mobile-friendly-web-design/touch-events-in-javascript.html
 
+/**
+ ************
+ * UTILS
+ ************
+ */
+// http://stackoverflow.com/questions/211703/is-it-possible-to-get-the-position-of-div-within-the-browser-viewport-not-withi
+const getPositionInViewport = (e) => {
+  const offset = {
+    x: 0, // e.offsetWidth / 2,
+    y: 0, // e.offsetHeight / 2,
+  };
 
+  while (e) {
+    offset.x += e.offsetLeft;
+    offset.y += e.offsetTop;
+    e = e.offsetParent;
+  }
+
+  if (document.documentElement && (document.documentElement.scrollTop || document.documentElement.scrollLeft)) {
+    offset.x -= document.documentElement.scrollLeft;
+    offset.y -= document.documentElement.scrollTop;
+  } else if (document.body && (document.body.scrollTop || document.body.scrollLeft)) {
+    offset.x -= document.body.scrollLeft;
+    offset.y -= document.body.scrollTop;
+  } else if (window.pageXOffset || window.pageYOffset) {
+    offset.x -= window.pageXOffset;
+    offset.y -= window.pageYOffset;
+  }
+  return offset;
+};
+
+function addMarker(x, y, color = 'red') {
+  const marker = document.createElement('div');
+  marker.classList.add('marker');
+  marker.classList.add(color);
+  marker.style.left = `${x}px`;
+  marker.style.top = `${y}px`;
+  document.body.appendChild(marker);
+}
+
+/**
+ ************
+ * CHARACTERS
+ ************
+ */
+function traceCharacter(character, position) {
+  console.log('trace character : ', position);
+}
+
+
+/**
+ ************
+ * KEYBOARD
+ ************
+ */
 // https://code.tutsplus.com/tutorials/creating-a-keyboard-with-css-and-jquery--net-5774
 const write = document.getElementById('write');
 const keys = document.querySelectorAll('#keyboard li');
@@ -37,6 +91,7 @@ function keyTouched(e) {
   const key = e.target;
   let character = key.innerHTML;
 
+  /* DEFINE KEYBOARD EVENT */
   // Shift key
   if (key.classList.contains('left-shift') || key.classList.contains('right-shift')) {
     toggleUppercase();
@@ -78,12 +133,31 @@ function keyTouched(e) {
     shift = false;
   }
 
+  /* ADD CHARACTED WITH SPECIFIC DATA */
+  const { x, y } = getPositionInViewport(key);
+  addMarker(x, y);
+  const touchPosition = {
+    x: e.clientX || e.touches[0].clientX,
+    y: e.clientY || e.touches[0].clientY,
+  };
+  addMarker(touchPosition.x, touchPosition.y, 'blue');
+
+  traceCharacter(character, {
+    x: (touchPosition.x - x) / key.offsetWidth,
+    y: (touchPosition.y - y) / key.offsetWidth
+  });
+
   write.innerHTML += character;
   return true;
 }
 
 
-// START
+/**
+ ************
+ * START
+ ************
+ */
 for (let i = 0; i < keys.length; i++) {
-  keys[i].addEventListener('click', keyTouched);
+  // keys[i].addEventListener('click', keyTouched);
+  keys[i].addEventListener('touchstart', keyTouched);
 }
