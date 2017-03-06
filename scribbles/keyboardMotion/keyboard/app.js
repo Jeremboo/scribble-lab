@@ -67,6 +67,7 @@ function traceCharacter(character, position) {
   letter.appendChild(turbulenceZone);
   const char = document.createElement('span');
   char.innerHTML = character;
+  if (character === ' ') char.style.marginLeft = '30px';
   letter.appendChild(char);
   text.appendChild(letter);
   console.log('trace character : ', character, position);

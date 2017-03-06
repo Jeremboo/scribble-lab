@@ -69,13 +69,14 @@ body, html
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  padding: 50px 30px;
 
   charSize = 30px;
   .character {
     display: block;
     position: relative;
-    width: charSize;
-    height: charSize;
+    // width: charSize;
+    // height: charSize;
 
     // hack
     .marker {
@@ -86,8 +87,12 @@ body, html
     }
 
     span {
-      center();
+      // center();
+      display: block;
+      // min-width: charSize * 0.5;
+      // min-height: charSize * 0.5;
       font-size: charSize * 1.5;
+      letter-spacing: 1px;
     }
   }
 }
