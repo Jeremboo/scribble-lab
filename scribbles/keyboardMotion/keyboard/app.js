@@ -9,6 +9,17 @@
 // Tuto virtual keyboard: https://www.codeproject.com/Articles/13748/JavaScript-Virtual-Keyboard
 // Touch event handling : http://tutorials.jenkov.com/responsive-mobile-friendly-web-design/touch-events-in-javascript.html
 
+
+import dat from 'dat.gui/build/dat.gui';
+
+const props = {
+  skewXMax: 45,
+  skewYMax: 0,
+  distordXMax: 45,
+  distordYMax: 45,
+  scaleZ: 3,
+};
+
 /**
  ************
  * UTILS
@@ -49,6 +60,20 @@ function addMarker(x, y, color = 'red') {
   document.body.appendChild(marker);
 }
 
+function updateTransform(elm) {
+  elm.style.transform = `skewX(${
+    (0.5 - elm.getAttribute('data-x')) * props.skewXMax
+  }deg) skewY(${
+    (0.5 - elm.getAttribute('data-y')) * props.skewYMax
+  }deg) perspective(100px) scaleZ(${
+    props.scaleZ
+  }) rotateX(${
+    -(0.5 - elm.getAttribute('data-y')) * props.distordYMax
+  }deg) rotateY(${
+    (0.5 - elm.getAttribute('data-x')) * props.distordXMax
+  }deg)`;
+}
+
 /**
  ************
  * CHARACTERS
@@ -65,9 +90,14 @@ function traceCharacter(character, position) {
   turbulenceZone.style.left = `${position.x * 100}%`;
   turbulenceZone.style.top = `${position.y * 100}%`;
   letter.appendChild(turbulenceZone);
+
+  // Letter
   const char = document.createElement('span');
   char.innerHTML = character;
   if (character === ' ') char.style.marginLeft = '30px';
+  char.setAttribute('data-x', position.x);
+  char.setAttribute('data-y', position.y);
+  updateTransform(char);
   letter.appendChild(char);
   text.appendChild(letter);
   console.log('trace character : ', character, position);
@@ -182,3 +212,28 @@ for (let i = 0; i < keys.length; i++) {
   // keys[i].addEventListener('click', keyTouched);
   keys[i].addEventListener('touchstart', keyTouched);
 }
+
+
+/**
+ ************
+ * GUI
+ ************
+ */
+function updateCharacters() {
+  const chars = document.querySelectorAll('.character span');
+  let i;
+  for (i = 0; i < chars.length; i++) {
+    updateTransform(chars[i]);
+  }
+}
+const gui = new dat.GUI();
+const skewXMax = gui.add(props, 'skewXMax', 0, 180);
+skewXMax.onChange(updateCharacters);
+const distordXMax = gui.add(props, 'distordXMax', 0, 180);
+distordXMax.onChange(updateCharacters);
+const distordYMax = gui.add(props, 'distordYMax', 0, 180);
+distordYMax.onChange(updateCharacters);
+const scaleZ = gui.add(props, 'scaleZ', 0, 10);
+scaleZ.onChange(updateCharacters);
+// const skewYMax = gui.add(props, 'skewYMax', 0, 180);
+// skewYMax.onChange(updateCharacters);
