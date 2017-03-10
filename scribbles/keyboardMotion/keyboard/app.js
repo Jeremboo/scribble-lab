@@ -20,6 +20,10 @@ const props = {
   scaleZ: 3,
 };
 
+// https://codepen.io/Jeremboo/pen/jVNVqr
+// http://vanseodesign.com/web-design/svg-filter-primitives-fedisplacementmap/
+// https://codepen.io/pen/?editors=1000
+
 /**
  ************
  * UTILS
