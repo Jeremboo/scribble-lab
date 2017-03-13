@@ -1,0 +1,31 @@
+@import '../_modules/base.styl';
+
+
+#letter
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 256px;
+  height: 256px;
+  font-size: 5em;
+  filter: url(#morphology); // -3 - 5
+  // filter: url(#deform);
+
+  div
+    width: 100%;
+    height: 100%;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    filter: url(#deform);
+
+body
+  background-color: transparent;
+
+  & > canvas
+    position: absolute
+    left: 50%
+    top: 50%
+    transform: translate(-50%, -50%)
+    z-index: -1

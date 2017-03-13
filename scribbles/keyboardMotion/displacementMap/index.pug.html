@@ -1,0 +1,25 @@
+
+<p class="f">
+  <a target="_blank" href="http://www.jeremieboulay.fr">@Jeremboo</a>
+  <br /> ┗|｀O´|┛
+</p>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0">
+  <defs>
+    <filter id="morphology">
+      <feMorphology id="erode" operator="erode" radius="0"/>
+      <feMorphology id="dilate" operator="dilate" radius="0"/>
+    </filter>
+
+    <filter id="deform">
+      <feImage id="image" x="0" y="0" width="256px" height="256px" result="rippleImage" />
+      <feDisplacementMap id="displacement-map" in2="rippleImage" in="SourceGraphic" xChannelSelector="G" yChannelSelector="R" result="displacementMap" scale="10" />
+    </filter>
+  </defs>
+</svg>
+
+<div id="letter">
+  <div>
+    <span>A</span>
+  </div>
+</div>

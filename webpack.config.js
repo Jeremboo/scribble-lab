@@ -55,9 +55,15 @@ var config = {
           loader: 'style!css!stylus',
         },
         {
-          test: /\.(png|jpe?g|gif|svg)$/,
+          test: /\.(png|jpe?g|gif)$/,
           loader: 'file?name=imgs/[hash].[ext]',
           include: [ './assets/', assets ],
+          exclude: [ './assets/raw/', assets + 'raw/' ],
+        },
+        {
+          test: /\.(svg)$/,
+          loader: 'raw',
+          include: [ './assets/raw/', assets + 'raw/' ],
         },
         {
           test: /\.(html|pug)$/,
