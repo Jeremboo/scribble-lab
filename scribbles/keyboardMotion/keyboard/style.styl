@@ -3,17 +3,39 @@ mainColor = #070707
 secondaryColor = #C9F0FF
 bgColor = #eee;
 
-// fix dat gui bug
-.slider {
-  width: 56% !important;
-}
-
-center() {
+center()
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
+
+// WEB FONT
+// fontPath = "../assets/fonts/";
+// webfont("Font", fontPath + "Font/FontLTStd-Roman", 300, normal, otf)
+// https://codepen.io/EmmanuelBeziat/pen/yYoadw?editors=0100
+webfont(family, fileUrl, font-weight = false, font-style = false, formats = eot woff2 woff truetype svg)
+	@font-face
+		fonts = ()
+		font-family family
+		if eot in formats
+			push(fonts, 'url(' + fileUrl + '.eot) format("emebedded-opentype")')
+		if woff2 in formats
+			push(fonts, 'url(' + fileUrl + '.woff2) format("woff2")')
+		if woff in formats
+			push(fonts, 'url(' + fileUrl + '.woff) format("woff")')
+		if opentype in formats || otf in formats
+			push(fonts, 'url(' + fileUrl + '.otf) format("opentype")')
+		if truetype in formats || ttf in formats
+			push(fonts, 'url(' + fileUrl + '.ttf) format("truetype")')
+		if svg in formats
+			push(fonts, 'url(' + fileUrl + '.svg#' + family + ') format("svg")')
+		src unquote(join(", ", fonts))
+		if font-weight
+			font-weight font-weight
+		if font-style
+			font-style font-style
+
+webfont('font', '../_assets/typo/font', 300, normal, eot woff ttf);
 
 *
   margin: 0;
@@ -24,8 +46,7 @@ body, html
   height: 100%;
   overflow: hidden
   background-color: bgColor
-  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif
-  font: 71%/1.5 Verdana, Sans-Serif;
+  font-family: font;
 
 .input:focus, textarea:focus {
     outline: none !important;
@@ -45,6 +66,30 @@ body, html
   a
     font-size: 0.8rem
     color: secondaryColor
+
+// fix dat gui bug
+.slider
+  width: 56% !important;
+
+// HELPERS
+.marker
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  border-radius: 3px;
+  opacity: 0.5;
+  background-color: red;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+
+  &.green
+    background-color: green;
+
+  &.blue
+    background-color: blue;
+
+// START
+
 
 #container {
   width: 100%;
@@ -116,6 +161,7 @@ body, html
 // KEYBOARD
 keyboard(letterSize) {
   #keyboard {
+    font: 71%/1.5 Verdana, Sans-Serif;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -196,25 +242,4 @@ keyboard(letterSize) {
 }
 @media screen and (min-width: 1024px) {
   keyboard(50px);
-}
-
-
-// HELPERS
-.marker {
-  position: fixed;
-  width: 5px;
-  height: 5px;
-  border-radius: 3px;
-  opacity: 0.5;
-  background-color: red;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-
-  &.green {
-    background-color: green;
-  }
-
-  &.blue {
-    background-color: blue;
-  }
 }
