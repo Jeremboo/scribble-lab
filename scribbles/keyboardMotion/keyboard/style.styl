@@ -72,15 +72,24 @@ body, html
   width: 56% !important;
 
 // HELPERS
+._hideRedMarkers .marker.red {
+  display: none;
+}
+._hideBlueMarkers .marker.blue {
+  display: none;
+}
 .marker
   position: fixed;
   width: 5px;
   height: 5px;
   border-radius: 3px;
   opacity: 0.5;
-  background-color: red;
+  background-color: black;
   transform: translate(-50%, -50%);
   pointer-events: none;
+
+  &.red
+    background-color: red;
 
   &.green
     background-color: green;

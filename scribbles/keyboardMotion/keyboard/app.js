@@ -18,6 +18,8 @@ const props = {
   distordXMax: 45,
   distordYMax: 45,
   scaleZ: 3,
+  showRedMarkers: true,
+  showBlueMarkers: true,
 };
 
 // https://codepen.io/Jeremboo/pen/jVNVqr
@@ -91,6 +93,7 @@ function traceCharacter(character, position) {
   letter.classList.add('character');
   const turbulenceZone = document.createElement('div');
   turbulenceZone.classList.add('marker');
+  turbulenceZone.classList.add('red');
   turbulenceZone.style.left = `${position.x * 100}%`;
   turbulenceZone.style.top = `${position.y * 100}%`;
   letter.appendChild(turbulenceZone);
@@ -231,13 +234,27 @@ function updateCharacters() {
   }
 }
 const gui = new dat.GUI();
-const skewXMax = gui.add(props, 'skewXMax', 0, 180);
+
+const markerFolder = gui.addFolder('Markers');
+const showRedMarkers = markerFolder.add(props, 'showRedMarkers');
+showRedMarkers.onChange(() => {
+  document.body.classList.toggle('_hideRedMarkers');
+});
+const showBlueMarkers = markerFolder.add(props, 'showBlueMarkers');
+showBlueMarkers.onChange(() => {
+  document.body.classList.toggle('_hideBlueMarkers');
+});
+
+const letterFolder = gui.addFolder('Letters');
+const skewXMax = letterFolder.add(props, 'skewXMax', 0, 180);
 skewXMax.onChange(updateCharacters);
-const distordXMax = gui.add(props, 'distordXMax', 0, 180);
+const distordXMax = letterFolder.add(props, 'distordXMax', 0, 180);
 distordXMax.onChange(updateCharacters);
-const distordYMax = gui.add(props, 'distordYMax', 0, 180);
+const distordYMax = letterFolder.add(props, 'distordYMax', 0, 180);
 distordYMax.onChange(updateCharacters);
-const scaleZ = gui.add(props, 'scaleZ', 0, 10);
+const scaleZ = letterFolder.add(props, 'scaleZ', 0, 10);
 scaleZ.onChange(updateCharacters);
-// const skewYMax = gui.add(props, 'skewYMax', 0, 180);
+// const skewYMax = letterFolder.add(props, 'skewYMax', 0, 180);
 // skewYMax.onChange(updateCharacters);
+
+gui.close();
