@@ -1,4 +1,4 @@
-import { updateTransform } from 'props';
+import { updateTransform, props } from 'props';
 import { getPositionInViewport, addMarker } from 'utils2';
 
 /**
@@ -9,11 +9,16 @@ import { getPositionInViewport, addMarker } from 'utils2';
 const write = document.getElementById('write');
 const text = document.getElementById('text');
 let updateLetter = f => f;
+// let currentChar = false;
+let pressureInterval = false;
 
 export const onUpdateLetter = (callback) => {
   updateLetter = callback;
 };
 
+function keyLeave() {
+  if (pressureInterval) clearInterval(pressureInterval);
+}
 
 function traceCharacter(letter, position) {
   write.innerHTML += letter;
@@ -39,6 +44,18 @@ function traceCharacter(letter, position) {
 
   letterWrapper.appendChild(char);
   text.appendChild(letterWrapper);
+
+  // Start touchpressure
+  const touchedAt = new Date();
+  pressureInterval = setInterval(() => {
+    const interval = new Date().getTime() - touchedAt;
+    char.setAttribute('data-pressureTime', interval);
+    updateLetter(letter, char);
+
+    if (interval > props.pressureTimeMax) {
+      keyLeave();
+    }
+  }, 25);
 }
 
 /**
@@ -149,4 +166,7 @@ function keyTouched(e) {
 for (let i = 0; i < keys.length; i++) {
   // keys[i].addEventListener('click', keyTouched);
   keys[i].addEventListener('touchstart', keyTouched);
+  keys[i].addEventListener('touchend', keyLeave);
+  keys[i].addEventListener('touchcancel', keyLeave);
+  keys[i].addEventListener('mousedown', keyLeave);
 }

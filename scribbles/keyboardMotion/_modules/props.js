@@ -11,6 +11,9 @@ export const props = {
   scaleZ: 3,
   showRedMarkers: true,
   showBlueMarkers: true,
+  pressureTimeMax: 1500,
+  sizeMax: 200,
+  sizeMin: 36,
 };
 
 /**
@@ -30,6 +33,8 @@ export const updateTransform = (elm) => {
   }deg) rotateY(${
     (0.5 - elm.getAttribute('data-x')) * props.distordXMax
   }deg)`;
+  const pressureDuration = elm.getAttribute('data-pressureTime') / props.pressureTimeMax;
+  elm.style.fontSize = `${Math.min(props.sizeMin + (pressureDuration * props.sizeMax), props.sizeMax)}px`;
 };
 
 /**
@@ -71,3 +76,6 @@ const scaleZ = letterFolder.add(props, 'scaleZ', 0, 10);
 scaleZ.onChange(updateCharacters);
 // const skewYMax = letterFolder.add(props, 'skewYMax', 0, 180);
 // skewYMax.onChange(updateCharacters);
+
+const sizeMax = letterFolder.add(props, 'sizeMax', props.sizeMin, 500);
+sizeMax.onChange(updateCharacters);
