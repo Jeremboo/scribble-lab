@@ -52,7 +52,7 @@ var config = {
         },
         {
           test: /\.(styl|css)$/,
-          loader: 'style!css?sourceMap!stylus',
+          loader: 'style!css!stylus',
         },
         {
           test: /\.(png|jpe?g|gif|svg)$/,
@@ -62,6 +62,11 @@ var config = {
         {
           test: /\.(html|pug)$/,
           loader: 'pug',
+        },
+        {
+          test: /\.(eot|svg|ttf|woff(2)?)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+          loader: 'file?name=fonts/[name].[ext]',
+          include: [ './assets/', assets ],
         },
       ],
     },
