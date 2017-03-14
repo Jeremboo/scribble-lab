@@ -1,10 +1,17 @@
 // KEYBOARD
 keyboard(letterSize) {
   #keyboard {
+    // position: fixed;
+    // bottom: 0;
     font: 71%/1.5 Verdana, Sans-Serif;
     margin: 0;
     padding: 0;
     list-style: none;
+
+    // Hack
+    .marker {
+      z-index: 2;
+    }
 
     li {
         float: left;
@@ -64,22 +71,4 @@ keyboard(letterSize) {
   .capslock, .tab, .left-shift {
     clear: left;
   }
-}
-
-
-// letterSize = 40px;
-@media screen and (min-width: 620px) and (max-width: 800px) {
-  keyboard(35px);
-}
-@media screen and (min-width: 360px) and (max-width: 620px) {
-  keyboard(20px);
-}
-@media screen and (max-width: 359px) {
-  keyboard(15px);
-}
-@media screen and (min-width: 800px) and (max-width: 1023px) {
-  keyboard(40px);
-}
-@media screen and (min-width: 1024px) {
-  keyboard(50px);
 }

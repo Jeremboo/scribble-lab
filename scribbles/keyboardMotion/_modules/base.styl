@@ -163,8 +163,35 @@ body, html
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1;
 
   &.hidden {
     display: none;
   }
+}
+
+@media screen and (min-width: 620px) and (max-width: 800px) {
+  keySize = 35px;
+  keyboard(keySize);
+  #wrapper { min-height: keySize * 6; }
+}
+@media screen and (min-width: 360px) and (max-width: 620px) {
+  keySize = 20px;
+  keyboard(keySize);
+  #wrapper { min-height: keySize * 6; }
+}
+@media screen and (max-width: 359px) {
+  keySize = 20px;
+  keyboard(keySize);
+  #wrapper { min-height: keySize * 6; }
+}
+@media screen and (min-width: 800px) and (max-width: 1023px) {
+  keySize = 40px;
+  keyboard(keySize);
+  #wrapper { min-height: keySize * 6; }
+}
+@media screen and (min-width: 1024px) {
+  keySize = 50px;
+  keyboard(keySize);
+  #wrapper { min-height: keySize * 6; }
 }

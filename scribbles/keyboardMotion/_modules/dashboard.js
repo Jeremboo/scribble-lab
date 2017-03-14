@@ -57,18 +57,7 @@ function traceCharacter(letter, position) {
       }
     }, 25);
   }
-
 }
-
-/**
- ************
- * UX
- ************
- */
-const textZone = document.getElementById('text');
-textZone.addEventListener('touchstart', () => {
-  document.getElementById('wrapper').classList.toggle('hidden');
-});
 
 /**
  ************

@@ -9,11 +9,12 @@ export const props = {
   distordXMax: 45,
   distordYMax: 45,
   scaleZ: 3,
-  showRedMarkers: true,
-  showBlueMarkers: true,
   pressureTimeMax: 1500,
   sizeMax: 200,
   sizeMin: 36,
+  showKeyboard: true,
+  showRedMarkers: true,
+  showBlueMarkers: true,
 };
 
 /**
@@ -22,6 +23,10 @@ export const props = {
  ************
  */
 const markerFolder = gui.addFolder('Markers');
+const showKeyboard = markerFolder.add(props, 'showKeyboard');
+showKeyboard.onChange(() => {
+  document.getElementById('wrapper').classList.toggle('hidden');
+});
 const showRedMarkers = markerFolder.add(props, 'showRedMarkers');
 showRedMarkers.onChange(() => {
   document.body.classList.toggle('_hideRedMarkers');
