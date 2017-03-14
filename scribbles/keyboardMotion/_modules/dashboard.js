@@ -8,12 +8,13 @@ import { getPositionInViewport, addMarker } from 'utils2';
  */
 const write = document.getElementById('write');
 const text = document.getElementById('text');
-let updateLetter = f => f;
-// let currentChar = false;
 let pressureInterval = false;
+let createLetter = f => f;
+let updateLetter = f => f;
 
-export const onUpdateLetter = (callback) => {
-  updateLetter = callback;
+export const onNewLetter = (onCreate = f => f, onUpdate = f => f) => {
+  createLetter = onCreate;
+  updateLetter = onUpdate;
 };
 
 function keyLeave() {
@@ -36,26 +37,27 @@ function traceCharacter(letter, position) {
   char.setAttribute('data-x', position.x);
   char.setAttribute('data-y', position.y);
 
-  if (letter === ' ') {
-    char.style.marginLeft = '30px';
-  } else {
-    updateLetter(letter, char);
-  }
-
   letterWrapper.appendChild(char);
   text.appendChild(letterWrapper);
 
-  // Start touchpressure
-  const touchedAt = new Date();
-  pressureInterval = setInterval(() => {
-    const interval = new Date().getTime() - touchedAt;
-    char.setAttribute('data-pressureTime', interval);
-    updateLetter(letter, char);
+  if (letter === ' ') {
+    char.style.marginLeft = '30px';
+  } else {
+    createLetter(letter, char);
 
-    if (interval > props.pressureTimeMax) {
-      keyLeave();
-    }
-  }, 25);
+    // Start touchpressure
+    const touchedAt = new Date();
+    pressureInterval = setInterval(() => {
+      const interval = new Date().getTime() - touchedAt;
+      char.setAttribute('data-pressureTime', interval);
+      updateLetter(letter, char);
+
+      if (interval > props.pressureTimeMax) {
+        keyLeave();
+      }
+    }, 25);
+  }
+
 }
 
 /**

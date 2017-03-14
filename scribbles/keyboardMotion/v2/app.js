@@ -13,10 +13,36 @@
 // http://vanseodesign.com/web-design/svg-filter-primitives-fedisplacementmap/
 // https://codepen.io/pen/?editors=1000
 
-import { updateTransform } from 'props';
-import { onUpdateLetter } from 'dashboard';
+import { onUpdateLetters, props } from 'props';
+import { onNewLetter } from 'dashboard';
 
-onUpdateLetter((letter, charElm) => {
+
+/**
+ ************
+ * TRANFORM
+ ************
+ */
+const updateTransform = (elm) => {
+   elm.style.transform = `skewX(${
+     (0.5 - elm.getAttribute('data-x')) * props.skewXMax
+   }deg) skewY(${
+     (0.5 - elm.getAttribute('data-y')) * props.skewYMax
+   }deg) perspective(100px) scaleZ(${
+     props.scaleZ
+   }) rotateX(${
+     -(0.5 - elm.getAttribute('data-y')) * props.distordYMax
+   }deg) rotateY(${
+     (0.5 - elm.getAttribute('data-x')) * props.distordXMax
+   }deg)`;
+   const pressureDuration = elm.getAttribute('data-pressureTime') / props.pressureTimeMax;
+   elm.style.fontSize = `${Math.min(props.sizeMin + (pressureDuration * props.sizeMax), props.sizeMax)}px`;
+ };
+
+onUpdateLetters(updateTransform);
+
+const updateLetter = (letter, charElm) => {
   charElm.innerHTML = letter;
   updateTransform(charElm);
-});
+};
+
+onNewLetter(updateLetter, updateLetter);

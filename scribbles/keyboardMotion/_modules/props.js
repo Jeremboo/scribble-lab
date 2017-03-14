@@ -18,27 +18,6 @@ export const props = {
 
 /**
  ************
- * TRANSFORM V2
- ************
- */
-export const updateTransform = (elm) => {
-  elm.style.transform = `skewX(${
-    (0.5 - elm.getAttribute('data-x')) * props.skewXMax
-  }deg) skewY(${
-    (0.5 - elm.getAttribute('data-y')) * props.skewYMax
-  }deg) perspective(100px) scaleZ(${
-    props.scaleZ
-  }) rotateX(${
-    -(0.5 - elm.getAttribute('data-y')) * props.distordYMax
-  }deg) rotateY(${
-    (0.5 - elm.getAttribute('data-x')) * props.distordXMax
-  }deg)`;
-  const pressureDuration = elm.getAttribute('data-pressureTime') / props.pressureTimeMax;
-  elm.style.fontSize = `${Math.min(props.sizeMin + (pressureDuration * props.sizeMax), props.sizeMax)}px`;
-};
-
-/**
- ************
  * MARKERS
  ************
  */
@@ -57,11 +36,16 @@ showBlueMarkers.onChange(() => {
  * LETTER TRANSFORM
  ************
  */
+let updateLetter = f => f;
+export const onUpdateLetters = (callback = f => f) => {
+  updateLetter = callback;
+};
+
 function updateCharacters() {
   const chars = document.querySelectorAll('.character span');
   let i;
   for (i = 0; i < chars.length; i++) {
-    updateTransform(chars[i]);
+    updateLetter(chars[i]);
   }
 }
 
