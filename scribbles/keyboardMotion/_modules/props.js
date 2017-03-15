@@ -66,5 +66,5 @@ scaleZ.onChange(updateCharacters);
 // const skewYMax = letterFolder.add(props, 'skewYMax', 0, 180);
 // skewYMax.onChange(updateCharacters);
 
-const sizeMax = letterFolder.add(props, 'sizeMax', props.sizeMin, 500);
+export const sizeMax = letterFolder.add(props, 'sizeMax', 1, 500);
 sizeMax.onChange(updateCharacters);

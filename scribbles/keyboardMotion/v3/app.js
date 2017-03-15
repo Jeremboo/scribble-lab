@@ -1,5 +1,13 @@
-import { onUpdateLetters, props } from 'props';
+import { onUpdateLetters, props, sizeMax  } from 'props';
 import { onNewLetter } from 'dashboard';
+
+/**
+ ************
+ * DAT GUI UPDATE
+ ************
+ */
+props.sizeMin = 1;
+sizeMax.setValue(10);
 
 /**
  ************
@@ -49,6 +57,10 @@ function transformLetter(elm) {
   }deg)`;
 
   const pressureDuration = elm.getAttribute('data-pressureTime') / props.pressureTimeMax;
+  const paths = elm.querySelectorAll('path');
+  for (let i = 0; i < paths.length; i++) {
+    paths[i].style.strokeWidth = Math.max(props.sizeMin, pressureDuration * props.sizeMax);
+  }
 }
 onUpdateLetters(transformLetter);
 
