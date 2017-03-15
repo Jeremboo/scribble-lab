@@ -16,26 +16,26 @@ center()
 // webfont("Font", fontPath + "Font/FontLTStd-Roman", 300, normal, otf)
 // https://codepen.io/EmmanuelBeziat/pen/yYoadw?editors=0100
 webfont(family, fileUrl, font-weight = false, font-style = false, formats = eot woff2 woff truetype svg)
-	@font-face
-		fonts = ()
-		font-family family
-		if eot in formats
-			push(fonts, 'url(' + fileUrl + '.eot) format("emebedded-opentype")')
-		if woff2 in formats
-			push(fonts, 'url(' + fileUrl + '.woff2) format("woff2")')
-		if woff in formats
-			push(fonts, 'url(' + fileUrl + '.woff) format("woff")')
-		if opentype in formats || otf in formats
-			push(fonts, 'url(' + fileUrl + '.otf) format("opentype")')
-		if truetype in formats || ttf in formats
-			push(fonts, 'url(' + fileUrl + '.ttf) format("truetype")')
-		if svg in formats
-			push(fonts, 'url(' + fileUrl + '.svg#' + family + ') format("svg")')
-		src unquote(join(", ", fonts))
-		if font-weight
-			font-weight font-weight
-		if font-style
-			font-style font-style
+  @font-face
+    fonts = ()
+    font-family family
+    if eot in formats
+      push(fonts, 'url(' + fileUrl + '.eot) format("emebedded-opentype")')
+    if woff2 in formats
+      push(fonts, 'url(' + fileUrl + '.woff2) format("woff2")')
+    if woff in formats
+      push(fonts, 'url(' + fileUrl + '.woff) format("woff")')
+    if opentype in formats || otf in formats
+      push(fonts, 'url(' + fileUrl + '.otf) format("opentype")')
+    if truetype in formats || ttf in formats
+      push(fonts, 'url(' + fileUrl + '.ttf) format("truetype")')
+    if svg in formats
+      push(fonts, 'url(' + fileUrl + '.svg#' + family + ') format("svg")')
+    src unquote(join(", ", fonts))
+    if font-weight
+      font-weight font-weight
+    if font-style
+      font-style font-style
 
 webfont('font', '../_assets/typo/font', 300, normal, eot woff ttf);
 
@@ -98,6 +98,8 @@ body, html
 
   &.blue
     background-color: blue;
+    z-index: 2;
+
 
 // START
 
@@ -129,7 +131,7 @@ body, html
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  // flex-wrap: wrap;
   padding: 50px 30px;
 
   charSize = 30px;
@@ -162,7 +164,7 @@ body, html
   width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   z-index: 1;
 
   &.hidden {
@@ -173,25 +175,25 @@ body, html
 @media screen and (min-width: 620px) and (max-width: 800px) {
   keySize = 35px;
   keyboard(keySize);
-  #wrapper { min-height: keySize * 6; }
+  // #wrapper { min-height: keySize * 6; }
 }
 @media screen and (min-width: 360px) and (max-width: 620px) {
   keySize = 20px;
   keyboard(keySize);
-  #wrapper { min-height: keySize * 6; }
+  // #wrapper { min-height: keySize * 6; }
 }
 @media screen and (max-width: 359px) {
   keySize = 20px;
   keyboard(keySize);
-  #wrapper { min-height: keySize * 6; }
+  // #wrapper { min-height: keySize * 6; }
 }
 @media screen and (min-width: 800px) and (max-width: 1023px) {
   keySize = 40px;
   keyboard(keySize);
-  #wrapper { min-height: keySize * 6; }
+  // #wrapper { min-height: keySize * 6; }
 }
 @media screen and (min-width: 1024px) {
   keySize = 50px;
   keyboard(keySize);
-  #wrapper { min-height: keySize * 6; }
+  // #wrapper { min-height: keySize * 6; }
 }

@@ -1,6 +1,9 @@
 // KEYBOARD
 keyboard(letterSize) {
   #keyboard {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
     // position: fixed;
     // bottom: 0;
     font: 71%/1.5 Verdana, Sans-Serif;
@@ -8,16 +11,16 @@ keyboard(letterSize) {
     padding: 0;
     list-style: none;
 
-    // Hack
-    .marker {
-      z-index: 2;
+    & > div {
+      display: flex;
+      justify-content: center;
     }
 
     li {
-        float: left;
-        margin: 0 (letterSize * 0.125) (letterSize * 0.125) 0;
-        width: letterSize;
-        height: letterSize;
+        // float: left;
+        // margin: 0 (letterSize * 0.125) (letterSize * 0.125) 0;
+        width: letterSize * 1.2;
+        height: letterSize * 0.9;
         line-height: letterSize;
         text-align: center;
         background: #fff;
