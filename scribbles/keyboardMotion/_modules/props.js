@@ -68,3 +68,5 @@ scaleZ.onChange(updateCharacters);
 
 export const sizeMax = letterFolder.add(props, 'sizeMax', 1, 500);
 sizeMax.onChange(updateCharacters);
+export const sizeMin = letterFolder.add(props, 'sizeMin', 1, 40);
+sizeMin.onChange(updateCharacters);

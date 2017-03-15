@@ -1,4 +1,4 @@
-import { onUpdateLetters, props, sizeMax  } from 'props';
+import { onUpdateLetters, props, sizeMax, sizeMin  } from 'props';
 import { onNewLetter } from 'dashboard';
 
 /**
@@ -6,8 +6,8 @@ import { onNewLetter } from 'dashboard';
  * DAT GUI UPDATE
  ************
  */
-props.sizeMin = 1;
 sizeMax.setValue(10);
+sizeMin.setValue(3);
 
 /**
  ************
