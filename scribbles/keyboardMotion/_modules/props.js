@@ -6,6 +6,11 @@ gui.close();
 export const props = {
   skewXMax: 45,
   skewYMax: 0,
+  deformation: {
+    force: 0.3,
+    scale: 10,
+    size: 15,
+  },
   distordXMax: 45,
   distordYMax: 45,
   scaleZ: 3,
@@ -54,7 +59,7 @@ function updateCharacters() {
   }
 }
 
-const letterFolder = gui.addFolder('Letters');
+export const letterFolder = gui.addFolder('Letters');
 const skewXMax = letterFolder.add(props, 'skewXMax', 0, 180);
 skewXMax.onChange(updateCharacters);
 const distordXMax = letterFolder.add(props, 'distordXMax', 0, 180);
