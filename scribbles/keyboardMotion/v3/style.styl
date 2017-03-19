@@ -4,15 +4,30 @@ body, html {
   background-color: white;
 }
 
-#text .character span {
-  overflow: hidden;
-  background-color: white;
-  font-size: 0em;
-  filter: contrast(3);
+#text .character {
 
-  & > div {
-    width: 100%;
-    height: 100%;
-    filter: blur(1px);
+  .marker {
+    z-index: 2;
   }
+
+  span {
+    overflow: hidden;
+    background-color: white;
+    font-size: 0em;
+    filter: contrast(3);
+
+    & > div {
+      width: 100%;
+      height: 100%;
+      filter: blur(1px);
+    }
+  }
+}
+
+#texture-tool-wrapper {
+  visibility: hidden;
+}
+
+#keyboard li {
+  background-color: #eee;
 }

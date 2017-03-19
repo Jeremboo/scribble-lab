@@ -123,14 +123,17 @@ function createCustomFilter(id, data) {
   filter.appendChild(feImg);
 
   const displacementmap = document.createElementNS(NS, 'feDisplacementMap');
-  const sign = (data.left && data.top) ? -1 : 1;
+  const sign = (
+    (data.left && data.top) // ||  // HAUT / GAUCHE
+    // (!data.top && data.left)    // HAUT / DROITE
+  ) ? -1 : 1;
   displacementmap.setAttribute('data-sign', sign);
   displacementmap.setAttribute('class', 'deformation');
   displacementmap.setAttribute('scale', props.deformation.scale * sign);
   displacementmap.setAttribute('in', 'SourceGraphic');
   displacementmap.setAttribute('in2', 'rippleImage');
-  displacementmap.setAttribute('xChannelSelector', 'R');
-  displacementmap.setAttribute('yChannelSelector', 'R');
+  displacementmap.setAttribute('xChannelSelector', (!data.top && data.left) ? 'G' : 'R');
+  displacementmap.setAttribute('yChannelSelector', (data.top && !data.left) ? 'G' : 'R');
   filter.appendChild(displacementmap);
   return filter;
 }
@@ -159,11 +162,13 @@ function transformLetter(elm, x = elm.getAttribute('data-x'), y = elm.getAttribu
     paths[i].style.strokeWidth = Math.max(props.sizeMin, pressureDuration * props.sizeMax);
   }
 
-  // Deforamtion
+  // Deformation
   const deform = elm.querySelector('.deformation');
   const scale = props.deformation.scale * deform.getAttribute('data-sign');
+  const reverseX = deform.getAttribute('xChannelSelector') === 'G' ? -1 : 1;
+  const reverseY = deform.getAttribute('yChannelSelector') === 'G' ? -1 : 1;
   deform.setAttribute('scale', scale);
-  deform.parentNode.parentNode.style.transform = `translate(${scale * 0.5}px, ${scale * 0.5}px)`;
+  deform.parentNode.parentNode.style.transform = `translate(${scale * 0.5 * reverseX}px, ${scale * 0.5 * reverseY}px)`;
 }
 onUpdateLetters(transformLetter);
 
