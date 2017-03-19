@@ -155,7 +155,8 @@ function keyTouched(e) {
  ************
  */
 for (let i = 0; i < keys.length; i++) {
-  // keys[i].addEventListener('click', keyTouched);
+  keys[i].addEventListener('mousedown', keyTouched);
+  keys[i].addEventListener('mouseup', keyLeave);
   keys[i].addEventListener('touchstart', keyTouched);
   keys[i].addEventListener('touchend', keyLeave);
   keys[i].addEventListener('touchcancel', keyLeave);

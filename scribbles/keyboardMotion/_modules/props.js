@@ -7,9 +7,9 @@ export const props = {
   skewXMax: 45,
   skewYMax: 0,
   deformation: {
-    force: 0.3,
+    force: 1,
     scale: 10,
-    size: 15,
+    size: 45,
   },
   distordXMax: 45,
   distordYMax: 45,
@@ -51,7 +51,7 @@ export const onUpdateLetters = (callback = f => f) => {
   updateLetter = callback;
 };
 
-function updateCharacters() {
+export function updateCharacters() {
   const chars = document.querySelectorAll('.character span');
   let i;
   for (i = 0; i < chars.length; i++) {

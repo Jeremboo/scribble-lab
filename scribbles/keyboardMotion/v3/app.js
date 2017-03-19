@@ -1,6 +1,6 @@
 import { createCanvasTexture } from 'threejs-texture-tool';
 
-import { letterFolder, onUpdateLetters, props, sizeMax, sizeMin  } from 'props';
+import { letterFolder, onUpdateLetters, props, sizeMax, sizeMin, updateCharacters  } from 'props';
 import { onNewLetter } from 'dashboard';
 
 
@@ -23,11 +23,7 @@ deformationForce.onChange(() => {
 });
 const deformationScale = deformationFolder.add(props.deformation, 'scale', -50, 50);
 deformationScale.onChange(() => {
-  const deformations = document.getElementsByClassName('deformation');
-  for (let i = 0; i < deformations.length; i++) {
-    deformations[i].setAttribute('scale', props.deformation.scale);
-    deformations[i].parentNode.parentNode.style.transform = `translate(${props.deformation.scale * 0.5}px, ${props.deformation.scale * 0.5}px)`
-  }
+  updateCharacters();
 });
 const deformationSize = deformationFolder.add(props.deformation, 'size', 0, 100);
 deformationSize.onChange(() => {
@@ -83,12 +79,16 @@ function createCustomFilter(id, data) {
   // turbulence.setAttribute('result', 'rippleImage');
   // filter.appendChild(turbulence);
 
+  // Position
+  const top = data.top ? 0 : 1;
+  const left = data.left ? 0 : 1;
+
   const feImg = document.createElementNS(NS, 'feImage');
   const createRippleImage = (p) => {
     const { width, height, context } = p;
     const grd = context.createRadialGradient(
-      width * 0.5, height * 0.5, 0,
-      width * 0.5, height * 0.5, props.deformation.size,
+      width * left, height * top, 0,
+      width * left, height * top, props.deformation.size,
     );
     const greenRatio = Math.floor(255 * props.deformation.force);
     grd.addColorStop(0, `rgb(${255 - greenRatio}, ${greenRatio}, 0)`);
@@ -123,12 +123,14 @@ function createCustomFilter(id, data) {
   filter.appendChild(feImg);
 
   const displacementmap = document.createElementNS(NS, 'feDisplacementMap');
+  const sign = (data.left && data.top) ? -1 : 1;
+  displacementmap.setAttribute('data-sign', sign);
   displacementmap.setAttribute('class', 'deformation');
-  displacementmap.setAttribute('scale', props.deformation.scale);
+  displacementmap.setAttribute('scale', props.deformation.scale * sign);
   displacementmap.setAttribute('in', 'SourceGraphic');
   displacementmap.setAttribute('in2', 'rippleImage');
-  displacementmap.setAttribute('xChannelSelector', 'G');
-  displacementmap.setAttribute('yChannelSelector', 'G');
+  displacementmap.setAttribute('xChannelSelector', 'R');
+  displacementmap.setAttribute('yChannelSelector', 'R');
   filter.appendChild(displacementmap);
   return filter;
 }
@@ -138,17 +140,17 @@ function createCustomFilter(id, data) {
  * TRANSFORM
  ************
  */
-function transformLetter(elm) {
+function transformLetter(elm, x = elm.getAttribute('data-x'), y = elm.getAttribute('data-y')) {
   elm.style.transform = `skewX(${
-    (0.5 - elm.getAttribute('data-x')) * props.skewXMax
+    (0.5 - x) * props.skewXMax
   }deg) skewY(${
-    (0.5 - elm.getAttribute('data-y')) * props.skewYMax
+    (0.5 - y) * props.skewYMax
   }deg) perspective(100px) scaleZ(${
     props.scaleZ
   }) rotateX(${
-    -(0.5 - elm.getAttribute('data-y')) * props.distordYMax
+    -(0.5 - y) * props.distordYMax
   }deg) rotateY(${
-    (0.5 - elm.getAttribute('data-x')) * props.distordXMax
+    (0.5 - x) * props.distordXMax
   }deg)`;
 
   const pressureDuration = elm.getAttribute('data-pressureTime') / props.pressureTimeMax;
@@ -156,6 +158,12 @@ function transformLetter(elm) {
   for (let i = 0; i < paths.length; i++) {
     paths[i].style.strokeWidth = Math.max(props.sizeMin, pressureDuration * props.sizeMax);
   }
+
+  // Deforamtion
+  const deform = elm.querySelector('.deformation');
+  const scale = props.deformation.scale * deform.getAttribute('data-sign');
+  deform.setAttribute('scale', scale);
+  deform.parentNode.parentNode.style.transform = `translate(${scale * 0.5}px, ${scale * 0.5}px)`;
 }
 onUpdateLetters(transformLetter);
 
@@ -169,15 +177,24 @@ onNewLetter(
     const l = alphabetSVG[letter];
     if (svgLetterExist(l)) {
       const id = Math.floor(Math.random() * 200); // TODO remplace
+      const x = charElm.getAttribute('data-x');
+      const y = charElm.getAttribute('data-y');
       // Add letter
       const svgClone = l.cloneNode(true);
-      charElm.appendChild(svgClone);
+      const wrapper = document.createElement('div');
+      wrapper.appendChild(svgClone);
+      charElm.appendChild(wrapper);
       // Create filter
-      const filter = createCustomFilter(id, { width: parseInt(svgClone.style.width), height: parseInt(svgClone.style.height) });
+      const filter = createCustomFilter(id, {
+        width: parseInt(svgClone.style.width),
+        height: parseInt(svgClone.style.height),
+        top: (y < 0.5),
+        left: (x < 0.5),
+      });
       svgClone.appendChild(filter);
       svgClone.style.filter = `url(#deform-${id})`;
       // Other transformation
-      transformLetter(charElm);
+      transformLetter(charElm, x, y);
     } else {
       // Remove the last letter
       charElm.parentNode.parentNode.removeChild(charElm.parentNode);
