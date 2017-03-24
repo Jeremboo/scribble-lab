@@ -24,9 +24,9 @@ import { onNewLetter } from 'dashboard';
  */
 const updateTransform = (elm) => {
    elm.style.transform = `skewX(${
-     (0.5 - elm.getAttribute('data-x')) * props.skewXMax
+     (0.5 - elm.getAttribute('data-x')) * props.skew.XMax
    }deg) skewY(${
-     (0.5 - elm.getAttribute('data-y')) * props.skewYMax
+     (0.5 - elm.getAttribute('data-y')) * props.skew.YMax
    }deg) perspective(100px) scaleZ(${
      props.scaleZ
    }) rotateX(${

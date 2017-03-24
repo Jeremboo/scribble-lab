@@ -4,8 +4,10 @@ export const gui = new dat.GUI();
 gui.close();
 
 export const props = {
-  skewXMax: 45,
-  skewYMax: 0,
+  skew: {
+    XMax: 45,
+    YMax: 0,
+  },
   deformation: {
     force: 1,
     scale: 10,
@@ -20,6 +22,7 @@ export const props = {
   showKeyboard: true,
   showRedMarkers: true,
   showBlueMarkers: true,
+  showTextures: true,
 };
 
 /**
@@ -27,7 +30,7 @@ export const props = {
  * MARKERS
  ************
  */
-const markerFolder = gui.addFolder('Markers');
+export const markerFolder = gui.addFolder('Markers');
 const showKeyboard = markerFolder.add(props, 'showKeyboard');
 showKeyboard.onChange(() => {
   document.getElementById('wrapper').classList.toggle('hidden');
@@ -60,7 +63,8 @@ export function updateCharacters() {
 }
 
 export const letterFolder = gui.addFolder('Letters');
-const skewXMax = letterFolder.add(props, 'skewXMax', 0, 180);
+export const skewFolder = letterFolder.addFolder('Skew');
+const skewXMax = skewFolder.add(props.skew, 'XMax', 0, 180);
 skewXMax.onChange(updateCharacters);
 const distordXMax = letterFolder.add(props, 'distordXMax', 0, 180);
 distordXMax.onChange(updateCharacters);
@@ -71,7 +75,8 @@ scaleZ.onChange(updateCharacters);
 // const skewYMax = letterFolder.add(props, 'skewYMax', 0, 180);
 // skewYMax.onChange(updateCharacters);
 
-export const sizeMax = letterFolder.add(props, 'sizeMax', 1, 500);
+const typoFolder = letterFolder.addFolder('Weight');
+export const sizeMax = typoFolder.add(props, 'sizeMax', 1, 500);
 sizeMax.onChange(updateCharacters);
-export const sizeMin = letterFolder.add(props, 'sizeMin', 1, 40);
+export const sizeMin = typoFolder.add(props, 'sizeMin', 1, 40);
 sizeMin.onChange(updateCharacters);

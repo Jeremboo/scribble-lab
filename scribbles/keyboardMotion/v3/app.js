@@ -1,6 +1,6 @@
 import { createCanvasTexture } from 'threejs-texture-tool';
 
-import { letterFolder, onUpdateLetters, props, sizeMax, sizeMin, updateCharacters  } from 'props';
+import { letterFolder, onUpdateLetters, props, sizeMax, sizeMin, updateCharacters, markerFolder  } from 'props';
 import { onNewLetter } from 'dashboard';
 
 
@@ -13,6 +13,11 @@ const canvasTextureUpdate = [];
  */
 sizeMax.setValue(10);
 sizeMin.setValue(3);
+
+const showTexture = markerFolder.add(props, 'showTextures');
+showTexture.onChange(() => {
+  document.body.classList.toggle('_hideTextureTool');
+});
 
 const deformationFolder = letterFolder.addFolder('Deformation');
 const deformationForce = deformationFolder.add(props.deformation, 'force', 0, 1);
@@ -87,8 +92,8 @@ function createCustomFilter(id, data) {
   const createRippleImage = (p) => {
     const { width, height, context } = p;
     const grd = context.createRadialGradient(
-      width * left, height * top, 0,
-      width * left, height * top, props.deformation.size,
+      width * data.x, height * data.y, 0,
+      width * data.x, height * data.y, props.deformation.size,
     );
     const greenRatio = Math.floor(255 * props.deformation.force);
     grd.addColorStop(0, `rgb(${255 - greenRatio}, ${greenRatio}, 0)`);
@@ -145,9 +150,9 @@ function createCustomFilter(id, data) {
  */
 function transformLetter(elm, x = elm.getAttribute('data-x'), y = elm.getAttribute('data-y')) {
   elm.style.transform = `skewX(${
-    (0.5 - x) * props.skewXMax
+    (0.5 - x) * props.skew.XMax
   }deg) skewY(${
-    (0.5 - y) * props.skewYMax
+    (0.5 - y) * props.skew.YMax
   }deg) perspective(100px) scaleZ(${
     props.scaleZ
   }) rotateX(${
@@ -195,6 +200,8 @@ onNewLetter(
         height: parseInt(svgClone.style.height),
         top: (y < 0.5),
         left: (x < 0.5),
+        y,
+        x,
       });
       svgClone.appendChild(filter);
       svgClone.style.filter = `url(#deform-${id})`;
