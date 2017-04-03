@@ -1,4 +1,4 @@
-import { updateTransform, props } from 'props';
+import { updateTransform, props, toggleKeyboard } from 'props';
 import { getPositionInViewport, addMarker } from 'utils2';
 
 /**
@@ -125,6 +125,12 @@ function keyTouched(e) {
   // uppercase
   if (key.classList.contains('uppercase')) {
     character = character.toUpperCase();
+  }
+
+  // hide
+  if (key.classList.contains('hide')) {
+    toggleKeyboard();
+    return false;
   }
 
   // Remove shift once a key is clicked.

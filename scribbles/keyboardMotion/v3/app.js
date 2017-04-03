@@ -14,6 +14,7 @@ const canvasTextureUpdate = [];
 sizeMax.setValue(10);
 sizeMin.setValue(3);
 
+document.body.classList.toggle('_hideTextureTool');
 const showTexture = markerFolder.add(props, 'showTextures');
 showTexture.onChange(() => {
   document.body.classList.toggle('_hideTextureTool');

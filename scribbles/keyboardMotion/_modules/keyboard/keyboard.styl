@@ -1,6 +1,11 @@
 // KEYBOARD
 keyboard(letterSize) {
   #keyboard {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    background-color: #eeeeed;
+    color: #2D2C2D;
     display: flex;
     justify-content: flex-end;
     flex-direction: column;
@@ -16,15 +21,27 @@ keyboard(letterSize) {
       justify-content: center;
     }
 
+    &:before {
+      content: '';
+      z-index: -1;
+      position: absolute;
+      background-color: #eeeeed;
+      left: -1000px;
+      right: -1000px;
+      top: -2px;
+      height: 100%;
+    }
+
     li {
         // float: left;
         // margin: 0 (letterSize * 0.125) (letterSize * 0.125) 0;
-        width: letterSize * 1.2;
+        // width: letterSize * 1.2;
+        width: 10%;
         height: letterSize * 0.9;
         line-height: letterSize;
         text-align: center;
-        background: #fff;
-        border: letterSize * 0.025 solid #f9f9f9;
+        background-color: #ffffff;
+        border: letterSize * 0.025 solid #eeeeed;
         border-radius: (letterSize * 0.125);
         user-select: none;
 
@@ -41,7 +58,7 @@ keyboard(letterSize) {
       width: letterSize * 1.75;
     }
     .capslock {
-      width: letterSize * 2;
+      // width: letterSize * 2;
     }
     .return {
       width: letterSize * 1.925;
@@ -60,7 +77,8 @@ keyboard(letterSize) {
     }
     .space {
       clear: left;
-      width: letterSize * 17.025;
+      // width: letterSize * 17.025;
+      width: 70%;
     }
     .on {
       display: none;
@@ -68,6 +86,17 @@ keyboard(letterSize) {
 
     .off, .on {
       pointer-events: none;
+    }
+
+    .special {
+      width: 20%;
+      color: #ffffff;
+      background-color: #A5A5A4;
+    }
+
+    .locked {
+      pointer-events: none;
+      // color: rgba(255, 255, 255, 0.5);
     }
   }
 

@@ -20,10 +20,24 @@ export const props = {
   sizeMax: 200,
   sizeMin: 36,
   showKeyboard: true,
-  showRedMarkers: true,
-  showBlueMarkers: true,
-  showTextures: true,
+  showRedMarkers: false,
+  showBlueMarkers: false,
+  showTextures: false,
 };
+
+
+// KEYBOARD
+export const toggleKeyboard = () => {
+  document.getElementById('wrapper').classList.toggle('hidden');
+  props.showKeyboard = (!document.getElementById('wrapper').classList.contains('hidden'));
+};
+function showKeyboardFct(e) {
+  e.preventDefault();
+  document.getElementById('wrapper').classList.remove('hidden');
+  props.showKeyboard = true;
+}
+document.getElementById('text').addEventListener('touchstart', showKeyboardFct);
+document.getElementById('text').addEventListener('click', showKeyboardFct);
 
 /**
  ************
@@ -31,14 +45,15 @@ export const props = {
  ************
  */
 export const markerFolder = gui.addFolder('Markers');
-const showKeyboard = markerFolder.add(props, 'showKeyboard');
-showKeyboard.onChange(() => {
-  document.getElementById('wrapper').classList.toggle('hidden');
-});
+const showKeyboard = markerFolder.add(props, 'showKeyboard').listen();
+showKeyboard.onChange(toggleKeyboard);
 const showRedMarkers = markerFolder.add(props, 'showRedMarkers');
+
+document.body.classList.toggle('_hideRedMarkers');
 showRedMarkers.onChange(() => {
   document.body.classList.toggle('_hideRedMarkers');
 });
+document.body.classList.toggle('_hideBlueMarkers');
 const showBlueMarkers = markerFolder.add(props, 'showBlueMarkers');
 showBlueMarkers.onChange(() => {
   document.body.classList.toggle('_hideBlueMarkers');
