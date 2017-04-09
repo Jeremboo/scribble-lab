@@ -23,8 +23,22 @@ export const props = {
   showRedMarkers: false,
   showBlueMarkers: false,
   showTextures: false,
+  Typographie: 'Helvetica',
 };
 
+const typo = gui.add(props, 'Typographie', {
+  Helvetica: 'Helvetica',
+  Zapfino: 'Zapfino',
+  Chalkduster: 'Chalkduster',
+  Papyrus: 'Papyrus',
+  Gravity: 'Gravity',
+  Times: 'Times',
+  SnellRoundhand: 'SnellRoundhand',
+});
+
+typo.onChange(value => {
+  document.getElementById('container').className = value;
+});
 
 // KEYBOARD
 export const toggleKeyboard = () => {
