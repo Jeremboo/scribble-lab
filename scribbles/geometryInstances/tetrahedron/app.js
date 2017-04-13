@@ -60,23 +60,35 @@ import OrbitControls from 'OrbitControl';
 /**/
 /* ---- CREATING ZONE ---- */
 
-const randomizeMatrix = function() {
-	const position = new Vector3();
-  const rotation = new Euler();
-	const quaternion = new Quaternion();
-	const scale = new Vector3();
-	return (matrix) => {
-		position.x = Math.random() * 40 - 20;
-		position.y = Math.random() * 40 - 20;
-		position.z = Math.random() * 40 - 20;
-		rotation.x = Math.random() * 2 * Math.PI;
-		rotation.y = Math.random() * 2 * Math.PI;
-		rotation.z = Math.random() * 2 * Math.PI;
-		quaternion.setFromEuler(rotation, false);
-		scale.x = scale.y = scale.z = Math.random() * 1;
-		matrix.compose(position, quaternion, scale);
-	};
-}();
+const getRandomInt = (min, max) => Math.floor((Math.random() * ((max - min) + 1))) + min;
+const getRandomAttribute = (json) => {
+  const keys = Object.keys(json);
+  return json[keys[getRandomInt(0, keys.length - 1)]];
+};
+
+const COLORS = {
+  YELLOW: 0xFFE700,
+  YELLOW_1: 0xFFD700,
+  ORANGE: 0xF7AC00,
+  ORANGE_1: 0xF19000,
+  ORANGE_2: 0xEB6B00,
+  ORANGE_3: 0xE85207,
+  RED: 0xE3122C,
+  GREEN: 0x00A47B,
+  GREEN_1: 0x008A35,
+  GREEN_2: 0x006B29,
+  BLUE: 0x00ADC0,
+  BLUE_1: 0x008ED0,
+  BLUE_2: 0x0063AD,
+  BLUE_3: 0x273A8F,
+  PURPLE: 0xC2006B,
+  PURPLE_1: 0xB10276,
+  PURPLE_2: 0x944492,
+  PURPLE_3: 0x80368A,
+  PURPLE_4: 0x6F1F81,
+  PURPLE_5: 0x522282,
+  PURPLE_6: 0x4B2F85,
+};
 
 const vertInstanced = `
   #define SHADER_NAME vertInstanced
@@ -88,14 +100,9 @@ const vertInstanced = `
 	attribute vec3 mcol1;
 	attribute vec3 mcol2;
 	attribute vec3 mcol3;
-  attribute mat4 matrix;
 
-	#ifdef PICKING
-		attribute vec3 pickingColor;
-	#else
-		attribute vec3 color;
-		varying vec3 vPosition;
-	#endif
+	attribute vec3 color;
+	varying vec3 vPosition;
 
 	varying vec3 vColor;
 	void main()	{
@@ -109,12 +116,8 @@ const vertInstanced = `
 
 		vec3 positionEye = (modelViewMatrix * matrix * vec4(position, 1.0)).xyz;
 
-		#ifdef PICKING
-			vColor = pickingColor;
-		#else
-			vColor = color;
-			vPosition = positionEye;
-		#endif
+		vColor = color;
+		vPosition = positionEye;
 
 		gl_Position = projectionMatrix * vec4(positionEye, 1.0);
 	}
@@ -124,46 +127,59 @@ const fragInstanced = `
   #define SHADER_NAME fragInstanced
 	#extension GL_OES_standard_derivatives : enable
 	precision highp float;
-	varying vec3 vColor;
 
-	#ifndef PICKING
-		varying vec3 vPosition;
-	#endif
+	varying vec3 vColor;
+	varying vec3 vPosition;
 
 	void main()	{
-
-		#ifdef PICKING
-			gl_FragColor = vec4(vColor, 1.0);
-		#else
-			vec3 fdx = dFdx(vPosition);
-			vec3 fdy = dFdy(vPosition);
-			vec3 normal = normalize(cross(fdx, fdy));
-			float diffuse = dot(normal, vec3(0.0, 0.0, 1.0));
-			gl_FragColor = vec4(diffuse * vColor, 1.0);
-		#endif
+		vec3 fdx = dFdx(vPosition);
+		vec3 fdy = dFdy(vPosition);
+		vec3 normal = normalize(cross(fdx, fdy));
+		float diffuse = dot(normal, vec3(0.0, 0.0, 1.0));
+		gl_FragColor = vec4(diffuse * vColor, 1.0);
 	}
 `;
 
-const instanceCount = 1000;
+const instanceCount = 25000; // 25000;
 
+// ##
+// MATRIX
+const position = new Vector3();
+const rotation = new Euler();
+const quaternion = new Quaternion();
+const scale = new Vector3();
+const matrix = new Matrix4();
+const me = matrix.elements;
+const updateMatrix = () => {
+  position.x = Math.random() * 40 - 20;
+  position.y = Math.random() * 40 - 20;
+  position.z = Math.random() * 40 - 20;
+  rotation.x = Math.random() * 2 * Math.PI;
+  rotation.y = Math.random() * 2 * Math.PI;
+  rotation.z = Math.random() * 2 * Math.PI;
+  quaternion.setFromEuler(rotation, false);
+  scale.x = scale.y = scale.z = 1;
+  matrix.compose(position, quaternion, scale);
+};
+
+// ##
+// MATERIAL
 const material = new RawShaderMaterial({
   vertexShader: vertInstanced,
   fragmentShader: fragInstanced,
 });
 
+// ##
+// GEOMETRY
 const geom = new TetrahedronBufferGeometry(1, 0);
 const instanceGeom = new InstancedBufferGeometry();
 
 // ##
+// INSTANCES
 // copy vertices into the instace geometry
 const vertices = geom.attributes.position.clone();
 instanceGeom.addAttribute('position', vertices);
-
-// ##
-// CREATE RANDOM MATRIX
-const matrices = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 16), 16, 1
-);
+// for the matrix
 const mcol0 = new InstancedBufferAttribute(
 	new Float32Array(instanceCount * 3), 3, 1
 );
@@ -176,77 +192,43 @@ const mcol2 = new InstancedBufferAttribute(
 const mcol3 = new InstancedBufferAttribute(
 	new Float32Array(instanceCount * 3), 3, 1
 );
-
-const matrix = new Matrix4();
-const me = matrix.elements;
-
-for (let i = 0, ul = mcol0.count; i < ul; i++) {
-	randomizeMatrix(matrix);
-
-	// var object = new Object3D();
-	// objectCount ++;
-	// object.applyMatrix(matrix);
-	// pickingData[i + 1] = object;
-
-	matrices.set(matrix.elements, i * 16);
-	mcol0.setXYZ(i, me[0], me[1], me[2]);
-	mcol1.setXYZ(i, me[4], me[5], me[6]);
-	mcol2.setXYZ(i, me[8], me[9], me[10]);
-	mcol3.setXYZ(i, me[12], me[13], me[14]);
-}
-
-instanceGeom.addAttribute('matrix', matrices);
+const instanceLength = mcol0.count;
 instanceGeom.addAttribute('mcol0', mcol0);
 instanceGeom.addAttribute('mcol1', mcol1);
 instanceGeom.addAttribute('mcol2', mcol2);
 instanceGeom.addAttribute('mcol3', mcol3);
-
-// ##
-// RANDOM COLOR
+// for the color
 const colors = new InstancedBufferAttribute(
 	new Float32Array(instanceCount * 3), 3, 1
 );
-
 for (let i = 0, ul = colors.count; i < ul; i++) {
-	colors.setXYZ(i, Math.random(), Math.random(), Math.random());
+  const c = new Color(getRandomAttribute(COLORS)).getHSL();
+  colors.setXYZ(i, c.h, c.s, c.l);
 }
 instanceGeom.addAttribute('color', colors);
-
 
 // ##
 // MESH
 const mesh = new Mesh(instanceGeom, material);
 webgl.scene.add(mesh);
 
-// // OBJECTS
-// class Example extends Object3D {
-//   constructor() {
-//     super();
-//
-//     this.material = new MeshBasicMaterial({
-//       color: new Color(secondaryColor),
-//       shading: FlatShading,
-//       wireframe: true,
-//     });
-//     this.geometry = new BoxGeometry(1, 1, 1);
-//     this.mesh = new Mesh(this.geometry, this.material);
-//
-//     this.add(this.mesh);
-//
-//     this.update = this.update.bind(this);
-//   }
-//
-//   update() {
-//     this.rotation.x += 0.03;
-//     this.rotation.y += 0.03;
-//   }
-// }
-//
-// // START
-// const ex = new Example();
-//
-// // ADDS
-// webgl.add(ex);
+// ##
+// UPDATE
+const updatePosition = () => {
+  mesh.geometry.attributes.mcol0.needsUpdate = true;
+  mesh.geometry.attributes.mcol1.needsUpdate = true;
+  mesh.geometry.attributes.mcol2.needsUpdate = true;
+  mesh.geometry.attributes.mcol3.needsUpdate = true;
+
+  let i;
+  for (i = 0; i < instanceLength; i++) {
+    updateMatrix();
+    mcol0.setXYZ(i, me[0], me[1], me[2]);
+    mcol1.setXYZ(i, me[4], me[5], me[6]);
+    mcol2.setXYZ(i, me[8], me[9], me[10]);
+    mcol3.setXYZ(i, me[12], me[13], me[14]);
+  }
+};
 
 /* ---- CREATING ZONE END ---- */
 /**/
@@ -263,5 +245,6 @@ webgl.scene.add(mesh);
 /**/ function _loop() {
 /**/ 	webgl.update();
 /**/ 	requestAnimationFrame(_loop);
+      updatePosition();
 /**/ }
 /**/ _loop();
