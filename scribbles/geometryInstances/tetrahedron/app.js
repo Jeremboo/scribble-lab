@@ -140,7 +140,7 @@ const fragInstanced = `
 	}
 `;
 
-const instanceCount = 25000; // 25000;
+const instanceCount = 100; // 25000;
 
 // ##
 // MATRIX
@@ -151,9 +151,9 @@ const scale = new Vector3();
 const matrix = new Matrix4();
 const me = matrix.elements;
 const updateMatrix = () => {
-  position.x = Math.random() * 40 - 20;
-  position.y = Math.random() * 40 - 20;
-  position.z = Math.random() * 40 - 20;
+  position.x = Math.random() * 4 - 2;
+  position.y = Math.random() * 4 - 2;
+  position.z = Math.random() * 4 - 2;
   rotation.x = Math.random() * 2 * Math.PI;
   rotation.y = Math.random() * 2 * Math.PI;
   rotation.z = Math.random() * 2 * Math.PI;
@@ -192,7 +192,6 @@ const mcol2 = new InstancedBufferAttribute(
 const mcol3 = new InstancedBufferAttribute(
 	new Float32Array(instanceCount * 3), 3, 1
 );
-const instanceLength = mcol0.count;
 instanceGeom.addAttribute('mcol0', mcol0);
 instanceGeom.addAttribute('mcol1', mcol1);
 instanceGeom.addAttribute('mcol2', mcol2);
@@ -221,7 +220,7 @@ const updatePosition = () => {
   mesh.geometry.attributes.mcol3.needsUpdate = true;
 
   let i;
-  for (i = 0; i < instanceLength; i++) {
+  for (i = 0; i < instanceCount; i++) {
     updateMatrix();
     mcol0.setXYZ(i, me[0], me[1], me[2]);
     mcol1.setXYZ(i, me[4], me[5], me[6]);
