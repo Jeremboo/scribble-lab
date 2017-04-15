@@ -2,15 +2,18 @@ import {
   WebGLRenderer, Scene, PerspectiveCamera, Object3D, BoxGeometry,
   MeshBasicMaterial, Mesh, Color, FlatShading, RawShaderMaterial,
   TetrahedronBufferGeometry, InstancedBufferGeometry, InstancedBufferAttribute,
-  Matrix4, Quaternion, Euler, Vector3,
+  Matrix4, Quaternion, Euler, Vector3, PointLight, ShaderMaterial, AmbientLight,
+  PointLightHelper, UniformsLib, UniformsUtils,
 } from 'three';
 
+import { COLORS } from 'props';
+import { getRandomAttribute } from 'utils';
 import OrbitControls from 'OrbitControl';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#C9F0FF';
-/**/ const bgColor = false // 'rgb(0, 0, 0)';
+/**/ const bgColor = 0xaaaaaa; // 'rgb(0, 0, 0)';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Webgl {
@@ -22,14 +25,14 @@ import OrbitControls from 'OrbitControl';
 /**/     if (bgColor) this.renderer.setClearColor(new Color(bgColor));
 /**/     this.scene = new Scene();
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
-/**/     this.camera.position.set(0, 0, 10);
+/**/     this.camera.position.set(0, 0, 100);
 /**/     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 /**/     this.controls.enableDamping = true;
 /**/     this.controls.dampingFactor = 0.1;
 /**/     this.controls.rotateSpeed = 0.1;
-/**/     this.controls.minDistance = 5;
-/**/     this.controls.maxDistance = 20;
-/**/     this.controls.maxPolarAngle = Math.PI * 0.45;
+// /**/     this.controls.minDistance = 5;
+// /**/     this.controls.maxDistance = 20;
+// /**/     this.controls.maxPolarAngle = Math.PI * 0.45;
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
 /**/     this.resize = this.resize.bind(this);
@@ -60,42 +63,12 @@ import OrbitControls from 'OrbitControl';
 /**/
 /* ---- CREATING ZONE ---- */
 
-const getRandomInt = (min, max) => Math.floor((Math.random() * ((max - min) + 1))) + min;
-const getRandomAttribute = (json) => {
-  const keys = Object.keys(json);
-  return json[keys[getRandomInt(0, keys.length - 1)]];
-};
-
-const COLORS = {
-  YELLOW: 0xFFE700,
-  YELLOW_1: 0xFFD700,
-  ORANGE: 0xF7AC00,
-  ORANGE_1: 0xF19000,
-  ORANGE_2: 0xEB6B00,
-  ORANGE_3: 0xE85207,
-  RED: 0xE3122C,
-  GREEN: 0x00A47B,
-  GREEN_1: 0x008A35,
-  GREEN_2: 0x006B29,
-  BLUE: 0x00ADC0,
-  BLUE_1: 0x008ED0,
-  BLUE_2: 0x0063AD,
-  BLUE_3: 0x273A8F,
-  PURPLE: 0xC2006B,
-  PURPLE_1: 0xB10276,
-  PURPLE_2: 0x944492,
-  PURPLE_3: 0x80368A,
-  PURPLE_4: 0x6F1F81,
-  PURPLE_5: 0x522282,
-  PURPLE_6: 0x4B2F85,
-};
-
 const vertInstanced = `
-  #define SHADER_NAME vertInstanced
-	precision highp float;
-	uniform mat4 modelViewMatrix;
-	uniform mat4 projectionMatrix;
-	attribute vec3 position;
+  // #define SHADER_NAME vertInstanced
+	// precision highp float;
+	// uniform mat4 modelViewMatrix;
+	// uniform mat4 projectionMatrix;
+	// attribute vec3 position;
 	attribute vec3 mcol0;
 	attribute vec3 mcol1;
 	attribute vec3 mcol2;
@@ -105,6 +78,9 @@ const vertInstanced = `
 	varying vec3 vPosition;
 
 	varying vec3 vColor;
+  varying vec3 vNormal;
+
+
 	void main()	{
 
 		mat4 matrix = mat4(
@@ -115,32 +91,70 @@ const vertInstanced = `
 		);
 
 		vec3 positionEye = (modelViewMatrix * matrix * vec4(position, 1.0)).xyz;
+    // vPosition = positionEye;
 
+    vPosition = (modelMatrix * vec4(position, 1.0 )).xyz;
+    vNormal = normalMatrix * normal;
 		vColor = color;
-		vPosition = positionEye;
 
 		gl_Position = projectionMatrix * vec4(positionEye, 1.0);
 	}
 `;
 
 const fragInstanced = `
-  #define SHADER_NAME fragInstanced
-	#extension GL_OES_standard_derivatives : enable
-	precision highp float;
+// #define SHADER_NAME fragInstanced
+// #extension GL_OES_standard_derivatives : enable
+// precision highp float;
 
-	varying vec3 vColor;
-	varying vec3 vPosition;
+varying vec3 vNormal;
+varying vec3 vColor;
+varying vec3 vPosition;
 
-	void main()	{
-		vec3 fdx = dFdx(vPosition);
-		vec3 fdy = dFdy(vPosition);
-		vec3 normal = normalize(cross(fdx, fdy));
-		float diffuse = dot(normal, vec3(0.0, 0.0, 1.0));
-		gl_FragColor = vec4(diffuse * vColor, 1.0);
-	}
+uniform vec3 diffuse;
+
+uniform vec3 pointLightColor[MAX_POINT_LIGHTS];
+uniform vec3 pointLightPosition[MAX_POINT_LIGHTS];
+uniform float pointLightDistance[MAX_POINT_LIGHTS];
+
+
+void main()	{
+
+  vec4 addedLights = vec4(0.0,0.0,0.0, 1.0);
+  for(int l = 0; l < MAX_POINT_LIGHTS; l++) {
+    vec3 lightDirection = normalize(vPosition - pointLightPosition[l]);
+    addedLights.rgb += clamp(dot(-lightDirection, vNormal), 0.0, 1.0) * pointLightColor[l];
+  }
+  gl_FragColor = mix(vec4(diffuse.x, diffuse.y, diffuse.z, 1.0), addedLights, addedLights);
+
+  // gl_FragColor = vec4(vColor, 1.0);
+}
 `;
 
 const instanceCount = 100; // 25000;
+
+// ##
+// LIGHT
+const ambiantLight = new AmbientLight(0xffffff, 0.5);
+webgl.scene.add(ambiantLight);
+const lights = [];
+for (let i = 0; i < 4; i++) {
+  const light = new PointLight(0xffffff, 0.5, 200);
+  webgl.scene.add(light);
+  lights.push(light);
+}
+lights[0].position.set(35, 20, 47);
+lights[0].power = 2.5;
+lights[1].position.set(-20, 50, -100);
+lights[2].position.set(-50, 30, 110);
+lights[2].power = 12;
+lights[3].position.set(35, 30, 230);
+lights[3].power = 8;
+// helpers
+for (let i = 0; i < 4; i++) {
+  const helper = new PointLightHelper(lights[i], 10);
+  webgl.scene.add(helper);
+}
+
 
 // ##
 // MATRIX
@@ -151,9 +165,9 @@ const scale = new Vector3();
 const matrix = new Matrix4();
 const me = matrix.elements;
 const updateMatrix = () => {
-  position.x = Math.random() * 4 - 2;
-  position.y = Math.random() * 4 - 2;
-  position.z = Math.random() * 4 - 2;
+  position.x = Math.random() * 40 - 20;
+  position.y = Math.random() * 40 - 20;
+  position.z = Math.random() * 40 - 20;
   rotation.x = Math.random() * 2 * Math.PI;
   rotation.y = Math.random() * 2 * Math.PI;
   rotation.z = Math.random() * 2 * Math.PI;
@@ -164,14 +178,23 @@ const updateMatrix = () => {
 
 // ##
 // MATERIAL
-const material = new RawShaderMaterial({
+// https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
+// https://aerotwist.com/tutorials/an-introduction-to-shaders-part-2/
+const uniforms = UniformsUtils.merge([
+  UniformsLib['lights'],
+]);
+const material = new ShaderMaterial({
   vertexShader: vertInstanced,
   fragmentShader: fragInstanced,
+  uniforms,
+  lights: true,
+  shading: FlatShading,
 });
+
 
 // ##
 // GEOMETRY
-const geom = new TetrahedronBufferGeometry(1, 0);
+const geom = new TetrahedronBufferGeometry(2, 0);
 const instanceGeom = new InstancedBufferGeometry();
 
 // ##
@@ -201,8 +224,8 @@ const colors = new InstancedBufferAttribute(
 	new Float32Array(instanceCount * 3), 3, 1
 );
 for (let i = 0, ul = colors.count; i < ul; i++) {
-  const c = new Color(getRandomAttribute(COLORS)).getHSL();
-  colors.setXYZ(i, c.h, c.s, c.l);
+  const c = new Color(getRandomAttribute(COLORS));
+  colors.setXYZ(i, c.r, c.g, c.b);
 }
 instanceGeom.addAttribute('color', colors);
 
@@ -229,6 +252,8 @@ const updatePosition = () => {
   }
 };
 
+updatePosition();
+
 /* ---- CREATING ZONE END ---- */
 /**/
 /**/
@@ -244,6 +269,6 @@ const updatePosition = () => {
 /**/ function _loop() {
 /**/ 	webgl.update();
 /**/ 	requestAnimationFrame(_loop);
-      updatePosition();
+      // updatePosition();
 /**/ }
 /**/ _loop();
