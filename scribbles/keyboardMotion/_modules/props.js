@@ -5,7 +5,7 @@ gui.close();
 
 export const props = {
   skew: {
-    XMax: 45,
+    XMax: 70,
     YMax: 0,
   },
   deformation: {
@@ -14,11 +14,11 @@ export const props = {
     size: 45,
   },
   distordXMax: 45,
-  distordYMax: 45,
-  scaleZ: 3,
+  distordYMax: 30,
+  scaleZ: 2,
   pressureTimeMax: 1500,
-  sizeMax: 200,
-  sizeMin: 36,
+  sizeMax: 75,
+  sizeMin: 25,
   showKeyboard: true,
   showRedMarkers: false,
   showBlueMarkers: false,
