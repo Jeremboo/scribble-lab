@@ -6,9 +6,10 @@ import {
   PointLightHelper, UniformsLib, UniformsUtils,
 } from 'three';
 
-import { COLORS } from 'props';
 import { getRandomAttribute } from 'utils';
 import OrbitControls from 'OrbitControl';
+
+const COLORS = ['#c15455', '#6394c6', '#daf4ec'];
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
@@ -27,12 +28,6 @@ import OrbitControls from 'OrbitControl';
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 100);
 /**/     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-/**/     this.controls.enableDamping = true;
-/**/     this.controls.dampingFactor = 0.1;
-/**/     this.controls.rotateSpeed = 0.1;
-// /**/     this.controls.minDistance = 5;
-// /**/     this.controls.maxDistance = 20;
-// /**/     this.controls.maxPolarAngle = Math.PI * 0.45;
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
 /**/     this.resize = this.resize.bind(this);

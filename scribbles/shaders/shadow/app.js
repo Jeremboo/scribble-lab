@@ -1,19 +1,23 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Object3D, TetrahedronBufferGeometry,
-  MeshBasicMaterial, Mesh, FlatShading, Color, UniformsLib,
-  UniformsUtils, ShaderMaterial, PointLightHelper, AmbientLight, PointLight,
-  Vector3, MeshPhongMaterial,
+  Mesh, FlatShading, Color,
+  ShaderMaterial, PointLightHelper, AmbientLight, PointLight,
+  Vector3, MeshPhongMaterial, SphereGeometry, MeshBasicMaterial,
 } from 'three';
-
 import OrbitControls from 'OrbitControl';
+import { GUI } from 'dat.gui/build/dat.gui';
 
-import { COLORS } from 'props';
-import { getRandomAttribute } from 'utils';
+const props = {
+  showTardetedResult: false,
+  rotationSpeed: 0.001,
+  NBR_OF_LIGHTS: 3,
+  LIGHT_DISTANCE: 200,
+};
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#C9F0FF';
-/**/ const bgColor = 0xaaaaaa // 'rgb(0, 0, 0)';
+/**/ const bgColor = 0xaaaaaa;
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Webgl {
@@ -25,11 +29,8 @@ import { getRandomAttribute } from 'utils';
 /**/     if (bgColor) this.renderer.setClearColor(new Color(bgColor));
 /**/     this.scene = new Scene();
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
-/**/     this.camera.position.set(0, 0, 100);
+/**/     this.camera.position.set(0, 0, 150);
 /**/     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-/**/     this.controls.enableDamping = true;
-/**/     this.controls.dampingFactor = 0.1;
-/**/     this.controls.rotateSpeed = 0.1;
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
 /**/     this.resize = this.resize.bind(this);
@@ -60,8 +61,9 @@ import { getRandomAttribute } from 'utils';
 /**/
 /* ---- CREATING ZONE ---- */
 
-// GLSL
 
+// ##
+// SHADER
 const vertInstanced = `
   varying vec3 vNormal;
   varying vec3 vWorldPosition;
@@ -90,9 +92,9 @@ const fragInstanced = `
   uniform vec3 color;
   uniform vec3 ambientLightColor;
 
-  uniform vec3 lightsPosition[4];
-  uniform float lightsDistance[4];
-  uniform float lightsPower[4];
+  uniform vec3 lightsPosition[${props.NBR_OF_LIGHTS}];
+  uniform float lightsDistance[${props.NBR_OF_LIGHTS}];
+  uniform float lightsPower[${props.NBR_OF_LIGHTS}];
 
   void main()	{
     // V1 http://blog.edankwan.com/post/three-js-advanced-tips-shadow
@@ -102,7 +104,7 @@ const fragInstanced = `
 
     // V2 https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
     vec4 addedLights = vec4(ambientLightColor, 1.0);
-    for(int l = 0; l < 4; l++) {
+    for(int l = 0; l < ${props.NBR_OF_LIGHTS}; l++) {
       vec3 lightDirection = normalize(lightsPosition[l] - vWorldPosition);
       addedLights.rgb += clamp(dot(-lightDirection, vNormal), 0.0, 1.0);
     }
@@ -115,75 +117,78 @@ const fragInstanced = `
 // LIGHT
 const ambientLight = new AmbientLight(0xffffff, 0.5);
 webgl.scene.add(ambientLight);
+let i;
 const lights = [];
-const NBR_OF_LIGHTS = 4;
-for (let i = 0; i < NBR_OF_LIGHTS; i++) {
-  const light = new PointLight(0xffffff, 0.5, 200);
+for (i = 0; i < props.NBR_OF_LIGHTS; i++) {
+  const light = new PointLight(0xffffff, 0.5, props.LIGHT_DISTANCE);
   webgl.scene.add(light);
   lights.push(light);
 }
-// lights[0].position.set(1, 1, 2);
-lights[0].position.set(35, 20, 47);
-lights[0].power = 2.5;
-lights[1].position.set(-20, 50, -100);
-lights[2].position.set(-50, 30, 110);
-lights[2].power = 12;
-lights[3].position.set(35, 30, 230);
-lights[3].power = 8;
-// helpers
-for (let i = 0; i < NBR_OF_LIGHTS; i++) {
-  const helper = new PointLightHelper(lights[i], 10);
-  webgl.scene.add(helper);
-}
+lights[0].position.set(0, 0, 50);
+// lights[0].power = 2;
+lights[1].position.set(50, 0, 0);
+// lights[1].power = 6;
+lights[2].position.set(0, 0, -50);
+// lights[2].power = 12;
 
-
-// OBJECTS
+// ##
+// OBJECT
 class Tetra extends Object3D {
-  constructor() {
+  constructor(showTargetedResult) {
     super();
+    const color = new Color('#c15455');
 
     // ##
     // MATERIAL
     // https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
     // https://aerotwist.com/tutorials/an-introduction-to-shaders-part-2/
-    const color = new Color(getRandomAttribute(COLORS));
-    const colorVec3 = new Vector3(color.r, color.g, color.b);
-    const uniforms = {};
-    // const uniforms = UniformsUtils.merge([
-    //   UniformsLib['lights'],
-    // ]);
-    uniforms.color = {
-      type: 'vec3',
-      value: colorVec3,
-    };
-    uniforms.ambientLightColor = {
-      type: 'vec3',
-      value: new Vector3(ambientLight.color.r, ambientLight.color.g, ambientLight.color.b),
-    };
-    uniforms.lightsPosition = {
-      type: 'vec3v',
-      value: lights.map(light => light.position),
-    };
-    uniforms.lightsDistance = {
-      type: 'fv1',
-      value: lights.map(light => light.distance),
-    };
-    uniforms.lightsPower = {
-      type: 'fv1',
-      value: lights.map(light => light.power),
-    };
-    this.material = new ShaderMaterial({
-      vertexShader: vertInstanced,
-      fragmentShader: fragInstanced,
-      uniforms,
-      // lights : true,
-      shading: FlatShading,
-    });
-
-    // this.material = new MeshPhongMaterial({
-    //   color,
-    //   shading: FlatShading,
-    // });
+    if (showTargetedResult) {
+      this.material = new MeshPhongMaterial({
+        color,
+        shading: FlatShading,
+      });
+      this.visible = false;
+    } else {
+      const colorVec3 = new Vector3(color.r, color.g, color.b);
+      const uniforms = {};
+      // const uniforms = UniformsUtils.merge([
+      //   UniformsLib['lights'],
+      // ]);
+      uniforms.color = {
+        type: 'vec3',
+        value: colorVec3,
+      };
+      uniforms.ambientLightColor = {
+        type: 'vec3',
+        value: new Vector3(ambientLight.color.r, ambientLight.color.g, ambientLight.color.b),
+      };
+      uniforms.lightsPosition = {
+        type: 'vec3v',
+        value: lights.map(light => light.position),
+      };
+      uniforms.lightsDistance = {
+        type: 'fv1',
+        value: lights.map(light => light.distance),
+      };
+      uniforms.lightsPower = {
+        type: 'fv1',
+        value: lights.map(light => light.power),
+      };
+      this.material = new ShaderMaterial({
+        vertexShader: vertInstanced,
+        fragmentShader: fragInstanced,
+        uniforms,
+        // lights : true,
+        shading: FlatShading,
+      });
+      this.material = new ShaderMaterial({
+        vertexShader: vertInstanced,
+        fragmentShader: fragInstanced,
+        shading: FlatShading,
+        // lights : true,
+        uniforms,
+      });
+    }
 
     this.geometry = new TetrahedronBufferGeometry(20, 0);
     this.mesh = new Mesh(this.geometry, this.material);
@@ -195,16 +200,43 @@ class Tetra extends Object3D {
 
   update() {
     this.mesh.material.needsUpdate = true;
-    this.rotation.x += 0.01;
-    this.rotation.y += 0.01;
+    this.rotation.x += props.rotationSpeed;
+    this.rotation.y += props.rotationSpeed;
   }
 }
 
+// ##
 // START
-const ex = new Tetra();
+const customTetra = new Tetra();
+const targetedTetra = new Tetra(true);
 
-// ADDS
-webgl.add(ex);
+webgl.add(customTetra);
+webgl.add(targetedTetra);
+
+// ##
+// HELPER
+const toggleTargetedResult = show => {
+  customTetra.visible = !show;
+  targetedTetra.visible = show;
+};
+const gui = new GUI();
+const targetedResultController = gui.add(props, 'showTardetedResult');
+gui.add(props, 'rotationSpeed', 0, 0.1);
+targetedResultController.onChange(toggleTargetedResult);
+
+for (i = 0; i < props.NBR_OF_LIGHTS; i++) {
+  const helper = new PointLightHelper(lights[i], lights[i].distance * 0.1);
+  webgl.scene.add(helper);
+
+  const lightDistanceHelper = new Mesh(
+    new SphereGeometry(lights[i].distance, 16, 16),
+    new MeshBasicMaterial({ wireframe: true, color: helper.material.color }),
+  );
+  lightDistanceHelper.position.copy(lights[i].position);
+  lightDistanceHelper.material.transparent = true;
+  lightDistanceHelper.material.opacity = 0.5;
+  webgl.scene.add(lightDistanceHelper);
+}
 
 /* ---- CREATING ZONE END ---- */
 /**/
