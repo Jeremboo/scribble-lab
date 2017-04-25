@@ -120,7 +120,7 @@ const fragInstanced = `
     vec4 addedLights = vec4(ambientLightColor, 1.0);
     for(int l = 0; l < ${props.LIGHTS.length}; l++) {
       vec3 lightDirection = normalize(lightsPosition[l] - vWorldPosition);
-      addedLights.rgb += clamp(dot(-lightDirection, vNormal), 0.0, 1.0);
+      addedLights.rgb += clamp(dot(lightDirection, vNormal), 0.0, 1.0);
     }
     gl_FragColor = vec4(color, 1.0) * addedLights;
   }
