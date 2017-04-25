@@ -7,13 +7,6 @@ import {
 import OrbitControls from 'OrbitControl';
 import { GUI } from 'dat.gui/build/dat.gui';
 
-const props = {
-  showTardetedResult: false,
-  rotationSpeed: 0.001,
-  NBR_OF_LIGHTS: 3,
-  LIGHT_DISTANCE: 200,
-};
-
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#C9F0FF';
@@ -61,6 +54,27 @@ const props = {
 /**/
 /* ---- CREATING ZONE ---- */
 
+const props = {
+  showTardetedResult: false,
+  rotationSpeed: 0.001,
+  LIGHTS: [
+    {
+      position: new Vector3(0, 0, 50),
+      distance: 200,
+      power: 2,
+    },
+    {
+      position: new Vector3(50, 0, 0),
+      distance: 200,
+      power: 6,
+    },
+    {
+      position: new Vector3(0, 0, -50),
+      distance: 200,
+      power: 12,
+    },
+  ],
+};
 
 // ##
 // SHADER
@@ -92,9 +106,9 @@ const fragInstanced = `
   uniform vec3 color;
   uniform vec3 ambientLightColor;
 
-  uniform vec3 lightsPosition[${props.NBR_OF_LIGHTS}];
-  uniform float lightsDistance[${props.NBR_OF_LIGHTS}];
-  uniform float lightsPower[${props.NBR_OF_LIGHTS}];
+  uniform vec3 lightsPosition[${props.LIGHTS.length}];
+  uniform float lightsDistance[${props.LIGHTS.length}];
+  uniform float lightsPower[${props.LIGHTS.length}];
 
   void main()	{
     // V1 http://blog.edankwan.com/post/three-js-advanced-tips-shadow
@@ -104,7 +118,7 @@ const fragInstanced = `
 
     // V2 https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
     vec4 addedLights = vec4(ambientLightColor, 1.0);
-    for(int l = 0; l < ${props.NBR_OF_LIGHTS}; l++) {
+    for(int l = 0; l < ${props.LIGHTS.length}; l++) {
       vec3 lightDirection = normalize(lightsPosition[l] - vWorldPosition);
       addedLights.rgb += clamp(dot(-lightDirection, vNormal), 0.0, 1.0);
     }
@@ -112,24 +126,19 @@ const fragInstanced = `
   }
 `;
 
-
 // ##
 // LIGHT
 const ambientLight = new AmbientLight(0xffffff, 0.5);
 webgl.scene.add(ambientLight);
 let i;
 const lights = [];
-for (i = 0; i < props.NBR_OF_LIGHTS; i++) {
-  const light = new PointLight(0xffffff, 0.5, props.LIGHT_DISTANCE);
+for (i = 0; i < props.LIGHTS.length; i++) {
+  const light = new PointLight(0xffffff, 0.5, props.LIGHTS[i].distance);
+  light.position.copy(props.LIGHTS[i].position);
+  light.power = props.LIGHTS[i].power;
   webgl.scene.add(light);
   lights.push(light);
 }
-lights[0].position.set(0, 0, 50);
-// lights[0].power = 2;
-lights[1].position.set(50, 0, 0);
-// lights[1].power = 6;
-lights[2].position.set(0, 0, -50);
-// lights[2].power = 12;
 
 // ##
 // OBJECT
@@ -208,23 +217,27 @@ class Tetra extends Object3D {
 // ##
 // START
 const customTetra = new Tetra();
-const targetedTetra = new Tetra(true);
-
 webgl.add(customTetra);
+// targeted render
+const targetedTetra = new Tetra(true);
 webgl.add(targetedTetra);
 
 // ##
 // HELPER
+// gui
+const gui = new GUI();
+const targetedResultController = gui.add(props, 'showTardetedResult');
+gui.add(props, 'rotationSpeed', 0, 0.1);
+
+// toggle targeted result
 const toggleTargetedResult = show => {
   customTetra.visible = !show;
   targetedTetra.visible = show;
 };
-const gui = new GUI();
-const targetedResultController = gui.add(props, 'showTardetedResult');
-gui.add(props, 'rotationSpeed', 0, 0.1);
 targetedResultController.onChange(toggleTargetedResult);
 
-for (i = 0; i < props.NBR_OF_LIGHTS; i++) {
+// add light helpers
+for (i = 0; i < props.LIGHTS.length; i++) {
   const helper = new PointLightHelper(lights[i], lights[i].distance * 0.1);
   webgl.scene.add(helper);
 
