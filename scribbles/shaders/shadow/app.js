@@ -109,7 +109,7 @@ const fragInstanced = `
 
   void main()	{
     // Based in ambient light
-    vec4 addedLights = vec4(ambientLightColor * ambientLightIntensity, 1.0);
+    vec4 lighting = vec4(ambientLightColor * ambientLightIntensity, 1.0);
 
     for(int l = 0; l < ${props.LIGHTS.length}; l++) {
       // Get the normalized directed light ray ( diff vect between light's position && && fragment position)
@@ -119,10 +119,10 @@ const fragInstanced = `
       float diffuseLighting = clamp(dot(vNormal, lightDirection), 0.0, 1.0) * lightsIntensity[l];
 
       // add to the lights's vector
-      addedLights.rgb += diffuseLighting;
+      lighting.rgb += diffuseLighting;
     }
 
-    gl_FragColor = vec4(color, 1.0) * addedLights;
+    gl_FragColor = vec4(color, 1.0) * lighting;
   }
 `;
 
