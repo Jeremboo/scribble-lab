@@ -61,67 +61,67 @@ const props = {
     {
       position: new Vector3(0, 0, 50),
       distance: 200,
-      power: 2,
+      intensity: 0.9,
     },
     {
       position: new Vector3(50, 0, 0),
       distance: 200,
-      power: 6,
+      intensity: 0.8,
     },
     {
       position: new Vector3(0, 0, -50),
       distance: 200,
-      power: 12,
+      intensity: 1,
     },
   ],
 };
 
 // ##
 // SHADER
+// https://learnopengl.com/#!Lighting/Basic-Lighting
+// https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
+// http://blog.edankwan.com/post/three-js-advanced-tips-shadow
 const vertInstanced = `
   varying vec3 vNormal;
   varying vec3 vWorldPosition;
-  varying vec3 vPos;
 
 	void main()	{
-
     vNormal = normal;
 
     vec4 worldPosition = modelMatrix * vec4(position, 1.0);
     vWorldPosition = worldPosition.xyz;
 
-    vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
-
-    gl_Position = projectionMatrix *
-               modelViewMatrix *
-               vec4(position, 1.0);
+    gl_Position = projectionMatrix * viewMatrix * worldPosition;
 	}
 `;
 
 const fragInstanced = `
   varying vec3 vNormal;
   varying vec3 vWorldPosition;
-  varying vec3 vPos;
 
   uniform vec3 color;
   uniform vec3 ambientLightColor;
+  uniform float ambientLightIntensity;
 
   uniform vec3 lightsPosition[${props.LIGHTS.length}];
   uniform float lightsDistance[${props.LIGHTS.length}];
-  uniform float lightsPower[${props.LIGHTS.length}];
+  uniform float lightsIntensity[${props.LIGHTS.length}];
 
   void main()	{
-    // V1 http://blog.edankwan.com/post/three-js-advanced-tips-shadow
-    // vec3 pointLightPosition = lightsPosition[0];
-    // float dProd = max(0.0, dot(vNormal, pointLightDirection)) + ambientLightColor.x;
-    // gl_FragColor = vec4(color, 1.0) * vec4(dProd, dProd, dProd, 1.0);
+    // Based in ambient light
+    vec4 addedLights = vec4(ambientLightColor * ambientLightIntensity, 1.0);
 
-    // V2 https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
-    vec4 addedLights = vec4(ambientLightColor, 1.0);
     for(int l = 0; l < ${props.LIGHTS.length}; l++) {
+      // Get the normalized directed light ray ( diff vect between light's position && && fragment position)
       vec3 lightDirection = normalize(lightsPosition[l] - vWorldPosition);
-      addedLights.rgb += clamp(dot(lightDirection, vNormal), 0.0, 1.0);
+
+      // Get the scalar light value
+      float diffuseLighting = clamp(dot(vNormal, lightDirection), 0.0, 1.0) * lightsIntensity[l];
+
+      // add to the lights's vector
+      addedLights.rgb += diffuseLighting;
     }
+
     gl_FragColor = vec4(color, 1.0) * addedLights;
   }
 `;
@@ -133,9 +133,9 @@ webgl.scene.add(ambientLight);
 let i;
 const lights = [];
 for (i = 0; i < props.LIGHTS.length; i++) {
-  const light = new PointLight(0xffffff, 0.5, props.LIGHTS[i].distance);
-  light.position.copy(props.LIGHTS[i].position);
-  light.power = props.LIGHTS[i].power;
+  const { intensity, distance, position } = props.LIGHTS[i];
+  const light = new PointLight(0xffffff, intensity, distance);
+  light.position.copy(position);
   webgl.scene.add(light);
   lights.push(light);
 }
@@ -171,6 +171,10 @@ class Tetra extends Object3D {
         type: 'vec3',
         value: new Vector3(ambientLight.color.r, ambientLight.color.g, ambientLight.color.b),
       };
+      uniforms.ambientLightIntensity = {
+        type: 'f',
+        value: ambientLight.intensity,
+      };
       uniforms.lightsPosition = {
         type: 'vec3v',
         value: lights.map(light => light.position),
@@ -179,22 +183,13 @@ class Tetra extends Object3D {
         type: 'fv1',
         value: lights.map(light => light.distance),
       };
-      uniforms.lightsPower = {
+      uniforms.lightsIntensity = {
         type: 'fv1',
-        value: lights.map(light => light.power),
+        value: lights.map(light => light.intensity),
       };
       this.material = new ShaderMaterial({
         vertexShader: vertInstanced,
         fragmentShader: fragInstanced,
-        uniforms,
-        // lights : true,
-        shading: FlatShading,
-      });
-      this.material = new ShaderMaterial({
-        vertexShader: vertInstanced,
-        fragmentShader: fragInstanced,
-        shading: FlatShading,
-        // lights : true,
         uniforms,
       });
     }
@@ -208,7 +203,6 @@ class Tetra extends Object3D {
   }
 
   update() {
-    this.mesh.material.needsUpdate = true;
     this.rotation.x += props.rotationSpeed;
     this.rotation.y += props.rotationSpeed;
   }
@@ -247,7 +241,7 @@ for (i = 0; i < props.LIGHTS.length; i++) {
   );
   lightDistanceHelper.position.copy(lights[i].position);
   lightDistanceHelper.material.transparent = true;
-  lightDistanceHelper.material.opacity = 0.5;
+  lightDistanceHelper.material.opacity = 0.1;
   webgl.scene.add(lightDistanceHelper);
 }
 
