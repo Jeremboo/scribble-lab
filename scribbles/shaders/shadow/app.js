@@ -56,14 +56,14 @@ import { GUI } from 'dat.gui/build/dat.gui';
 
 const props = {
   showTardetedResult: false,
-  rotationSpeed: 0.001,
+  rotationSpeed: 0.01,
   LIGHTS: [
     {
       position: new Vector3(0, 0, 50),
       distance: 200,
       intensity: 0.9,
     },
-    {
+    /*{
       position: new Vector3(50, 0, 0),
       distance: 200,
       intensity: 0.8,
@@ -72,8 +72,13 @@ const props = {
       position: new Vector3(0, 0, -50),
       distance: 200,
       intensity: 1,
-    },
+    },*/
   ],
+};
+
+const worldToLocalDirection = (object, worldDirectionVector) => {
+  object.updateMatrixWorld();
+  return new Vector3().copy(worldDirectionVector).applyQuaternion(object.getWorldQuaternion().inverse())
 };
 
 // ##
@@ -81,12 +86,13 @@ const props = {
 // https://learnopengl.com/#!Lighting/Basic-Lighting
 // https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
 // http://blog.edankwan.com/post/three-js-advanced-tips-shadow
+// https://aerotwist.com/tutorials/an-introduction-to-shaders-part-2/
 const vertInstanced = `
   varying vec3 vNormal;
   varying vec3 vWorldPosition;
 
 	void main()	{
-    vNormal = normal;
+    vNormal = normalMatrix * normal;
 
     vec4 worldPosition = modelMatrix * vec4(position, 1.0);
     vWorldPosition = worldPosition.xyz;
@@ -109,7 +115,7 @@ const fragInstanced = `
 
   void main()	{
     // Based in ambient light
-    vec4 lighting = vec4(ambientLightColor * ambientLightIntensity, 1.0);
+    vec4 addedLights = vec4(ambientLightColor * ambientLightIntensity, 1.0);
 
     for(int l = 0; l < ${props.LIGHTS.length}; l++) {
       // Get the normalized directed light ray ( diff vect between light's position && && fragment position)
@@ -119,10 +125,10 @@ const fragInstanced = `
       float diffuseLighting = clamp(dot(vNormal, lightDirection), 0.0, 1.0) * lightsIntensity[l];
 
       // add to the lights's vector
-      lighting.rgb += diffuseLighting;
+      addedLights.rgb += diffuseLighting;
     }
 
-    gl_FragColor = vec4(color, 1.0) * lighting;
+    gl_FragColor = vec4(color, 1.0) * addedLights;
   }
 `;
 
@@ -149,8 +155,6 @@ class Tetra extends Object3D {
 
     // ##
     // MATERIAL
-    // https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
-    // https://aerotwist.com/tutorials/an-introduction-to-shaders-part-2/
     if (showTargetedResult) {
       this.material = new MeshPhongMaterial({
         color,
@@ -177,7 +181,7 @@ class Tetra extends Object3D {
       };
       uniforms.lightsPosition = {
         type: 'vec3v',
-        value: lights.map(light => light.position),
+        value: this.getLightsWorldPosition(),
       };
       uniforms.lightsDistance = {
         type: 'fv1',
@@ -191,6 +195,7 @@ class Tetra extends Object3D {
         vertexShader: vertInstanced,
         fragmentShader: fragInstanced,
         uniforms,
+        shading: FlatShading,
       });
     }
 
@@ -202,9 +207,17 @@ class Tetra extends Object3D {
     this.update = this.update.bind(this);
   }
 
+  getLightsWorldPosition() {
+    return lights.map(light => worldToLocalDirection(webgl.camera, light.position));
+  }
+
   update() {
     this.rotation.x += props.rotationSpeed;
     this.rotation.y += props.rotationSpeed;
+
+    // Update world position & rotation
+    this.material.needsUpdate = true;
+    if (this.material.uniforms) this.material.uniforms.lightsPosition.value = this.getLightsWorldPosition();
   }
 }
 
