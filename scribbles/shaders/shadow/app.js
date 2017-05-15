@@ -87,6 +87,7 @@ const worldToLocalDirection = (object, worldDirectionVector) => {
 // https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
 // http://blog.edankwan.com/post/three-js-advanced-tips-shadow
 // https://aerotwist.com/tutorials/an-introduction-to-shaders-part-2/
+// TODO : http://www.mathematik.uni-marburg.de/~thormae/lectures/graphics1/code/WebGLShaderLightMat/ShaderLightMat.html
 const vertInstanced = `
   varying vec3 vNormal;
   varying vec3 vWorldPosition;
