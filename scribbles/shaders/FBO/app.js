@@ -3,6 +3,8 @@ import {
   FloatType, ShaderMaterial, DataTexture,
 } from 'three';
 
+import { GUI } from 'dat.gui/build/dat.gui';
+
 import { getRandomFloat } from 'utils';
 
 import FBOParticle from 'FBOParticle';
@@ -27,11 +29,12 @@ import simulationFrag from './shaders/simulation.f.glsl';
 /**/     if (bgColor) this.renderer.setClearColor(new Color(bgColor));
 /**/     this.scene = new Scene();
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
-/**/     this.camera.position.set(0, 0, 1000);
+/**/     this.camera.position.set(0, 0, 500);
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
 /**/     this.resize = this.resize.bind(this);
 /**/     this.resize(w, h); // set render size
+/**/     this.onUpdate = f => f;
 /**/   }
 /**/   add(mesh) {
 /**/     this.scene.add(mesh);
@@ -41,6 +44,7 @@ import simulationFrag from './shaders/simulation.f.glsl';
 /**/   }
 /**/   update() {
 /**/     let i = this.meshCount;
+/**/     this.onUpdate();
 /**/     while (--i >= 0) {
 /**/       this.meshListeners[i].apply(this, null);
 /**/     }
@@ -64,7 +68,32 @@ import simulationFrag from './shaders/simulation.f.glsl';
  * FBO: http://barradeau.com/blog/?p=621
  */
 
-const SIZE = 250;
+/**
+ * CURL NOISE:
+ * - https://codepen.io/megalowe13/pen/KpvOrN/
+ * - http://szymonkaliski.github.io/pex-exp-curl-noise/
+ * - http://www.miaumiau.cat/2011/08/curl-noise-volume-shadow-particles/
+ */
+
+
+ /**
+ **********
+ * PROPS
+ **********
+ */
+
+const props = {
+  SIZE: 100,
+  AMPL: 0.15,
+  SPEED: 0.0001,
+  ROTATION: 0.005,
+};
+
+const gui = new GUI();
+const guiAmplitude = gui.add(props, 'AMPL', 0.01, 2);
+gui.add(props, 'SPEED', 0.0001, 1);
+gui.add(props, 'ROTATION', 0.0001, 0.3);
+
 /**
 **********
 * DATA TEXTURE
@@ -79,10 +108,9 @@ const getRandomData = (w, h, size) => {
   while (len--) data[len] = getRandomFloat(-size, size);
   return data;
 };
-const data = getRandomData(TEXTURE_WIDTH, TEXTURE_HEIGHT, SIZE);
+const data = getRandomData(TEXTURE_WIDTH, TEXTURE_HEIGHT, props.SIZE);
 const positions = new DataTexture(data, TEXTURE_WIDTH, TEXTURE_HEIGHT, RGBFormat, FloatType);
 positions.needsUpdate = true;
-
 
 /**
  **********
@@ -95,7 +123,7 @@ positions.needsUpdate = true;
  */
 const particleShaderMaterial = new ShaderMaterial({
   uniforms: {
-    // Will be set after the FBO.update() call
+    // Will be set after the particles.update() call
     positions: { type: 't', value: null },
     pointSize: { type: 'f', value: 2 },
   },
@@ -107,7 +135,11 @@ const particleShaderMaterial = new ShaderMaterial({
  * PARTICLE POSITION
  */
 const simulationShaderMaterial = new ShaderMaterial({
-  uniforms: { positions: { type: 't', value: positions } },
+  uniforms: {
+    positions: { type: 't', value: positions },
+    timer: { type: 'f', value: 0 },
+    amplitude: { type: 'f', value: props.AMPL },
+  },
   vertexShader: simulationVert,
   fragmentShader: simulationFrag,
 });
@@ -122,12 +154,23 @@ const particles = new FBOParticle(
   particleShaderMaterial,
   webgl.renderer,
 );
+
 webgl.add(particles);
+
+webgl.onUpdate = () => {
+  particles.fbo.material.uniforms.timer.value += props.SPEED;
+  particles.rotation.x += props.ROTATION;
+  particles.rotation.y += props.ROTATION;
+};
+
+guiAmplitude.onChange(() => {
+  particles.fbo.material.uniforms.amplitude.value = props.AMPL;
+});
 
 /* ---- CREATING ZONE END ---- */
 /**/
 /**/
-/**/ /* ---- ON RESIZE ---- */
+/**/ /* ---- ON REprops.SIZE ---- */
 /**/ function onResize() {
 /**/   windowWidth = window.innerWidth;
 /**/   windowHeight = window.innerHeight;

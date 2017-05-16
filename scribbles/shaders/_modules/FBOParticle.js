@@ -38,17 +38,14 @@ export default class FBOParticle extends Points {
     const geom = new BufferGeometry();
     geom.addAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]), 3));
     geom.addAttribute('uv', new BufferAttribute(new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]), 2));
-    this.scene.add(new Mesh(geom, simulationMaterial));
+    this.fbo = new Mesh(geom, simulationMaterial);
+    this.scene.add(this.fbo);
 
     this.update = this.update.bind(this);
   }
 
   update() {
     this.renderer.render(this.scene, this.orthoCamera, this.rtt, true);
-
     this.material.uniforms.positions.value = this.rtt.texture;
-
-    this.rotation.x += 0.01;
-    this.rotation.y -= 0.01;
   }
 }
