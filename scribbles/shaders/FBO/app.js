@@ -7,6 +7,11 @@ import { getRandomFloat } from 'utils';
 
 import FBOParticle from 'FBOParticle';
 
+import particleVert from './shaders/particle.v.glsl';
+import particleFrag from './shaders/particle.f.glsl';
+import simulationVert from './shaders/simulation.v.glsl';
+import simulationFrag from './shaders/simulation.f.glsl';
+
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#C9F0FF';
@@ -94,26 +99,8 @@ const particleShaderMaterial = new ShaderMaterial({
     positions: { type: 't', value: null },
     pointSize: { type: 'f', value: 2 },
   },
-  vertexShader: `
-    uniform sampler2D positions; // RenderTarget containing the transformed positions
-    uniform float pointSize;
-    void main() {
-      // the mesh is a normalized square so the uvs = the xy positions of the vertices
-      vec3 pos = texture2D( positions, position.xy ).xyz;
-      // pos now contains a 3D position in space, we can use it as a regular vertex
-
-      // regular projection of our position
-      gl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );
-
-      // sets the point size
-      gl_PointSize = pointSize;
-    }
-  `,
-  fragmentShader: `
-    void main() {
-      gl_FragColor = vec4( vec3( 1.0 ), 0.25 );
-    }
-  `,
+  vertexShader: particleVert,
+  fragmentShader: particleFrag,
 });
 
 /** *********
@@ -121,21 +108,8 @@ const particleShaderMaterial = new ShaderMaterial({
  */
 const simulationShaderMaterial = new ShaderMaterial({
   uniforms: { positions: { type: 't', value: positions } },
-  vertexShader: `
-    varying vec2 vUv;
-    void main() {
-        vUv = vec2(uv.x, uv.y);
-        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-    }
-  `,
-  fragmentShader: `
-    uniform sampler2D positions;
-    varying vec2 vUv;
-    void main() {
-        vec3 pos = texture2D( positions, vUv ).rgb;
-        gl_FragColor = vec4( pos,1.0 );
-    }
-  `,
+  vertexShader: simulationVert,
+  fragmentShader: simulationFrag,
 });
 
 /** *********

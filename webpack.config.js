@@ -74,8 +74,8 @@ var config = {
           loader: 'file?name=fonts/[name].[ext]',
           include: [ './assets/', assets ],
         },
-        { test: /\.(glsl|frag|vert)$/, exclude: node_modules, use: 'raw-loader' },
-        { test: /\.(glsl|frag|vert)$/, exclude: node_modules, use: 'glslify-loader' },
+        { test: /\.(glsl|frag|vert)$/, exclude: node_modules, loader: 'raw' },
+        { test: /\.(glsl|frag|vert)$/, exclude: node_modules, loader: 'glslify' },
       ],
     },
     stylus: {
