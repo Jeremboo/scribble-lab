@@ -85,22 +85,26 @@ import simulationFrag from './shaders/simulation.f.glsl';
 const props = {
   SIZE: 100,
   AMPL: 0.15,
-  SPEED: 0.0001,
-  ROTATION: 0.005,
+  COMPLEXITY: 0.01,
+  SPEED: 0.002,
+  ROTATION: 0.001,
+  ZOOM: 500,
 };
 
 const gui = new GUI();
-const guiAmplitude = gui.add(props, 'AMPL', 0.01, 2);
-gui.add(props, 'SPEED', 0.0001, 1);
-gui.add(props, 'ROTATION', 0.0001, 0.3);
+const guiAmplitude = gui.add(props, 'AMPL', 0.01, 1);
+const guiComplexity = gui.add(props, 'COMPLEXITY', 0, 0.02);
+const guiZoom = gui.add(props, 'ZOOM', 0, 1000);
+gui.add(props, 'SPEED', 0, 0.05);
+gui.add(props, 'ROTATION', 0, 0.02);
 
 /**
 **********
 * DATA TEXTURE
 **********
 */
-const TEXTURE_WIDTH = 256;
-const TEXTURE_HEIGHT = 256;
+const TEXTURE_WIDTH = 256 * 1.5;
+const TEXTURE_HEIGHT = 256 * 1.5;
 
 const getRandomData = (w, h, size) => {
   let len = w * h * 3;
@@ -138,6 +142,7 @@ const simulationShaderMaterial = new ShaderMaterial({
   uniforms: {
     positions: { type: 't', value: positions },
     timer: { type: 'f', value: 0 },
+    complexity: { type: 'f', value: props.COMPLEXITY },
     amplitude: { type: 'f', value: props.AMPL },
   },
   vertexShader: simulationVert,
@@ -165,6 +170,12 @@ webgl.onUpdate = () => {
 
 guiAmplitude.onChange(() => {
   particles.fbo.material.uniforms.amplitude.value = props.AMPL;
+});
+guiComplexity.onChange(() => {
+  particles.fbo.material.uniforms.complexity.value = props.COMPLEXITY;
+});
+guiZoom.onChange(() => {
+  webgl.camera.position.z = props.ZOOM;
 });
 
 /* ---- CREATING ZONE END ---- */

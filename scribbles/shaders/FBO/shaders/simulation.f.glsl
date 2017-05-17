@@ -102,7 +102,6 @@ vec3 curlNoise(vec3 p) {
 
   const float divisor = 1.0 / ( 2.0 * e );
   return normalize( vec3( x , y , z ) * divisor );
-  // return vec3( 100.0 );
 }
 
 
@@ -111,12 +110,15 @@ vec3 curlNoise(vec3 p) {
 uniform sampler2D positions;
 uniform float timer;
 uniform float amplitude;
+uniform float complexity;
 varying vec2 vUv;
 
 void main() {
     vec3 pos = texture2D( positions, vUv ).rgb;
 
-    float displacement = snoise( pos * timer ) * amplitude;
+    float displacement = snoise( pos * complexity + vec3( timer )) * amplitude;
+    vec3 newPos = pos + (pos * displacement);
+    // vec3 newPos = curlNoise(pos * timer) * 100.0;
 
-    gl_FragColor = vec4( pos + (pos * displacement), 1.0 );
+    gl_FragColor = vec4(newPos, 1.0 );
 }
