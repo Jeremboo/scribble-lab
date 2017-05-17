@@ -1,6 +1,6 @@
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Color, NearestFilter, RGBFormat,
-  FloatType, ShaderMaterial, DataTexture,
+  WebGLRenderer, Scene, PerspectiveCamera, Color, RGBFormat,
+  FloatType, ShaderMaterial, DataTexture, Vector3,
 } from 'three';
 
 import { GUI } from 'dat.gui/build/dat.gui';
@@ -84,10 +84,10 @@ import simulationFrag from './shaders/simulation.f.glsl';
 
 const props = {
   SIZE: 100,
-  AMPL: 0.15,
-  COMPLEXITY: 0.01,
-  SPEED: 0.002,
-  ROTATION: 0.001,
+  AMPL: 0.3,
+  COMPLEXITY: 0.015,
+  SPEED: 0.007,
+  ROTATION: 0.002,
   ZOOM: 500,
 };
 
@@ -130,6 +130,7 @@ const particleShaderMaterial = new ShaderMaterial({
     // Will be set after the particles.update() call
     positions: { type: 't', value: null },
     pointSize: { type: 'f', value: 2 },
+    lightPosition: { type: 'v3', value: new Vector3(props.SIZE, props.SIZE, props.SIZE) },
   },
   vertexShader: particleVert,
   fragmentShader: particleFrag,
