@@ -51,6 +51,7 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 
 const addLine = text => { readme += `\n\n${text}`; };
 const addPreview = (previewPath, name, link = '/') => {
+  console.log(previewPath);
   if (fs.existsSync(previewPath)) {
     readme += `
   <a href="${link}">
@@ -62,7 +63,7 @@ const addPreview = (previewPath, name, link = '/') => {
 for (i = 0; i < data.length; i++) {
   const group = data[i];
   if (group.visible) {
-    addLine(`##${group.link ? `[${group.name}](${group.link})` : group.name}`);
+    addLine(`## ${group.link ? `[${group.name}](${group.link})` : group.name}`);
     addLine(group.description);
     addLine('<p align="center">');
 

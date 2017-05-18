@@ -2,8 +2,8 @@
   "name": "FBO",
   "path": "scribbles/webglparticles/FBO/",
   "link": "",
-  "visible": false,
-  "preview": "scribbles/webglparticles/FBO/preview.gif",
+  "visible": true,
+  "preview": "/preview.gif",
   "description": "",
   "date": "2017-05-15T09:47:25.983Z",
   "tags": []
