@@ -2,10 +2,13 @@ import {
   WebGLRenderer, Scene, PerspectiveCamera, Object3D, TetrahedronBufferGeometry,
   Mesh, FlatShading, Color,
   ShaderMaterial, PointLightHelper, AmbientLight, PointLight,
-  Vector3, MeshPhongMaterial, SphereGeometry, MeshBasicMaterial,
+  Vector3, MeshPhongMaterial, SphereGeometry, MeshBasicMaterial, ShaderLib,
 } from 'three';
 import OrbitControls from 'OrbitControl';
 import { GUI } from 'dat.gui/build/dat.gui';
+
+import vertShadow from './shaders/shadow.v.glsl';
+import fragShadow from './shaders/shadow.f.glsl';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
@@ -88,8 +91,6 @@ const worldToLocalDirection = (object, worldDirectionVector) => {
 // http://blog.edankwan.com/post/three-js-advanced-tips-shadow
 // https://aerotwist.com/tutorials/an-introduction-to-shaders-part-2/
 // TODO : http://www.mathematik.uni-marburg.de/~thormae/lectures/graphics1/code/WebGLShaderLightMat/ShaderLightMat.html
-import vertInstanced from './shaders/phong.v.glsl';
-import fragInstanced from './shaders/phong.f.glsl';
 
 // ##
 // LIGHT
@@ -143,13 +144,13 @@ class Tetra extends Object3D {
         type: 'fv1',
         value: lights.map(light => light.distance),
       };
-      uniforms.lightsIntensity = {
+      uniforms.lightsDiffuse = {
         type: 'fv1',
         value: lights.map(light => light.intensity),
       };
       this.material = new ShaderMaterial({
-        vertexShader: vertInstanced,
-        fragmentShader: fragInstanced,
+        vertexShader: vertShadow,
+        fragmentShader: fragShadow,
         uniforms,
         shading: FlatShading,
         defines: { NBR_OF_LIGHTS: lights.length },
