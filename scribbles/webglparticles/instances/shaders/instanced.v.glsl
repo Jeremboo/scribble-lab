@@ -1,18 +1,27 @@
-// #define SHADER_NAME vertInstanced
-// precision highp float;
-// uniform mat4 modelViewMatrix;
-// uniform mat4 projectionMatrix;
-// attribute vec3 position;
+#define PHONG
+
 attribute vec3 mcol0;
 attribute vec3 mcol1;
 attribute vec3 mcol2;
 attribute vec3 mcol3;
-
 attribute vec3 color;
-
 varying vec3 vColor;
 
+varying vec3 vViewPosition;
+
+#ifndef FLAT_SHADED
+	varying vec3 vNormal;
+#endif
+
 void main()	{
+
+  vColor = color;
+
+  #ifndef FLAT_SHADED
+  	vNormal = normalize( transformedNormal );
+  #endif
+
+  #include <begin_vertex>
 
   mat4 matrix = mat4(
     vec4(mcol0, 0),
@@ -20,10 +29,9 @@ void main()	{
     vec4(mcol2, 0),
     vec4(mcol3, 1)
   );
+  transformed = (matrix * vec4(position, 1.0)).xyz;
 
-  vec3 positionEye = (modelViewMatrix * matrix * vec4(position, 1.0)).xyz;
+	#include <project_vertex>
 
-  vColor = color;
-
-  gl_Position = projectionMatrix * vec4(positionEye, 1.0);
+	vViewPosition = - mvPosition.xyz;
 }

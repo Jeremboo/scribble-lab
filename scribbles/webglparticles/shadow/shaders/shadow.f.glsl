@@ -21,6 +21,7 @@ void main()	{
     float diffuseLighting = max(dot(vNormal, lightDirection), 0.0) * lightsDiffuse[l];
 
     // add to the lights's vector
+    // float celIntensity = ceil(diffuseLighting * 8.0) / 8.0;
     addedLights.rgb += diffuseLighting;
   }
 

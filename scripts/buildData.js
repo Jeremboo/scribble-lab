@@ -51,7 +51,6 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 
 const addLine = text => { readme += `\n\n${text}`; };
 const addPreview = (previewPath, name, link = '/') => {
-  console.log(previewPath);
   if (fs.existsSync(previewPath)) {
     readme += `
   <a href="${link}">
@@ -75,7 +74,7 @@ for (i = 0; i < data.length; i++) {
           addPreview(scribble.path + scribble.preview, scribble.name, scribble.link);
         } else if (typeOfPreviewInfo === 'object') {
           let k;
-          for (k = 0; k < scribble.preview.length; k++) {
+          for (k = scribble.preview.length - 1; k >= 0; k--) {
             // TODO mame a different name
             addPreview(scribble.path + scribble.preview[k], scribble.name, scribble.link);
           }

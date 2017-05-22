@@ -3,7 +3,7 @@ import {
   Mesh, Color, FlatShading,
   TetrahedronBufferGeometry, InstancedBufferGeometry, InstancedBufferAttribute,
   Matrix4, Quaternion, Euler, Vector3, PointLight, ShaderMaterial, AmbientLight,
-  PointLightHelper
+  PointLightHelper, DoubleSide, UniformsUtils, UniformsLib,
 } from 'three';
 
 import { getRandomAttribute } from 'utils';
@@ -24,7 +24,7 @@ const COLORS = ['#c15455', '#6394c6', '#daf4ec'];
 /**/   constructor(w, h) {
 /**/     this.meshCount = 0;
 /**/     this.meshListeners = [];
-/**/     this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
+/**/     this.renderer = new WebGLRenderer({ antialias: true, });
 /**/     this.renderer.setPixelRatio(window.devicePixelRatio);
 /**/     if (bgColor) this.renderer.setClearColor(new Color(bgColor));
 /**/     this.scene = new Scene();
@@ -61,6 +61,7 @@ const COLORS = ['#c15455', '#6394c6', '#daf4ec'];
 /**/
 /* ---- CREATING ZONE ---- */
 
+let i;
 const instanceCount = 25000; // 25000;
 
 // ##
@@ -68,8 +69,8 @@ const instanceCount = 25000; // 25000;
 const ambiantLight = new AmbientLight(0xffffff, 0.5);
 webgl.scene.add(ambiantLight);
 const lights = [];
-for (let i = 0; i < 4; i++) {
-  const light = new PointLight(0xffffff, 0.5, 200);
+for (i = 0; i < 4; i++) {
+  const light = new PointLight(0xffffff, 0.5, 300);
   webgl.scene.add(light);
   lights.push(light);
 }
@@ -81,10 +82,10 @@ lights[2].power = 12;
 lights[3].position.set(35, 30, 230);
 lights[3].power = 8;
 // helpers
-for (let i = 0; i < 4; i++) {
-  const helper = new PointLightHelper(lights[i], 10);
-  webgl.scene.add(helper);
-}
+// for (i = 0; i < 4; i++) {
+//   const helper = new PointLightHelper(lights[i], 10);
+//   webgl.scene.add(helper);
+// }
 
 // ##
 // MATRIX
@@ -108,15 +109,18 @@ const updateMatrix = () => {
 
 // ##
 // MATERIAL
+const uniforms = UniformsUtils.merge([
+  UniformsLib.common,
+  UniformsLib.lights,
+]);
+
 const material = new ShaderMaterial({
-  uniforms: {
-    eyePosition: { type: 'v3', value: webgl.camera.position },
-    lightPosition: { type: 'v3', value: lights[0].position },
-    roughness: { type: 'f', value: 10 },
-    fresnel: { type: 'f', value: 15 },
-  },
+  uniforms,
   vertexShader: vertInstanced,
   fragmentShader: fragInstanced,
+  lights: true,
+  shading: FlatShading,
+  side: DoubleSide,
 });
 
 // ##
@@ -178,8 +182,21 @@ const updatePosition = () => {
     mcol3.setXYZ(i, me[12], me[13], me[14]);
   }
 };
-
 updatePosition();
+
+// ROTATE LIGHTS
+let timer = 0;
+const lightslength = lights.length;
+
+const rotateLights = () => {
+  for (i = 0; i < lightslength; i++) {
+    lights[i].position.y = Math.cos(timer * i + 20) * 100;
+    lights[i].position.z = Math.sin(timer * i / 2) * 100;
+    lights[i].position.x = Math.sin(timer * i) * 100;
+  }
+
+  timer += 0.01;
+};
 
 /* ---- CREATING ZONE END ---- */
 /**/
@@ -197,5 +214,6 @@ updatePosition();
 /**/ 	webgl.update();
 /**/ 	requestAnimationFrame(_loop);
       // updatePosition();
+      rotateLights();
 /**/ }
 /**/ _loop();
