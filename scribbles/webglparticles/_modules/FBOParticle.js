@@ -5,7 +5,7 @@ import {
 } from 'three';
 
 export default class FBOParticle extends Points {
-  constructor(width, height, simulationMaterial, particleMaterial, renderer) {
+  constructor(width, height, particleMaterial, renderer) {
     /** *********
      * PARTICLE
      */
@@ -25,6 +25,7 @@ export default class FBOParticle extends Points {
     /** *********
      * FBO
      */
+    this.fbos = [];
     this.renderer = renderer;
     this.scene = new Scene();
     this.orthoCamera = new OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow(2, 53), 1);
@@ -32,16 +33,23 @@ export default class FBOParticle extends Points {
       minFilter: NearestFilter, // Important as we want to sample square pixels
       magFilter: NearestFilter,
       format: RGBFormat, // Could be RGBAFormat
-      type: FloatType, // important as we need precise coordinates (not ints)
+      type: FloatType, // important as we need precise coordinates (not ints) // ( /(iPad|iPhone|iPod)/g.test( navigator.userAgent ) ) ? HalfFloatType : FloatType,
     });
 
+    this.update = this.update.bind(this);
+  }
+
+  createFBO(name, simulationMaterial) {
     const geom = new BufferGeometry();
     geom.addAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]), 3));
     geom.addAttribute('uv', new BufferAttribute(new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]), 2));
-    this.fbo = new Mesh(geom, simulationMaterial);
-    this.scene.add(this.fbo);
+    const mesh = new Mesh(geom, simulationMaterial);
+    this.fbos[name] = mesh
+    this.scene.add(mesh);
+  }
 
-    this.update = this.update.bind(this);
+  updateFBOUniform(fboName, uniformName, value) {
+    this.fbos[fboName].material.uniforms[uniformName].value = value;
   }
 
   update() {

@@ -136,6 +136,13 @@ const particleShaderMaterial = new ShaderMaterial({
   fragmentShader: particleFrag,
 });
 
+const fboParticles = new FBOParticle(
+  TEXTURE_WIDTH,
+  TEXTURE_HEIGHT,
+  particleShaderMaterial,
+  webgl.renderer,
+);
+
 /** *********
  * PARTICLE POSITION
  */
@@ -150,30 +157,33 @@ const simulationShaderMaterial = new ShaderMaterial({
   fragmentShader: simulationFrag,
 });
 
+fboParticles.createFBO('positions', simulationShaderMaterial);
+
 /** *********
- * INIT
+ * ADD TO THE SCENE
  */
-const particles = new FBOParticle(
-  TEXTURE_WIDTH,
-  TEXTURE_HEIGHT,
-  simulationShaderMaterial,
-  particleShaderMaterial,
-  webgl.renderer,
-);
+webgl.add(fboParticles);
 
-webgl.add(particles);
 
+/**
+ **********
+ * UPDATE
+ **********
+ */
+
+let timer = 0;
 webgl.onUpdate = () => {
-  particles.fbo.material.uniforms.timer.value += props.SPEED;
-  particles.rotation.x += props.ROTATION;
-  particles.rotation.y += props.ROTATION;
+  timer += props.SPEED;
+  fboParticles.updateFBOUniform('positions', 'timer', timer);
+  fboParticles.rotation.x += props.ROTATION;
+  fboParticles.rotation.y += props.ROTATION;
 };
 
 guiAmplitude.onChange(() => {
-  particles.fbo.material.uniforms.amplitude.value = props.AMPL;
+  fboParticles.updateFBOUniform('positions', 'amplitude', props.AMPL);
 });
 guiComplexity.onChange(() => {
-  particles.fbo.material.uniforms.complexity.value = props.COMPLEXITY;
+  fboParticles.updateFBOUniform('positions', 'complexity', props.COMPLEXITY);
 });
 guiZoom.onChange(() => {
   webgl.camera.position.z = props.ZOOM;
