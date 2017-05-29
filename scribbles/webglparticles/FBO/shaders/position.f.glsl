@@ -73,7 +73,8 @@ float snoise(vec3 v){
                                 dot(p2,x2), dot(p3,x3) ) );
 }
 
-
+// CURL
+// From: https://github.com/cabbibo/glsl-curl-noise
 vec3 snoiseVec3( vec3 x ){
 
   float s  = snoise(vec3( x ));
@@ -118,7 +119,7 @@ void main() {
 
     float displacement = snoise( pos * complexity + vec3( timer )) * amplitude;
     vec3 newPos = pos + (pos * displacement);
-    // vec3 newPos = curlNoise(pos * timer) * 100.0;
+    // vec3 newPos = pos + (pos * curlNoise(pos * 0.001) * timer);
 
     gl_FragColor = vec4(newPos, 1.0 );
 }

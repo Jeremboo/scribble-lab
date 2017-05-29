@@ -3,6 +3,8 @@ import {
   FloatType, ShaderMaterial, DataTexture, Vector3,
 } from 'three';
 
+import FBOHelper from 'three.fbo-helper';
+
 import { GUI } from 'dat.gui/build/dat.gui';
 
 import { getRandomFloat } from 'utils';
@@ -11,8 +13,9 @@ import FBOParticle from 'FBOParticle';
 
 import particleVert from './shaders/particle.v.glsl';
 import particleFrag from './shaders/particle.f.glsl';
-import simulationVert from './shaders/simulation.v.glsl';
-import simulationFrag from './shaders/simulation.f.glsl';
+
+import defaultVert from './shaders/default.v.glsl';
+import positionFrag from './shaders/position.f.glsl';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
@@ -31,6 +34,9 @@ import simulationFrag from './shaders/simulation.f.glsl';
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 500);
 /**/     this.dom = this.renderer.domElement;
+
+         this.helper = new FBOHelper(this.renderer);
+
 /**/     this.update = this.update.bind(this);
 /**/     this.resize = this.resize.bind(this);
 /**/     this.resize(w, h); // set render size
@@ -49,8 +55,14 @@ import simulationFrag from './shaders/simulation.f.glsl';
 /**/       this.meshListeners[i].apply(this, null);
 /**/     }
 /**/     this.renderer.render(this.scene, this.camera);
+
+         this.helper.update();
+
 /**/   }
 /**/   resize(w, h) {
+
+         this.helper.setSize(w, h);
+
 /**/     this.camera.aspect = w / h;
 /**/     this.camera.updateProjectionMatrix();
 /**/     this.renderer.setSize(w, h);
@@ -82,6 +94,9 @@ import simulationFrag from './shaders/simulation.f.glsl';
  **********
  */
 
+const TEXTURE_WIDTH = 256 * 1.5;
+const TEXTURE_HEIGHT = 256 * 1.5;
+
 const props = {
   SIZE: 100,
   AMPL: 0.3,
@@ -97,24 +112,6 @@ const guiComplexity = gui.add(props, 'COMPLEXITY', 0, 0.02);
 const guiZoom = gui.add(props, 'ZOOM', 0, 1000);
 gui.add(props, 'SPEED', 0, 0.05);
 gui.add(props, 'ROTATION', 0, 0.02);
-
-/**
-**********
-* DATA TEXTURE
-**********
-*/
-const TEXTURE_WIDTH = 256 * 1.5;
-const TEXTURE_HEIGHT = 256 * 1.5;
-
-const getRandomData = (w, h, size) => {
-  let len = w * h * 3;
-  const data = new Float32Array(len);
-  while (len--) data[len] = getRandomFloat(-size, size);
-  return data;
-};
-const data = getRandomData(TEXTURE_WIDTH, TEXTURE_HEIGHT, props.SIZE);
-const positions = new DataTexture(data, TEXTURE_WIDTH, TEXTURE_HEIGHT, RGBFormat, FloatType);
-positions.needsUpdate = true;
 
 /**
  **********
@@ -145,24 +142,43 @@ const fboParticles = new FBOParticle(
 
 /** *********
  * PARTICLE POSITION
+ * Create a DataTexture and a shader to compute each values
  */
-const simulationShaderMaterial = new ShaderMaterial({
+
+ /**
+ * DATA TEXTURE
+ */
+
+ const getRandomData = (w, h, size) => {
+   let len = w * h * 3;
+   const data = new Float32Array(len);
+   while (len--) data[len] = getRandomFloat(-size, size);
+   return data;
+ };
+ const positionData = getRandomData(TEXTURE_WIDTH, TEXTURE_HEIGHT, props.SIZE);
+ const positions = fboParticles.createDataTexture(positionData);
+
+ /**
+ * SHADER
+ */
+const simulationPositionShaderMaterial = new ShaderMaterial({
   uniforms: {
     positions: { type: 't', value: positions },
     timer: { type: 'f', value: 0 },
     complexity: { type: 'f', value: props.COMPLEXITY },
     amplitude: { type: 'f', value: props.AMPL },
   },
-  vertexShader: simulationVert,
-  fragmentShader: simulationFrag,
+  vertexShader: defaultVert,
+  fragmentShader: positionFrag,
 });
 
-fboParticles.createFBO('positions', simulationShaderMaterial);
+fboParticles.createSimulation('positions', simulationPositionShaderMaterial);
 
 /** *********
  * ADD TO THE SCENE
  */
 webgl.add(fboParticles);
+webgl.helper.attach(fboParticles.fbo, 'Position');
 
 
 /**
@@ -174,16 +190,16 @@ webgl.add(fboParticles);
 let timer = 0;
 webgl.onUpdate = () => {
   timer += props.SPEED;
-  fboParticles.updateFBOUniform('positions', 'timer', timer);
+  fboParticles.updateSimulationUniform('positions', 'timer', timer);
   fboParticles.rotation.x += props.ROTATION;
   fboParticles.rotation.y += props.ROTATION;
 };
 
 guiAmplitude.onChange(() => {
-  fboParticles.updateFBOUniform('positions', 'amplitude', props.AMPL);
+  fboParticles.updateSimulationUniform('positions', 'amplitude', props.AMPL);
 });
 guiComplexity.onChange(() => {
-  fboParticles.updateFBOUniform('positions', 'complexity', props.COMPLEXITY);
+  fboParticles.updateSimulationUniform('positions', 'complexity', props.COMPLEXITY);
 });
 guiZoom.onChange(() => {
   webgl.camera.position.z = props.ZOOM;
