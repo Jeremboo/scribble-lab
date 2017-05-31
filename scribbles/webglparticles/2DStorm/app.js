@@ -1,3 +1,5 @@
+import { GUI } from 'dat.gui/build/dat.gui';
+
 /**/ /* ---- CORE ---- */
 /**/ const canvas = document.createElement('canvas');
 /**/ const context = canvas.getContext('2d');
@@ -15,57 +17,83 @@
 
 
 /* ---- CREATING ZONE ---- */
-
 /* ---- SETTINGS ---- */
-const PARTICLE_NUMBERS = 100;
-
-const VEL_MAX = 5;
-const VEL_MIN = 0;
-const VEL_BRAKE_MIN = 0.9;
-const VEL_BRAKE_MAX = 0.95;
-
-const LINE_WIDTH = 5;
-
-const DEMISE_DISTANCE = 10;
-
-const ATTRACTIVE_AMPL = 3.8; // To reduce the force of the attraction at center
-const ATTRACTIVE_ZONE = 0.1;
-const ATTRACTIVE_FORCE = 0.02;
-
-const ROTATION_FORCE = 10;
-
 const COLORS = ['#32234A', '#820263', '#D90368', '#883677', '#CA61C3'];
+
+const props = {
+  PARTICLE_NUMBERS: 500,
+  LINE_WIDTH: 2,
+
+  DEMISE_DISTANCE: 20,
+  APPARITION_DISTANCE: 350,
+
+  ROTATION_FORCE: 10,
+
+  VEL_MAX: 5,
+  VEL_MIN: 0,
+  VEL_BRAKE_MIN: 0.9,
+  VEL_BRAKE_MAX: 0.95,
+
+  ATT_AMPL: 3.8, // To reduce the force of the attraction at cente,
+  ATT_ZONE: 0.8,
+  ATT_FORCE: 0.02,
+
+};
+
+// Helpers 1
+const gui = new GUI();
+const particleNumbers = gui.add(props, 'PARTICLE_NUMBERS', 1, 1500);
+gui.add(props, 'LINE_WIDTH', 1, 10);
+gui.add(props, 'DEMISE_DISTANCE', 0, 100);
+gui.add(props, 'APPARITION_DISTANCE', 0, windowWidth);
+gui.add(props, 'ROTATION_FORCE', 0, 100);
+
+const velocity = gui.addFolder('Velocity');
+const velMin = velocity.add(props, 'VEL_MIN', 0, 80);
+const velMax = velocity.add(props, 'VEL_MAX', 0, 80);
+const velBrakeMin = velocity.add(props, 'VEL_BRAKE_MIN', 0, 1);
+const velBrakeMax = velocity.add(props, 'VEL_BRAKE_MAX', 0, 1);
+
+const attraction = gui.addFolder('Attraction');
+attraction.add(props, 'ATT_AMPL', 0, 10);
+attraction.add(props, 'ATT_ZONE', 0, 1);
+attraction.add(props, 'ATT_FORCE', 0, 0.1);
+
 
 Math.sqr = (a) => a * a;
 Math.randomF = (min, max) => Math.random() * (max - min) + min;
 const getDist = (x1, y1, x2, y2) => Math.sqrt(Math.sqr(y2 - y1) + Math.sqr(x2 - x1));
 const getRandomAngle = () => Math.random() * Math.PI * 2;
 
+const getRandomVelMax = () => Math.randomF(props.VEL_MIN, props.VEL_MAX);
+const getRandomVelBrake = () => Math.randomF(props.VEL_BRAKE_MIN, props.VEL_BRAKE_MAX);
+
 /* ---- PARTICLE ---- */
 class Particle {
   constructor(x, y) {
     this.init(x, y);
+    this.life = 0;
     this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
   }
 
   init(x, y) {
     const angle = getRandomAngle();
-    const radius = Math.randomF(0, windowWidth);
+    const radius = Math.randomF(0, props.APPARITION_DISTANCE);
     this.x = x || Math.cos(angle) * radius;
     this.y = y || Math.sin(angle) * radius;
     this.train = [];
     this.vel = {
       x: 0,
       y: 0,
-      max: Math.randomF(VEL_MIN, VEL_MAX),
-      brake: Math.randomF(VEL_BRAKE_MIN, VEL_BRAKE_MAX),
+      max: getRandomVelMax(),
+      brake: getRandomVelBrake(),
     };
   }
 
   render() {
     context.beginPath();
     context.strokeStyle = this.color;
-    context.lineWidth = LINE_WIDTH; // TODO augmenter la taille du trai en fonction de la distance ?
+    context.lineWidth = props.LINE_WIDTH; // TODO augmenter la taille du trai en fonction de la distance ?
 
     let i = this.train.length - 1;
     for (i; i > 0; i--) {
@@ -79,7 +107,7 @@ class Particle {
     const dist = getDist(this.x, this.y, 0, 0);
 
     // Init a Particle when he near the center
-    if (dist < DEMISE_DISTANCE) {
+    if (dist < props.DEMISE_DISTANCE) {
       this.init();
       return;
     }
@@ -90,7 +118,8 @@ class Particle {
     };
 
     // calculate force
-    const f = Math.exp(ATTRACTIVE_AMPL * (1 - (dist / windowWidth) - ATTRACTIVE_ZONE)) * ATTRACTIVE_FORCE;
+    // http://www.mathopenref.com/graphfunctions.html?fx=(exp(a * (1 - x - b))) * c&xh=1&xl=0&yh=10&yl=-10&a=3.595744680851064&b=0.3&c=1.4&dh=10&dl=-4&d=5.6
+    const f = Math.exp(props.ATT_AMPL * (props.ATT_ZONE - (dist / windowWidth))) * props.ATT_FORCE;
     const force = {
       x: norm.x * f,
       y: norm.y * f,
@@ -133,18 +162,62 @@ class Particle {
     };
 
     return {
-      x: normalizedOrthogonalVec.x * ROTATION_FORCE,
-      y: normalizedOrthogonalVec.y * ROTATION_FORCE,
+      x: normalizedOrthogonalVec.x * props.ROTATION_FORCE,
+      y: normalizedOrthogonalVec.y * props.ROTATION_FORCE,
     };
   }
 }
 
 // START
-const particles = [];
-for (let i = 0; i < PARTICLE_NUMBERS; i++) {
-  particles.push(new Particle());
+let particles = [];
+
+function init() {
+  particles = [];
+  for (let i = 0; i < props.PARTICLE_NUMBERS; i++) {
+    particles.push(new Particle());
+  }
 }
 
+init();
+
+// HELPER 2
+particleNumbers.onChange(() => {
+  let i;
+  const nbrOfParticles = particles.length;
+  if (props.PARTICLE_NUMBERS > nbrOfParticles) {
+    for (i = nbrOfParticles; i < props.PARTICLE_NUMBERS; i++) {
+      particles.push(new Particle());
+    }
+  } else {
+    for (i = props.PARTICLE_NUMBERS; i < nbrOfParticles; i++) {
+      particles.splice(props.PARTICLE_NUMBERS, nbrOfParticles - props.PARTICLE_NUMBERS);
+    }
+  }
+});
+velMin.onChange(() => {
+  particles.forEach(particle => {
+    particle.vel.max = getRandomVelMax();
+  });
+});
+velMax.onChange(() => {
+  particles.forEach(particle => {
+    particle.vel.max = getRandomVelMax();
+  });
+});
+velBrakeMin.onChange(() => {
+  particles.forEach(particle => {
+    particle.vel.brake = getRandomVelBrake();
+  });
+});
+velBrakeMax.onChange(() => {
+  particles.forEach(particle => {
+    particle.vel.brake = getRandomVelBrake();
+  });
+});
+props.init = init;
+gui.add(props, 'init');
+
+// LOOP
 let i;
 function loop() {
   for (i = 0; i < particles.length; i++) {
