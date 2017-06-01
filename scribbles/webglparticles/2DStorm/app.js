@@ -214,8 +214,8 @@ velBrakeMax.onChange(() => {
     particle.vel.brake = getRandomVelBrake();
   });
 });
-props.init = init;
-gui.add(props, 'init');
+props.restart = init;
+gui.add(props, 'restart');
 
 // LOOP
 let i;
