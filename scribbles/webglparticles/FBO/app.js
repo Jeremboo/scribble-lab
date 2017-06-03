@@ -1,20 +1,14 @@
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Color, RGBFormat,
-  FloatType, ShaderMaterial, DataTexture, Vector3,
+  WebGLRenderer, Scene, PerspectiveCamera, Color,
+  ShaderMaterial, BufferGeometry, BufferAttribute, Points,
 } from 'three';
-
-import FBOHelper from 'three.fbo-helper';
-
 import { GUI } from 'dat.gui/build/dat.gui';
 
-import { getRandomFloat } from 'utils';
-
-import FBOParticle from 'FBOParticle';
+import GPUSimulation from 'GPUSimulation';
 
 import particleVert from './shaders/particle.v.glsl';
 import particleFrag from './shaders/particle.f.glsl';
 
-import defaultVert from './shaders/default.v.glsl';
 import positionFrag from './shaders/position.f.glsl';
 
 /**/ /* ---- CORE ---- */
@@ -34,9 +28,6 @@ import positionFrag from './shaders/position.f.glsl';
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 500);
 /**/     this.dom = this.renderer.domElement;
-
-         this.helper = new FBOHelper(this.renderer);
-
 /**/     this.update = this.update.bind(this);
 /**/     this.resize = this.resize.bind(this);
 /**/     this.resize(w, h); // set render size
@@ -50,19 +41,13 @@ import positionFrag from './shaders/position.f.glsl';
 /**/   }
 /**/   update() {
 /**/     let i = this.meshCount;
-/**/     this.onUpdate();
 /**/     while (--i >= 0) {
 /**/       this.meshListeners[i].apply(this, null);
 /**/     }
 /**/     this.renderer.render(this.scene, this.camera);
-
-         this.helper.update();
-
+/**/     this.onUpdate();
 /**/   }
 /**/   resize(w, h) {
-
-         this.helper.setSize(w, h);
-
 /**/     this.camera.aspect = w / h;
 /**/     this.camera.updateProjectionMatrix();
 /**/     this.renderer.setSize(w, h);
@@ -94,8 +79,9 @@ import positionFrag from './shaders/position.f.glsl';
  **********
  */
 
-const TEXTURE_WIDTH = 256 * 1.5;
-const TEXTURE_HEIGHT = 256 * 1.5;
+const TEXTURE_SIZE = 512;
+const TEXTURE_HEIGHT = TEXTURE_SIZE;
+const TEXTURE_WIDTH = TEXTURE_SIZE;
 
 const props = {
   SIZE: 100,
@@ -118,67 +104,64 @@ gui.add(props, 'ROTATION', 0, 0.02);
  * FBO
  **********
  */
+const gpuSim = new GPUSimulation(TEXTURE_WIDTH, TEXTURE_HEIGHT, webgl.renderer);
+gpuSim.initHelper(windowWidth, windowHeight);
 
-/** *********
- * PARTICLE MATERIAL
+/**
+ * DATA TEXTURE
  */
-const particleShaderMaterial = new ShaderMaterial({
+let i;
+const dataPosition = gpuSim.createDataTexture();
+const textureLength = dataPosition.image.data.length;
+
+// Create random position on a circle
+for (i = 0; i < textureLength; i += 4) {
+  const radius = (10 - Math.pow(Math.random(), 3)) * 10;
+  const azimuth = Math.random() * Math.PI;
+  const inclination = Math.random() * Math.PI * 2;
+  dataPosition.image.data[i] = radius * Math.sin(azimuth) * Math.cos(inclination);
+  dataPosition.image.data[i + 1] = radius * Math.sin(azimuth) * Math.sin(inclination);
+  dataPosition.image.data[i + 2] = radius * Math.cos(azimuth);
+  dataPosition.image.data[i + 3] = 1;
+}
+
+// Create a simulation and set uniforms for the simulation
+const positionFBO = gpuSim.createSimulation('positions', positionFrag, dataPosition, {
   uniforms: {
-    // Will be set after the particles.update() call
-    positions: { type: 't', value: null },
-    pointSize: { type: 'f', value: 2 },
-    lightPosition: { type: 'v3', value: new Vector3(props.SIZE, props.SIZE, props.SIZE) },
+    timer: { type: 'f', value: 0 },
+    amplitude: { type: 'f', value: props.AMPL },
+    complexity: { type: 'f', value: props.COMPLEXITY },
+  },
+});
+
+/**
+ **********
+ * PARTICLE
+ **********
+ */
+const l = TEXTURE_WIDTH * TEXTURE_HEIGHT;
+const vertices = new Float32Array(l * 3);
+for (i = 0; i < l; i++) {
+  const i3 = i * 3;
+  vertices[i3] = (i % TEXTURE_WIDTH) / TEXTURE_HEIGHT;
+  vertices[i3 + 1] = (i / TEXTURE_WIDTH) / TEXTURE_HEIGHT;
+}
+const particleGeom = new BufferGeometry();
+particleGeom.addAttribute('position', new BufferAttribute(vertices, 3));
+const particleMaterial = new ShaderMaterial({
+  uniforms: {
+    positions: { type: 't', value: positionFBO.output.texture },
+    pointSize: { type: 'f', value: 1 },
   },
   vertexShader: particleVert,
   fragmentShader: particleFrag,
 });
 
-const fboParticles = new FBOParticle(
-  TEXTURE_WIDTH,
-  TEXTURE_HEIGHT,
-  particleShaderMaterial,
-  webgl.renderer,
-);
-
 /** *********
- * PARTICLE POSITION
- * Create a DataTexture and a shader to compute each values
- */
-
- /**
- * DATA TEXTURE
- */
-
- const getRandomData = (w, h, size) => {
-   let len = w * h * 3;
-   const data = new Float32Array(len);
-   while (len--) data[len] = getRandomFloat(-size, size);
-   return data;
- };
- const positionData = getRandomData(TEXTURE_WIDTH, TEXTURE_HEIGHT, props.SIZE);
- const positions = fboParticles.createDataTexture(positionData);
-
- /**
- * SHADER
- */
-const simulationPositionShaderMaterial = new ShaderMaterial({
-  uniforms: {
-    positions: { type: 't', value: positions },
-    timer: { type: 'f', value: 0 },
-    complexity: { type: 'f', value: props.COMPLEXITY },
-    amplitude: { type: 'f', value: props.AMPL },
-  },
-  vertexShader: defaultVert,
-  fragmentShader: positionFrag,
-});
-
-fboParticles.createSimulation('positions', simulationPositionShaderMaterial);
-
-/** *********
- * ADD TO THE SCENE
- */
-webgl.add(fboParticles);
-webgl.helper.attach(fboParticles.fbo, 'Position');
+* ADD TO THE SCENE
+*/
+const particles = new Points(particleGeom, particleMaterial);
+webgl.add(particles);
 
 
 /**
@@ -189,17 +172,25 @@ webgl.helper.attach(fboParticles.fbo, 'Position');
 
 let timer = 0;
 webgl.onUpdate = () => {
+  particles.rotation.x += props.ROTATION;
+  particles.rotation.y += props.ROTATION;
+
   timer += props.SPEED;
-  fboParticles.updateSimulationUniform('positions', 'timer', timer);
-  fboParticles.rotation.x += props.ROTATION;
-  fboParticles.rotation.y += props.ROTATION;
+  positionFBO.material.uniforms.timer.value = timer;
+
+  // update all simulations with the textures computed
+  // gpuSim.update();
+  // update only one simulation always with the initialDataTexture.
+  gpuSim.updateSimulation(positionFBO, positionFBO.initialDataTexture);
+  gpuSim.helper.update();
 };
 
+// HELPER 2
 guiAmplitude.onChange(() => {
-  fboParticles.updateSimulationUniform('positions', 'amplitude', props.AMPL);
+  positionFBO.material.uniforms.amplitude.value = props.AMPL;
 });
 guiComplexity.onChange(() => {
-  fboParticles.updateSimulationUniform('positions', 'complexity', props.COMPLEXITY);
+  positionFBO.material.uniforms.complexity.value = props.COMPLEXITY;
 });
 guiZoom.onChange(() => {
   webgl.camera.position.z = props.ZOOM;
@@ -208,7 +199,7 @@ guiZoom.onChange(() => {
 /* ---- CREATING ZONE END ---- */
 /**/
 /**/
-/**/ /* ---- ON REprops.SIZE ---- */
+/**/ /* ---- ON RESIZE ---- */
 /**/ function onResize() {
 /**/   windowWidth = window.innerWidth;
 /**/   windowHeight = window.innerHeight;

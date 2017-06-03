@@ -1,6 +1,6 @@
 //	Simplex 3D Noise
 //	by Ian McEwan, Ashima Arts
-//
+
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
 
@@ -108,14 +108,14 @@ vec3 curlNoise(vec3 p) {
 
 // ----
 
-uniform sampler2D positions;
+uniform sampler2D texture;
 uniform float timer;
 uniform float amplitude;
 uniform float complexity;
 varying vec2 vUv;
 
 void main() {
-    vec3 pos = texture2D( positions, vUv ).rgb;
+    vec3 pos = texture2D( texture, vUv ).rgb;
 
     float displacement = snoise( pos * complexity + vec3( timer )) * amplitude;
     vec3 newPos = pos + (pos * displacement);

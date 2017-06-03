@@ -50,7 +50,7 @@ uniform sampler2D texture;
 varying vec2 vUv;
 
 void main() {
-	gl_FragColor = texture2D( texture, vUv );
+  gl_FragColor = texture2D( texture, vUv );
 }
 `;
 
@@ -60,7 +60,7 @@ varying vec2 vUv;
 
 void main()	{
   vUv = vec2(uv.x, uv.y);
-	gl_Position = vec4( position, 1.0 );
+  gl_Position = vec4( position, 1.0 );
 }
 `;
 
@@ -116,52 +116,6 @@ export default class GPUSimulation {
 
   /**
    * *********
-   * LOOP
-   * *********
-   */
-
-  /**
-   * Update each simulations
-   */
-  update() {
-    // Update the current index to switch between fbos input/output
-    const inputFboTextureIdx = this.currentFboTextureIdx;
-    this.currentFboTextureIdx = 1 - this.currentFboTextureIdx;
-
-    let i;
-    const length = this.simulations.length;
-    for (i = 0; i < length; i++) {
-      // set the current simulation material
-      this.mesh.material = this.simulations[i].material;
-
-      // compute
-      this.renderTexture(
-        this.simulations[i].fbos[inputFboTextureIdx],
-        this.simulations[i].fbos[this.currentFboTextureIdx]
-      );
-
-      // save the render to the output
-      this.simulations[i].output = this.simulations[i].fbos[this.currentFboTextureIdx];
-    }
-
-    if (this.helper) this.helper.update();
-  }
-
-
-  /**
-   * Compute the input texture and save the
-   * result in the output.
-   * @param {WebGLRenderTarget} {DataTexture} input
-   * @param {WebGLRenderTarget} output
-   */
-  renderTexture(input, output) {
-    this.mesh.material.uniforms.texture.value = input;
-    this.renderer.render(this.scene, this.orthoCamera, output, true);
-  }
-
-
-  /**
-   * *********
    * CREATE
    * *********
    */
@@ -179,6 +133,7 @@ export default class GPUSimulation {
    *
    * @return {Object} Simulation -
    */
+  // TODO create a simulaition who update only with the initial dataTexture
   createSimulation(name, simFragmentShader, initialDataTexture, {
     width = this.width,
     height = this.height,
@@ -261,6 +216,62 @@ export default class GPUSimulation {
       fragmentShader: simFragmentShader,
     });
     return material;
+  }
+
+
+  /**
+   * *********
+   * LOOP
+   * *********
+   */
+
+  /**
+   * Update each simulations
+   */
+  update() {
+    // Update the current index to switch between fbos input/output
+    this.currentFboTextureIdx = 1 - this.currentFboTextureIdx;
+
+    let i;
+    const length = this.simulations.length;
+    for (i = 0; i < length; i++) {
+      this.updateSimulation(this.simulations[i]);
+    }
+
+    if (this.helper) this.helper.update();
+  }
+
+  /**
+   * Compute a simulation. Could be call alone to update only one simulation
+   * with a different input.
+   * EX: gpuSim.updateSimulation(sim, sim.initialDataTexture);
+   * WARNING: if the input is not referenced, you must manually update the
+   * currentFboTextureIdx : this.currentFboTextureIdx = 1 - this.currentFboTextureIdx;
+   * @param {Simulation} simulation - simulation build by the GPUSim
+   * @param {WebGLRenderTarget} {DataTexture} input
+   */
+  updateSimulation(simulation, input = simulation.output) {
+    // set the current simulation material
+    this.mesh.material = simulation.material;
+    // compute
+    this.renderTexture(
+      input,
+      simulation.fbos[this.currentFboTextureIdx]
+    );
+    // save the render to the output
+    simulation.output = simulation.fbos[this.currentFboTextureIdx];
+  }
+
+
+  /**
+   * Compute the input texture and save the
+   * result in the output.
+   * @param {WebGLRenderTarget} {DataTexture} input
+   * @param {WebGLRenderTarget} output
+   */
+  renderTexture(input, output) {
+    this.mesh.material.uniforms.texture.value = input;
+    this.renderer.render(this.scene, this.orthoCamera, output, true);
   }
 
 
