@@ -5,6 +5,7 @@ import {
 import { GUI } from 'dat.gui/build/dat.gui';
 
 import GPUSimulation from 'GPUSimulation';
+import Particles from 'Particles';
 
 import { getRandomFloat } from 'utils';
 
@@ -118,7 +119,7 @@ let i;
 const dataSpherePosition = gpuSim.createDataTexture();
 const textureLength = dataSpherePosition.image.data.length;
 
-// Create random position on a circle
+// Create random position on a sphere
 for (i = 0; i < textureLength; i += 4) {
   const azimuth = Math.random() * Math.PI;
   const inclination = Math.random() * Math.PI * 2;
@@ -153,15 +154,7 @@ const positionFBO = gpuSim.createSimulation('positions', positionFrag, dataSpher
  * PARTICLE
  **********
  */
-const l = TEXTURE_WIDTH * TEXTURE_HEIGHT;
-const vertices = new Float32Array(l * 3);
-for (i = 0; i < l; i++) {
-  const i3 = i * 3;
-  vertices[i3] = (i % TEXTURE_WIDTH) / TEXTURE_HEIGHT;
-  vertices[i3 + 1] = (i / TEXTURE_WIDTH) / TEXTURE_HEIGHT;
-}
-const particleGeom = new BufferGeometry();
-particleGeom.addAttribute('position', new BufferAttribute(vertices, 3));
+ // Create a particle Material
 const particleMaterial = new ShaderMaterial({
   uniforms: {
     positions: { type: 't', value: positionFBO.output.texture },
@@ -171,10 +164,10 @@ const particleMaterial = new ShaderMaterial({
   fragmentShader: particleFrag,
 });
 
-/** *********
-* ADD TO THE SCENE
-*/
-const particles = new Points(particleGeom, particleMaterial);
+// Create a system of particle
+const particles = new Particles(TEXTURE_WIDTH, TEXTURE_HEIGHT, particleMaterial);
+
+// Add to the scene
 webgl.add(particles);
 
 
