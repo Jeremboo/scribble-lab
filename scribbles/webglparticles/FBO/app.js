@@ -6,6 +6,8 @@ import { GUI } from 'dat.gui/build/dat.gui';
 
 import GPUSimulation from 'GPUSimulation';
 
+import { getRandomFloat } from 'utils';
+
 import particleVert from './shaders/particle.v.glsl';
 import particleFrag from './shaders/particle.f.glsl';
 
@@ -90,6 +92,7 @@ const props = {
   SPEED: 0.007,
   ROTATION: 0.002,
   ZOOM: 500,
+  TO_SQUARE: 0,
 };
 
 const gui = new GUI();
@@ -98,6 +101,7 @@ const guiComplexity = gui.add(props, 'COMPLEXITY', 0, 0.02);
 const guiZoom = gui.add(props, 'ZOOM', 0, 1000);
 gui.add(props, 'SPEED', 0, 0.05);
 gui.add(props, 'ROTATION', 0, 0.02);
+const guiShape = gui.add(props, 'TO_SQUARE', 0, 1);
 
 /**
  **********
@@ -111,26 +115,36 @@ gpuSim.initHelper(windowWidth, windowHeight);
  * DATA TEXTURE
  */
 let i;
-const dataPosition = gpuSim.createDataTexture();
-const textureLength = dataPosition.image.data.length;
+const dataSpherePosition = gpuSim.createDataTexture();
+const textureLength = dataSpherePosition.image.data.length;
 
 // Create random position on a circle
 for (i = 0; i < textureLength; i += 4) {
-  const radius = (10 - Math.pow(Math.random(), 3)) * 10;
   const azimuth = Math.random() * Math.PI;
   const inclination = Math.random() * Math.PI * 2;
-  dataPosition.image.data[i] = radius * Math.sin(azimuth) * Math.cos(inclination);
-  dataPosition.image.data[i + 1] = radius * Math.sin(azimuth) * Math.sin(inclination);
-  dataPosition.image.data[i + 2] = radius * Math.cos(azimuth);
-  dataPosition.image.data[i + 3] = 1;
+  dataSpherePosition.image.data[i] = props.SIZE * Math.sin(azimuth) * Math.cos(inclination);
+  dataSpherePosition.image.data[i + 1] = props.SIZE * Math.sin(azimuth) * Math.sin(inclination);
+  dataSpherePosition.image.data[i + 2] = props.SIZE * Math.cos(azimuth);
+  dataSpherePosition.image.data[i + 3] = 1;
+}
+
+// Create a second set of position on a square
+const dataSquarePosition = gpuSim.createDataTexture();
+for (i = 0; i < textureLength; i += 4) {
+  dataSquarePosition.image.data[i] = getRandomFloat(-props.SIZE, props.SIZE);
+  dataSquarePosition.image.data[i + 1] = getRandomFloat(-props.SIZE, props.SIZE);
+  dataSquarePosition.image.data[i + 2] = getRandomFloat(-props.SIZE, props.SIZE);
+  dataSquarePosition.image.data[i + 3] = 1;
 }
 
 // Create a simulation and set uniforms for the simulation
-const positionFBO = gpuSim.createSimulation('positions', positionFrag, dataPosition, {
+const positionFBO = gpuSim.createSimulation('positions', positionFrag, dataSpherePosition, {
   uniforms: {
     timer: { type: 'f', value: 0 },
     amplitude: { type: 'f', value: props.AMPL },
     complexity: { type: 'f', value: props.COMPLEXITY },
+    toSquare: { type: 'f', value: props.TO_SQUARE },
+    squareTexture: { type: 't', value: dataSquarePosition },
   },
 });
 
@@ -191,6 +205,9 @@ guiAmplitude.onChange(() => {
 });
 guiComplexity.onChange(() => {
   positionFBO.material.uniforms.complexity.value = props.COMPLEXITY;
+});
+guiShape.onChange(() => {
+  positionFBO.material.uniforms.toSquare.value = props.TO_SQUARE;
 });
 guiZoom.onChange(() => {
   webgl.camera.position.z = props.ZOOM;

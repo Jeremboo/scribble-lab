@@ -109,13 +109,17 @@ vec3 curlNoise(vec3 p) {
 // ----
 
 uniform sampler2D texture;
+uniform sampler2D squareTexture;
 uniform float timer;
 uniform float amplitude;
 uniform float complexity;
+uniform float toSquare;
 varying vec2 vUv;
 
 void main() {
-    vec3 pos = texture2D( texture, vUv ).rgb;
+    vec3 posSphere = texture2D( texture, vUv ).rgb;
+    vec3 posSquare = texture2D( squareTexture, vUv ).rgb;
+    vec3 pos = (posSquare * toSquare) + (posSphere * (1.0 - toSquare));
 
     float displacement = snoise( pos * complexity + vec3( timer )) * amplitude;
     vec3 newPos = pos + (pos * displacement);
