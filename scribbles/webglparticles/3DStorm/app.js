@@ -1,10 +1,11 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Color,
   BufferGeometry, BufferAttribute,
-  ShaderMaterial, Points,
+  ShaderMaterial, Points, Vector3,
 } from 'three';
 
 import GPUSimulation from 'GPUSimulation';
+import Particles from 'Particles';
 
 import shaderSimulationPosition from './shaders/simulationPosition.f.glsl';
 import shaderSimulationVelocity from './shaders/simulationVelocity.f.glsl';
@@ -58,6 +59,27 @@ import particleFrag from './shaders/particle.f.glsl';
 /**/
 /* ---- CREATING ZONE ---- */
 
+/* ---- SETTINGS ---- */
+
+const props = {
+  PARTICLE_NUMBERS: 500,
+  POINT_SIZE: 2,
+
+  DEMISE_DISTANCE: 20,
+  APPARITION_DISTANCE: 350,
+
+  ROTATION_FORCE: 10,
+
+  VEL_MAX: 5,
+  VEL_MIN: 0,
+  VEL_BRAKE_MIN: 0.9,
+  VEL_BRAKE_MAX: 0.95,
+
+  ATT_AMPL: 3.8, // To reduce the force of the attraction at cente,
+  ATT_ZONE: 0.8,
+  ATT_FORCE: 0.02,
+};
+
 
 /* ---- INIT ---- */
 const TEXTURE_SIZE = 512;
@@ -74,50 +96,59 @@ const dataVelocity = gpuSim.createDataTexture();
 
 // Initialize data
 const textureArraySize = TEXTURE_WIDTH * TEXTURE_HEIGHT * 4;
-const birandom = () => Math.random() * 2 - 1;
 for (let i = 0; i < textureArraySize; i += 4) {
-	const radius = (1 - Math.pow(Math.random(), 3)) * 1;
-	const azimuth = Math.random() * Math.PI;
-	const inclination = Math.random() * Math.PI * 2;
+  const radius = (1 - Math.pow(Math.random(), 3)) * 1;
+  const azimuth = Math.random() * Math.PI;
+  const inclination = Math.random() * Math.PI * 2;
 
-	dataPosition.image.data[i] = radius * Math.sin(azimuth) * Math.cos(inclination);
-	dataPosition.image.data[i + 1] = radius * Math.sin(azimuth) * Math.sin(inclination);
-	dataPosition.image.data[i + 2] = radius * Math.cos(azimuth);
-	dataPosition.image.data[i + 3] = 1;
+  dataPosition.image.data[i] = radius * Math.sin(azimuth) * Math.cos(inclination);
+  dataPosition.image.data[i + 1] = radius * Math.sin(azimuth) * Math.sin(inclination);
+  dataPosition.image.data[i + 2] = radius * Math.cos(azimuth);
+  dataPosition.image.data[i + 3] = 1;
 
-	dataVelocity.image.data[i] = 0;
-	dataVelocity.image.data[i + 1] = 0;
-	dataVelocity.image.data[i + 2] = 0;
-	dataVelocity.image.data[i + 3] = 1;
+  dataVelocity.image.data[i] = 0;
+  dataVelocity.image.data[i + 1] = 0;
+  dataVelocity.image.data[i + 2] = 0;
+  dataVelocity.image.data[i + 3] = 1;
 }
 
+// Initalize simulations
 const velocityFBO = gpuSim.createSimulation(
-  'textureVelocity', shaderSimulationVelocity, dataVelocity
+  'textureVelocity', shaderSimulationVelocity, dataVelocity, {
+    uniforms: {
+      attractionAmplitude: { type: 'f', value: props.ATT_AMPL },
+      attractionZone: { type: 'f', value: props.ATT_ZONE },
+      attractionForce: { type: 'f', value: props.ATT_FORCE },
+      velMax: { type: 'f', value: new Vector3(20, 20, 20) }, // TODO may be in attribute
+      velBrake: { type: 'f', value: props.VEL_BRAKE_MAX }, // TODO may be in attribute
+    },
+  }
 );
 const positionFBO = gpuSim.createSimulation(
-  'texturePosition', shaderSimulationPosition, dataPosition
+  'texturePosition', shaderSimulationPosition, dataPosition, {
+    uniforms: {
+      velocityTexture: { type: 't', value: velocityFBO.output.texture },
+      demiseDistance: { type: 'f', value: props.DEMISE_DISTANCE },
+      rotationForce: { type: 'f', value: props.ROTATION_FORCE },
+    },
+  }
 );
 
 /* ---- Particles ---- */
-const l = TEXTURE_WIDTH * TEXTURE_HEIGHT;
-const vertices = new Float32Array(l * 3);
-for (let i = 0; i < l; i++) {
-  const i3 = i * 3;
-  vertices[i3] = (i % TEXTURE_WIDTH) / TEXTURE_HEIGHT;
-  vertices[i3 + 1] = (i / TEXTURE_WIDTH) / TEXTURE_HEIGHT;
-}
-const particleGeom = new BufferGeometry();
-particleGeom.addAttribute('position', new BufferAttribute(vertices, 3));
+ // Create a particle Material
 const particleMaterial = new ShaderMaterial({
   uniforms: {
     positions: { type: 't', value: positionFBO.output.texture },
-    pointSize: { type: 'f', value: 1 },
+    pointSize: { type: 'f', value: props.POINT_SIZE },
   },
   vertexShader: particleVert,
   fragmentShader: particleFrag,
 });
 
-const particles = new Points(particleGeom, particleMaterial);
+// Create a system of particle
+const particles = new Particles(TEXTURE_WIDTH, TEXTURE_HEIGHT, particleMaterial);
+
+// Add to the scene
 webgl.add(particles);
 
 /* ---- UPDATE ---- */
