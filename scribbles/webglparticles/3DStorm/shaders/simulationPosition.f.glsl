@@ -1,5 +1,6 @@
 uniform sampler2D texture;
 uniform sampler2D velocityTexture;
+uniform sampler2D initialPositionTexture;
 
 uniform float demiseDistance;
 uniform float rotationForce;
@@ -7,8 +8,9 @@ uniform float rotationForce;
 varying vec2 vUv;
 
 void main() {
-  // Get the old position
   vec3 pos = vec3(0.0, 0.0, 0.0);
+
+  // Get the old position
   vec3 oldPosition = texture2D(texture, vUv).xyz;
 
   // Get the velocity and distance
@@ -18,9 +20,7 @@ void main() {
 
   // if to nearest
   if (dist < demiseDistance) {
-    // TODO init on a new random position
-    pos = vec3(0.0, 0.0, 0.0);
-
+    pos = texture2D(initialPositionTexture, vUv).xyz;
   } else {
     // Apply velocity { pos -= vel }
     pos = oldPosition - vel;
@@ -31,7 +31,6 @@ void main() {
     // TODO apply rotationForce to the normalized vector
 
     // TODO apply normalizedrotationForce { pos += rotationForce }
-
   }
 
   gl_FragColor = vec4(pos, 1.0);

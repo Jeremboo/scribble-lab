@@ -18,7 +18,7 @@
  * gpuCompute.update();
  *
  * // Update texture uniforms in your visualization materials with the gpu renderer output
- * myMaterial.uniforms.myTexture.value = TODO
+ * myMaterial.uniforms.myTexture.value = positionFBO.output.texture;
  *
  * // ... Do your rendering
  *
