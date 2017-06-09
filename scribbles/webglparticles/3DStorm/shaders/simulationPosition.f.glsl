@@ -8,6 +8,7 @@ uniform float rotationForce;
 varying vec2 vUv;
 
 void main() {
+  // init
   vec3 pos = vec3(0.0, 0.0, 0.0);
 
   // Get the old position
@@ -15,22 +16,25 @@ void main() {
 
   // Get the velocity and distance
   vec4 velocityTex = texture2D(velocityTexture, vUv);
-  vec3 vel = velocityTex.xyz;
+  vec2 vel = velocityTex.xy;
+  float force = velocityTex.z;
   float dist = velocityTex.a;
 
   // if to nearest
   if (dist < demiseDistance) {
+    // init att the default position
     pos = texture2D(initialPositionTexture, vUv).xyz;
   } else {
-    // Apply velocity { pos -= vel }
-    pos = oldPosition - vel;
+    // VELOCITY
+    pos = oldPosition - vec3(vel, 0.0);
 
-    // TODO get orthogonal vector { x: -posY, y: posX }
-    // TODO get dist ort/pos
-    // TODO normalize l'orthogonal vector
-    // TODO apply rotationForce to the normalized vector
-
-    // TODO apply normalizedrotationForce { pos += rotationForce }
+    // ROTATION
+    // Get orthogonal vector { x: -posY, y: posX }
+    vec3 ortho = vec3(-pos.y, pos.x, pos.z);
+    // Normalize the orthogonal vector
+    vec3 orthoNormalized = normalize(ortho);
+    // Apply the rotation
+    pos += orthoNormalized * force * rotationForce * 100.0;
   }
 
   gl_FragColor = vec4(pos, 1.0);

@@ -1,49 +1,48 @@
 uniform sampler2D texture;
 uniform sampler2D positionTexture;
 
+uniform float maxDistance;
 uniform float demiseDistance;
 
-uniform float attractionAmplitude;
-uniform float attractionZone;
+uniform float attractionCurve;
+uniform float attractionDistance;
 uniform float attractionForce;
 
-uniform vec3 velMax;
+uniform float velMax;
 uniform float velBrake;
 
 varying vec2 vUv;
 
 void main() {
-  float dist = 1.0;
-  vec3 vel = vec3(0.0);
-
+  // TEXTURES
   // Get the current position
-  vec3 position = texture2D(positionTexture, vUv).xyz;
-
+  vec2 position = texture2D(positionTexture, vUv).xy;
   // Get the old velocity
   vec4 velocityTex = texture2D(texture, vUv);
-  vec3 oldVel = velocityTex.xyz;
-  // float oldDist = velocityTex.a;
+  vec2 oldVel = velocityTex.xy;
 
-  // TODO get the dist between theres positions;
-  dist = length(position); // distance(position, vec3(0.0));
+  // INIT needed values
+  vec2 vel = vec2(0.0);
+  float dist = length(position); // distance(position, vec2(0.0));
+  float force = 1.0;
 
-  // if not to nearest
+  // If not to nearest
   if (dist > demiseDistance) {
-    // TODO normalize the position vector to get a force
-    vec3 normalized = position / dist; // normalize(position);
+    // Normalized force direction
+    vec2 normalized = position / dist; // normalize(position);
 
-    // TODO caculate the force
-    // float force = exp(attractionAmplitude * (attractionZone - (dist / 10.0))) * attractionForce;
-    float force = 0.01;
+    // Force amplitude
+    // http://www.mathopenref.com/graphfunctions.html?fx=(exp(a%20*%20(1%20-%20x%20-%20b)))%20*%20c&xh=1&xl=0&yh=10&yl=-10&a=3.595744680851064&b=0.3&c=1.4&dh=10&dl=-4&d=5.6
+    force = exp(attractionCurve * ((maxDistance * attractionDistance) - dist)) * 0.0001 * attractionForce;
 
-    // TODO update velocity: { vel += force }
-    vel = oldVel + (normalized * force);
+    // Update the velocity
+    vel = (oldVel + (normalized * force));
 
-    // TODO decrement velocity: if (Math.abs(vel) > velMax) vel *= velBrake;
-    // if (abs(length(vel)) > 0.05) {
-    //   vel = oldVel;
-    // }
+    // Decrement velocity
+    if (abs(dist) > velMax) {
+      vel *= velBrake;
+    }
   }
 
-  gl_FragColor = vec4(vel, dist);
+  gl_FragColor = vec4(vel.xy, force, dist);
 }
