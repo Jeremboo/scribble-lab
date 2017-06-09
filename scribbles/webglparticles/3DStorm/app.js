@@ -34,7 +34,7 @@ import particleFrag from './shaders/particle.f.glsl';
 /**/     if (bgColor) this.renderer.setClearColor(new Color(bgColor));
 /**/     this.scene = new Scene();
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
-/**/     this.camera.position.set(0, 0, 10);
+/**/     this.camera.position.set(0, -20, 5);
 /**/     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
@@ -189,6 +189,7 @@ gui.add(props, 'ROTATION_FORCE', 0, 10).onChange(() => {
   positionFBO.material.uniforms.rotationForce.value = props.ROTATION_FORCE;
 });
 
+// velocity
 const velocity = gui.addFolder('Velocity');
 velocity.add(props, 'VEL_MAX', 0, 80).onChange(() => {
   velocityFBO.material.uniforms.velMax.value = props.VEL_MAX;
@@ -197,6 +198,7 @@ velocity.add(props, 'VEL_BRAKE', 0, 1).onChange(() => {
   velocityFBO.material.uniforms.velBrake.value = props.VEL_BRAKE;
 });
 
+// attraction
 const attraction = gui.addFolder('Attraction');
 attraction.add(props, 'ATT_CURVE', 0, 1).onChange(() => {
   velocityFBO.material.uniforms.attractionCurve.value = props.ATT_CURVE;
@@ -207,6 +209,13 @@ attraction.add(props, 'ATT_DIST', 0, 2).onChange(() => {
 attraction.add(props, 'ATT_FORCE', 0.1, 2).onChange(() => {
   velocityFBO.material.uniforms.attractionForce.value = props.ATT_FORCE;
 });
+
+// Reset button
+props.RESET = () => {
+  gpuSim.updateSimulation(velocityFBO, velocityFBO.initialDataTexture)
+  gpuSim.updateSimulation(positionFBO, positionFBO.initialDataTexture)
+};
+gui.add(props, 'RESET');
 
 /* ---- CREATING ZONE END ---- */
 /**/
