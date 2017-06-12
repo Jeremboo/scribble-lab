@@ -78,9 +78,9 @@ const props = {
   VEL_BRAKE_MIN: 0.8, // 0.9,
   VEL_BRAKE: 0.9, // 0.9,
 
-  ROT_CURVE: 0.8, // force of rotation at the center
-  ROT_DIST: 0.43, // distance of force at the center
-  ROT_FORCE: 0.01, // global rotation force
+  ROT_CURVE: 1, // force of rotation at the center
+  ROT_DIST: 0.18, // distance of force at the center
+  ROT_FORCE: 0.08, // global rotation force
 
   ATT_CURVE: 0.4, // To reduce the exponential force
   ATT_DIST: 1.2,
@@ -189,15 +189,25 @@ webgl.add(axisHelper);
 // gui
 const gui = new GUI();
 
+// global
+const global = gui.addFolder('Global');
+global.add(props, 'POINT_SIZE', 1, 100).onChange(() => {
+  particles.material.uniforms.pointSize.value = props.POINT_SIZE;
+});
+global.add(props, 'DEMISE_DISTANCE', 0, 3).onChange(() => {
+  positionFBO.material.uniforms.demiseDistance.value = props.DEMISE_DISTANCE;
+  velocityFBO.material.uniforms.demiseDistance.value = props.DEMISE_DISTANCE;
+});
+
 // rotation
 const rotation = gui.addFolder('Rotation');
 rotation.add(props, 'ROT_CURVE', 0, 1).onChange(() => {
   positionFBO.material.uniforms.rotationCurve.value = props.ROT_CURVE;
 });
-rotation.add(props, 'ROT_DIST', 0, 2).onChange(() => {
+rotation.add(props, 'ROT_DIST', 0, 1).onChange(() => {
   positionFBO.material.uniforms.rotationDistance.value = props.ROT_DIST;
 });
-rotation.add(props, 'ROT_FORCE', 0, 1.5).onChange(() => {
+rotation.add(props, 'ROT_FORCE', 0, 0.1).onChange(() => {
   positionFBO.material.uniforms.rotationForce.value = props.ROT_FORCE;
 });
 
@@ -211,15 +221,6 @@ attraction.add(props, 'ATT_DIST', 0, 2).onChange(() => {
 });
 attraction.add(props, 'ATT_FORCE', 0, 2).onChange(() => {
   velocityFBO.material.uniforms.attractionForce.value = props.ATT_FORCE;
-});
-
-// global
-gui.add(props, 'POINT_SIZE', 1, 100).onChange(() => {
-  particles.material.uniforms.pointSize.value = props.POINT_SIZE;
-});
-gui.add(props, 'DEMISE_DISTANCE', 0, 3).onChange(() => {
-  positionFBO.material.uniforms.demiseDistance.value = props.DEMISE_DISTANCE;
-  velocityFBO.material.uniforms.demiseDistance.value = props.DEMISE_DISTANCE;
 });
 
 // velocity FIXME doesn't works

@@ -48,7 +48,8 @@
         "visible": true,
         "preview": [
           "/preview.gif",
-          "/preview2.gif"
+          "/preview2.gif",
+          "/preview3.gif"
         ],
         "description": "",
         "date": "2017-06-01T09:27:17.688Z",
@@ -79,7 +80,10 @@
         "path": "scribbles/webglparticles/FBO/",
         "link": "",
         "visible": true,
-        "preview": "/preview.gif",
+        "preview": [
+          "/preview.gif",
+          "/preview2.gif"
+        ],
         "description": "",
         "date": "2017-05-15T09:47:25.983Z",
         "tags": []
