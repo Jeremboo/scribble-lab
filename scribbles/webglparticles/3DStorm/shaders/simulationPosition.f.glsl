@@ -3,6 +3,9 @@ uniform sampler2D velocityTexture;
 uniform sampler2D initialPositionTexture;
 
 uniform float demiseDistance;
+
+uniform float rotationCurve;
+uniform float rotationDistance;
 uniform float rotationForce;
 
 varying vec2 vUv;
@@ -17,7 +20,7 @@ void main() {
   // Get the velocity and distance
   vec4 velocityTex = texture2D(velocityTexture, vUv);
   vec2 vel = velocityTex.xy;
-  float force = velocityTex.z;
+  float force = 0.0; // velocityTex.z;
   float dist = velocityTex.a;
 
   // if to nearest
@@ -34,7 +37,8 @@ void main() {
     // Normalize the orthogonal vector
     vec3 orthoNormalized = normalize(ortho);
     // Apply the rotation
-    pos += orthoNormalized * force * rotationForce * 100.0;
+    force = exp(rotationCurve * ((10.0 * rotationDistance) - dist)) * rotationForce;
+    pos += orthoNormalized * force;
   }
 
   gl_FragColor = vec4(pos, 1.0);

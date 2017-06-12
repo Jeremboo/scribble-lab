@@ -68,15 +68,19 @@ import particleFrag from './shaders/particle.f.glsl';
 
 /* ---- SETTINGS ---- */
 const props = {
-  POINT_SIZE: 10,
+  POINT_SIZE: 1.2,
 
   DEMISE_DISTANCE: 1,
   MAX_DISTANCE: 10,
 
-  ROTATION_FORCE: 0.3,
+  VEL_MIN: 1, // 0.1,
+  VEL_MAX: 2, // 0.1,
+  VEL_BRAKE_MIN: 0.8, // 0.9,
+  VEL_BRAKE: 0.9, // 0.9,
 
-  VEL_MAX: 0.1,
-  VEL_BRAKE: 0.9,
+  ROT_CURVE: 0.8, // force of rotation at the center
+  ROT_DIST: 0.43, // distance of force at the center
+  ROT_FORCE: 0.01, // global rotation force
 
   ATT_CURVE: 0.4, // To reduce the exponential force
   ATT_DIST: 1.2,
@@ -91,9 +95,10 @@ const TEXTURE_WIDTH = TEXTURE_SIZE;
 const gpuSim = new GPUSimulation(TEXTURE_WIDTH, TEXTURE_HEIGHT, webgl.renderer);
 gpuSim.initHelper(windowWidth, windowHeight);
 
-// Create texture
+// Create textures
 const dataPosition = gpuSim.createDataTexture();
 const dataVelocity = gpuSim.createDataTexture();
+const dataProps = gpuSim.createDataTexture();
 
 // Initialize data
 const textureArraySize = TEXTURE_WIDTH * TEXTURE_HEIGHT * 4;
@@ -109,6 +114,11 @@ for (let i = 0; i < textureArraySize; i += 4) {
   dataVelocity.image.data[i + 1] = 0;
   dataVelocity.image.data[i + 2] = 0;
   dataVelocity.image.data[i + 3] = 1;
+
+  dataProps.image.data[i] = getRandomFloat(props.VEL_MIN, props.VEL_MAX);
+  dataProps.image.data[i + 1] = getRandomFloat(props.VEL_BRAKE_MIN, props.VEL_BRAKE);
+  dataProps.image.data[i + 2] = 0;
+  dataProps.image.data[i + 3] = 1;
 }
 
 // Initalize simulations
@@ -121,9 +131,8 @@ const velocityFBO = gpuSim.createSimulation(
       attractionCurve: { type: 'f', value: props.ATT_CURVE },
       attractionDistance: { type: 'f', value: props.ATT_DIST },
       attractionForce: { type: 'f', value: props.ATT_FORCE },
-      // velocity params of each particles
-      velMax: { type: 'f', value: props.VEL_MAX }, // TODO may be in attribute
-      velBrake: { type: 'f', value: props.VEL_BRAKE }, // TODO may be in attribute
+      // velocity params: VEL_MAX, VEL_BRAKE
+      propsTexture: { type: 'f', value: dataProps },
       // distance of demise and the external circle distance
       demiseDistance: { type: 'f', value: props.DEMISE_DISTANCE },
       maxDistance: { type: 'f', value: props.MAX_DISTANCE },
@@ -140,7 +149,9 @@ const positionFBO = gpuSim.createSimulation(
       // Demise distance
       demiseDistance: { type: 'f', value: props.DEMISE_DISTANCE },
       // Global rotation force
-      rotationForce: { type: 'f', value: props.ROTATION_FORCE },
+      rotationCurve: { type: 'f', value: props.ROT_CURVE },
+      rotationDistance: { type: 'f', value: props.ROT_DIST },
+      rotationForce: { type: 'f', value: props.ROT_FORCE },
     },
   },
 );
@@ -178,24 +189,16 @@ webgl.add(axisHelper);
 // gui
 const gui = new GUI();
 
-gui.add(props, 'POINT_SIZE', 1, 100).onChange(() => {
-  particles.material.uniforms.pointSize.value = props.POINT_SIZE;
+// rotation
+const rotation = gui.addFolder('Rotation');
+rotation.add(props, 'ROT_CURVE', 0, 1).onChange(() => {
+  positionFBO.material.uniforms.rotationCurve.value = props.ROT_CURVE;
 });
-gui.add(props, 'DEMISE_DISTANCE', 0, 3).onChange(() => {
-  positionFBO.material.uniforms.demiseDistance.value = props.DEMISE_DISTANCE;
-  velocityFBO.material.uniforms.demiseDistance.value = props.DEMISE_DISTANCE;
+rotation.add(props, 'ROT_DIST', 0, 2).onChange(() => {
+  positionFBO.material.uniforms.rotationDistance.value = props.ROT_DIST;
 });
-gui.add(props, 'ROTATION_FORCE', 0, 10).onChange(() => {
-  positionFBO.material.uniforms.rotationForce.value = props.ROTATION_FORCE;
-});
-
-// velocity
-const velocity = gui.addFolder('Velocity');
-velocity.add(props, 'VEL_MAX', 0, 80).onChange(() => {
-  velocityFBO.material.uniforms.velMax.value = props.VEL_MAX;
-});
-velocity.add(props, 'VEL_BRAKE', 0, 1).onChange(() => {
-  velocityFBO.material.uniforms.velBrake.value = props.VEL_BRAKE;
+rotation.add(props, 'ROT_FORCE', 0, 1.5).onChange(() => {
+  positionFBO.material.uniforms.rotationForce.value = props.ROT_FORCE;
 });
 
 // attraction
@@ -210,16 +213,40 @@ attraction.add(props, 'ATT_FORCE', 0, 2).onChange(() => {
   velocityFBO.material.uniforms.attractionForce.value = props.ATT_FORCE;
 });
 
+// global
+gui.add(props, 'POINT_SIZE', 1, 100).onChange(() => {
+  particles.material.uniforms.pointSize.value = props.POINT_SIZE;
+});
+gui.add(props, 'DEMISE_DISTANCE', 0, 3).onChange(() => {
+  positionFBO.material.uniforms.demiseDistance.value = props.DEMISE_DISTANCE;
+  velocityFBO.material.uniforms.demiseDistance.value = props.DEMISE_DISTANCE;
+});
+
+// velocity FIXME doesn't works
+// const velocity = gui.addFolder('Velocity');
+// velocity.add(props, 'VEL_MAX', props.VEL_MIN, 80).onChange(() => {
+//   for (let i = 0; i < textureArraySize; i += 4) {
+//     dataProps.image.data[i] = getRandomFloat(props.VEL_MIN, props.VEL_MAX);
+//   }
+//   velocityFBO.material.uniforms.propsTexture.value = dataProps;
+// });
+// velocity.add(props, 'VEL_BRAKE', props.VEL_BRAKE_MIN, 1).onChange(() => {
+//   for (let i = 0; i < textureArraySize; i += 4) {
+//     dataProps.image.data[i + 1] = getRandomFloat(props.VEL_BRAKE_MIN, props.VEL_BRAKE);
+//   }
+//   velocityFBO.material.uniforms.propsTexture.value = dataProps;
+// });
+
 // Reset button
-props.RESET = () => {
+props.reset = () => {
   gpuSim.updateSimulation(velocityFBO, velocityFBO.initialDataTexture);
   gpuSim.updateSimulation(positionFBO, positionFBO.initialDataTexture);
 };
-gui.add(props, 'RESET');
+gui.add(props, 'reset');
 
 // Stop button
-props.PLAY = true;
-gui.add(props, 'PLAY');
+props.play = true;
+gui.add(props, 'play');
 
 
 /* ---- CREATING ZONE END ---- */
@@ -236,7 +263,7 @@ gui.add(props, 'PLAY');
 /**/ /* ---- LOOP ---- */
 /**/ function _loop() {
 /**/ 	webgl.update();
-      props.PLAY && update();
+      props.play && update();
 /**/ 	requestAnimationFrame(_loop);
 /**/ }
 /**/ _loop();

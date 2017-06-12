@@ -1,6 +1,8 @@
 uniform sampler2D texture;
 uniform sampler2D positionTexture;
 
+uniform sampler2D propsTexture;
+
 uniform float maxDistance;
 uniform float demiseDistance;
 
@@ -8,8 +10,8 @@ uniform float attractionCurve;
 uniform float attractionDistance;
 uniform float attractionForce;
 
-uniform float velMax;
-uniform float velBrake;
+// uniform float velMax;
+// uniform float velBrake;
 
 varying vec2 vUv;
 
@@ -20,6 +22,10 @@ void main() {
   // Get the old velocity
   vec4 velocityTex = texture2D(texture, vUv);
   vec2 oldVel = velocityTex.xy;
+  // props
+  vec2 props = texture2D(propsTexture, vUv).xy;
+  float velMax = props.x;
+  float velBrake = props.y;
 
   // INIT needed values
   vec2 vel = vec2(0.0);
