@@ -98,12 +98,11 @@ const dataVelocity = gpuSim.createDataTexture();
 // Initialize data
 const textureArraySize = TEXTURE_WIDTH * TEXTURE_HEIGHT * 4;
 for (let i = 0; i < textureArraySize; i += 4) {
+  const radius = getRandomFloat(props.DEMISE_DISTANCE * 3, props.MAX_DISTANCE);
   const azimuth = Math.random() * Math.PI;
-  const radius = getRandomFloat(8, props.MAX_DISTANCE);
-  const inclination = Math.random() * Math.PI * 2;
-  dataPosition.image.data[i] = radius * Math.sin(azimuth) * Math.cos(inclination);
-  dataPosition.image.data[i + 1] = radius * Math.sin(azimuth) * Math.sin(inclination);
-  dataPosition.image.data[i + 2] = getRandomFloat(0.001, 0.1) * (10 - radius); // radius * Math.cos(azimuth);
+  dataPosition.image.data[i] = radius * Math.sin(azimuth) * Math.cos(azimuth);
+  dataPosition.image.data[i + 1] = (radius * Math.sin(azimuth) * Math.sin(azimuth)) - (radius * 0.5);
+  dataPosition.image.data[i + 2] = getRandomFloat(0.001, 0.2) * (props.MAX_DISTANCE - radius) * 0.4;
   dataPosition.image.data[i + 3] = 1;
 
   dataVelocity.image.data[i] = 0;
@@ -155,6 +154,7 @@ const particleMaterial = new ShaderMaterial({
   },
   vertexShader: particleVert,
   fragmentShader: particleFrag,
+  transparent: true,
 });
 
 // Create a system of particle
@@ -163,14 +163,14 @@ const particles = new Particles(TEXTURE_WIDTH, TEXTURE_HEIGHT, particleMaterial)
 // Add to the scene
 webgl.add(particles);
 
-/* ---- UPDATE ---- */
+/* ---- Update ---- */
 const update = () => {
   positionFBO.material.uniforms.velocityTexture.value = velocityFBO.output.texture;
   velocityFBO.material.uniforms.positionTexture.value = positionFBO.output.texture;
   gpuSim.update();
 };
 
-// HELPERS
+/* ---- Helpers ---- */
 // axis
 const axisHelper = new AxisHelper(1);
 webgl.add(axisHelper);
@@ -206,16 +206,21 @@ attraction.add(props, 'ATT_CURVE', 0, 1).onChange(() => {
 attraction.add(props, 'ATT_DIST', 0, 2).onChange(() => {
   velocityFBO.material.uniforms.attractionDistance.value = props.ATT_DIST;
 });
-attraction.add(props, 'ATT_FORCE', 0.1, 2).onChange(() => {
+attraction.add(props, 'ATT_FORCE', 0, 2).onChange(() => {
   velocityFBO.material.uniforms.attractionForce.value = props.ATT_FORCE;
 });
 
 // Reset button
 props.RESET = () => {
-  gpuSim.updateSimulation(velocityFBO, velocityFBO.initialDataTexture)
-  gpuSim.updateSimulation(positionFBO, positionFBO.initialDataTexture)
+  gpuSim.updateSimulation(velocityFBO, velocityFBO.initialDataTexture);
+  gpuSim.updateSimulation(positionFBO, positionFBO.initialDataTexture);
 };
 gui.add(props, 'RESET');
+
+// Stop button
+props.PLAY = true;
+gui.add(props, 'PLAY');
+
 
 /* ---- CREATING ZONE END ---- */
 /**/
@@ -231,7 +236,7 @@ gui.add(props, 'RESET');
 /**/ /* ---- LOOP ---- */
 /**/ function _loop() {
 /**/ 	webgl.update();
-      update();
+      props.PLAY && update();
 /**/ 	requestAnimationFrame(_loop);
 /**/ }
 /**/ _loop();

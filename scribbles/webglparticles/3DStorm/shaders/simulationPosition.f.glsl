@@ -9,7 +9,7 @@ varying vec2 vUv;
 
 void main() {
   // init
-  vec3 pos = vec3(0.0, 0.0, 0.0);
+  vec3 pos = vec3(0.0);
 
   // Get the old position
   vec3 oldPosition = texture2D(texture, vUv).xyz;
