@@ -45,7 +45,7 @@ void main() {
     vel = (oldVel + (normalized * force));
 
     // Decrement velocity
-    if (abs(dist) > velMax) {
+    if (dist > velMax) {
       vel *= velBrake;
     }
   }

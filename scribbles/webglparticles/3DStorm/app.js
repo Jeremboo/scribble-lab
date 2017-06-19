@@ -105,8 +105,8 @@ const textureArraySize = TEXTURE_WIDTH * TEXTURE_HEIGHT * 4;
 for (let i = 0; i < textureArraySize; i += 4) {
   const radius = getRandomFloat(props.DEMISE_DISTANCE * 3, props.MAX_DISTANCE);
   const azimuth = Math.random() * Math.PI;
-  dataPosition.image.data[i] = radius * Math.sin(azimuth) * Math.cos(azimuth);
-  dataPosition.image.data[i + 1] = (radius * Math.sin(azimuth) * Math.sin(azimuth)) - (radius * 0.5);
+  dataPosition.image.data[i] = 0 //radius * Math.sin(azimuth) * Math.cos(azimuth);
+  dataPosition.image.data[i + 1] = 0 //(radius * Math.sin(azimuth) * Math.sin(azimuth)) - (radius * 0.5);
   dataPosition.image.data[i + 2] = getRandomFloat(0.001, 0.2) * (props.MAX_DISTANCE - radius) * 0.4;
   dataPosition.image.data[i + 3] = 1;
 
@@ -120,6 +120,29 @@ for (let i = 0; i < textureArraySize; i += 4) {
   dataProps.image.data[i + 2] = 0;
   dataProps.image.data[i + 3] = 1;
 }
+
+// INITIAL DATA 2
+const alfTextureArraySize = textureArraySize * 0.25;
+const dist = props.DEMISE_DISTANCE * 2;
+for (let i = 0; i < alfTextureArraySize; i += 4) {
+  const radius = getRandomFloat(0, props.MAX_DISTANCE);
+  const azimuth = Math.random() * Math.PI;
+  const x = ((radius * Math.sin(azimuth) * Math.cos(azimuth)) * 0.1) + dist;
+  const y = (((radius * Math.sin(azimuth) * Math.sin(azimuth)) - (radius * 0.5)) * 0.1) + dist;
+  dataPosition.image.data[i] = x;
+  dataPosition.image.data[i + 1] = y;
+  dataPosition.image.data[i + 2] = getRandomFloat(0.1, 0.2);
+  dataPosition.image.data[i + 3] = 0;
+}
+for (let i = alfTextureArraySize; i < alfTextureArraySize * 2; i += 4) {
+  const radius = getRandomFloat(0, props.MAX_DISTANCE);
+  const azimuth = Math.random() * Math.PI;
+  dataPosition.image.data[i] = ((radius * Math.sin(azimuth) * Math.cos(azimuth)) * 0.1) - dist;
+  dataPosition.image.data[i + 1] = (((radius * Math.sin(azimuth) * Math.sin(azimuth)) - (radius * 0.5)) * 0.1) - dist;
+  dataPosition.image.data[i + 2] = getRandomFloat(0.1, 0.2);
+  dataPosition.image.data[i + 3] = 0;
+}
+
 
 // Initalize simulations
 const velocityFBO = gpuSim.createSimulation(
