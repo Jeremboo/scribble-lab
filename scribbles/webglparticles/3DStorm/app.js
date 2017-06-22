@@ -67,10 +67,17 @@ import particleFrag from './shaders/particle.f.glsl';
 /* ---- CREATING ZONE ---- */
 
 /* ---- SETTINGS ---- */
-const props = {
-  POINT_SIZE: 1.2,
 
-  DEMISE_DISTANCE: 1,
+// Position types
+const CIRCLE = 'circle';
+const TWO_SOURCES = '2 sources';
+
+// Props
+const props = {
+  POINT_SIZE: 1,
+  INITIAL_POS: TWO_SOURCES,
+
+  DEMISE_DISTANCE: 0.5,
   MAX_DISTANCE: 10,
 
   VEL_MIN: 1, // 0.1,
@@ -100,16 +107,9 @@ const dataPosition = gpuSim.createDataTexture();
 const dataVelocity = gpuSim.createDataTexture();
 const dataProps = gpuSim.createDataTexture();
 
-// Initialize data
+// Initialize Velocity and props
 const textureArraySize = TEXTURE_WIDTH * TEXTURE_HEIGHT * 4;
 for (let i = 0; i < textureArraySize; i += 4) {
-  const radius = getRandomFloat(props.DEMISE_DISTANCE * 3, props.MAX_DISTANCE);
-  const azimuth = Math.random() * Math.PI;
-  dataPosition.image.data[i] = 0 //radius * Math.sin(azimuth) * Math.cos(azimuth);
-  dataPosition.image.data[i + 1] = 0 //(radius * Math.sin(azimuth) * Math.sin(azimuth)) - (radius * 0.5);
-  dataPosition.image.data[i + 2] = getRandomFloat(0.001, 0.2) * (props.MAX_DISTANCE - radius) * 0.4;
-  dataPosition.image.data[i + 3] = 1;
-
   dataVelocity.image.data[i] = 0;
   dataVelocity.image.data[i + 1] = 0;
   dataVelocity.image.data[i + 2] = 0;
@@ -121,28 +121,43 @@ for (let i = 0; i < textureArraySize; i += 4) {
   dataProps.image.data[i + 3] = 1;
 }
 
-// INITIAL DATA 2
-const alfTextureArraySize = textureArraySize * 0.25;
-const dist = props.DEMISE_DISTANCE * 2;
-for (let i = 0; i < alfTextureArraySize; i += 4) {
-  const radius = getRandomFloat(0, props.MAX_DISTANCE);
-  const azimuth = Math.random() * Math.PI;
-  const x = ((radius * Math.sin(azimuth) * Math.cos(azimuth)) * 0.1) + dist;
-  const y = (((radius * Math.sin(azimuth) * Math.sin(azimuth)) - (radius * 0.5)) * 0.1) + dist;
-  dataPosition.image.data[i] = x;
-  dataPosition.image.data[i + 1] = y;
-  dataPosition.image.data[i + 2] = getRandomFloat(0.1, 0.2);
-  dataPosition.image.data[i + 3] = 0;
-}
-for (let i = alfTextureArraySize; i < alfTextureArraySize * 2; i += 4) {
-  const radius = getRandomFloat(0, props.MAX_DISTANCE);
-  const azimuth = Math.random() * Math.PI;
-  dataPosition.image.data[i] = ((radius * Math.sin(azimuth) * Math.cos(azimuth)) * 0.1) - dist;
-  dataPosition.image.data[i + 1] = (((radius * Math.sin(azimuth) * Math.sin(azimuth)) - (radius * 0.5)) * 0.1) - dist;
-  dataPosition.image.data[i + 2] = getRandomFloat(0.1, 0.2);
-  dataPosition.image.data[i + 3] = 0;
-}
+// Initialize Position
+function initDataPosition(dataTexture = gpuSim.createDataTexture()) {
+  switch (props.INITIAL_POS) {
+    case TWO_SOURCES:
+      const alfTextureArraySize = textureArraySize * 0.5;
+      const dist = props.DEMISE_DISTANCE * 2;
+      for (let i = 0; i < alfTextureArraySize; i += 4) {
+        const radius = getRandomFloat(0, props.MAX_DISTANCE);
+        const azimuth = Math.random() * Math.PI;
+        const x = ((radius * Math.sin(azimuth) * Math.cos(azimuth)) * 0.1);
+        const y = (((radius * Math.sin(azimuth) * Math.sin(azimuth)) - (radius * 0.5)) * 0.1);
 
+        dataTexture.image.data[i] = x + dist;
+        dataTexture.image.data[i + 1] = y + dist;
+        dataTexture.image.data[i + 2] = getRandomFloat(0.1, 0.2);
+        dataTexture.image.data[i + 3] = 0;
+
+        dataTexture.image.data[alfTextureArraySize + i] = x - dist;
+        dataTexture.image.data[alfTextureArraySize + i + 1] = y - dist;
+        dataTexture.image.data[alfTextureArraySize + i + 2] = getRandomFloat(0.1, 0.2);
+        dataTexture.image.data[alfTextureArraySize + i + 3] = 0;
+      }
+      break;
+    case CIRCLE:
+    default:
+      for (let i = 0; i < textureArraySize; i += 4) {
+        const radius = getRandomFloat(props.DEMISE_DISTANCE * 3, props.MAX_DISTANCE);
+        const azimuth = Math.random() * Math.PI;
+        dataTexture.image.data[i] = radius * Math.sin(azimuth) * Math.cos(azimuth);
+        dataTexture.image.data[i + 1] = (radius * Math.sin(azimuth) * Math.sin(azimuth)) - (radius * 0.5);
+        dataTexture.image.data[i + 2] = getRandomFloat(0.001, 0.2) * (props.MAX_DISTANCE - radius) * 0.4;
+        dataTexture.image.data[i + 3] = 1;
+      }
+  }
+  return dataTexture;
+}
+initDataPosition(dataPosition);
 
 // Initalize simulations
 const velocityFBO = gpuSim.createSimulation(
@@ -178,6 +193,8 @@ const positionFBO = gpuSim.createSimulation(
     },
   },
 );
+// Not need to update the materials on each loop. Just pass per reference
+velocityFBO.material.uniforms.positionTexture.value = positionFBO.output.texture;
 
 /* ---- Particles ---- */
  // Create a particle Material
@@ -199,8 +216,6 @@ webgl.add(particles);
 
 /* ---- Update ---- */
 const update = () => {
-  positionFBO.material.uniforms.velocityTexture.value = velocityFBO.output.texture;
-  velocityFBO.material.uniforms.positionTexture.value = positionFBO.output.texture;
   gpuSim.update();
 };
 
@@ -214,6 +229,10 @@ const gui = new GUI();
 
 // global
 const global = gui.addFolder('Global');
+global.add(props, 'INITIAL_POS', [CIRCLE, TWO_SOURCES]).onChange(() => {
+  positionFBO.initialDataTexture = initDataPosition();
+  props.reset();
+});
 global.add(props, 'POINT_SIZE', 1, 100).onChange(() => {
   particles.material.uniforms.pointSize.value = props.POINT_SIZE;
 });
