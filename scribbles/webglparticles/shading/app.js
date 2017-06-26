@@ -76,19 +76,17 @@ const instanceCount = 25;
 
 // ##
 // LIGHTS
-const ambiantLight = new AmbientLight(0xffffff, 0.2);
+const ambiantLight = new AmbientLight(0xffffff, 0.3);
 webgl.scene.add(ambiantLight);
 
 const pointLight = new PointLight(0xffffff, 0.5, 300);
-pointLight.position.set(0, 0, 0);
+pointLight.position.set(0, 10, 0);
 pointLight.castShadow = true;
-pointLight.shadow.camera.near = 1;
-pointLight.shadow.camera.far = 50;
-pointLight.shadowCameraVisible = true;
-pointLight.shadow.bias = 0.01;
+// pointLight.shadow.camera.near = 1;
+// pointLight.shadow.camera.far = 30;
+// pointLight.shadow.bias = 0.01;
 pointLight.shadow.mapSize.width = 1024;
 pointLight.shadow.mapSize.height = 1024;
-console.log(pointLight.shadow)
 
 webgl.scene.add(pointLight);
 
@@ -218,7 +216,7 @@ let timer = 0;
 /**/ function _loop() {
 /**/ 	webgl.update();
 /**/ 	requestAnimationFrame(_loop);
-      // pointLight.position.y = Math.cos(timer) * 10 + 15;
-      timer += 0.02;
+      pointLight.position.x = (Math.cos(timer) * 5) + 10;
+      timer += 0.025;
 /**/ }
 /**/ _loop();

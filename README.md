@@ -25,6 +25,9 @@ Generate particles with different noises and renders
     <img alt="FBO" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO//preview.gif?raw=true" width="200">
   </a>
   <a href="">
+    <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview.gif?raw=true" width="200">
+  </a>
+  <a href="">
     <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview2.gif?raw=true" width="200">
   </a>
   <a href="">
