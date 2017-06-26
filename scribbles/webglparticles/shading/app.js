@@ -5,7 +5,7 @@ import {
   Matrix4, Quaternion, Euler, Vector3, PointLight, ShaderMaterial, AmbientLight,
   DoubleSide, UniformsUtils, UniformsLib, PCFSoftShadowMap,
   PlaneBufferGeometry, MeshStandardMaterial, PointLightHelper,
-  ShaderLib,
+  DirectionalLight, DirectionalLightHelper, CameraHelper, ShaderLib
 } from 'three';
 
 import { getRandomAttribute, getRandomFloat, radians } from 'utils';
@@ -14,6 +14,7 @@ import OrbitControls from 'OrbitControl';
 import fragInstanced from './shaders/instanced.f.glsl';
 import vertInstanced from './shaders/instanced.v.glsl';
 import vertDeth from './shaders/depth.v.glsl';
+import fragDeth from './shaders/depth.f.glsl';
 
 const COLORS = ['#c15455', '#6394c6', '#daf4ec'];
 
@@ -76,22 +77,20 @@ const instanceCount = 25;
 
 // ##
 // LIGHTS
-const ambiantLight = new AmbientLight(0xffffff, 0.3);
+const ambiantLight = new AmbientLight(0xffffff, 0.5);
 webgl.scene.add(ambiantLight);
 
-const pointLight = new PointLight(0xffffff, 0.5, 300);
-pointLight.position.set(0, 10, 0);
-pointLight.castShadow = true;
-// pointLight.shadow.camera.near = 1;
-// pointLight.shadow.camera.far = 30;
-// pointLight.shadow.bias = 0.01;
-pointLight.shadow.mapSize.width = 1024;
-pointLight.shadow.mapSize.height = 1024;
-
-webgl.scene.add(pointLight);
-
-const ligthHelper = new PointLightHelper(pointLight, 10);
-webgl.scene.add(ligthHelper);
+const shadowLight = new DirectionalLight(0xffffff, 0.8);
+shadowLight.position.set(20, 40, 0);
+shadowLight.castShadow = true;
+// shadowLight.shadow.camera.near = 1;
+// shadowLight.shadow.camera.far = 20;
+// shadowLight.shadow.bias = 0.01;
+shadowLight.shadow.mapSize.width = 1024;
+shadowLight.shadow.mapSize.height = 1024;
+shadowLight.shadow.camera.scale.x = 6;
+shadowLight.shadow.camera.scale.y = 6;
+webgl.scene.add(shadowLight);
 
 // ##
 // MATERIAL
@@ -181,9 +180,9 @@ mesh.castShadow = true;
 mesh.receiveShadow = true;
 
 // Override the default DepthMaterial
-mesh.customDistanceMaterial = new ShaderMaterial({
+mesh.customDepthMaterial = new ShaderMaterial({
   vertexShader: vertDeth,
-  fragmentShader: ShaderLib.distanceRGBA.fragmentShader,
+  fragmentShader: fragDeth,
   uniforms: material.uniforms,
 });
 
@@ -197,6 +196,12 @@ plane.rotation.x = radians(-90);
 plane.position.y = -18;
 plane.receiveShadow = true;
 webgl.scene.add(plane);
+
+//Create a helper for the shadow camera (optional)
+const helper = new CameraHelper(shadowLight.shadow.camera);
+webgl.scene.add(helper);
+const ligthHelper = new DirectionalLightHelper(shadowLight, 10);
+webgl.scene.add(ligthHelper);
 
 
 let timer = 0;
@@ -216,7 +221,7 @@ let timer = 0;
 /**/ function _loop() {
 /**/ 	webgl.update();
 /**/ 	requestAnimationFrame(_loop);
-      pointLight.position.x = (Math.cos(timer) * 5) + 10;
+      shadowLight.position.x = (Math.cos(timer) * 10);
       timer += 0.025;
 /**/ }
 /**/ _loop();

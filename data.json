@@ -49,7 +49,9 @@
         "preview": [
           "/preview.gif",
           "/preview2.gif",
-          "/preview3.gif"
+          "/preview3.gif",
+          "/preview4.gif",
+          "/preview5.gif"
         ],
         "description": "",
         "date": "2017-06-01T09:27:17.688Z",
@@ -94,7 +96,8 @@
         "link": "",
         "visible": true,
         "preview": [
-          "/preview.gif"
+          "/preview.gif",
+          "/preview2.gif"
         ],
         "description": "shading with instanced",
         "date": "2017-04-13T09:13:30.098Z",
