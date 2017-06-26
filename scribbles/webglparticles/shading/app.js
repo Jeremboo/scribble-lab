@@ -5,6 +5,7 @@ import {
   Matrix4, Quaternion, Euler, Vector3, PointLight, ShaderMaterial, AmbientLight,
   DoubleSide, UniformsUtils, UniformsLib, PCFSoftShadowMap,
   PlaneBufferGeometry, MeshStandardMaterial, PointLightHelper,
+  ShaderLib,
 } from 'three';
 
 import { getRandomAttribute, getRandomFloat, radians } from 'utils';
@@ -12,6 +13,7 @@ import OrbitControls from 'OrbitControl';
 
 import fragInstanced from './shaders/instanced.f.glsl';
 import vertInstanced from './shaders/instanced.v.glsl';
+import vertDeth from './shaders/depth.v.glsl';
 
 const COLORS = ['#c15455', '#6394c6', '#daf4ec'];
 
@@ -74,12 +76,20 @@ const instanceCount = 25;
 
 // ##
 // LIGHTS
-const ambiantLight = new AmbientLight(0xffffff, 0.5);
+const ambiantLight = new AmbientLight(0xffffff, 0.2);
 webgl.scene.add(ambiantLight);
 
 const pointLight = new PointLight(0xffffff, 0.5, 300);
-pointLight.position.set(50, 50, 0);
+pointLight.position.set(0, 0, 0);
 pointLight.castShadow = true;
+pointLight.shadow.camera.near = 1;
+pointLight.shadow.camera.far = 50;
+pointLight.shadowCameraVisible = true;
+pointLight.shadow.bias = 0.01;
+pointLight.shadow.mapSize.width = 1024;
+pointLight.shadow.mapSize.height = 1024;
+console.log(pointLight.shadow)
+
 webgl.scene.add(pointLight);
 
 const ligthHelper = new PointLightHelper(pointLight, 10);
@@ -171,6 +181,14 @@ instanceGeom.addAttribute('color', colors);
 const mesh = new Mesh(instanceGeom, material);
 mesh.castShadow = true;
 mesh.receiveShadow = true;
+
+// Override the default DepthMaterial
+mesh.customDistanceMaterial = new ShaderMaterial({
+  vertexShader: vertDeth,
+  fragmentShader: ShaderLib.distanceRGBA.fragmentShader,
+  uniforms: material.uniforms,
+});
+
 webgl.scene.add(mesh);
 
 // Create a plane that receives shadows (but does not cast them)
@@ -182,6 +200,8 @@ plane.position.y = -18;
 plane.receiveShadow = true;
 webgl.scene.add(plane);
 
+
+let timer = 0;
 
 /* ---- CREATING ZONE END ---- */
 /**/
@@ -198,5 +218,7 @@ webgl.scene.add(plane);
 /**/ function _loop() {
 /**/ 	webgl.update();
 /**/ 	requestAnimationFrame(_loop);
+      // pointLight.position.y = Math.cos(timer) * 10 + 15;
+      timer += 0.02;
 /**/ }
 /**/ _loop();
