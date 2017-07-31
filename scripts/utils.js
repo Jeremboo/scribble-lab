@@ -69,7 +69,6 @@ const createDirsDepth = (parentPath, arr) => {
 // TODO use regex
 const getFilteredDirList = (dirPath) => fs.readdirSync(dirPath).filter(directory => !(
   directory[0] === '.' ||
-  directory[0] === '-' ||
   directory[0] === '_' ||
   directory === 'data.json'
   ))
