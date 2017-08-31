@@ -16,6 +16,7 @@
     "mo-js": "^0.288.1",
     "mojs-player": "^0.43.15",
     "pixi.js": "^4.3.2",
+    "postprocessing": "^2.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "three": "^0.83.0",
