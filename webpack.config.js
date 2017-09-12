@@ -20,16 +20,20 @@ var node_modules = path.resolve(__dirname, './node_modules');
 var config = {
     entry: [
       'babel-polyfill',
+      'webpack/hot/dev-server',
+      'webpack-dev-server/client?' + myLocalIp,
       path.resolve(__dirname, './bootstrap.js')
     ],
     output: {
-        path: path.resolve(__dirname, scribble_path + '/'),
-        filename: 'bundle.js',
+      path: path.resolve(__dirname, scribble_path + '/'),
+      filename: 'bundle.js',
+      publicPath: myLocalIp,
+      devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]',
     },
     devtool: "eval-source-map",
     devServer: {
       // compress: true,
-      contentBase: path.resolve(__dirname, '/'),
+      contentBase: path.resolve(__dirname, scribble_path + '/'),
       headers: { 'Access-Control-Allow-Origin': '*' },
       historyApiFallback: true,
       disableHostCheck: true,
@@ -100,6 +104,7 @@ var config = {
       ],
     },
     plugins: [
+      new webpack.HotModuleReplacementPlugin(),
       new webpack.LoaderOptionsPlugin({
         debug: true,
         options: {
