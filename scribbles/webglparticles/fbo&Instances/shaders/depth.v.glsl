@@ -1,21 +1,14 @@
-attribute vec3 mcol0;
-attribute vec3 mcol1;
-attribute vec3 mcol2;
-attribute vec3 mcol3;
+uniform sampler2D positions;
+
+attribute vec2 coord;
 
 varying vec4 vWorldPosition;
 
 void main()	{
 
-  mat4 matrix = mat4(
-    vec4(mcol0, 0),
-    vec4(mcol1, 0),
-    vec4(mcol2, 0),
-    vec4(mcol3, 1)
-  );
-  vec3 pos = (matrix * vec4(position, 1.0)).xyz;
+  vec3 pos = texture2D(positions, coord).xyz;
 
-  vec4 worldPosition = modelMatrix * vec4(pos, 1.0);
+  vec4 worldPosition = modelMatrix * vec4(position + (pos * 20.0), 1.0);
 	vWorldPosition = worldPosition;
 
   gl_Position = projectionMatrix * viewMatrix * worldPosition;

@@ -1,23 +1,23 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera,
   Mesh, Color, FlatShading,
-  CylinderBufferGeometry, InstancedBufferGeometry, InstancedBufferAttribute,
-  Matrix4, Quaternion, Euler, Vector3, PointLight, ShaderMaterial, AmbientLight,
+  InstancedBufferGeometry, InstancedBufferAttribute,
+  ShaderMaterial, AmbientLight,
   DoubleSide, UniformsUtils, UniformsLib, PCFSoftShadowMap,
-  PlaneBufferGeometry, MeshStandardMaterial, PointLightHelper,
-  DirectionalLight, DirectionalLightHelper, CameraHelper, ShaderLib,
+  PlaneBufferGeometry, MeshStandardMaterial,
+  DirectionalLight, DirectionalLightHelper, CameraHelper,
   OctahedronBufferGeometry,
 } from 'three';
-
-import { getRandomAttribute, getRandomFloat, radians } from 'utils';
 import OrbitControls from 'OrbitControl';
+
+import GPUSimulation from 'GPUSimulation';
+import { getRandomAttribute, getRandomFloat, radians } from 'utils';
 
 import fragInstanced from './shaders/instanced.f.glsl';
 import vertInstanced from './shaders/instanced.v.glsl';
 import vertDeth from './shaders/depth.v.glsl';
 import fragDeth from './shaders/depth.f.glsl';
-
-const COLORS = ['#3c6691', '#6394c6', '#146fcd'];
+import shaderSimulationPosition from './shaders/simulationPosition.f.glsl';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
@@ -36,7 +36,7 @@ const COLORS = ['#3c6691', '#6394c6', '#146fcd'];
 /**/     if (bgColor) this.renderer.setClearColor(new Color(bgColor));
 /**/     this.scene = new Scene();
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
-/**/     this.camera.position.set(0, 0, 100);
+/**/     this.camera.position.set(150, 100, 80);
 /**/     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
@@ -67,14 +67,34 @@ const COLORS = ['#3c6691', '#6394c6', '#146fcd'];
 /**/
 /* ---- CREATING ZONE ---- */
 
-// Shadows :
-// http://blog.edankwan.com/post/three-js-advanced-tips-shadow
-// http://learningthreejs.com/blog/2012/01/20/casting-shadows/
-// https://github.com/yiwenl/ShadingParticles
+/**
+ * TODO:
+ *   - Add shadows
+ *   - Orient the geometry
+ */
 
+/* --------------------- */
+/* ------- Props ------- */
+/* --------------------- */
 
-let i;
-const instanceCount = 25;
+const props = {
+  ROT_CURVE: 1, // force of rotation at the center
+  ROT_DIST: 0.18, // distance of force at the center
+  ROT_FORCE: 0.01, // global rotation force
+};
+
+const TEXTURE_SIZE = 12; // 512;
+const TEXTURE_HEIGHT = TEXTURE_SIZE;
+const TEXTURE_WIDTH = TEXTURE_SIZE;
+const INSTANCE_COUNT = TEXTURE_HEIGHT * TEXTURE_WIDTH;
+
+const COLORS = ['#3c6691', '#6394c6', '#146fcd'];
+
+let i, ul;
+
+/* --------------------- */
+/* ------- Scene ------- */
+/* --------------------- */
 
 // ##
 // LIGHTS
@@ -89,9 +109,59 @@ shadowLight.castShadow = true;
 // shadowLight.shadow.bias = 0.01;
 shadowLight.shadow.mapSize.width = 1024;
 shadowLight.shadow.mapSize.height = 1024;
-shadowLight.shadow.camera.scale.x = 6;
-shadowLight.shadow.camera.scale.y = 6;
+shadowLight.shadow.camera.scale.x = 12;
+shadowLight.shadow.camera.scale.y = 12;
 webgl.scene.add(shadowLight);
+
+// Create a plane that receives shadows (but does not cast them)
+const plane = new Mesh(new PlaneBufferGeometry(100, 100, 32, 32), new MeshStandardMaterial());
+plane.rotation.x = radians(-90);
+plane.position.y = -18;
+plane.receiveShadow = true;
+webgl.scene.add(plane);
+
+// Create a helper for the shadow camera (optional)
+// const helper = new CameraHelper(shadowLight.shadow.camera);
+// webgl.scene.add(helper);
+// const ligthHelper = new DirectionalLightHelper(shadowLight, 10);
+// webgl.scene.add(ligthHelper);
+
+
+/* ----------------------- */
+/* ---- GPUSimulation ---- */
+/* ----------------------- */
+
+const gpuSim = new GPUSimulation(TEXTURE_WIDTH, TEXTURE_HEIGHT, webgl.renderer);
+gpuSim.initHelper(windowWidth, windowHeight);
+
+// Create textures and init
+const dataPosition = gpuSim.createDataTexture();
+const textureArraySize = INSTANCE_COUNT * 4;
+
+for (i = 0; i < textureArraySize; i += 4) {
+  dataPosition.image.data[i] = getRandomFloat(0, 1);
+  dataPosition.image.data[i + 1] = 0;
+  dataPosition.image.data[i + 2] = getRandomFloat(0, 0.2);
+  dataPosition.image.data[i + 3] = 1;
+}
+
+const positionFBO = gpuSim.createSimulation(
+  'texturePosition', shaderSimulationPosition, dataPosition, {
+    uniforms: {
+      // Fist position of each particle
+      initialPositionTexture: { type: 't', value: dataPosition },
+      // Global rotation force
+      rotationCurve: { type: 'f', value: props.ROT_CURVE },
+      rotationDistance: { type: 'f', value: props.ROT_DIST },
+      rotationForce: { type: 'f', value: props.ROT_FORCE },
+    },
+  },
+);
+
+
+/* ------------------------ */
+/* ------- Instance ------- */
+/* ------------------------ */
 
 // ##
 // MATERIAL
@@ -99,6 +169,9 @@ const uniforms = UniformsUtils.merge([
   UniformsLib.common,
   UniformsLib.lights,
   UniformsLib.shadowmap,
+  {
+    positions: { type: 't', value: positionFBO.output.texture }, // mustbe updated into the loop
+  },
 ]);
 
 const material = new ShaderMaterial({
@@ -106,20 +179,18 @@ const material = new ShaderMaterial({
   vertexShader: vertInstanced,
   fragmentShader: fragInstanced,
   lights: true,
-  shading: FlatShading,
+  flatShading: FlatShading,
   side: DoubleSide,
 });
 
 // ##
 // GEOMETRY
-const geom = new OctahedronBufferGeometry(1, 1);
-geom.scale(1, 3, 1);
-
-// const geom = new CylinderBufferGeometry(2, 2, 10, 5);
-const instanceGeom = new InstancedBufferGeometry();
+const geom = new OctahedronBufferGeometry(1, 0);
+geom.scale(1, 30, 1);
 
 // ##
 // INSTANCES
+const instanceGeom = new InstancedBufferGeometry();
 // copy vertices into the instace geometry
 const vertices = geom.attributes.position.clone();
 instanceGeom.addAttribute('position', vertices);
@@ -128,63 +199,28 @@ instanceGeom.addAttribute('position', vertices);
 // const uvs = geom.attributes.uv.clone();
 // instanceGeom.addAttribute('uv', uvs);
 
-
-// for the matrix
-const mcol0 = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 3), 3, 1
+const coords = new InstancedBufferAttribute(
+  new Float32Array(INSTANCE_COUNT * 2), 2, 1,
 );
-const mcol1 = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 3), 3, 1
-);
-const mcol2 = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 3), 3, 1
-);
-const mcol3 = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 3), 3, 1
-);
-instanceGeom.addAttribute('mcol0', mcol0);
-instanceGeom.addAttribute('mcol1', mcol1);
-instanceGeom.addAttribute('mcol2', mcol2);
-instanceGeom.addAttribute('mcol3', mcol3);
-
-// Update Matrix
-const position = new Vector3();
-const rotation = new Euler();
-const quaternion = new Quaternion();
-const scale = new Vector3();
-const matrix = new Matrix4();
-const me = matrix.elements;
-for (i = 0; i < instanceCount; i++) {
-  // Update matrix
-  position.x = getRandomFloat(-20, 20);
-  position.y = getRandomFloat(-20, 20);
-  position.z = getRandomFloat(-20, 20);
-  rotation.x = Math.random() * 2 * Math.PI;
-  rotation.y = Math.random() * 2 * Math.PI;
-  rotation.z = Math.random() * 2 * Math.PI;
-  quaternion.setFromEuler(rotation, false);
-  scale.x = scale.y = scale.z = getRandomFloat(2, 4);
-  matrix.compose(position, quaternion, scale);
-
-  mcol0.setXYZ(i, me[0], me[1], me[2]);
-  mcol1.setXYZ(i, me[4], me[5], me[6]);
-  mcol2.setXYZ(i, me[8], me[9], me[10]);
-  mcol3.setXYZ(i, me[12], me[13], me[14]);
-}
-
-// For the color
 const colors = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 3), 3, 1
+  new Float32Array(INSTANCE_COUNT * 3), 3, 1,
 );
-for (let i = 0, ul = colors.count; i < ul; i++) {
+
+for (i = 0, ul = INSTANCE_COUNT; i < ul; i++) {
+  const x = (i % TEXTURE_WIDTH) / TEXTURE_WIDTH;
+  const y = Math.floor((i / TEXTURE_WIDTH)) / TEXTURE_HEIGHT;
+  coords.setXY(i, x, y);
+
   const c = new Color(getRandomAttribute(COLORS));
   colors.setXYZ(i, c.r, c.g, c.b);
 }
+instanceGeom.addAttribute('coord', coords);
 instanceGeom.addAttribute('color', colors);
 
 // ##
 // MESH
 const mesh = new Mesh(instanceGeom, material);
+mesh.rotation.x = radians(-90);
 mesh.castShadow = true;
 mesh.receiveShadow = true;
 
@@ -197,21 +233,12 @@ mesh.customDepthMaterial = new ShaderMaterial({
 
 webgl.scene.add(mesh);
 
-// Create a plane that receives shadows (but does not cast them)
-const plane = new Mesh(new PlaneBufferGeometry(100, 100, 32, 32), new MeshStandardMaterial());
-plane.rotation.x = radians(-90);
-plane.position.y = -18;
-plane.receiveShadow = true;
-webgl.scene.add(plane);
-
-// Create a helper for the shadow camera (optional)
-const helper = new CameraHelper(shadowLight.shadow.camera);
-webgl.scene.add(helper);
-const ligthHelper = new DirectionalLightHelper(shadowLight, 10);
-webgl.scene.add(ligthHelper);
-
-
-let timer = 0;
+/* ---- Update ---- */
+const update = () => {
+  gpuSim.update();
+  mesh.material.uniforms.positions.value = positionFBO.output.texture;
+  webgl.update();
+};
 
 /* ---- CREATING ZONE END ---- */
 /**/
@@ -226,9 +253,7 @@ let timer = 0;
 /**/ window.addEventListener('orientationchange', onResize);
 /**/ /* ---- LOOP ---- */
 /**/ function _loop() {
-/**/ 	webgl.update();
+/**/  update();
 /**/ 	requestAnimationFrame(_loop);
-      // shadowLight.position.x = (Math.cos(timer) * 10);
-      timer += 0.025;
 /**/ }
 /**/ _loop();

@@ -3,12 +3,24 @@
 Just a regroupment of some searches, tests, experiments around javascript or CSS and their frameworks.
 
 ---
+</p>
+</p>
+
+## shaders
+
+LSome tests about shaders possibilities
+
+<p align="center">
+</p>
 
 ## Webgl Particles
 
 Generate particles with different noises and renders
 
 <p align="center">
+  <a href="">
+    <img alt="fbo&Instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/fbo&Instances//preview.gif?raw=true" width="200">
+  </a>
   <a href="">
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview5.gif?raw=true" width="200">
   </a>

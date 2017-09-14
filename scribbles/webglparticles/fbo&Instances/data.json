@@ -3,7 +3,7 @@
   "path": "scribbles/webglparticles/fbo&Instances/",
   "link": "",
   "visible": true,
-  "preview": "scribbles/webglparticles/fbo&Instances/preview.gif",
+  "preview": ["/preview.gif"],
   "description": "",
   "date": "2017-09-08T14:47:14.783Z",
   "tags": []
