@@ -12,7 +12,52 @@
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
+import { getDistBetweenTwoVec2 } from 'utils';
+
 const NBR_OF_POINTS = 10;
+const MOUSE_DIST = 100;
+
+
+/**
+* MOUSE
+*/
+
+class Mouse {
+  constructor() {
+    this.x = 0;
+    this.y = 0;
+    this.direction = {
+      x: 0,
+      y: 0,
+    };
+
+    this.updateMousePosition = this.updateMousePosition.bind(this);
+    document.body.addEventListener('mousemove', this.updateMousePosition);
+  }
+
+  updateMousePosition(e) {
+    const x = e.x;
+    const y = e.y;
+
+    this.direction = {
+      x: x - this.x,
+      y: y - this.y,
+    };
+
+    this.x = x;
+    this.y = y;
+  }
+
+  debugRender() {
+    context.beginPath();
+    context.strokeStyle = '#ff0000';
+    context.moveTo(this.x, this.y);
+    context.lineTo(this.x + (this.direction.x * 4), this.y + (this.direction.y * 4));
+    context.closePath();
+    context.stroke();
+  }
+}
+const mouse = new Mouse();
 
 /**
 * WAVE
@@ -22,6 +67,7 @@ class Wave {
   constructor(x, y, segmentLength, depth) {
     // TODO build the shape
     this.points = [];
+    this.currentPoints = [];
     this.depth = depth;
 
     this.length = segmentLength * NBR_OF_POINTS;
@@ -50,11 +96,29 @@ class Wave {
         x: _x,
         y: _y,
       });
+      // Clone the point poisitions
+      this.currentPoints.push(Object.assign({}, this.points[i]));
     }
   }
 
   // Update values here
-  update() {}
+  update() {
+    let i;
+    const length = this.points.length - 1;
+    for (i = 1; i < length; i++) {
+      const p = this.points[i];
+      const dist = getDistBetweenTwoVec2(p.x, p.y, mouse.x, mouse.y);
+
+      if (dist.dist < MOUSE_DIST) {
+        this.currentPoints[i].x -= (mouse.x - this.currentPoints[i].x) * 0.2;
+        this.currentPoints[i].y -= (mouse.y - this.currentPoints[i].y) * 0.2;
+      }
+      this.currentPoints[i].x += (this.points[i].x - this.currentPoints[i].x) * 0.2;
+      this.currentPoints[i].y += (this.points[i].y - this.currentPoints[i].y) * 0.2;
+      this.currentPoints[i].cp2x = this.currentPoints[i].x;
+      this.currentPoints[i].cp2y = this.currentPoints[i].y;
+    }
+  }
 
   render() {
     context.beginPath();
@@ -62,13 +126,13 @@ class Wave {
     context.lineWidth = 1;
 
     // Start the first point
-    context.moveTo(this.points[0].x, this.points[0].y);
+    context.moveTo(this.currentPoints[0].x, this.currentPoints[0].y);
 
     // Draw the waveLine
     let i;
-    const length = this.points.length - 1;
-    for (let i = 1; i < length; i++) {
-      const p = this.points[i];
+    const length = this.currentPoints.length - 1;
+    for (i = 1; i < length; i++) {
+      const p = this.currentPoints[i];
 
       context.bezierCurveTo(
         p.cp1x,
@@ -80,10 +144,10 @@ class Wave {
       );
     }
 
-    context.lineTo(this.points[length].x, this.points[length].y);
-    context.lineTo(this.points[length].x, this.points[0].y + this.depth);
-    context.lineTo(this.points[0].x, this.points[0].y + this.depth);
-    context.lineTo(this.points[0].x, this.points[0].y);
+    context.lineTo(this.currentPoints[length].x, this.currentPoints[length].y);
+    context.lineTo(this.currentPoints[length].x, this.currentPoints[0].y + this.depth);
+    context.lineTo(this.currentPoints[0].x, this.currentPoints[0].y + this.depth);
+    context.lineTo(this.currentPoints[0].x, this.currentPoints[0].y);
     context.closePath();
     context.fill();
   }
@@ -94,7 +158,7 @@ class Wave {
   debugRender() {
     let i;
     const length = this.points.length - 1;
-    for (let i = 1; i < length; i++) {
+    for (i = 1; i < length; i++) {
       const p = this.points[i];
 
       // POINTS
@@ -139,6 +203,7 @@ const wave = new Wave(0, windowHeight * 0.5, (windowWidth / (NBR_OF_POINTS - 1))
 function loop() {
   wave.update();
   wave.render();
+  // mouse.debugRender();
   // wave.debugRender();
 }
 
