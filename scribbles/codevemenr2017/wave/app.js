@@ -128,8 +128,12 @@ class Wave {
       // Decrement
       this.currentPoints[i].x += (this.points[i].x - this.currentPoints[i].x) * 0.2;
       this.currentPoints[i].y += (this.points[i].y - this.currentPoints[i].y) * 0.2;
-      // this.currentPoints[i].cp2x = this.currentPoints[i].x;
-      // this.currentPoints[i].cp2y = this.currentPoints[i].y;
+
+      // SMOOTH
+      this.currentPoints[i].cp1x = this.currentPoints[i - 1].x;
+      this.currentPoints[i].cp1y = this.currentPoints[i - 1].y;
+      this.currentPoints[i].cp2x = this.currentPoints[i].x;
+      this.currentPoints[i].cp2y = this.currentPoints[i].y;
     }
   }
 
@@ -147,15 +151,11 @@ class Wave {
     for (i = 1; i < length; i++) {
       const p = this.currentPoints[i];
 
-      // context.bezierCurveTo(
-      //   p.cp1x,
-      //   p.cp1y,
-      //   p.cp2x,
-      //   p.cp2y,
-      //   p.x,
-      //   p.y,
-      // );
-      context.lineTo(
+      context.bezierCurveTo(
+        p.cp1x,
+        p.cp1y,
+        p.cp2x,
+        p.cp2y,
         p.x,
         p.y,
       );
@@ -182,7 +182,7 @@ class Wave {
       context.beginPath();
       context.strokeStyle = '#ff0000';
       context.lineWidth = 10;
-      context.arc(p.x, p.y, 5, 0, 2 * Math.PI, false);
+      context.arc(p.x, p.y, 1, 0, 2 * Math.PI, false);
       context.stroke();
       context.closePath();
 
@@ -222,7 +222,7 @@ function loop() {
   wave.update();
   wave.render();
   // mouse.debugRender();
-  // wave.debugRender();
+  wave.debugRender();
 }
 
 
