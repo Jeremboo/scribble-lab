@@ -13,6 +13,8 @@ export const radians = degrees => degrees * Math.PI / 180;
 
 export const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 export const getRandomFloat = (min, max) => (Math.random() * (max - min) + min);
+export const getPosXBetweenTwoNumbers = (min, max, x) => ((max - x) / (max - min));
+export const getXBetweenTwoNumbersWithPercent = (min, max, x) => (min + (x * ((max - min))));
 export const getRandomAttribute = (json) => {
   const keys = Object.keys(json);
   return json[keys[getRandomInt(0, keys.length - 1)]];

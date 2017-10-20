@@ -12,10 +12,11 @@
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
-import { getDistBetweenTwoVec2 } from 'utils';
+import { getDistBetweenTwoVec2, getPosXBetweenTwoNumbers } from 'utils';
 
-const NBR_OF_POINTS = 10;
-const MOUSE_DIST = 100;
+const NBR_OF_POINTS = 50;
+const MOUSE_DIST = 8;
+const MOUSE_VEL = 0.2;
 
 
 /**
@@ -56,6 +57,10 @@ class Mouse {
     context.closePath();
     context.stroke();
   }
+
+  update() {
+    this.direction.y -= this.direction.y * MOUSE_VEL;
+  }
 }
 const mouse = new Mouse();
 
@@ -72,9 +77,9 @@ class Wave {
 
     this.length = segmentLength * NBR_OF_POINTS;
     let i;
-    for (i = 0; i < NBR_OF_POINTS; i++) {
+    for (i = 0; i < NBR_OF_POINTS + 2; i++) {
 
-      const _x = x + (segmentLength * i);
+      const _x = x + (segmentLength * (i - 1));
       const _y = y;
 
       let cp2x = _x;
@@ -109,14 +114,22 @@ class Wave {
       const p = this.points[i];
       const dist = getDistBetweenTwoVec2(p.x, p.y, mouse.x, mouse.y);
 
-      if (dist.dist < MOUSE_DIST) {
-        this.currentPoints[i].x -= (mouse.x - this.currentPoints[i].x) * 0.2;
-        this.currentPoints[i].y -= (mouse.y - this.currentPoints[i].y) * 0.2;
+      // Mouse influence for the wave
+      const ratioOfInfluence = Math.max(
+        0,
+        getPosXBetweenTwoNumbers(0, MOUSE_DIST * Math.abs(mouse.direction.y), dist.dist),
+      );
+
+      // Apply mouse force of the line
+      if (mouse.direction.y * dist.y > 0) {
+        this.currentPoints[i].y += ratioOfInfluence * mouse.direction.y;
       }
+
+      // Decrement
       this.currentPoints[i].x += (this.points[i].x - this.currentPoints[i].x) * 0.2;
       this.currentPoints[i].y += (this.points[i].y - this.currentPoints[i].y) * 0.2;
-      this.currentPoints[i].cp2x = this.currentPoints[i].x;
-      this.currentPoints[i].cp2y = this.currentPoints[i].y;
+      // this.currentPoints[i].cp2x = this.currentPoints[i].x;
+      // this.currentPoints[i].cp2y = this.currentPoints[i].y;
     }
   }
 
@@ -134,11 +147,15 @@ class Wave {
     for (i = 1; i < length; i++) {
       const p = this.currentPoints[i];
 
-      context.bezierCurveTo(
-        p.cp1x,
-        p.cp1y,
-        p.cp2x,
-        p.cp2y,
+      // context.bezierCurveTo(
+      //   p.cp1x,
+      //   p.cp1y,
+      //   p.cp2x,
+      //   p.cp2y,
+      //   p.x,
+      //   p.y,
+      // );
+      context.lineTo(
         p.x,
         p.y,
       );
@@ -201,6 +218,7 @@ const wave = new Wave(0, windowHeight * 0.5, (windowWidth / (NBR_OF_POINTS - 1))
 * LOOP
 */
 function loop() {
+  mouse.update();
   wave.update();
   wave.render();
   // mouse.debugRender();
