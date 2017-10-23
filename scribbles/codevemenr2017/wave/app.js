@@ -100,6 +100,7 @@ class Wave {
         cp2y,
         x: _x,
         y: _y,
+        forceY: 0,
       });
       // Clone the point poisitions
       this.currentPoints.push(Object.assign({}, this.points[i]));
@@ -120,14 +121,18 @@ class Wave {
         getPosXBetweenTwoNumbers(0, MOUSE_DIST * Math.abs(mouse.direction.y), dist.dist),
       );
 
+      // Apply the resistance force
+      let currentForce = (this.points[i].y - this.currentPoints[i].y) * 0.1;
       // Apply mouse force of the line
       if (mouse.direction.y * dist.y > 0) {
-        this.currentPoints[i].y += ratioOfInfluence * mouse.direction.y;
+        currentForce += ratioOfInfluence * mouse.direction.y;
       }
+      this.currentPoints[i].forceY += currentForce;
 
+      // Apply
+      this.currentPoints[i].y += this.currentPoints[i].forceY;
       // Decrement
-      this.currentPoints[i].x += (this.points[i].x - this.currentPoints[i].x) * 0.2;
-      this.currentPoints[i].y += (this.points[i].y - this.currentPoints[i].y) * 0.2;
+      this.currentPoints[i].forceY *= 0.9;
 
       // SMOOTH
       this.currentPoints[i].cp1x = this.currentPoints[i - 1].x;
@@ -222,7 +227,7 @@ function loop() {
   wave.update();
   wave.render();
   // mouse.debugRender();
-  wave.debugRender();
+  // wave.debugRender();
 }
 
 
