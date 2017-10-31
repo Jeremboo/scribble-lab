@@ -61,22 +61,25 @@ class LetterShuffler {
       '#', '-', ':', ';', '~',
     ];
     this.id = Math.random()
+    this.animate = false;
 
     this.wrapper = wrapper;
     this.letter = letter;
     this.letterToShown = this.letter;
     this.wrapper.innerHTML = '';
     this.timer = 0;
-    this.duration = duration * 60;
+    this.duration = duration;
 
     this.show = this.show.bind(this);
     this.update = this.update.bind(this);
+
+    loop.add(this.update)
   }
 
   show(letter = this.letter) {
+    this.animate = true;
     this.timer = 0;
     this.letterToShown = letter;
-    loop.add(this.udpate)
   }
 
   hide() {
@@ -84,14 +87,15 @@ class LetterShuffler {
   }
 
   update() {
-    this.timer++;
-    if (this.timer < this.duration) {
-      this.wrapper.innerHTML = this.SHUFFLING_VALUES[Math.floor(Math.random() * this.SHUFFLING_VALUES.length)];
-    } else {
-      this.wrapper.innerHTML = this.letterToShown;
-      loop.remove(this.update)
+    if (this.animate) {
+      this.timer++;
+      if (this.timer < this.duration) {
+        this.wrapper.innerHTML = this.SHUFFLING_VALUES[Math.floor(Math.random() * this.SHUFFLING_VALUES.length)];
+      } else {
+        this.wrapper.innerHTML = this.letterToShown;
+        loop.remove(this.update)
+      }
     }
-    return this.id
   }
 }
 
@@ -107,37 +111,35 @@ class WordShuffler {
 
     this.timer = 0;
     this.duration = duration * 60;
-    this.nbrOfLettersToShown = 0;
+    this.lettersShown = 0;
 
     this.letters = [];
-    this.letterDuration = duration / words.length
-
     const arrayOfLetters = [...words];
+    this.letterDuration = this.duration / arrayOfLetters.length;
     arrayOfLetters.forEach((letter) => {
       const letterWrapper = document.createElement('span');
-      letterWrapper.style.margin = '0 2px'
+      letterWrapper.style.margin = '0 2px';
       this.wrapper.appendChild(letterWrapper);
       const letterShuffler = new LetterShuffler(letterWrapper, letter, {
-        duration: this.letterDuration
+        duration: this.letterDuration,
       });
-      this.letters.push(letterShuffler)
-    })
+      this.letters.push(letterShuffler);
+    });
 
-    this.update = this.update.bind(this)
+    this.update = this.update.bind(this);
+    this.timer = 0;
+    loop.add(this.update);
   }
 
   show() {
-    this.timer = 0
-    loop.add(this.update)
+    this.timer = 0;
   }
 
   update() {
-    this.timer++
-
-    const nbrOfLettersToShown = Math.floor(easing(this.timer / this.duration) * 10);
-    if (nbrOfLettersToShown > this.nbrOfLettersToShown) {
-      this.letters[nbrOfLettersToShown - 1].show();
-      this.nbrOfLettersToShown += 1;
+    this.timer += 1;
+    if (this.timer > (this.letterDuration * this.lettersShown)) {
+      this.letters[this.lettersShown].show();
+      this.lettersShown += 1
     }
 
     if (this.timer >= this.duration) {
@@ -146,15 +148,30 @@ class WordShuffler {
   }
 }
 
+const WORDS = [
+  '------------------------',
+  '------------------------',
+  '------------------------',
+];
 
-/* ---- START ---- */
-const word = new WordShuffler(document.getElementById('letter'), '   TONY   ')
-setTimeout(() => {
-  word.show('a')
-  // setTimeout(() => {
-  //   word.hide()
-  // }, 1000);
-}, 1000);
+const wrapper = document.getElementById('wrapper')
+function addLine(line) {
+  const lineElm = document.createElement('p')
+  wrapper.appendChild(lineElm)
+  const word = new WordShuffler(lineElm, line, { duration: 0.5 })
+  return word;
+}
+let i = 0;
+let interval = setInterval(() => {
+  const line = addLine(WORDS[i])
+  line.show();
+  i += 1;
+
+  if (i === WORDS.length) {
+    clearInterval(interval)
+  }
+}, 150)
+
 
 // function loop() {
 //   letter.update()
