@@ -2,7 +2,6 @@
 // Tuto shuffle letters effect: https://tutorialzine.com/2011/09/shuffle-letters-effect-jquery
 // Check wave: http://lab.hakim.se/checkwave/
 
-
 class Loop {
   constructor() {
     this._idRAF = -1;
@@ -52,7 +51,7 @@ loop.start()
  * @type {[type]}
  */
 class LetterShuffler {
-  constructor(wrapper, letter, { duration = 1 } = {}) {
+  constructor(wrapper, letter, { duration = 30 } = {}) {
     this.SHUFFLING_VALUES = [
       '!', '§', '$', '%',
       '&', '/', '(', ')',
@@ -68,18 +67,26 @@ class LetterShuffler {
     this.letterToShown = this.letter;
     this.wrapper.innerHTML = '';
     this.timer = 0;
-    this.duration = duration;
+    this.duration = 30;
+    this.scaleTargeted = 2;
 
     this.show = this.show.bind(this);
     this.update = this.update.bind(this);
 
-    loop.add(this.update)
+
+    // TODO regex
+    if (letter === '+' || letter === '-' || letter === '|' || letter === ' ') {
+      this.wrapper.classList.add('purple')
+    } else {
+      this.duration *= 2.1;
+    }
   }
 
   show(letter = this.letter) {
     this.animate = true;
     this.timer = 0;
     this.letterToShown = letter;
+    loop.add(this.update)
   }
 
   hide() {
@@ -91,6 +98,7 @@ class LetterShuffler {
       this.timer++;
       if (this.timer < this.duration) {
         this.wrapper.innerHTML = this.SHUFFLING_VALUES[Math.floor(Math.random() * this.SHUFFLING_VALUES.length)];
+        this.wrapper.style.transform = `scale(${(this.timer / this.duration) * 0.9})`
       } else {
         this.wrapper.innerHTML = this.letterToShown;
         loop.remove(this.update)
@@ -99,46 +107,44 @@ class LetterShuffler {
   }
 }
 
-const easing = t => t * t;
-
 /**
  *
  */
 class WordShuffler {
-  constructor(wrapper, words, { duration = 2 } = {}) {
+  constructor(wrapper, words, { duration = 0.2 } = {}) {
     this.wrapper = wrapper;
     this.wrapper.innerHTML = '';
 
     this.timer = 0;
-    this.duration = duration * 60;
     this.lettersShown = 0;
+    this.letterDuration = duration * 60;
+    this.lettersShuffler = [];
+    this.arrayOfLetters = [...words];
+    this.duration = this.letterDuration * this.arrayOfLetters.length;
 
-    this.letters = [];
-    const arrayOfLetters = [...words];
-    this.letterDuration = this.duration / arrayOfLetters.length;
-    arrayOfLetters.forEach((letter) => {
+    this.arrayOfLetters.forEach((letter) => {
       const letterWrapper = document.createElement('span');
-      letterWrapper.style.margin = '0 2px';
       this.wrapper.appendChild(letterWrapper);
       const letterShuffler = new LetterShuffler(letterWrapper, letter, {
         duration: this.letterDuration,
       });
-      this.letters.push(letterShuffler);
+      this.lettersShuffler.push(letterShuffler);
     });
 
     this.update = this.update.bind(this);
     this.timer = 0;
-    loop.add(this.update);
   }
 
   show() {
     this.timer = 0;
+    this.lettersShown = 0;
+    loop.add(this.update);
   }
 
   update() {
     this.timer += 1;
     if (this.timer > (this.letterDuration * this.lettersShown)) {
-      this.letters[this.lettersShown].show();
+      this.lettersShuffler[this.lettersShown].show();
       this.lettersShown += 1
     }
 
@@ -149,276 +155,68 @@ class WordShuffler {
 }
 
 const WORDS = [
-  '------------------------',
-  '------------------------',
-  '------------------------',
+  '+  -                             -  +',
+  '                                     ',
+  '                                     ',
+  '                                     ',
+  '                                     ',
+  '|          codevember day 1         |',
+  '                                     ',
+  '                                     ',
+  '                                     ',
+  '                                     ',
+  '+  -                             -  +',
 ];
 
-const wrapper = document.getElementById('wrapper')
-function addLine(line) {
-  const lineElm = document.createElement('p')
-  wrapper.appendChild(lineElm)
-  const word = new WordShuffler(lineElm, line, { duration: 0.5 })
-  return word;
-}
-let i = 0;
-let interval = setInterval(() => {
-  const line = addLine(WORDS[i])
-  line.show();
-  i += 1;
-
-  if (i === WORDS.length) {
-    clearInterval(interval)
+class TextShuffler {
+  constructor(wrapper, lines) {
+    this.i = 0;
+    this.lines = [];
+    this.durationInterval = 50;
+    this.wrapper = wrapper;
+    for (let i = 0; i < lines.length; i++) {
+      this.lines.push(this._addLine(lines[i]));
+    }
   }
-}, 150)
+
+  _addLine(line) {
+    const lineElm = document.createElement('p')
+    this.wrapper.appendChild(lineElm)
+    const word = new WordShuffler(lineElm, line, { duration: 0.05 })
+    return word;
+  }
+
+  show() {
+    this.i = 0;
+    const interval = setInterval(() => {
+      this.lines[this.i].show();
+      this.i += 1;
+
+      if (this.i === this.lines.length) {
+        clearInterval(interval)
+      }
+    }, this.durationInterval);
+  }
+
+  hide() {
+
+  }
+}
 
 
-// function loop() {
-//   letter.update()
-// }
-//
-// /* ---- CREATING ZONE END ---- */
-// /**/
-// /**/ /* ---- LOOP ---- */
-// /**/ function _loop() {
-//       loop();
-// /**/ 	requestAnimationFrame(_loop);
-// /**/ }
-// /**/ _loop();
+// START
+const wrapper = document.getElementById('wrapper')
+const text = new TextShuffler(wrapper, WORDS)
+text.show();
 
-// function WordShuffler(holder,opt){
-//   var that = this;
-//   var time = 0;
-//   this.now;
-//   this.then = Date.now();
-//
-//   this.delta;
-//   this.currentTimeOffset = 0;
-//
-//   this.word = null;
-//   this.currentWord = null;
-//   this.currentCharacter = 0;
-//   this.currentWordLength = 0;
-//
-//
-//   var options = {
-//     fps : 20,
-//     timeOffset : 5,
-//     textColor : '#000',
-//     fontSize : "50px",
-//     useCanvas : false,
-//     mixCapital : false,
-//     mixSpecialCharacters : false,
-//     needUpdate : true,
-//     colors : [
-//       '#f44336', '#e91e63', '#9c27b0',
-//       '#673ab7', '#3f51b5', '#2196f3',
-//       '#03a9f4', '#00bcd4', '#009688',
-//       '#4caf50', '#8bc34a', '#cddc39',
-//       '#ffeb3b', '#ffc107', '#ff9800',
-//       '#ff5722', '#795548', '#9e9e9e',
-//       '#607d8b'
-//     ]
-//   }
-//
-//   if(typeof opt != "undefined"){
-//     for(key in opt){
-//       options[key] = opt[key];
-//     }
-//   }
-//
-//
-//
-//   this.needUpdate = true;
-//   this.fps = options.fps;
-//   this.interval = 1000/this.fps;
-//   this.timeOffset = options.timeOffset;
-//   this.textColor = options.textColor;
-//   this.fontSize = options.fontSize;
-//   this.mixCapital = options.mixCapital;
-//   this.mixSpecialCharacters = options.mixSpecialCharacters;
-//   this.colors = options.colors;
-//
-//    this.useCanvas = options.useCanvas;
-//
-//   this.chars = [
-//     'A', 'B', 'C', 'D',
-//     'E', 'F', 'G', 'H',
-//     'I', 'J','K','L',
-//     'M','N','O','P',
-//     'Q','R','S','T',
-//     'U','V','W','X',
-//     'Y','Z'
-//   ];
-//   this.specialCharacters = [
-//     '!','§','$','%',
-//     '&','/','(',')',
-//     '=','?','_','<',
-//     '>','^','°','*',
-//     '#','-',':',';','~'
-//   ]
-//
-//   if(this.mixSpecialCharacters){
-//     this.chars = this.chars.concat(this.specialCharacters);
-//   }
-//
-//   this.getRandomColor = function () {
-//     var randNum = Math.floor( Math.random() * this.colors.length );
-//     return this.colors[randNum];
-//   }
-//
-//   //if Canvas
-//
-//   this.position = {
-//     x : 0,
-//     y : 50
-//   }
-//
-//   //if DOM
-//   if(typeof holder != "undefined"){
-//     this.holder = holder;
-//   }
-//
-//   if(!this.useCanvas && typeof this.holder == "undefined"){
-//     console.warn('Holder must be defined in DOM Mode. Use Canvas or define Holder');
-//   }
-//
-//
-//   this.getRandCharacter = function(characterToReplace){
-//     if(characterToReplace == " "){
-//       return ' ';
-//     }
-//     var randNum = Math.floor(Math.random() * this.chars.length);
-//     var lowChoice =  -.5 + Math.random();
-//     var picketCharacter = this.chars[randNum];
-//     var choosen = picketCharacter.toLowerCase();
-//     if(this.mixCapital){
-//       choosen = lowChoice < 0 ? picketCharacter.toLowerCase() : picketCharacter;
-//     }
-//     return choosen;
-//
-//   }
-//
-//   this.writeWord = function(word){
-//     this.word = word;
-//     this.currentWord = word.split('');
-//     this.currentWordLength = this.currentWord.length;
-//
-//   }
-//
-//   this.generateSingleCharacter = function (color,character) {
-//     var span = document.createElement('span');
-//     span.style.color = color;
-//     span.innerHTML = character;
-//     return span;
-//   }
-//
-//   this.updateCharacter = function (time) {
-//
-//       this.now = Date.now();
-//       this.delta = this.now - this.then;
-//
-//
-//
-//       if (this.delta > this.interval) {
-//         this.currentTimeOffset++;
-//
-//         var word = [];
-//
-//         if(this.currentTimeOffset === this.timeOffset && this.currentCharacter !== this.currentWordLength){
-//           this.currentCharacter++;
-//           this.currentTimeOffset = 0;
-//         }
-//         for(var k=0;k<this.currentCharacter;k++){
-//           word.push(this.currentWord[k]);
-//         }
-//
-//         for(var i=0;i<this.currentWordLength - this.currentCharacter;i++){
-//           word.push(this.getRandCharacter(this.currentWord[this.currentCharacter+i]));
-//         }
-//
-//
-//         if(that.useCanvas){
-//           c.clearRect(0,0,stage.x * stage.dpr , stage.y * stage.dpr);
-//           c.font = that.fontSize + " sans-serif";
-//           var spacing = 0;
-//           word.forEach(function (w,index) {
-//             if(index > that.currentCharacter){
-//               c.fillStyle = that.getRandomColor();
-//             }else{
-//               c.fillStyle = that.textColor;
-//             }
-//             c.fillText(w, that.position.x + spacing, that.position.y);
-//             spacing += c.measureText(w).width;
-//           });
-//         }else{
-//
-//           if(that.currentCharacter === that.currentWordLength){
-//             that.needUpdate = false;
-//           }
-//           this.holder.innerHTML = '';
-//           word.forEach(function (w,index) {
-//             var color = null
-//             if(index > that.currentCharacter){
-//               color = that.getRandomColor();
-//             }else{
-//               color = that.textColor;
-//             }
-//             that.holder.appendChild(that.generateSingleCharacter(color, w));
-//           });
-//         }
-//         this.then = this.now - (this.delta % this.interval);
-//       }
-//   }
-//
-//   this.restart = function () {
-//     this.currentCharacter = 0;
-//     this.needUpdate = true;
-//   }
-//
-//   function update(time) {
-//     time++;
-//     if(that.needUpdate){
-//       that.updateCharacter(time);
-//     }
-//     requestAnimationFrame(update);
-//   }
-//
-//   this.writeWord(this.holder.innerHTML);
-//
-//
-//   console.log(this.currentWord);
-//   update(time);
-// }
-//
-//
-//
-//
-// var headline = document.getElementById('headline');
-// var text = document.getElementById('text');
-// var shuffler = document.getElementById('shuffler');
-//
-// var headText = new WordShuffler(headline,{
-//   textColor : '#fff',
-//   timeOffset : 18,
-//   mixCapital : true,
-//   mixSpecialCharacters : true
-// });
-//
-// var pText = new WordShuffler(text,{
-//   textColor : '#fff',
-//   timeOffset : 2
-// });
-//
-// var buttonText = new WordShuffler(shuffler,{
-//   textColor : 'tomato',
-//   timeOffset : 10
-// });
-//
-//
-//
-//   shuffler.addEventListener('click',function () {
-//     headText.restart();
-//     pText.restart();
-//     buttonText.restart();
-//   });
+let show = true;
+setInterval(() => {
+  text.show();
+  // if (show) {
+  //   text.show();
+  // } else {
+  //   text.hide();
+  // }
+
+  show = !show;
+}, 4000);
