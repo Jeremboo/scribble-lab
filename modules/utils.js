@@ -1,4 +1,4 @@
-
+import { Vector3 } from 'three';
 
 Math.sqr = x => x * x;
 
@@ -18,6 +18,21 @@ export const getXBetweenTwoNumbersWithPercent = (min, max, x) => (min + (x * ((m
 export const getRandomAttribute = (json) => {
   const keys = Object.keys(json);
   return json[keys[getRandomInt(0, keys.length - 1)]];
+};
+
+export const getNormalizedPosFromScreen = (x, y) => new Vector3(
+  ((x / window.innerWidth) * 2) - 1,
+  -((y / window.innerHeight) * 2) + 1,
+  0.5,
+);
+// https://stackoverflow.com/questions/13055214/mouse-canvas-x-y-to-three-js-world-x-y-z
+export const getDistanceBetweenNormalizedMousePosAndPos = (normalizedMousePos, pos, camera) => {
+  const nm = normalizedMousePos.clone()
+  nm.unproject(camera);
+  const dir = nm.sub(camera.position).normalize();
+  const distance = (pos.z - camera.position.z) / dir.z;
+  const mousePos = camera.position.clone().add(dir.multiplyScalar(distance));
+  return pos.clone().sub(mousePos);
 };
 
 // ARRAY
