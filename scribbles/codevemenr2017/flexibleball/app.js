@@ -65,7 +65,7 @@ const MOUSE_VEL = 0.02;
 const ATTRACTION_FORCE = 0.05;
 const ATTRACTION_VEL = 0.7;
 
-const NBR_OF_BALLS = 1;
+const NBR_OF_BALLS = 0;
 const COLORS = [
   '#0169c0',
   '#cf297e',
@@ -192,17 +192,21 @@ webgl.add(pointLight);
 let j = 0;
 let normalizedMouse = new Vector3();
 const balls = [];
+const bigBall = new Ball({ color: COLORS[0], position: new Vector3() });
+balls.push(bigBall);
+webgl.add(bigBall);
 
 // push new balls each 20 ms
 let interval = setInterval(() => {
-  const b = new Ball({ color: COLORS[j % COLORS.length], position: new Vector3() });
+  if (j >= NBR_OF_BALLS) {
+    clearInterval(interval);
+    return;
+  }
+
+  const b = new Ball({ color: COLORS[j % COLORS.length] });
   balls.push(b);
   webgl.add(b);
   j++;
-
-  if (j === NBR_OF_BALLS) {
-    clearInterval(interval);
-  }
 }, 20);
 
 // target mouse position in the 3D view
