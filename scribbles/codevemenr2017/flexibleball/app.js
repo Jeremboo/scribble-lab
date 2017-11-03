@@ -9,7 +9,7 @@ import { getRandomFloat, getNormalizedPosFromScreen, getDistanceBetweenNormalize
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#7e44a1';
-/**/ const bgColor = 0xEDF2F4;
+/**/ const bgColor = 0x49475B;
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Webgl {
@@ -65,17 +65,19 @@ const MOUSE_VEL = 0.02;
 const ATTRACTION_FORCE = 0.05;
 const ATTRACTION_VEL = 0.7;
 
-const NBR_OF_BALLS = 0;
+const NBR_OF_BALLS = 50;
 const COLORS = [
-  '#0169c0',
-  '#cf297e',
-  '#419904',
+  '#53D8FB',
+  '#DE1A1A',
+  '#2D3047',
+  '#ED217C',
+  '#EDAE49',
 ];
 
 // OBJECTS
 class Ball extends Mesh {
   constructor({
-    size = getRandomFloat(1, 3),
+    size = 2,
     position = new Vector3(
       getRandomFloat(-8, 8),
       getRandomFloat(-5, 5),
@@ -88,11 +90,11 @@ class Ball extends Mesh {
       // flatShading: FlatShading,
       shininess: 10,
     });
-    const geometry = new SphereGeometry(size, 32, 32);
+    const geometry = new SphereGeometry(size, 16, 16);
     super(geometry, material);
 
     this.normalizedMouseVec = new Vector3();
-    this.attractionRadius = size * 2;
+    this.attractionRadius = (size * 0.5) + getRandomFloat(1, 3);
     this.force = {
       scale: 0,
       position: new Vector3(),
@@ -151,7 +153,7 @@ class Ball extends Mesh {
     const l = this.geometry.vertices.length - 1;
     for (i = l; i >= 0; i--) {
       const vecForce = getDistanceBetweenNormalizedMousePosAndPos(this.normalizedMouseVec, this.geometry.vertices[i].clone().add(this.position), webgl.camera);
-      const force = Math.max(0, (this.attractionRadius * 0.55) - vecForce.length());
+      const force = Math.max(0, this.attractionRadius - vecForce.length());
       this.force.vertices[i].add(vecForce.multiplyScalar(force * 0.15));
       // gravity force
       this.force.vertices[i].sub(this.initialVertices[i].clone().sub(this.geometry.vertices[i]).multiplyScalar(0.4));
@@ -171,7 +173,7 @@ class Ball extends Mesh {
 // plane
 const plane = new Mesh(
   new PlaneGeometry(800, 800, 32),
-  new MeshLambertMaterial({ color: 0xEDF2F4 }),
+  new MeshLambertMaterial({ color: bgColor }),
 );
 plane.position.y = -20;
 plane.rotation.x = -radians(90);
@@ -198,12 +200,19 @@ webgl.add(bigBall);
 
 // push new balls each 20 ms
 let interval = setInterval(() => {
-  if (j >= NBR_OF_BALLS) {
+  if (j > NBR_OF_BALLS) {
     clearInterval(interval);
     return;
   }
+  console.log('kl')
 
-  const b = new Ball({ color: COLORS[j % COLORS.length] });
+  const position = new Vector3(
+    Math.cos(getRandomFloat(0, 6.2831)) * getRandomFloat(2.8, 2.9),
+    Math.sin(getRandomFloat(0, 6.2831)) * getRandomFloat(2.8, 2.9),
+    Math.sin(getRandomFloat(0, 6.2831)) * getRandomFloat(2.8, 2.9),
+  );
+
+  const b = new Ball({ color: COLORS[Math.floor(Math.random() * COLORS.length)], position, size: getRandomFloat(0.2, 0.5) });
   balls.push(b);
   webgl.add(b);
   j++;
