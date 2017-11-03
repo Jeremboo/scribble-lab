@@ -1,13 +1,11 @@
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Object3D, Mesh,
+  WebGLRenderer, Scene, PerspectiveCamera, Mesh,
   MeshToonMaterial, Color, SphereGeometry, PlaneGeometry, MeshLambertMaterial,
   Vector3, AmbientLight, PointLight, DirectionalLight, Fog,
 } from 'three';
 
 import { getRandomFloat, getNormalizedPosFromScreen, getDistanceBetweenNormalizedMousePosAndPos, radians } from 'utils';
 
-
-let normalizedMouse = new Vector3();
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#7e44a1';
@@ -22,7 +20,7 @@ let normalizedMouse = new Vector3();
 /**/     this.renderer.setPixelRatio(window.devicePixelRatio);
 /**/     this.renderer.setClearColor(bgColor);
 /**/     this.scene = new Scene();
-         this.scene.fog = new Fog(bgColor, 0, 350)
+/**/     this.scene.fog = new Fog(bgColor, 0, 350)
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 10);
 /**/     this.dom = this.renderer.domElement;
@@ -41,11 +39,11 @@ let normalizedMouse = new Vector3();
 /**/     while (--i >= 0) {
 /**/       this.meshListeners[i].apply(this, null);
 /**/     }
-
-        this.camera.position.x += ((normalizedMouse.x * 2) - this.camera.position.x) * 0.08;
-				this.camera.position.y += ((normalizedMouse.y * 1.5) - this.camera.position.y) * 0.08;
-				this.camera.lookAt(new Vector3());
-
+/**/
+/**/      this.camera.position.x += ((normalizedMouse.x * 2) - this.camera.position.x) * 0.08;
+/**/			this.camera.position.y += ((normalizedMouse.y * 1.5) - this.camera.position.y) * 0.08;
+/**/			this.camera.lookAt(new Vector3());
+/**/
 /**/     this.renderer.render(this.scene, this.camera);
 /**/   }
 /**/   resize(w, h) {
@@ -56,8 +54,7 @@ let normalizedMouse = new Vector3();
 /**/ }
 /**/ const webgl = new Webgl(windowWidth, windowHeight);
 /**/ document.body.appendChild(webgl.dom);
-/**/
-/**/
+
 /* ---- CREATING ZONE ---- */
 
 const SCALE_FORCE = 0.1;
@@ -68,10 +65,19 @@ const MOUSE_VEL = 0.07;
 const ATTRACTION_FORCE = 0.1;
 const ATTRACTION_VEL = 0.8;
 
+const NBR_OF_BALLS = 3;
+const COLORS = [
+  '#53D8FB',
+  '#DE1A1A',
+  '#2D3047',
+  '#ED217C',
+  '#EDAE49',
+];
+
 // OBJECTS
-class Ball extends Object3D {
+class Ball extends Mesh {
   constructor({
-    size = getRandomFloat(0.2, 0.3),
+    size = getRandomFloat(1, 2),
     position = new Vector3(
       getRandomFloat(-8, 8),
       getRandomFloat(-5, 5),
@@ -79,9 +85,14 @@ class Ball extends Object3D {
     ),
     color = secondaryColor,
   } = {}) {
-    super();
+    const material = new MeshToonMaterial({
+      color: new Color(color),
+      // flatShading: FlatShading,
+      shininess: 10,
+    });
+    const geometry = new SphereGeometry(size, 32, 32);
+    super(geometry, material);
 
-    this.initialPosition = position;
     this.normalizedMouseVec = new Vector3();
     this.attractionRadius = size * 10;
     this.force = {
@@ -89,18 +100,9 @@ class Ball extends Object3D {
       position: new Vector3(),
     };
 
-    this.material = new MeshToonMaterial({
-      color: new Color(color),
-      // flatShading: FlatShading,
-      shininess: 10,
-    });
-    this.geometry = new SphereGeometry(size, 32, 32);
-    this.mesh = new Mesh(this.geometry, this.material);
+    this.initialPosition = position;
     this.position.copy(this.initialPosition);
-
-    this.mesh.scale.multiplyScalar(0.001);
-
-    this.add(this.mesh);
+    this.scale.multiplyScalar(0.001);
 
     this.update = this.update.bind(this);
   }
@@ -114,12 +116,11 @@ class Ball extends Object3D {
   }
 
   updateScale() {
-    this.force.scale += (1 - this.mesh.scale.x) * SCALE_FORCE;
-    this.mesh.scale.addScalar(this.force.scale);
+    this.force.scale += (1 - this.scale.x) * SCALE_FORCE;
+    this.scale.addScalar(this.force.scale);
     this.force.scale *= SCALE_VEL;
   }
 
-  // Updated on mousemove
   updateMouseAttractionForce() {
     // mousePosition force
     const vecForce = getDistanceBetweenNormalizedMousePosAndPos(this.normalizedMouseVec, this.position, webgl.camera);
@@ -134,47 +135,49 @@ class Ball extends Object3D {
   }
 }
 
+// #######
 // START
+// #######
 
+// #######
 // plane
-const plane = new Mesh(new PlaneGeometry(800, 800, 32), new MeshLambertMaterial({ color: 0xEDF2F4 }))
+const plane = new Mesh(
+  new PlaneGeometry(800, 800, 32),
+  new MeshLambertMaterial({ color: 0xEDF2F4 }),
+);
 plane.position.y = -20;
-plane.rotation.x = -radians(90)
-webgl.add(plane)
-/**
- * LIGHTS
- */
-const ambiantLight = new AmbientLight(0xffffff, 0.8)
-webgl.add(ambiantLight)
-const directionalLight = new DirectionalLight(0xffffff, 0.15)
-directionalLight.position.set(0, 1, 0)
-webgl.add(directionalLight)
-const pointLight = new PointLight(0xfff7d7, 0.05)
-pointLight.position.set(1, 0, 0)
-webgl.add(pointLight)
+plane.rotation.x = -radians(90);
+webgl.add(plane);
+// #######
+// lights
+const ambiantLight = new AmbientLight(0xffffff, 0.8);
+webgl.add(ambiantLight);
+const directionalLight = new DirectionalLight(0xffffff, 0.15);
+directionalLight.position.set(0, 1, 0);
+webgl.add(directionalLight);
+const pointLight = new PointLight(0xfff7d7, 0.05);
+pointLight.position.set(1, 0, 0);
+webgl.add(pointLight);
 
-const balls = [];
-const nbrOfBalls = 200;
-const colors = [
-  '#53D8FB',
-  '#DE1A1A',
-  '#2D3047',
-  '#ED217C',
-  '#EDAE49',
-];
-
+// #######
+// balls
 let j = 0;
+let normalizedMouse = new Vector3();
+const balls = [];
+
+// push new balls each 20 ms
 let interval = setInterval(() => {
-  const b = new Ball({ color: colors[Math.floor(Math.random() * colors.length)] });
+  const b = new Ball({ color: COLORS[Math.floor(Math.random() * COLORS.length)] });
   balls.push(b);
   webgl.add(b);
   j++;
 
-  if(j === nbrOfBalls) {
+  if (j === NBR_OF_BALLS) {
     clearInterval(interval);
   }
 }, 20);
 
+// target mouse position in the 3D view
 document.body.addEventListener('mousemove', (e) => {
   normalizedMouse = getNormalizedPosFromScreen(e.clientX, e.clientY)
   const l = balls.length;
@@ -187,13 +190,13 @@ document.body.addEventListener('mousemove', (e) => {
 /**/
 /**/
 /**/ /* ---- ON RESIZE ---- */
-/**/ function onResize() {
+/**/ function _onResize() {
 /**/   windowWidth = window.innerWidth;
 /**/   windowHeight = window.innerHeight;
 /**/   webgl.resize(windowWidth, windowHeight);
 /**/ }
-/**/ window.addEventListener('resize', onResize);
-/**/ window.addEventListener('orientationchange', onResize);
+/**/ window.addEventListener('resize', _onResize);
+/**/ window.addEventListener('orientationchange', _onResize);
 /**/ /* ---- LOOP ---- */
 /**/ function _loop() {
 /**/ 	webgl.update();
