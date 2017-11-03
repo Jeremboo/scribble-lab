@@ -22,7 +22,7 @@
     "three": "^0.87.0",
     "three-orbit-controls": "^72.0.0",
     "three.fbo-helper": "^1.1.0",
-    "three.meshline": "^1.0.3",
+    "three.meshline": "https://github.com/Jeremboo/THREE.MeshLine/tarball/master",
     "threejs-texture-tool": "^0.5.1"
   },
   "devDependencies": {

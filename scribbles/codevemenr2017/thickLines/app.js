@@ -1,7 +1,7 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Object3D, BoxGeometry,
   MeshBasicMaterial, Mesh, Color, FlatShading, Vector2, Vector3,
-  Geometry, SplineCurve, Path,
+  Geometry, SplineCurve, Path, QuadraticBezierCurve3
 } from 'three';
 
 import OrbitControl from 'OrbitControl';
@@ -57,73 +57,13 @@ import { getRandomFloat } from 'utils';
 /**/
 /* ---- CREATING ZONE ---- */
 
-// OBJECTS
-class WindLine extends Mesh {
-  constructor({ amplitude = 0.5, nbrOfPoints = 4, length = 5, orientationY = -2 } = {}) {
-    const maxLength = length / nbrOfPoints;
-    const minLength = maxLength * 0.5;
-
-    // const points = [];
-    // points.push(new Vector2(0, 0));
-    // for (let i = 0; i < nbrOfPoints; i++) {
-    //   points.push(new Vector2(
-    //     (maxLength * i) + getRandomFloat(minLength, maxLength),
-    //     (amplitude * orientationY * i) + getRandomFloat(-amplitude, amplitude),
-    //   ));
-    // }
-    // const curve = new SplineCurve(points);
-    // const path = new Path(curve.getPoints(50));
-    // const geometry = path.createPointsGeometry(50);
-
-
-    const geometry = new Geometry();
-    for (let j = 0; j < Math.PI; j += 2 * Math.PI / 100 ) {
-      geometry.vertices.push(new Vector3(
-        (maxLength * j) + getRandomFloat(minLength, maxLength),
-        (amplitude * orientationY * j) + getRandomFloat(-amplitude, amplitude),
-        0,
-      ));
-    }
-    const line = new MeshLine();
-    line.setGeometry( geometry );
-
-    const material = new ShaderMaterial({
-      vertexShader: lineVert,
-      fragmentShader: lineFrag,
-      uniforms: {
-        color: { type: 'v3', value: new Color(0x000000) },
-        timer: { type: 'f', value: 0 },
-      },
-    });
-
-    super(geometry, material);
-
-    this.update = this.update.bind(this);
-  }
-
-  update() {
-    this.rotation.x += 0.01;
-    this.material.uniforms.timer.value = this.rotation.x * 2;
-    // this.rotation.y += 0.03;
-  }
-}
-
 // START
-//const ex = new Example();
-// webgl.add(ex);
-
-
-// const geometry = new Geometry();
-// for (let j = 0; j < Math.PI; j += 2 * Math.PI / 100 ) {
-//   const v = new Vector3( Math.cos( j ), Math.sin( j ), 0 );
-//   geometry.vertices.push( v );
-// }
+// create point
 const points = [];
-points.push(new Vector2(0, 0));
 for (let i = 0; i < 10; i++) {
   points.push(new Vector3(
-    (10 * i) + getRandomFloat(2, 10),
-    10 + getRandomFloat(-5, 5),
+    getRandomFloat(-5, 5),
+    (-20 * i),
     0,
   ));
 }
@@ -131,40 +71,29 @@ const curve = new SplineCurve(points);
 const path = new Path(curve.getPoints(100));
 const geometry = path.createPointsGeometry(100);
 
-
-const lineGeometry = new Geometry();
-for (let j = 0; j < geometry.vertices.length; j++) {
-  lineGeometry.vertices.push(new Vector3(0, 0, 0));
-}
 const line = new MeshLine();
-line.setGeometry(geometry, p => 2 - p);
-// line.setGeometry(lineGeometry, p => 2 - p);
+line.setGeometry(geometry);
 
+
+// create mesh line
 const material = new MeshLineMaterial({
-  color: new Color('#ff00ff'),
+  color: new Color('#5c5c5c'),
   lineWidth: 2,
-  visibility: 0,
-  // sizeAttenuation: false,
-  // near: webgl.camera.near,
-  // far: webgl.camera.far,
+  dashArray: 0.1, // 0 -> no dash ; 1 -> alf dashline length ; 2 -> dashline === length
+  dashOffset: 0, // increment im to animate the dash
+  dashRatio: 0.5 // 0.5 -> balancing ; 0.1 -> more line : 0.9 -> more void
 });
-const mesh = new Mesh( line.geometry, material ); // this syntax could definitely be improved!
-webgl.add( mesh );
+const mesh = new Mesh(line.geometry, material); // this syntax could definitely be improved!
+mesh.position.y = 100;
+webgl.add(mesh);
 
-let i = 0;
+
+// update
 function update() {
-  // material.uniforms.lineWidth.value -= 0.01;
-  material.uniforms.visibility.value += 0.1;
-
-  // const lastPoint = geometry.vertices[geometry.vertices.length - 1];
-  // const currentPoint = geometry.vertices[i];
-  // if (currentPoint !== lastPoint) {
-  //   i = (i + 1) % (geometry.vertices.length);
-  // }
-  // line.advance(geometry.vertices[i]);
-  // mesh.rotation.x += 0.01;
-  // mesh.rotation.y += 0.01;
+  mesh.material.uniforms.dashOffset.value += 0.001;
+  mesh.rotation.y += 0.1;
 }
+
 
 /* ---- CREATING ZONE END ---- */
 /**/
