@@ -1,4 +1,7 @@
-export const canvasBuilder = (width = window.innerWidth, height = window.innerHeight) => {
+export const sqr = a => a * a;
+const getDistBetweenTwoVec2 = (x1, y1, x2, y2) => Math.sqrt(sqr(y2 - y1) + sqr(x2 - x1));
+
+const canvasBuilder = (width = window.innerWidth, height = window.innerHeight) => {
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
@@ -10,11 +13,12 @@ export const canvasBuilder = (width = window.innerWidth, height = window.innerHe
   };
 };
 
-export const gradientArc = (ctx, { x = 0, y = 0, size = 10 } = {}) => {
+const gradientArc = (ctx, { x = 0, y = 0, size = 10, ratio = 0.5 } = {}) => {
   const canvasB = canvasBuilder(ctx.canvas.width, ctx.canvas.height);
   // create with the temps canvas
   const gradStyle = canvasB.context.createRadialGradient(x, y, 1, x, y, size);
   gradStyle.addColorStop(0, 'rgba(0, 0, 0, 1)');
+  gradStyle.addColorStop(ratio, 'rgba(0, 0, 0, 0.5)');
   gradStyle.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
   canvasB.context.fillStyle = gradStyle;
@@ -24,7 +28,7 @@ export const gradientArc = (ctx, { x = 0, y = 0, size = 10 } = {}) => {
 };
 
 window.URL = window.URL || window.webkitURL;
-export const applyImageToCanvas = (url, w, h, handling) => new Promise((resolve, reject) => {
+const applyImageToCanvas = (url, w, h, handling) => new Promise((resolve, reject) => {
   const xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
   xhr.responseType = 'blob';
@@ -63,7 +67,8 @@ class BubbleCanvas {
   // Save state here
   constructor(size) {
     this.size = size;
-    this.bubbleSize = size * 0.25;
+    this.bubbleSize = size * 0.5;
+    this.littleBubbleSize = size * 0.5;
     this.threshold = 200;
     this.backgroundImg = false;
 
@@ -90,7 +95,7 @@ class BubbleCanvas {
     // Load background image
     // https://i.imgur.com/462xXUs.png
     // https://pixabay.com/get/eb3db40a2ef2073ed95c4518b74d4095e272e1dc04b014419cf9c97fafebb4_640.jpg
-    applyImageToCanvas('https://pixabay.com/get/eb3db40a2ef2073ed95c4518b74d4095e272e1dc04b014419cf9c97fafebb4_640.jpg', this.size, this.size).then((_canvas) => {
+    applyImageToCanvas('https://i.imgur.com/462xXUs.png', this.size, this.size).then((_canvas) => {
       this.backgroundImg = _canvas;
     });
 
@@ -109,6 +114,13 @@ class BubbleCanvas {
     // Update the positions of the little bubble
     this.littleBubble.x += (this.mousePosition.x - this.littleBubble.x) * 0.1;
     this.littleBubble.y += (this.mousePosition.y - this.littleBubble.y) * 0.1;
+
+
+    // play with the scale
+    // const dist = getDistBetweenTwoVec2(this.littleBubble.x, this.littleBubble.y, this.center.x, this.center.y);
+    // const scale = Math.min(Math.max(0, (5 - ((dist / this.size) * 20))), 1)
+    // this.littleBubbleSize = this.bubbleSize * scale;
+
   }
 
   render() {
@@ -118,8 +130,8 @@ class BubbleCanvas {
       this.context.globalCompositeOperation = 'source-over';
 
       // Gradient circles
-      gradientArc(this.context, { x: this.center.x, y: this.center.y, size: this.bubbleSize });
-      gradientArc(this.context, { x: this.littleBubble.x, y: this.littleBubble.y, size: this.bubbleSize });
+      gradientArc(this.context, { x: this.center.x, y: this.center.y, size: this.bubbleSize * 2, ratio: 0.4 });
+      gradientArc(this.context, { x: this.littleBubble.x, y: this.littleBubble.y, size: this.littleBubbleSize, ratio: 0.1 });
 
       // threshold
       this.renderThershold();
