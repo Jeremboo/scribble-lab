@@ -1,4 +1,4 @@
-import { Vector3 } from 'three';
+import { Vector3, Euler } from 'three';
 
 Math.sqr = x => x * x;
 
@@ -109,3 +109,9 @@ export const testPerf = (fct, ...params) => {
   console.log(`PERF === ${t1 - t0} ms.`);
   return result;
 };
+
+export const getRandomEuler = () => new Euler(
+  getRandomFloat(0, 6.2831),
+  getRandomFloat(0, 6.2831),
+  getRandomFloat(0, 6.2831),
+);
