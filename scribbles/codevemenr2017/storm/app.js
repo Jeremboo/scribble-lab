@@ -86,7 +86,7 @@ const props = {
   ROT_FORCE: 0.01, // global rotation force
 };
 
-const TEXTURE_SIZE = 12; // 512;
+const TEXTURE_SIZE = 56; // 512;
 const TEXTURE_HEIGHT = TEXTURE_SIZE;
 const TEXTURE_WIDTH = TEXTURE_SIZE;
 const INSTANCE_COUNT = TEXTURE_HEIGHT * TEXTURE_WIDTH;

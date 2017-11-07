@@ -10,17 +10,14 @@ uniform float t;
 varying vec2 vUv;
 
 void main() {
-  // init
-  vec3 pos = vec3(0.0);
-
   // Get the old position
-  vec3 oldPosition = texture2D(texture, vUv).xyz;
+  vec3 initialPositionTexture = texture2D(initialPositionTexture, vUv).xyz;
 
-  vec3 newPosition = vec3(
-    cos(t) * 2.0,
-    -sin(t) * 2.0,
-    oldPosition.z
+  vec3 pos = vec3(
+    cos(t + initialPositionTexture.y) * initialPositionTexture.x,
+    -sin(t + initialPositionTexture.y) * initialPositionTexture.x,
+    initialPositionTexture.z
   );
 
-  gl_FragColor = vec4(newPosition, 1.0);
+  gl_FragColor = vec4(pos, 1.0);
 }
