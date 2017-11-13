@@ -9,9 +9,6 @@ import { getRandomFloat, getRandomInt } from 'utils';
 
 /* --------------------------- */
 /* ----------- CORE ---------- */
-const mainColor = '#070707';
-const secondaryColor = '#C9F0FF';
-const bgColor = '#F2EFEA';
 let windowWidth = window.innerWidth;
 let windowHeight = window.innerHeight;
 class Webgl {
@@ -20,7 +17,6 @@ class Webgl {
    this.meshListeners = [];
    this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
    this.renderer.setPixelRatio(window.devicePixelRatio);
-   this.renderer.setClearColor(new Color(bgColor));
    this.scene = new Scene();
    this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
    this.camera.position.set(0, 0, 500);
@@ -34,6 +30,14 @@ class Webgl {
    if (!mesh.update) return;
    this.meshListeners.push(mesh.update);
    this.meshCount++;
+ }
+ remove(mesh) {
+   const idx = this.meshListeners.indexOf(mesh.update);
+    if (idx < 0) return;
+    this.scene.remove(mesh);
+    this.meshListeners.splice(idx, 1);
+    this.meshCount--;
+
  }
  update() {
    let i = this.meshCount;
@@ -62,10 +66,12 @@ const NBR_OF_CURVES = 10;
 const SIZE = 600;
 const AMPL_MAX = 60;
 const COLORS = [
-  '#3CDBD3',
-  '#E8E288',
-  '#7DCE82',
-  '#FF8360',
+  '#02C39A',
+  '#00A896',
+  '#028090',
+  '#05668D',
+  '#FBB13C',
+  '#EF476F',
 ];
 
 class DashedCurve extends Mesh {
@@ -131,14 +137,27 @@ class DashedCurve extends Mesh {
 
 // ########
 // START
+// Lines
 const curves = [];
-for (let i = 0; i < NBR_OF_LINES; i++) {
-  const dashedCurve = new DashedCurve();
+function addCurvedLine(i) {
+  const dashedCurve = new DashedCurve({ color: COLORS[i % (COLORS.length)] });
   dashedCurve.rotation.x = getRandomFloat(0, 3);
   webgl.add(dashedCurve);
   curves.push(dashedCurve);
 }
+for (let i = 0; i < NBR_OF_LINES; i++) {
+  addCurvedLine(i);
+}
 
+document.body.addEventListener('click', () => {
+  for (let i = 0; i < NBR_OF_LINES; i++) {
+    webgl.remove(curves[0]);
+    curves.splice(0, 1);
+  }
+  for (let i = 0; i < NBR_OF_LINES; i++) {
+    addCurvedLine(i);
+  }
+});
 
 /* ---- CREATING ZONE END ---- */
 /* --------------------------- */
