@@ -1,16 +1,10 @@
 import {
-  WebGLRenderer, Scene, PerspectiveCamera,
-  Color, Line,
-  SplineCurve, Path, Vector2,
-  ShaderMaterial,
+  WebGLRenderer, Scene, PerspectiveCamera, Object3D, BoxGeometry,
+  MeshBasicMaterial, Mesh, Color, FlatShading,
+  JSONLoader, ObjectLoader,
 } from 'three';
 
-import { getRandomFloat } from 'utils';
-
-import OrbitControl from 'OrbitControl';
-
-import lineVert from './shaders/line.v.glsl';
-import lineFrag from './shaders/line.f.glsl';
+import threeJSON from './three.json';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
@@ -28,7 +22,6 @@ import lineFrag from './shaders/line.f.glsl';
 /**/     this.scene = new Scene();
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 10);
-/**/     this.controls = new OrbitControl(this.camera, this.renderer.domElement);
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
 /**/     this.resize = this.resize.bind(this);
@@ -58,59 +51,47 @@ import lineFrag from './shaders/line.f.glsl';
 /**/
 /**/
 /* ---- CREATING ZONE ---- */
+const asset = {
+  name: 'tree',
+  ex: 'json',
+  children: [
+    'branche_0',
+    'branche_1',
+    'branche_2',
+    'branche_3',
+    'branche_4',
+    'branche_5',
+    'branche_6',
+    'Cône',
+    'Cône.1',
+    'Cône.2',
+    'Cône.3',
+    'Cône.4',
+    'Cône.5',
+    'Cône.6',
+    'tronc',
+  ],
+};
+const loadJSON = (fileName, callback, progress) => {
+  const loader = new JSONLoader();
+  loader.load(fileName, ( geometry, materials ) => {
+    callback(geometry, materials );
+  }, progress, onError);
+};
+const loadObj = (fileName, callback, progress) => {
+  const loader = new ObjectLoader();
+  loader.load(fileName, (obj) => {
+    callback(obj);
+  }, progress, f => f);
+};
 
-// ########
-// RANDOM 2D CURVE
-class Random2DCurve extends Line {
-  constructor({ amplitude = 0.5, nbrOfPoints = 4, length = 5, orientationY = -2 } = {}) {
-    const MAX_LENGTH = length / nbrOfPoints;
-    const MIN_LENGTH = MAX_LENGTH * 0.5;
-
-    const points = [];
-    points.push(new Vector2(0, 0));
-    for (let i = 0; i < nbrOfPoints; i++) {
-      points.push(new Vector2(
-        (MAX_LENGTH * i) + getRandomFloat(MIN_LENGTH, MAX_LENGTH),
-        (amplitude * orientationY * i) + getRandomFloat(-amplitude, amplitude),
-      ));
-    }
-    const curve = new SplineCurve(points);
-    const path = new Path(curve.getPoints(50));
-    const geometry = path.createPointsGeometry(50);
-    const material = new ShaderMaterial({
-      vertexShader: lineVert,
-      fragmentShader: lineFrag,
-      uniforms: {
-        color: { type: 'v3', value: new Color(0x000000) },
-        timer: { type: 'f', value: 0 },
-      },
-    });
-
-    super(geometry, material);
-
-    this.update = this.update.bind(this);
+loadObj('three.json', ( loadedObjs ) => {
+  object = new Object3D();
+  for (let j = 0; j < children.length; j++) {
+    object.add(loadedObjs.getObjectByName(children[j]))
   }
-
-  update() {
-    this.rotation.x += 0.01;
-    this.material.uniforms.timer.value = this.rotation.x * 2;
-    // this.rotation.y += 0.03;
-  }
-}
-
-// ########
-// START
-
-// lines
-for (let i = 0; i < 1000; i++) {
-  const curve = new Random2DCurve({
-    orientationY: 2,
-    length: getRandomFloat(3, 7),
-    amplitude: 0.2,
-  });
-  curve.rotation.x = getRandomFloat(0, Math.PI * 180);
-  webgl.add(curve);
-}
+  save(name, object);
+}, f => f);
 
 /* ---- CREATING ZONE END ---- */
 /**/
