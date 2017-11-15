@@ -1,4 +1,4 @@
-import { Vector3, Euler } from 'three';
+import { Vector3, Euler, Raycaster } from 'three';
 
 Math.sqr = x => x * x;
 
@@ -35,6 +35,32 @@ export const getDistanceBetweenNormalizedMousePosAndPos = (normalizedMousePos, p
   return pos.clone().sub(mousePos);
 };
 
+// Ty Robin <3
+// https://codepen.io/robin-dela/pen/dZXVrQ?editors=0010
+// https://threejs.org/docs/#api/core/Raycaster
+export const addCursorMoveListener = (mesh, camera, scene, callback) => {
+  const raycaster = new Raycaster();
+  const moveEvent = 'ontouchstart' in (window || navigator.msMaxTouchPoints) ? 'touchmove' : 'mousemove';
+  window.addEventListener(moveEvent, (e) => {
+    const mouseVec = getNormalizedPosFromScreen(
+      e.clientX || e.touches[0].clientX,
+      e.clientY || e.touches[0].clientY,
+    );
+    raycaster.setFromCamera(mouseVec, camera);
+    const intersects = raycaster.intersectObjects(scene.children);
+
+    let i = 0;
+    let targetedObjectIntersected = false;
+    while (i < intersects.length && !targetedObjectIntersected) {
+      if (intersects[i].object.uuid === mesh.uuid) {
+        targetedObjectIntersected = true;
+        callback(intersects[i]);
+      }
+      i += 1;
+    }
+  });
+};
+
 // ARRAY
 export const existingValueBy = (arr, comparator) =>
   arr.filter(value => comparator(value))[0]
@@ -52,6 +78,7 @@ export const canvasBuilder = (width = window.innerWidth, height = window.innerHe
     getImageData: () => context.getImageData(0, 0, width, height).data,
   };
 };
+window.URL = window.URL || window.webkitURL;
 export const applyImageToCanvas = (url, w, h) => new Promise((resolve, reject) => {
   const xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
@@ -78,6 +105,20 @@ export const applyImageToCanvas = (url, w, h) => new Promise((resolve, reject) =
   };
   xhr.send();
 });
+
+export const drawGradientArc = (ctx, { x = 0, y = 0, size = 10, ratio = 0.5 } = {}) => {
+  const canvasB = canvasBuilder(ctx.canvas.width, ctx.canvas.height);
+  // create with the temps canvas
+  const gradStyle = canvasB.context.createRadialGradient(x, y, 1, x, y, size);
+  gradStyle.addColorStop(0, 'rgba(0, 0, 0, 1)');
+  gradStyle.addColorStop(ratio, 'rgba(0, 0, 0, 0.5)');
+  gradStyle.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+  canvasB.context.fillStyle = gradStyle;
+  canvasB.context.arc(x, y, size, 0, Math.PI * 2);
+  canvasB.context.fill();
+  ctx.drawImage(canvasB.canvas, 0, 0);
+};
 
 /*******
 * ANIMATION
