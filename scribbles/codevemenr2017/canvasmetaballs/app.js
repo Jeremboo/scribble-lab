@@ -1,62 +1,9 @@
+import { drawGradientArc, canvasBuilder, applyImageToCanvas } from 'utils';
+
 Math.sqr = a => a * a;
 const getVec2Length = (x, y) => Math.sqrt(Math.sqr(y) + Math.sqr(x));
 const getDistBetweenTwoVec2 = (x1, y1, x2, y2) => getVec2Length(x2 - x1, y2 - y1);
 
-const canvasBuilder = (width = window.innerWidth, height = window.innerHeight) => {
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext('2d');
-  return {
-    canvas,
-    context,
-    getImageData: () => context.getImageData(0, 0, width, height).data,
-  };
-};
-
-const gradientArc = (ctx, { x = 0, y = 0, size = 10, ratio = 0.5 } = {}) => {
-  const canvasB = canvasBuilder(ctx.canvas.width, ctx.canvas.height);
-  // create with the temps canvas
-  const gradStyle = canvasB.context.createRadialGradient(x, y, 1, x, y, size);
-  gradStyle.addColorStop(0, 'rgba(0, 0, 0, 1)');
-  gradStyle.addColorStop(ratio, 'rgba(0, 0, 0, 0.5)');
-  gradStyle.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-  canvasB.context.fillStyle = gradStyle;
-  canvasB.context.arc(x, y, size, 0, Math.PI * 2);
-  canvasB.context.fill();
-  ctx.drawImage(canvasB.canvas, 0, 0);
-};
-
-window.URL = window.URL || window.webkitURL;
-const applyImageToCanvas = (url, w, h, handling) => new Promise((resolve, reject) => {
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', url, true);
-  xhr.responseType = 'blob';
-  xhr.onload = (e) => {
-    if (e.target.status === 200) {
-      const blob = e.target.response;
-      const image = new Image();
-      image.crossOrigin = 'Anonymous';
-      image.onload = () => {
-        const width = w || image.width;
-        const height = h || image.height;
-        const canvasB = canvasBuilder(width, height);
-        const { canvas, context } = canvasB;
-        context.globalAlpha = 1;
-        context.drawImage(image, 0, 0, width, height);
-        window.URL.revokeObjectURL(blob);
-        // resolve(Object.assign(canvasB, { image }));
-        resolve(canvas);
-      };
-      image.onerror = () => {
-        reject('Err : Canvas cannot be loaded');
-      };
-      image.src = window.URL.createObjectURL(blob);
-    }
-  };
-  xhr.send();
-});
 
 /* ---- CREATING ZONE ---- */
 // http://jamie-wong.com/2014/08/19/metaballs-and-marching-squares/
@@ -147,8 +94,8 @@ class BubbleCanvas {
       this.context.globalCompositeOperation = 'source-over';
 
       // Gradient circles
-      gradientArc(this.context, { x: this.center.x, y: this.center.y, size: this.bubbleSize, ratio: 0.4 });
-      gradientArc(this.context, { x: this.littleBubble.x, y: this.littleBubble.y, size: this.littleBubbleSize, ratio: 0.2 });
+      drawGradientArc(this.context, { x: this.center.x, y: this.center.y, size: this.bubbleSize, ratio: 0.4 });
+      drawGradientArc(this.context, { x: this.littleBubble.x, y: this.littleBubble.y, size: this.littleBubbleSize, ratio: 0.2 });
 
       // threshold
       this.renderThershold();
