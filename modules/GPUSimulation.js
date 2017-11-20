@@ -36,6 +36,7 @@ import {
   WebGLRenderTarget, BufferGeometry, BufferAttribute, DataTexture,
   ClampToEdgeWrapping, ShaderMaterial,
 } from 'three';
+
 import FBOHelper from 'three.fbo-helper';
 
 /**
@@ -58,7 +59,7 @@ void main() {
 const DEFAULT_SIMULATION_VERTEX_SHADER = `
 varying vec2 vUv;
 
-void main()	{
+void main() {
   vUv = vec2(uv.x, uv.y);
   gl_Position = vec4( position, 1.0 );
 }
@@ -149,7 +150,7 @@ export default class GPUSimulation {
     const fbo = new WebGLRenderTarget(width, height, {
       wrapS,
       wrapT,
-      minFilter, // Important as we want to sample square pixels
+      minFilter,
       magFilter,
       format, // Could be RGBFormat
       type, // important as we need precise coordinates (not ints)
@@ -242,7 +243,7 @@ export default class GPUSimulation {
   }
 
   /**
-   * Compute a simulation. Could be call alone to update only one simulation
+   * Compute a simulation. Could be called alone to update only one simulation
    * with a different input.
    * EX: gpuSim.updateSimulation(sim, sim.initialDataTexture);
    * WARNING: if the input is not referenced, you must manually update the

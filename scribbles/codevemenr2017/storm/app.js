@@ -6,7 +6,7 @@ import {
   DoubleSide, UniformsUtils, UniformsLib, PCFSoftShadowMap,
   PlaneBufferGeometry, MeshStandardMaterial,
   DirectionalLight,
-  OctahedronBufferGeometry, Vector3, Fog,
+  SphereBufferGeometry, Vector3, Fog,
 } from 'three';
 
 import GPUSimulation from 'GPUSimulation';
@@ -40,7 +40,7 @@ window.addEventListener('mousemove', (e) => {
 /**/     this.renderer.shadowMap.type = PCFSoftShadowMap;
 /**/     if (bgColor) this.renderer.setClearColor(new Color(bgColor));
 /**/     this.scene = new Scene();
-this.scene.fog = new Fog(bgColor, 0, 350)
+         this.scene.fog = new Fog(bgColor, 0, 350)
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 200);
          this.camera.lookAt(new Vector3(0, 0, 0))
@@ -60,7 +60,6 @@ this.scene.fog = new Fog(bgColor, 0, 350)
 /**/     while (--i >= 0) {
 /**/       this.meshListeners[i].apply(this, null);
 /**/     }
-
          this.camera.position.x += ((normalizedMouse.x * 40) - this.camera.position.x) * 0.08;
          this.camera.position.y += (30 + (normalizedMouse.y * 20) - this.camera.position.y) * 0.08;
          this.camera.lookAt(new Vector3());
@@ -117,7 +116,7 @@ shadowLight.shadow.camera.scale.y = 12;
 webgl.scene.add(shadowLight);
 
 // Create a plane that receives shadows (but does not cast them)
-const plane = new Mesh(new PlaneBufferGeometry(1000, 1000, 32, 32), new MeshStandardMaterial({ color: bgColor }));
+const plane = new Mesh(new PlaneBufferGeometry(1000, 1000, 1, 1), new MeshStandardMaterial({ color: bgColor }));
 plane.rotation.x = radians(-90);
 plane.position.y = -18;
 plane.receiveShadow = true;
@@ -129,13 +128,14 @@ webgl.scene.add(plane);
 
 const gpuSim = new GPUSimulation(TEXTURE_WIDTH, TEXTURE_HEIGHT, webgl.renderer);
 
-// Create textures and init
+// Create textures and init him
 const dataPosition = gpuSim.createDataTexture();
 const textureArraySize = INSTANCE_COUNT * 4;
 
 for (i = 0; i < textureArraySize; i += 4) {
   const ampl = Math.cos(i) * 3
-  const radius = getRandomFloat(-ampl, ampl)
+  const radius = getRandomFloat(-ampl, ampl);
+
   dataPosition.image.data[i] = Math.cos(getRandomFloat(0, 6.2831)) * radius;
   dataPosition.image.data[i + 1] = Math.sin(getRandomFloat(0, 6.2831)) * radius;
   dataPosition.image.data[i + 2] = getRandomFloat(-0.4, 2);
@@ -178,13 +178,13 @@ const material = new ShaderMaterial({
   fragmentShader: fragInstanced,
   lights: true,
   flatShading: FlatShading,
-  side: DoubleSide,
+  // side: DoubleSide,
 });
 
 // ##
 // GEOMETRY
-const geom = new OctahedronBufferGeometry(1, 0);
-geom.scale(1, 10, 1);
+const geom = new SphereBufferGeometry(5, 32, 32);
+// geom.scale(1, 10, 1);
 
 // ##
 // INSTANCES
