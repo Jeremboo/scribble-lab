@@ -4,11 +4,14 @@ import {
   FontLoader,
 } from 'three';
 import { TimelineLite } from 'gsap';
+import { GUI } from 'dat-gui';
 
 import { MeshLine, MeshLineMaterial } from 'three.meshline';
 
 import fontFile from './font'
-import { getRandomFloat, getRandomInt } from 'utils';
+import { getRandomFloat, getRandomInt, radians } from 'utils';
+
+const gui = new GUI();
 
 /* --------------------------- */
 /* ----------- CORE ---------- */
@@ -62,8 +65,134 @@ document.body.appendChild(webgl.dom);
 
 /* --------------------------- */
 /* ------ CREATING ZONE ------ */
+const props = {
+  LINE_SPEED: 0.003,
+  LINE_FREQUENCY: 0.05,
+  LINE_TURBULENCE: 1.3,
+  LINE_DISRUPTED_ORIENTATION: 0.2,
+  LINE_WIDTH: 0.2,
+  LINE_LENGTH: 0.9,
+  LINE_OPACITY: 1,
+};
 
-export default class AnimatedText extends Object3D {
+class WindLine extends Mesh {
+  constructor({
+    nbrOfPoints = getRandomFloat(3, 5),
+    length = getRandomFloat(5, 8),
+    disruptedOrientation = getRandomFloat(-props.LINE_DISRUPTED_ORIENTATION, props.LINE_DISRUPTED_ORIENTATION),
+    speed = props.LINE_SPEED,
+  } = {}) {
+
+    // Create the points of the line
+    const points = [];
+    const segmentLength = length / nbrOfPoints;
+    points.push(new Vector3(0, 0, 0));
+    for (let i = 0; i < nbrOfPoints; i++) {
+      const pos = (segmentLength * i);
+      points.push(new Vector3(
+        pos - getRandomFloat(-props.LINE_TURBULENCE, props.LINE_TURBULENCE),
+        pos + (segmentLength * i),
+        0,
+        // getRandomFloat(-props.LINE_TURBULENCE* 0.1, props.LINE_TURBULENCE * 0.1)),
+      ));
+    }
+
+    // Intance the geometry
+    const curve = new SplineCurve(points);
+    const path = new Path(curve.getPoints(50));
+    const geometry = path.createPointsGeometry(50);
+
+    const line = new MeshLine();
+    line.setGeometry(geometry);
+
+    // Material
+    const dashArray = 2;
+    const dashRatio = props.LINE_LENGTH;
+    const dashOffsetRight = 1.01;
+    const dashOffsetLeft = dashArray * dashRatio;
+    super(line.geometry, new MeshLineMaterial({
+      lineWidth: props.LINE_WIDTH,
+      dashArray,
+      dashRatio,
+      dashOffset: dashOffsetLeft,
+      opacity: 0,
+      transparent: true,
+      color: new Color('#000000'),
+    }));
+
+    this.position.set(
+      getRandomFloat(-10.8, 10),
+      getRandomFloat(-6, 5),
+      getRandomFloat(-2, 1),
+    );
+
+    this.speed = speed;
+    this.dying = dashOffsetRight;
+    this.update = this.update.bind(this);
+  }
+
+  update() {
+    this.material.uniforms.dashOffset.value -= this.speed;
+
+    const opacityTargeted = this.material.uniforms.dashOffset.value > (this.dying + 0.25) ? props.LINE_OPACITY : 0;
+    this.material.uniforms.opacity.value += (opacityTargeted - this.material.uniforms.opacity.value) * 0.08;
+  }
+
+  isDied() {
+    return this.material.uniforms.dashOffset.value < this.dying;
+  }
+}
+class Wind extends Object3D {
+  constructor() {
+    super();
+
+    this.lines = [];
+    this.lineNbr = -1;
+
+    this.update = this.update.bind(this);
+
+    // *********
+    // GUI
+    const lineFolder = gui.addFolder('Lines');
+    lineFolder.add(props, 'LINE_FREQUENCY', 0, 1).name('FREQUENCY');
+    lineFolder.add(props, 'LINE_OPACITY', 0, 1).name('OPACITY');
+    lineFolder.add(props, 'LINE_WIDTH', 0, 0.4).name('WIDTH');
+    lineFolder.add(props, 'LINE_LENGTH', 0.85, 0.99).name('LENGTH');
+    lineFolder.add(props, 'LINE_SPEED', 0, 0.01).name('SPEED');
+    lineFolder.add(props, 'LINE_TURBULENCE', 0, 4).name('TURBULENCE');
+    lineFolder.add(props, 'LINE_DISRUPTED_ORIENTATION', 0, 0.5).name('DISRUPTED_ORIENTATION');
+  }
+
+  addWindLine() {
+    const line = new WindLine();
+    this.lines.push(line);
+    this.add(line);
+    this.lineNbr++;
+  }
+
+  removeWindLine() {
+    this.remove(this.lines[0]);
+    this.lines[0] = null;
+    this.lines.shift();
+    this.lineNbr--;
+  }
+
+  update() {
+    if (Math.random() < props.LINE_FREQUENCY) {
+      this.addWindLine();
+    }
+
+    let i;
+    for (i = this.lineNbr; i >= 0; i--) {
+      this.lines[i].update();
+
+      if (this.lines[i].isDied()) {
+        this.removeWindLine();
+      }
+    }
+  }
+}
+class AnimatedText extends Object3D {
   constructor(text, font, { size = 1, letterSpacing = 0.03, color = '#000000' } = {}) {
     super();
 
@@ -118,8 +247,11 @@ const fontAsset = fontLoader.parse(fontFile);
 const text = new AnimatedText('CODEVEMBER', fontAsset);
 text.position.x -= text.basePosition * 0.5;
 text.position.y -= 0.5;
-webgl.add(text)
+webgl.add(text);
 text.show();
+
+const windLines = new Wind();
+webgl.add(windLines);
 
 // animate lines
 
