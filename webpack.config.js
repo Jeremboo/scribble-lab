@@ -49,6 +49,7 @@ var config = {
         html: path.resolve(__dirname, scribble_path + '/index.pug.html'),
         style: path.resolve(__dirname, scribble_path + '/style.styl'),
         app: path.resolve(__dirname, scribble_path + '/app.js'),
+        postprocessing: path.resolve(__dirname, './node_modules/postprocessing/build/postprocessing.js'),
       },
     },
     module: {

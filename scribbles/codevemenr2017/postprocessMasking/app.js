@@ -7,6 +7,7 @@ import {
   EffectComposer, RenderPass, BlurPass,
 } from 'postprocessing';
 
+import IncrustationPass from './IncrustationPass';
 
 import { getRandomFloat } from 'utils';
 
@@ -69,10 +70,12 @@ initPostprocessing() {
   // *********
   // PASSES
   const renderPass = new RenderPass(this.scene, this.camera);
-  renderPass.renderToScreen = true;
   this._composer.addPass(renderPass);
 
   // TODO add new custo pass (MASK PASS)
+  const incrustationPass = new IncrustationPass();
+  incrustationPass.renderToScreen = true;
+  this._composer.addPass(incrustationPass);
 }
 
 /**/ }
@@ -89,7 +92,6 @@ class RandomGeometry extends Mesh {
 
     this.material = new MeshBasicMaterial({
       color: new Color('#00ff00'),
-      shading: FlatShading,
     });
     this.geometry = new BoxGeometry(1, 1, 1);
     this.mesh = new Mesh(this.geometry, this.material);
