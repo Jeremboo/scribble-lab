@@ -67,13 +67,20 @@ document.body.appendChild(webgl.dom);
 /* ------ CREATING ZONE ------ */
 const props = {
   LINE_SPEED: 0.003,
-  LINE_FREQUENCY: 0.05,
-  LINE_TURBULENCE: 1.3,
+  LINE_FREQUENCY: 0.5,
+  LINE_TURBULENCE: 2.2,
   LINE_DISRUPTED_ORIENTATION: 0.2,
-  LINE_WIDTH: 0.2,
-  LINE_LENGTH: 0.9,
+  LINE_WIDTH: 0.05,
+  LINE_LENGTH: 0.99,
   LINE_OPACITY: 1,
 };
+
+const COLORS = [
+  '#4062BB',
+  '#52489C',
+  '#59C3C3',
+  '#F45B69',
+];
 
 class WindLine extends Mesh {
   constructor({
@@ -81,6 +88,7 @@ class WindLine extends Mesh {
     length = getRandomFloat(5, 8),
     disruptedOrientation = getRandomFloat(-props.LINE_DISRUPTED_ORIENTATION, props.LINE_DISRUPTED_ORIENTATION),
     speed = props.LINE_SPEED,
+    color = new Color('#000000'),
   } = {}) {
 
     // Create the points of the line
@@ -93,7 +101,6 @@ class WindLine extends Mesh {
         pos - getRandomFloat(-props.LINE_TURBULENCE, props.LINE_TURBULENCE),
         pos + (segmentLength * i),
         0,
-        // getRandomFloat(-props.LINE_TURBULENCE* 0.1, props.LINE_TURBULENCE * 0.1)),
       ));
     }
 
@@ -117,13 +124,14 @@ class WindLine extends Mesh {
       dashOffset: dashOffsetLeft,
       opacity: 0,
       transparent: true,
-      color: new Color('#000000'),
+      depthWrite: false,
+      color,
     }));
 
     this.position.set(
-      getRandomFloat(-10.8, 10),
+      getRandomFloat(-10, 10),
       getRandomFloat(-6, 5),
-      getRandomFloat(-2, 1),
+      getRandomFloat(-2, 10),
     );
 
     this.speed = speed;
@@ -164,7 +172,7 @@ class Wind extends Object3D {
   }
 
   addWindLine() {
-    const line = new WindLine();
+    const line = new WindLine({ color: new Color(COLORS[getRandomInt(0, COLORS.length - 1)]) });
     this.lines.push(line);
     this.add(line);
     this.lineNbr++;
@@ -193,7 +201,7 @@ class Wind extends Object3D {
   }
 }
 class AnimatedText extends Object3D {
-  constructor(text, font, { size = 1, letterSpacing = 0.03, color = '#000000' } = {}) {
+  constructor(text, font, { size = 0.3, letterSpacing = 0.03, color = '#000000' } = {}) {
     super();
 
     this.basePosition = 0;
@@ -244,7 +252,7 @@ class AnimatedText extends Object3D {
 // https://gero3.github.io/facetype.js/
 const fontLoader = new FontLoader()
 const fontAsset = fontLoader.parse(fontFile);
-const text = new AnimatedText('CODEVEMBER', fontAsset);
+const text = new AnimatedText('CODEVEMBER DAY.22', fontAsset);
 text.position.x -= text.basePosition * 0.5;
 text.position.y -= 0.5;
 webgl.add(text);
@@ -270,7 +278,7 @@ class CameraMouseControl {
     document.body.addEventListener('mousemove', this.handleMouseMove);
   }
   handleMouseMove(event) {
-    this.position.x = -((event.clientX / window.innerWidth) - 0.5) * 2;
+    this.position.x = -((event.clientX / window.innerWidth) - 0.5) * 8;
     this.position.y = ((event.clientY / window.innerHeight) - 0.5) * 4;
   }
   update() {
