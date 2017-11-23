@@ -9,7 +9,7 @@ import { GUI } from 'dat-gui';
 import { MeshLine, MeshLineMaterial } from 'three.meshline';
 
 import fontFile from './font'
-import { getRandomFloat, getRandomInt, radians } from 'utils';
+import { getRandomFloat, getRandomInt } from 'utils';
 
 const gui = new GUI();
 
@@ -67,8 +67,8 @@ document.body.appendChild(webgl.dom);
 /* ------ CREATING ZONE ------ */
 const props = {
   LINE_SPEED: 0.003,
-  LINE_FREQUENCY: 0.5,
-  LINE_TURBULENCE: 2.2,
+  LINE_FREQUENCY: 0.65,
+  LINE_TURBULENCE: 2.1,
   LINE_DISRUPTED_ORIENTATION: 0.2,
   LINE_WIDTH: 0.05,
   LINE_LENGTH: 0.99,
@@ -252,11 +252,14 @@ class AnimatedText extends Object3D {
 // https://gero3.github.io/facetype.js/
 const fontLoader = new FontLoader()
 const fontAsset = fontLoader.parse(fontFile);
-const text = new AnimatedText('CODEVEMBER DAY.22', fontAsset);
+const text = new AnimatedText('CODEVEMBER DAY.23', fontAsset);
 text.position.x -= text.basePosition * 0.5;
 text.position.y -= 0.5;
 webgl.add(text);
-text.show();
+
+setTimeout(() => {
+  text.show();
+}, 1000);
 
 const windLines = new Wind();
 webgl.add(windLines);
