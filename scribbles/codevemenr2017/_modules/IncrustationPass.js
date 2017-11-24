@@ -1,4 +1,4 @@
-import { ShaderMaterial, Color, TextureLoader } from 'three';
+import { ShaderMaterial, Color } from 'three';
 import { Pass } from 'postprocessing/';
 
 const incrustationShader = {
@@ -36,7 +36,7 @@ const incrustationShader = {
 }
 
 export default class IncrustationPass extends Pass {
-  constructor() {
+  constructor(texture) {
     super();
 
     // { color = 0x00ff00, image = false } = {}
@@ -44,11 +44,7 @@ export default class IncrustationPass extends Pass {
     this.name = 'IncrustationPass';
     this.needsSwap = true;
     this.material = new ShaderMaterial(incrustationShader);
-
-    const loader = new TextureLoader();
-    loader.load('https://i.imgur.com/462xXUs.png', (texture) => {
-      this.material.uniforms.tIncrustation.value = texture;
-    });
+    this.material.uniforms.tIncrustation.value = texture;
     this.quad.material = this.material;
   }
 

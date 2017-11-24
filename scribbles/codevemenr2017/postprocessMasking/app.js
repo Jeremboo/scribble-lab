@@ -7,7 +7,7 @@ import {
   EffectComposer, RenderPass, BlurPass,
 } from 'postprocessing';
 
-import IncrustationPass from './IncrustationPass';
+import IncrustationPass from 'IncrustationPass';
 
 import { getRandomFloat } from 'utils';
 
@@ -58,7 +58,7 @@ const clock = new Clock();
 /**/     this.camera.aspect = w / h;
 /**/     this.camera.updateProjectionMatrix();
 /**/     this.renderer.setSize(w, h);
-  this._composer.setSize(w, h);
+        this._composer.setSize(w, h);
 /**/   }
 
 initPostprocessing() {
