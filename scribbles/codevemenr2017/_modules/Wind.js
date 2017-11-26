@@ -21,6 +21,7 @@ const props = {
 
 export class WindLine extends Mesh {
   constructor({
+    width = 1,
     nbrOfPoints = getRandomFloat(3, props.LINE_NBR_OF_POINTS_MAX),
     length = getRandomFloat(0.5, props.LINE_LENGTH_MAX),
     disruptedOrientation = getRandomFloat(-0.2, 0.2),
@@ -35,10 +36,9 @@ export class WindLine extends Mesh {
     for (let i = 1; i < nbrOfPoints; i++) {
       const pos = (segmentLength * i);
       points.push(new Vector3(
-        (pos + disruptedOrientation) + getRandomFloat(-turbulence, turbulence),
+        (pos * disruptedOrientation) + getRandomFloat(-turbulence, turbulence),
         pos,
         0,
-        // getRandomFloat(-props.LINE_TURBULENCE* 0.1, props.LINE_TURBULENCE * 0.1)),
       ));
     }
 
@@ -56,7 +56,7 @@ export class WindLine extends Mesh {
     const dashOffsetRight = 1.01;
     const dashOffsetLeft = dashArray * dashRatio;
     super(line.geometry, new MeshLineMaterial({
-      lineWidth: props.LINE_WIDTH,
+      lineWidth: width,
       dashArray,
       dashRatio,
       dashOffset: dashOffsetLeft,
@@ -90,24 +90,18 @@ export class WindLine extends Mesh {
 }
 
 export default class Wind extends Object3D {
-  constructor({
-    speed = 0.003,
-    frequency = 0.9,
-    turbulence = 1.3,
-    disruptedOrientation = getRandomFloat(-0.2, 0.2),
-    width = 0.2,
-    length = 0.9,
-    opacity = 1,
-  } = {}) {
+  constructor(_props) {
     super();
 
-    this.speed = speed;
-    this.frequency = frequency;
-    this.turbulence = turbulence;
-    this.disruptedOrientation = disruptedOrientation;
-    this.width = width;
-    this.length = length;
-    this.opacity = opacity;
+    this.props = Object.assign({
+      speed: 0.003,
+      frequency: 0.9,
+      turbulence: 1.3,
+      disruptedOrientation: getRandomFloat(-0.2, 0.2),
+      width: 0.2,
+      length: 0.9,
+      opacity: 1,
+    }, _props);
 
     this.lines = [];
     this.lineNbr = -1;
@@ -116,26 +110,23 @@ export default class Wind extends Object3D {
 
     // *********
     // GUI
-    try {
-      const lineFolder = gui.addFolder('Lines');
-      lineFolder.add(this, 'frequency', 0, 1).name('FREQUENCY');
-      lineFolder.add(props, 'LINE_OPACITY', 0, 1).name('OPACITY');
-      lineFolder.add(props, 'LINE_WIDTH', 0, 0.4).name('WIDTH');
-      lineFolder.add(props, 'LINE_VISIBLE_LENGTH', 0.85, 0.99).name('LENGTH');
-      lineFolder.add(this, 'speed', 0, 0.01).name('SPEED');
-      lineFolder.add(props, 'LINE_TURBULENCE', 0, 4).name('TURBULENCE');
-      lineFolder.add(this, 'disruptedOrientation', 0, 0.5).name('DISRUPTED_ORIENTATION');
-      lineFolder.add(props, 'LINE_NBR_OF_POINTS_MAX', 0, 10).name('POINTS_MAX');
-    } catch (e) {
-      
-    }
+    // try {
+    //   const lineFolder = gui.addFolder('Lines');
+    //   lineFolder.add(this, 'frequency', 0, 1).name('FREQUENCY');
+    //   lineFolder.add(props, 'LINE_OPACITY', 0, 1).name('OPACITY');
+    //   lineFolder.add(props, 'LINE_WIDTH', 0, 0.4).name('WIDTH');
+    //   lineFolder.add(props, 'LINE_VISIBLE_LENGTH', 0.85, 0.99).name('LENGTH');
+    //   lineFolder.add(this, 'speed', 0, 0.01).name('SPEED');
+    //   lineFolder.add(this, 'turbulences', 0, 4).name('TURBULENCE');
+    //   lineFolder.add(this, 'disruptedOrientation', 0, 0.5).name('DISRUPTED_ORIENTATION');
+    //   lineFolder.add(props, 'LINE_NBR_OF_POINTS_MAX', 0, 10).name('POINTS_MAX');
+    // } catch (e) {
+    //
+    // }
   }
 
   addWindLine() {
-    const line = new WindLine({
-      disruptedOrientation: this.disruptedOrientation,
-      speed: this.speed,
-    });
+    const line = new WindLine(this.props);
     this.lines.push(line);
     this.add(line);
     this.lineNbr++;
@@ -149,7 +140,7 @@ export default class Wind extends Object3D {
   }
 
   update() {
-    if (Math.random() < this.frequency) {
+    if (Math.random() < this.props.frequency) {
       this.addWindLine();
     }
 

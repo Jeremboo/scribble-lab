@@ -106,21 +106,21 @@ class CustomWindLine extends WindLine {
   }
 }
 // CUSTOM2
-class CustomWindLine2 extends WindLine {
-  constructor(props) {
-    super(props);
-    // console.log(this.material.uniforms.dashOffset)
-    this.dying = 2;
-    this.material.uniforms.dashOffset.value = 0;
-    this.material.uniforms.opacity.value = 1;
-  }
-  update() {
-    this.material.uniforms.dashOffset.value += this.speed;
-  }
-  isDied() {
-    return this.material.uniforms.dashOffset.value > this.dying;
-  }
-}
+// class CustomWindLine2 extends WindLine {
+//   constructor(props) {
+//     super(props);
+//     // console.log(this.material.uniforms.dashOffset)
+//     this.dying = 2;
+//     this.material.uniforms.dashOffset.value = 0;
+//     this.material.uniforms.opacity.value = 1;
+//   }
+//   update() {
+//     this.material.uniforms.dashOffset.value += this.speed;
+//   }
+//   isDied() {
+//     return this.material.uniforms.dashOffset.value > this.dying;
+//   }
+// }
 
 const loader = new TextureLoader();
 loader.load('https://i.imgur.com/462xXUs.png', (texture) => {
@@ -129,41 +129,44 @@ loader.load('https://i.imgur.com/462xXUs.png', (texture) => {
   webgl._composer.passes[1].material.uniforms.tIncrustation.value = texture
 
 
-  const windLines = new Wind({ frequency: 0.1, speed: 0.009 });
+  const windLines = new Wind({
+    frequency: 0.9,
+    speed: 0.01,
+    width: 0.01,
+    turbulence: 0.5,
+    disruptedOrientation: 1,
+  });
+  // custom addWindLine method
   windLines.addWindLine = () => {
-    const line = new CustomWindLine({
-      turbulence: 0.5,
-      length: getRandomFloat(4, 5),
-      disruptedOrientation: getRandomFloat(2, 1),
-    });
+    const line = new CustomWindLine(windLines.props);
     line.position.set(
-      getRandomFloat(-1.8, -1.5),
-      getRandomFloat(-1.8, -1.5),
-      getRandomFloat(-1, 0),
+      0,
+      0,
+      0,
     );
     windLines.lines.push(line);
     windLines.add(line);
     windLines.lineNbr++;
   }
   webgl.add(windLines);
-
-  const windLines2 = new Wind({ frequency: 0.1, speed: 0.009 });
-  windLines2.addWindLine = () => {
-    const line = new CustomWindLine2({
-      turbulence: 0.5,
-      length: getRandomFloat(4, 5),
-      disruptedOrientation: getRandomFloat(2, 1),
-    });
-    line.position.set(
-      getRandomFloat(-1.8, -1.5),
-      getRandomFloat(-1.8, -1.5),
-      getRandomFloat(-1, 0),
-    );
-    windLines2.lines.push(line);
-    windLines2.add(line);
-    windLines2.lineNbr++;
-  }
-  webgl.add(windLines2);
+  //
+  // const windLines2 = new Wind({ frequency: 0.1, speed: 0.009 });
+  // windLines2.addWindLine = () => {
+  //   const line = new CustomWindLine2({
+  //     turbulence: 0,
+  //     length: getRandomFloat(4, 5),
+  //     disruptedOrientation: 0,
+  //   });
+  //   line.position.set(
+  //     getRandomFloat(-1.8, -1.5),
+  //     getRandomFloat(-1.8, -1.5),
+  //     getRandomFloat(-1, 0),
+  //   );
+  //   windLines2.lines.push(line);
+  //   windLines2.add(line);
+  //   windLines2.lineNbr++;
+  // }
+  // webgl.add(windLines2);
 });
 
 
