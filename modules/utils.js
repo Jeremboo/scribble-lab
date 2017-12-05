@@ -35,6 +35,17 @@ export const getDistanceBetweenNormalizedMousePosAndPos = (normalizedMousePos, p
   return pos.clone().sub(mousePos);
 };
 
+// https://www.gamedev.net/forums/topic/95637-random-point-within-a-sphere/
+export const getrandomPosWithinASphere = (r) => {
+  const theta = getRandomFloat(0, Math.PI * 2);
+  const phi = getRandomFloat(-Math.PI * 0.5, Math.PI * 0.5);
+  return new Vector3(
+    r * Math.cos(theta) * Math.cos(phi),
+    (r * 0.9) * Math.sin(phi),
+    r * Math.sin(theta) * Math.cos(phi),
+  );
+};
+
 // Ty Robin <3
 // https://codepen.io/robin-dela/pen/dZXVrQ?editors=0010
 // https://threejs.org/docs/#api/core/Raycaster
