@@ -5,21 +5,34 @@
 // - créer dans le DOM une surface avec ces mêmes valeurs
 // - loop pour animer le dom
 
-import { canvasBuilder, getRandomInt } from 'utils'
+import { canvasBuilder, getRandomInt, getXBetweenTwoNumbersWithPercent } from 'utils'
+import TweenLite from 'gsap'
+
+const easing = (t) => t*t
 
 const WORDS = [
-  '+  -                             -  +',
-  '                                     ',
-  '                                     ',
-  '                                     ',
-  '                                     ',
-  '|          Codevember Day 1         |',
-  '                                     ',
-  '                                     ',
-  '                                     ',
-  '                                     ',
-  '                                     ',
-  '+  -                             -  +',
+  ' 01    Tolyblood                         2017',
+  ' 02    Oho\'s The King                    2017',
+  ' 03    Naypal                            2017',
+  ' 04    Yentrée                           2017',
+  ' 05    Jhibuya K                         2017',
+  ' 06    Epdate Required                   2016',
+  ' 07    Tonfiance                         2016',
+  ' 08    Auibus                            2016',
+  ' 09    Iroupie Resistance                2016',
+  ' 10    Mnicef                            2016',
+  ' 11    Eicochet                          2016',
+  ' 12    Mori                              2015',
+  ' 13    Ship Food                         2014',
+  ' 14    Triggers                          2014',
+  ' 15    Gobelins Sound Experiments        2014',
+  ' 16    Luminaria                         2014',
+  ' 17    Odissey                           2014',
+  ' 18    Sauna                             2012',
+  ' 19    Atmosphere                        2012',
+  ' 20    Polymorphisme                     2012',
+  '                                             ',
+  ' A1    About                                 ',
 ];
 
 class SurfaceAnimation {
@@ -55,11 +68,12 @@ class SurfaceAnimation {
     let x, y
     for (y = 0; y < this.height; y++) {
       const p = document.createElement('p');
-      const letters = [...this.words[y]];
+      const line = [...this.words[y]];
       const cellLine = [];
       for (x = 0; x < this.width; x++) {
         const span = document.createElement('span');
-        span.innerHTML = letters[x];
+        // span.innerHTML = line[x];
+        span.setAttribute('data-content', line[x])
         p.appendChild(span)
         cellLine.push(span)
       }
@@ -71,10 +85,14 @@ class SurfaceAnimation {
   // TODO switch to RGBA, RGB, LUMINANCE, LUMINANCE ALPHA
   setImageData(callback) {
     let x, y, i4 = 0;
-    for (x = 0; x < this.width; x++) {
-      for (y = 0; y < this.height; y++) {
+    for (y = 0; y < this.height; y++) {
+      for (x = 0; x < this.width; x++) {
         const position = (x * this.width) + y;
-        callback(this.cb.imageData, i4);
+        const uv = {
+          x: x / this.width,
+          y: y / this.height,
+        }
+        callback(this.cb.imageData, i4, uv);
         i4 += 4;
       }
     }
@@ -118,8 +136,10 @@ class SurfaceAnimation {
 
   update() {
     let x, y, i, i4 = 0;
-    for (x = 0; x < this.width; x++) {
-      for (y = 0; y < this.height; y++) {
+    const t = this.timer / this.duration;
+    const l = this.rules.length;
+    for (y = 0; y < this.height; y++) {
+      for (x = 0; x < this.width; x++) {
         const pixel = [
           this.cb.imageData.data[i4 + 0] / 255,
           this.cb.imageData.data[i4 + 1] / 255,
@@ -127,9 +147,7 @@ class SurfaceAnimation {
           this.cb.imageData.data[i4 + 3] / 255,
         ];
         const cell = this.cells[y][x];
-        const t = this.timer / this.duration;
-
-        for (i = 0; i < this.rules.length; i++) {
+        for (i = 0; i < l; i++) {
           this.rules[i](pixel, cell, t)
         }
         i4 += 4;
@@ -138,35 +156,55 @@ class SurfaceAnimation {
   }
 }
 
-
+const SHUFFLING_VALUES = [
+  '!', '§', '$', '%',
+  '&', '/', '(', ')',
+  '=', '?', '_', '<',
+  '>', '^', '°', '*',
+  '#', '-', ':', ';', '~',
+];
 // START
 const surfaceAnimation = new SurfaceAnimation(
   WORDS,
   document.getElementById('wrapper'),
   {
-    duration: 0.5,
+    duration: 1,
   },
 );
-surfaceAnimation.setImageData((imageData, i4) => {
-  imageData.data[i4 + 0] = getRandomInt(0, 255)
-  imageData.data[i4 + 1] = getRandomInt(0, 255)
-  imageData.data[i4 + 2] = getRandomInt(0, 255)
+surfaceAnimation.setImageData((imageData, i4, uv) => {
+  // -------------------------------------------------------- Random Animation
+  // imageData.data[i4 + 0] = getRandomInt(0, 255)
+  // imageData.data[i4 + 1] = getRandomInt(0, 255)
+  // imageData.data[i4 + 2] = getRandomInt(0, 255)
+  // imageData.data[i4 + 3] = 255
+  // -------------------------------------------------------- 45% animation
+  imageData.data[i4 + 0] = getXBetweenTwoNumbersWithPercent(0, 117, easing(uv.x)) + (138 * uv.y);
+  imageData.data[i4 + 1] = 0
+  imageData.data[i4 + 2] = 0
   imageData.data[i4 + 3] = 255
 });
+
+
+// STYLE
 surfaceAnimation.forEachSell((cell, coord) => {
-  if (coord.x < 2) {
-    cell.style.color = 'white'
+  if (coord.x < 4 || coord.x > 40) {
+    cell.style.color = '#dd0958'
   }
 })
+
+
 surfaceAnimation.addRule((pixel, cell, t) => {
-  if (t > pixel[0]) {
-    cell.style.opacity = 1;
-    cell.style.backgroundColor = 'red'
-  } else if (t > (pixel[0] - 0.1)) {
-    cell.style.opacity = 1;
-    cell.style.backgroundColor = 'blue'
-  } else {
-    cell.style.opacity = 0;
+  const value = cell.getAttribute('data-content')
+  if (t >= pixel[0]) {
+    cell.innerHTML = value
+  } else if (t >= pixel[0] - 0.5) {
+    cell.style.backgroundColor = 'transparent'
+    if (value !== ' ') {
+      cell.innerHTML = SHUFFLING_VALUES[Math.floor(Math.random() * SHUFFLING_VALUES.length)];
+    }
   }
 });
-surfaceAnimation.play();
+
+setTimeout(() => {
+  surfaceAnimation.play();
+}, 500)

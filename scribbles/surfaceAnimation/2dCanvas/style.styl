@@ -1,7 +1,7 @@
 // INIT
 mainColor = #070707
-secondaryColor = #C9F0FF
-bgColor = #fff
+secondaryColor = #251014
+bgColor = #151232
 
 body, html
   width: 100%;
@@ -10,6 +10,8 @@ body, html
   background-color: bgColor
   margin: 0
   font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif
+  background: bgColor;
+  background: linear-gradient(45deg, bgColor 0%,secondaryColor 100%);
 
 .f
   position: fixed
@@ -54,5 +56,15 @@ body, html
     display: block;
     width: 0.8em;
     height: 1em;
+  }
+}
+
+// HACK
+.SurfaceAnimation {
+  p {
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    height: 1.5em;
   }
 }
