@@ -26,15 +26,6 @@ body, html
     font-size: 0.8rem
     color: secondaryColor
 
-
-#preview
-  position: fixed;
-  top: 16px;
-  left: 16px;
-
-  &:hover
-    transform: scale(5);
-
 #wrapper
   position: absolute;
   left: 50%
@@ -45,6 +36,18 @@ body, html
 // CLASS
 .SurfaceAnimation {
   font-family: monospace;
+
+  &-helper {
+    position: fixed;
+    transform-origin: 0 0;
+    top: 16px;
+    left: 16px;
+    transition: transform 0.1s
+
+    &:hover {
+      transform: scale(5);
+    }
+  }
 
   p {
     margin: 0;
