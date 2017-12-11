@@ -60,7 +60,7 @@ export default class SurfaceAnimation {
     this.timer = 0;
     this.surfaceCells = [];
     this.surfaceThreshold = [];
-    this.rules = [];
+    this.rules = f => f;
 
     // HELPER
     this.cbHelper = false;
@@ -167,13 +167,16 @@ export default class SurfaceAnimation {
   */
 
   /**
-   * Add a rule when there is an animation
+   * Set a callback of rules who will be executed for each update
    * @type {Array}  thresholdData ... [r, g, b, a] values [0 => 1]
    * @type {Node}   cell ........ DOM attribute
    * @type {Number} t ........... the easing position. [0 => 1]
    */
-  addRule(callback) {
-    this.rules.push(callback);
+  setRules(callback) {
+    if (typeof callback !== 'function') {
+      console.error('ERROR: rules must be wrapped into a function');
+    }
+    this.rules = callback;
   }
 
   /**
@@ -199,16 +202,12 @@ export default class SurfaceAnimation {
   }
 
   update() {
-    let i = 0;
     const t = this.timer / this.duration;
-    const l = this.rules.length;
 
     this._parse((x, y) => {
       const threshold = this.surfaceThreshold[y][x];
       const cell = this.surfaceCells[y][x];
-      for (i = 0; i < l; i++) {
-        this.rules[i](threshold, cell, t)
-      }
+      this.rules(threshold, cell, t)
     });
   }
 
@@ -226,7 +225,6 @@ export default class SurfaceAnimation {
     document.body.appendChild(this.cbHelper.canvas);
   }
 
-  // TODO switch to RGBA, RGB, LUMINANCE, LUMINANCE ALPHA
   /**
    * Set values between 0 and 1 for each data
    * @param {Function} callback [description]

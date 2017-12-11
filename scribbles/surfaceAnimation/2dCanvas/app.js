@@ -50,7 +50,6 @@ surfaceAnimation.setThresholdSurface((idx2) => {
   return ((idx2.x / surfaceAnimation.width) * 0.5) + ((idx2.y / surfaceAnimation.height) * 0.5);
 });
 
-
 // STYLE
 surfaceAnimation.parseCellSurface((cell, idx2) => {
   if (idx2.x < 4 || idx2.x > surfaceAnimation.width - 5) {
@@ -58,23 +57,22 @@ surfaceAnimation.parseCellSurface((cell, idx2) => {
   }
 });
 
-
-surfaceAnimation.addRule((threshold, cell, t) => {
-  const value = cell.getAttribute('data-content')
+surfaceAnimation.setRules((threshold, cell, t) => {
+  const value = cell.getAttribute('data-content');
   if (t >= threshold) {
-    cell.innerHTML = value
+    cell.innerHTML = value;
   } else if (t >= threshold - 0.1) {
-    cell.style.backgroundColor = 'transparent'
+    cell.style.backgroundColor = 'transparent';
     if (value !== ' ') {
       cell.innerHTML = SHUFFLING_VALUES[Math.floor(Math.random() * SHUFFLING_VALUES.length)];
     }
   } else if (t >= threshold - 0.2) {
-    cell.style.backgroundColor = 'white'
+    cell.style.backgroundColor = 'white';
   } else {
-    cell.style.backgroundColor = 'transparent'
+    cell.style.backgroundColor = 'transparent';
   }
 });
 
 setTimeout(() => {
   surfaceAnimation.play();
-}, 500)
+}, 500);
