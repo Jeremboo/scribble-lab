@@ -1,6 +1,6 @@
 /**
  * SurfaceAnimation animate Node elements on the X and Y axis
- * @version 1.0.0
+ * @version 1.1.0
  * @update 2017.12.11
  * @author jeremboo http://jeremieboulay.fr
  *
