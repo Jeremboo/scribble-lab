@@ -46,6 +46,14 @@ export const getrandomPosWithinASphere = (r) => {
   );
 };
 
+// https://stackoverflow.com/questions/40485197/turning-random-cube-to-random-sphere-in-three-js?rq=1
+export const getRandomPosAroundASphere = (r) => {
+  return new Vector3(
+    Math.random() - 0.5,
+    Math.random() - 0.5,
+    Math.random() - 0.5).normalize().multiplyScalar(r);
+};
+
 // Ty Robin <3
 // https://codepen.io/robin-dela/pen/dZXVrQ?editors=0010
 // https://threejs.org/docs/#api/core/Raycaster

@@ -134,7 +134,7 @@ export default class GPUSimulation {
    *
    * @return {Object} Simulation -
    */
-  // TODO create a simulaition who update only with the initial dataTexture
+  // TODO create a simulation who update only with the initial dataTexture
   createSimulation(name, simFragmentShader, initialDataTexture, {
     width = this.width,
     height = this.height,
