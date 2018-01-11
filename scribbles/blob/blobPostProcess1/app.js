@@ -8,6 +8,7 @@ import {
   EffectComposer, RenderPass, BlurPass, BloomPass,
 } from 'postprocessing';
 
+
 import OrbitControl from 'OrbitControl';
 
 import MetaballPass from 'MetaballPass';
@@ -20,10 +21,15 @@ import { getRandomFloat, radians, getRandomPosAroundASphere } from 'utils';
 const clock = new Clock();
 
 const COLORS = [
-  '#F6D2E6',
-  '#8F71F0',
-  '#5BC0F0',
+  '#e7a7cb',
+  '#ac99ee',
+  '#85cced',
 ];
+
+const props = {
+  amplitude: 0.09,
+  speed: 0.2,
+};
 
 /**/ /* ---- CORE ---- */
 /**/ let windowWidth = window.innerWidth;
@@ -36,8 +42,8 @@ const COLORS = [
 /**/     this.renderer.setPixelRatio(window.devicePixelRatio);
 /**/     this.scene = new Scene();
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
-/**/     this.camera.position.set(0, 0, 25);
-/**/     this.controls = new OrbitControl(this.camera, this.renderer.domElement);
+/**/     this.camera.position.set(0, 0, 35);
+// this.controls = new OrbitControl(this.camera, this.renderer.domElement);
 /**/     this.dom = this.renderer.domElement;
 
   this._composer = false;
@@ -88,10 +94,10 @@ initPostprocessing() {
   this._composer.addPass(metaballPass);
 
   // const bloomPass = new BloomPass({
-  //   intensity: 1,
+  //   intensity: 10,
   //   resolution: 0.9,
   //   kernelSize: 4,
-  //   distinction: 2,
+  //   distinction: 20,
   // });
   // bloomPass.renderToScreen = true;
   // this._composer.addPass(bloomPass);
@@ -122,28 +128,26 @@ class Bubble extends Mesh {
     });
     super(geom, material);
 
-    this.t = 0;
-    this.speedX = Math.random() * 0.9;
-    this.amplX = (Math.random() * 0.1) + 0.1;
-    this.speedY = (Math.random() * 0.1) + 0.1;
-    this.amplY = Math.random() * 0.1;
+    this.t = Math.random() * 1000;
+    this.speed = getRandomFloat(-props.speed, props.speed);
+    this.amplitude = getRandomFloat(-props.amplitude, props.amplitude);
 
     this.update = this.update.bind(this);
   }
 
   update() {
-    this.t += this.speedX;
-    this.position.x += Math.sin(this.t) * this.amplX;
-    this.position.y += Math.cos(this.t) * this.amplY;
-    this.position.z += Math.cos(this.t * 0.3) * this.amplY;
+    this.t += this.speed;
+    this.position.x += Math.sin(this.t) * this.amplitude;
+    this.position.y += Math.cos(this.t) * this.amplitude;
+    this.position.z += Math.cos(this.t * 0.04) * this.amplitude * 0.1;
 
     this.lookAt(webgl.camera.position);
   }
 }
 
 // START
+const size = 3;
 const bubbles = [];
-const size = 2;
 for (let i = 0; i < 50; i++) {
   const bubble = new Bubble(size);
   // bubble.scale.multiplyScalar(getRandomFloat(1, 2));
@@ -154,6 +158,26 @@ for (let i = 0; i < 50; i++) {
 
 
 /* ---- CREATING ZONE END ---- */
+class CameraMouseControl {
+  constructor(camera) {
+    this.camera = camera;
+    this.lookAt = new Vector3();
+    this.position = { x: 0, y: 0 };
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.update = this.update.bind(this);
+    document.body.addEventListener('mousemove', this.handleMouseMove);
+  }
+  handleMouseMove(event) {
+    this.position.x = -((event.clientX / window.innerWidth) - 0.5) * 80;
+    this.position.y = ((event.clientY / window.innerHeight) - 0.5) * 40;
+  }
+  update() {
+    this.camera.position.x += (this.position.x - this.camera.position.x) * 0.5;
+    this.camera.position.y += (this.position.y - this.camera.position.y) * 0.5;
+    this.camera.lookAt(this.lookAt);
+  }
+}
+const cameraControl = new CameraMouseControl(webgl.camera);
 /**/
 /**/
 /**/ /* ---- ON RESIZE ---- */
@@ -167,6 +191,7 @@ for (let i = 0; i < 50; i++) {
 /**/ /* ---- LOOP ---- */
 /**/ function _loop() {
 /**/ 	webgl.update();
+      cameraControl.update();
 /**/ 	requestAnimationFrame(_loop);
 /**/ }
 /**/ _loop();
