@@ -18,6 +18,9 @@ var node_modules = path.resolve(__dirname, './node_modules');
 
 // WEBPACK CONFIG
 var config = {
+    node: {
+      fs: "empty"
+    },
     entry: [
       'babel-polyfill',
       'webpack/hot/dev-server',
