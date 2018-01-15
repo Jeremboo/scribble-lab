@@ -1,10 +1,10 @@
 {
-  "name": "surfaceAnimation",
+  "name": "SurfaceAnimation.js",
   "path": "scribbles/surfaceAnimation/",
   "link": "",
   "visible": true,
   "preview": "scribbles/surfaceAnimation/preview.gif",
-  "description": "",
+  "description": "Some test about a concept of animation",
   "date": "2017-11-30T08:27:48.306Z",
   "tags": []
 }

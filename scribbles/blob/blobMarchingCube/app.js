@@ -90,6 +90,7 @@ class Metaballs extends MarchingCubes {
 
   update() {
     this.t += 1;
+    this.rotation.y += 0.0001;
     this.reset();
 
     let i;
@@ -104,7 +105,8 @@ class Metaballs extends MarchingCubes {
         this.balls[i].position.x + 0.5,
         this.balls[i].position.y + 0.5,
         this.balls[i].position.z + 0.5,
-        this.strength, this.substract);
+        this.strength, this.substract
+      );
     }
   }
 }

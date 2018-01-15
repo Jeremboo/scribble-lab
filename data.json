@@ -1,14 +1,120 @@
 [
   {
-    "name": "shaders",
-    "path": "scribbles/shaders/",
+    "name": "grid",
+    "path": "scribbles/grid/",
     "link": "",
-    "visible": true,
-    "preview": "scribbles/shaders/preview.gif",
-    "description": "LSome tests about shaders possibilities",
-    "date": "2017-05-23T06:49:11.458Z",
+    "visible": false,
+    "preview": "scribbles/grid/preview.gif",
+    "description": "",
+    "date": "2018-01-13T08:44:51.687Z",
     "tags": [],
     "scribbles": [
+      {
+        "name": "3dgrid",
+        "path": "scribbles/grid/3dgrid/",
+        "link": "",
+        "visible": true,
+        "preview": "scribbles/grid/3dgrid/preview.gif",
+        "description": "",
+        "date": "2018-01-13T08:45:22.048Z",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "name": "blob",
+    "path": "scribbles/blob/",
+    "link": "",
+    "visible": true,
+    "preview": "scribbles/blob/preview.gif",
+    "description": "",
+    "date": "2018-01-10T07:36:10.675Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "blobMarchingCube",
+        "path": "scribbles/blob/blobMarchingCube/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2018-01-10T16:36:55.799Z",
+        "tags": []
+      },
+      {
+        "name": "blobPostProcess1",
+        "path": "scribbles/blob/blobPostProcess1/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview1.gif",
+          "preview2.gif",
+          "preview3.gif"
+        ],
+        "description": "",
+        "date": "2018-01-10T07:36:41.323Z",
+        "tags": []
+      },
+      {
+        "name": "canvasmetaballs3",
+        "path": "scribbles/codevember2017/canvasmetaballs3/",
+        "link": "",
+        "visible": true,
+        "preview": "scribbles/codevember2017/canvasmetaballs3/preview.gif",
+        "description": "",
+        "date": "2017-11-15T14:45:23.016Z",
+        "tags": []
+      },
+      {
+        "name": "canvasmetaballs",
+        "path": "scribbles/codevember2017/canvasmetaballs/",
+        "link": "",
+        "visible": true,
+        "preview": "scribbles/codevember2017/canvasmetaballs/preview.gif",
+        "description": "",
+        "date": "2017-11-06T16:36:04.729Z",
+        "tags": []
+      },
+      {
+        "name": "wave",
+        "path": "scribbles/codevember2017/wave/",
+        "link": "",
+        "visible": true,
+        "preview": "scribbles/codevember2017/wave/preview.gif",
+        "description": "",
+        "date": "2017-09-28T10:02:15.507Z",
+        "tags": []
+      },
+      {
+        "name": "boiling",
+        "path": "scribbles/codevember2017/boiling/",
+        "link": "",
+        "visible": true,
+        "preview": "scribbles/codevember2017/boiling/preview.gif",
+        "description": "",
+        "date": "2017-09-21T13:52:57.633Z",
+        "tags": []
+      },
+      {
+        "name": "tonyBlob",
+        "path": "scribbles/blob/tonyBlob/",
+        "link": "",
+        "visible": false,
+        "preview": "scribbles/blob/tonyBlob/preview.gif",
+        "description": "",
+        "date": "2017-08-31T12:18:47.163Z",
+        "tags": []
+      },
+      {
+        "name": "withBlur",
+        "path": "scribbles/fluid/withBlur/",
+        "link": "",
+        "visible": true,
+        "preview": "scribbles/fluid/withBlur/preview.gif",
+        "description": "",
+        "date": "2017-08-14T13:22:54.546Z",
+        "tags": []
+      },
       {
         "name": "raymarching",
         "path": "scribbles/shaders/raymarching/",
@@ -18,7 +124,162 @@
         "description": "",
         "date": "2017-05-23T06:50:33.642Z",
         "tags": []
+      }
+    ]
+  },
+  {
+    "name": "SurfaceAnimation.js",
+    "path": "scribbles/surfaceAnimation/",
+    "link": "",
+    "visible": true,
+    "preview": "scribbles/surfaceAnimation/preview.gif",
+    "description": "Some test about a concept of animation",
+    "date": "2017-11-30T08:27:48.306Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "2dCanvas",
+        "path": "scribbles/surfaceAnimation/2dCanvas/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview3.gif",
+          "preview4.gif",
+          "preview5.gif",
+          "preview1.gif",
+          "preview.gif",
+          "preview2.gif"
+        ],
+        "description": "",
+        "date": "2017-12-04T21:05:06.386Z",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "name": "postprocessing",
+    "path": "scribbles/postprocessing/",
+    "link": "",
+    "visible": true,
+    "preview": "scribbles/postprocessing/preview.gif",
+    "description": "",
+    "date": "2017-11-16T15:41:01.185Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "Incrustation",
+        "path": "scribbles/postprocessing/incrustation/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-11-16T15:42:16.185Z",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "name": "codevember2017",
+    "path": "scribbles/codevember2017/",
+    "link": "",
+    "visible": true,
+    "preview": "scribbles/codevember2017/preview.gif",
+    "description": "My contributions of the Codevember challenge 2017.",
+    "date": "2017-08-31T12:17:55.974Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": " Metaballs and Bloom postprocessing",
+        "path": "scribbles/codevember2017/27_metaballsandbloom/",
+        "link": "https://codepen.io/Jeremboo/pen/XzBQGe",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-11-26T15:47:11.193Z",
+        "tags": []
       },
+      {
+        "name": "Text animation and animated lines (THREE.MeshLine fork)",
+        "path": "scribbles/codevember2017/23_textandlines/",
+        "link": "https://codepen.io/Jeremboo/pen/BmxOyB",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-11-14T18:00:32.791Z",
+        "tags": []
+      },
+      {
+        "name": "Perlin Noise surface",
+        "path": "scribbles/codevember2017/08_perlinnoisesurface/",
+        "link": "https://codepen.io/Jeremboo/pen/LRRrNY",
+        "visible": true,
+        "preview": "/preview.gif",
+        "description": "",
+        "date": "2017-11-09T10:08:39.261Z",
+        "tags": []
+      },
+      {
+        "name": "Flexible balls",
+        "path": "scribbles/codevember2017/03_flexibleballs/",
+        "link": "https://codepen.io/Jeremboo/pen/Xzdbgz",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-11-03T10:52:30.805Z",
+        "tags": []
+      },
+      {
+        "name": "Elastic Balls",
+        "path": "scribbles/codevember2017/02_elasticBalls/",
+        "link": "https://codepen.io/Jeremboo/pen/wPMJBY",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "Elastic balls attracted by the mouse in webgl",
+        "date": "2017-11-02T14:30:12.262Z",
+        "tags": []
+      },
+      {
+        "name": "Digital HUD",
+        "path": "scribbles/codevember2017/01_digitalhud/",
+        "link": "https://codepen.io/Jeremboo/pen/XzmEEJ",
+        "visible": true,
+        "preview": "/preview.gif",
+        "description": "",
+        "date": "2017-10-25T20:42:18.348Z",
+        "tags": []
+      },
+      {
+        "name": "Animated dashed lines (THREE.MeshLine fork)",
+        "path": "scribbles/codevember2017/13_animateddashedlines/",
+        "link": "https://codepen.io/Jeremboo/pen/aVdxPw?editors=0100",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-09-22T09:40:37.663Z",
+        "tags": []
+      },
+      {
+        "name": "Windline",
+        "path": "scribbles/codevember2017/09_windline/",
+        "link": "https://codepen.io/Jeremboo/pen/XzpYvd",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-09-20T15:18:27.892Z",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "name": "materials",
+    "path": "scribbles/materials/",
+    "link": "",
+    "visible": false,
+    "preview": "scribbles/materials/preview.gif",
+    "description": "Some tests about custom material possibilities",
+    "date": "2017-05-23T06:49:11.458Z",
+    "tags": [],
+    "scribbles": [
       {
         "name": "shadow",
         "path": "scribbles/shaders/shadow/",
@@ -42,12 +303,22 @@
     "tags": [],
     "scribbles": [
       {
+        "name": "storm",
+        "path": "scribbles/codevember2017/storm/",
+        "link": "",
+        "visible": true,
+        "preview": "scribbles/codevember2017/storm/preview.gif",
+        "description": "",
+        "date": "2017-11-06T21:59:01.804Z",
+        "tags": []
+      },
+      {
         "name": "fbo&Instances",
         "path": "scribbles/webglparticles/fbo&Instances/",
         "link": "",
         "visible": true,
         "preview": [
-          "/preview.gif"
+          "preview.gif"
         ],
         "description": "",
         "date": "2017-09-08T14:47:14.783Z",

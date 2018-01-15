@@ -3,7 +3,7 @@
   "path": "scribbles/surfaceAnimation/2dCanvas/",
   "link": "",
   "visible": true,
-  "preview": "scribbles/surfaceAnimation/2dCanvas/preview.gif",
+  "preview": ["preview3.gif", "preview4.gif", "preview5.gif", "preview1.gif", "preview.gif", "preview2.gif"],
   "description": "",
   "date": "2017-12-04T21:05:06.386Z",
   "tags": []

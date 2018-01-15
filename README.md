@@ -4,13 +4,91 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 
 ---
 </p>
-</p>
 
-## shaders
+## blob
 
-LSome tests about shaders possibilities
+
 
 <p align="center">
+  <a href="">
+    <img alt="blobMarchingCube" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobMarchingCube/preview.gif?raw=true" width="200">
+  </a>
+  <a href="">
+    <img alt="blobPostProcess1" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobPostProcess1/preview3.gif?raw=true" width="200">
+  </a>
+  <a href="">
+    <img alt="blobPostProcess1" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobPostProcess1/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="">
+    <img alt="blobPostProcess1" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobPostProcess1/preview1.gif?raw=true" width="200">
+  </a>
+</p>
+
+## SurfaceAnimation.js
+
+Some test about a concept of animation
+
+<p align="center">
+  <a href="">
+    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="">
+    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview.gif?raw=true" width="200">
+  </a>
+  <a href="">
+    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="">
+    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview5.gif?raw=true" width="200">
+  </a>
+  <a href="">
+    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview4.gif?raw=true" width="200">
+  </a>
+  <a href="">
+    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview3.gif?raw=true" width="200">
+  </a>
+</p>
+
+## postprocessing
+
+
+
+<p align="center">
+  <a href="">
+    <img alt="Incrustation" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/postprocessing/incrustation/preview.gif?raw=true" width="200">
+  </a>
+</p>
+
+## codevember2017
+
+My contributions of the Codevember challenge 2017.
+
+<p align="center">
+  <a href="https://codepen.io/Jeremboo/pen/XzBQGe">
+    <img alt=" Metaballs and Bloom postprocessing" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/27_metaballsandbloom/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://codepen.io/Jeremboo/pen/BmxOyB">
+    <img alt="Text animation and animated lines (THREE.MeshLine fork)" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/23_textandlines/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://codepen.io/Jeremboo/pen/LRRrNY">
+    <img alt="Perlin Noise surface" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/08_perlinnoisesurface//preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://codepen.io/Jeremboo/pen/Xzdbgz">
+    <img alt="Flexible balls" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/03_flexibleballs/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://codepen.io/Jeremboo/pen/wPMJBY">
+    <img alt="Elastic Balls" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/02_elasticBalls/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://codepen.io/Jeremboo/pen/XzmEEJ">
+    <img alt="Digital HUD" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/01_digitalhud//preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://codepen.io/Jeremboo/pen/aVdxPw?editors=0100">
+    <img alt="Animated dashed lines (THREE.MeshLine fork)" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/13_animateddashedlines/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://codepen.io/Jeremboo/pen/XzpYvd">
+    <img alt="Windline" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/09_windline/preview.gif?raw=true" width="200">
+  </a>
+</p>
 </p>
 
 ## Webgl Particles
@@ -19,7 +97,7 @@ Generate particles with different noises and renders
 
 <p align="center">
   <a href="">
-    <img alt="fbo&Instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/fbo&Instances//preview.gif?raw=true" width="200">
+    <img alt="fbo&Instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/fbo&Instances/preview.gif?raw=true" width="200">
   </a>
   <a href="">
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview5.gif?raw=true" width="200">
