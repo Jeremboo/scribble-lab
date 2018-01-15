@@ -20,7 +20,7 @@ const RayMarcher = function(){
 
         this.scene = new Scene();
 
-        this.renderer = new WebGLRenderer();
+        this.renderer = new WebGLRenderer({ alpha: true });
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.domElement = this.renderer.domElement;
 

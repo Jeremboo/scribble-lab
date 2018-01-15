@@ -131,35 +131,28 @@ const int steps = 50;
 const int shadowSteps = 4;
 const int ambienOcclusionSteps = 3;
 const float PI = 3.14159;
-vec2 field( vec3 position )
-{
-
-
+vec2 field( vec3 position ) {
     //position
     vec3 zero = vec3(0.);
+    // rotation
+    vec4 quat = vec4( 1., .1 , 0., .2 );
+    // FIELD EXAMPLES ---------------------------------------------------------------------------------
+    // //noise
+    // vec3 noise = position * .25;
+    // // noise += time * .1;
+    // float pnoise = 1. + perlin( noise );
+    // //box
+    // vec2 rb = roundBox( position, vec3(2.0,2.0,2.0),  0.5, zero, quat + vec4( 1., 1., 1., PI / 4. ) );
+    // //torus
+    // vec2 to0 = torus( position, vec2( 4.0,.15), zero, vec4( 1., 0., 0., 0. + time * .2 ) );
+    // vec2 to1 = torus( position, vec2( 4.0,.15), zero, vec4( 0., 0., 1., PI *.5 + time * .2 ) );
+    // //spheres
+    // vec2 sre = sphere( position, 3.0, zero, quat );
+    // vec2 sce = sphere( position, 1., zero, quat ) + perlin( position + time ) * .25;
+    // //composition
+    // return smin(sce, smin(to0, smin(to1, subtract(sre, rb), pnoise), pnoise), pnoise);
 
-    //rotation
-    vec4 quat = vec4( 1., sin( time ) *.1 , 0., time * .2 );
-
-    //noise
-    vec3 noise = position * .25;
-    //noise += time * .1;
-    float pnoise = 1. + perlin( noise );
-
-    //box
-    vec2 rb = roundBox( position, vec3(2.0,2.0,2.0),  0.5, zero, quat + vec4( 1., 1., 1., PI / 4. ) );
-
-    //torus
-    vec2 to0 = torus( position, vec2( 4.0,.15), zero, vec4( 1., 0., 0., 0. + time * .2 ) );
-    vec2 to1 = torus( position, vec2( 4.0,.15), zero, vec4( 0., 0., 1., PI *.5 + time * .2 ) );
-
-    //spheres
-    vec2 sre = sphere( position, 3.0, zero, quat );
-    vec2 sce = sphere( position, 1., zero, quat ) + perlin( position + time ) * .25;
-
-    //composition
-    return smin( sce, smin( to0, smin( to1, subtract( sre, rb  ), pnoise ), pnoise ), pnoise);
-
+    return sphere( position, 4., zero, quat ) + sin(time * 20. + (position.y * 5.) ) * 0.2;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -255,16 +248,14 @@ vec3 rimlight( vec3 pos, vec3 nor )
 
 
 void main() {
+    vec3 color0 = vec3(0.35, 0.47, 0.56); // blue
+    vec3 color1 = vec3(0.90, 0.76, 0.85); // purple
 
+    // default color ( background ) --------------------------------------------------
+    // vec2 xy = gl_FragCoord.xy / resolution;
+    // gl_FragColor = vec4( mix( color0, color1, sin( xy.y + 0.5 ) ) * 2., 1. );
 
-    vec3 color0 = vec3(0.9, 0.9, 0.0);    //yellow
-    vec3 color1 = vec3(0.0, 0.2, 0.9);    //blue
-
-    //default color ( background )
-    vec2 xy = gl_FragCoord.xy / resolution;
-    gl_FragColor = vec4( mix( color0, color1, sin( xy.y + 0.5 ) ) * 2., 1. );
-
-    float cameraAngle   = 0.;//0.8 * time;
+    float cameraAngle   = 0.; // 0.8 * time;
     float cameraRadius  = 20.;
 
     vec2  screenPos    = squareFrame( resolution );
@@ -277,9 +268,7 @@ void main() {
     float maxDist = 50.;
     vec2 collision = raymarching( rayOrigin, rayDirection, maxDist, .01 );
 
-    if ( collision.x > -0.5)
-    {
-
+    if (collision.x > -0.5) {
         //"world" position
         vec3 pos = rayOrigin + rayDirection * collision.x;
 
@@ -308,7 +297,5 @@ void main() {
 
         float dep = ( ( collision.x + .5 ) / ( maxDist * .5 ) );
         gl_FragColor = vec4( ( col + light0 + light1 ) * occ * dep, 1. );
-
     }
-
 }
