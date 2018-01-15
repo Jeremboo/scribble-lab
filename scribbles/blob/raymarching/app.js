@@ -18,6 +18,12 @@ import blobFrag from './shaders/blob.f.glsl';
  * - http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
  * - http://iquilezles.org/www/articles/smin/smin.htm
  * - http://iquilezles.org/www/material/nvscene2008/rwwtt.pdf
+ * 
+ * Inspiration:
+ * - https://www.shadertoy.com/view/4tXSDl
+ * - https://www.shadertoy.com/view/4llGDH
+ * - https://www.shadertoy.com/view/ld2GRz
+ * - https://www.shadertoy.com/view/4dj3zV
  */
 
 function animate() {
