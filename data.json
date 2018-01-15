@@ -22,7 +22,7 @@
     ]
   },
   {
-    "name": "blob",
+    "name": "Blobs",
     "path": "scribbles/blob/",
     "link": "",
     "visible": true,
@@ -47,8 +47,8 @@
         "link": "",
         "visible": true,
         "preview": [
-          "preview1.gif",
           "preview2.gif",
+          "preview1.gif",
           "preview3.gif"
         ],
         "description": "",
@@ -133,7 +133,7 @@
     "link": "",
     "visible": true,
     "preview": "scribbles/surfaceAnimation/preview.gif",
-    "description": "Some test about a concept of animation",
+    "description": "Some test about a concept of text animation",
     "date": "2017-11-30T08:27:48.306Z",
     "tags": [],
     "scribbles": [
@@ -157,7 +157,7 @@
     ]
   },
   {
-    "name": "postprocessing",
+    "name": "Custom Postprocessings",
     "path": "scribbles/postprocessing/",
     "link": "",
     "visible": true,
@@ -179,7 +179,7 @@
     ]
   },
   {
-    "name": "codevember2017",
+    "name": "Codevember2017",
     "path": "scribbles/codevember2017/",
     "link": "",
     "visible": true,
@@ -191,7 +191,7 @@
       {
         "name": " Metaballs and Bloom postprocessing",
         "path": "scribbles/codevember2017/27_metaballsandbloom/",
-        "link": "https://codepen.io/Jeremboo/pen/XzBQGe",
+        "link": "https://codepen.io/Jeremboo/full/XzBQGe",
         "visible": true,
         "preview": "preview.gif",
         "description": "",
@@ -201,27 +201,47 @@
       {
         "name": "Text animation and animated lines (THREE.MeshLine fork)",
         "path": "scribbles/codevember2017/23_textandlines/",
-        "link": "https://codepen.io/Jeremboo/pen/BmxOyB",
+        "link": "https://codepen.io/Jeremboo/full/BmxOyB",
         "visible": true,
         "preview": "preview.gif",
         "description": "",
-        "date": "2017-11-14T18:00:32.791Z",
+        "date": "2017-11-23T18:00:32.791Z",
+        "tags": []
+      },
+      {
+        "name": "Animated dashed lines (THREE.MeshLine fork)",
+        "path": "scribbles/codevember2017/13_animateddashedlines/",
+        "link": "https://codepen.io/Jeremboo/full/aVdxPw?editors=0100",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-11-13T09:40:37.663Z",
+        "tags": []
+      },
+      {
+        "name": "Windline",
+        "path": "scribbles/codevember2017/09_windline/",
+        "link": "https://codepen.io/Jeremboo/full/XzpYvd",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-11-09T15:18:27.892Z",
         "tags": []
       },
       {
         "name": "Perlin Noise surface",
         "path": "scribbles/codevember2017/08_perlinnoisesurface/",
-        "link": "https://codepen.io/Jeremboo/pen/LRRrNY",
+        "link": "https://codepen.io/Jeremboo/full/LRRrNY",
         "visible": true,
         "preview": "/preview.gif",
         "description": "",
-        "date": "2017-11-09T10:08:39.261Z",
+        "date": "2017-11-08T10:08:39.261Z",
         "tags": []
       },
       {
         "name": "Flexible balls",
         "path": "scribbles/codevember2017/03_flexibleballs/",
-        "link": "https://codepen.io/Jeremboo/pen/Xzdbgz",
+        "link": "https://codepen.io/Jeremboo/full/Xzdbgz",
         "visible": true,
         "preview": "preview.gif",
         "description": "",
@@ -231,7 +251,7 @@
       {
         "name": "Elastic Balls",
         "path": "scribbles/codevember2017/02_elasticBalls/",
-        "link": "https://codepen.io/Jeremboo/pen/wPMJBY",
+        "link": "https://codepen.io/Jeremboo/full/wPMJBY",
         "visible": true,
         "preview": "preview.gif",
         "description": "Elastic balls attracted by the mouse in webgl",
@@ -241,31 +261,11 @@
       {
         "name": "Digital HUD",
         "path": "scribbles/codevember2017/01_digitalhud/",
-        "link": "https://codepen.io/Jeremboo/pen/XzmEEJ",
+        "link": "https://codepen.io/Jeremboo/full/XzmEEJ",
         "visible": true,
         "preview": "/preview.gif",
         "description": "",
-        "date": "2017-10-25T20:42:18.348Z",
-        "tags": []
-      },
-      {
-        "name": "Animated dashed lines (THREE.MeshLine fork)",
-        "path": "scribbles/codevember2017/13_animateddashedlines/",
-        "link": "https://codepen.io/Jeremboo/pen/aVdxPw?editors=0100",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2017-09-22T09:40:37.663Z",
-        "tags": []
-      },
-      {
-        "name": "Windline",
-        "path": "scribbles/codevember2017/09_windline/",
-        "link": "https://codepen.io/Jeremboo/pen/XzpYvd",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2017-09-20T15:18:27.892Z",
+        "date": "2017-11-01T20:42:18.348Z",
         "tags": []
       }
     ]

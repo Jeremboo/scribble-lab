@@ -50,11 +50,13 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 ---`;
 
 const addLine = text => { readme += `\n\n${text}`; };
-const addPreview = (previewPath, name, link = '/') => {
+const addPreview = (previewPath, name, link) => {
   if (fs.existsSync(previewPath)) {
+    const gifLink = `https://github.com/Jeremboo/codevember/blob/master/${previewPath}`;
+    const l = link || gifLink;
     readme += `
-  <a href="${link}">
-    <img alt="${name}" src="https://github.com/Jeremboo/codevember/blob/master/${previewPath}?raw=true" width="200">
+  <a href="${l}">
+    <img alt="${name}" src="${gifLink}?raw=true" width="200">
   </a>`;
   }
 };

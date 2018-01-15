@@ -1,7 +1,7 @@
 {
   "name": "Elastic Balls",
   "path": "scribbles/codevember2017/02_elasticBalls/",
-  "link": "https://codepen.io/Jeremboo/pen/wPMJBY",
+  "link": "https://codepen.io/Jeremboo/full/wPMJBY",
   "visible": true,
   "preview": "preview.gif",
   "description": "Elastic balls attracted by the mouse in webgl",

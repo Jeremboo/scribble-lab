@@ -172,7 +172,7 @@ const createDataJSON = (name, path) => {
     path,
     link,
     visible,
-    preview: `${path}preview.gif`,
+    preview: `preview.gif`,
     description,
     date: new Date(),
     tags: [],
