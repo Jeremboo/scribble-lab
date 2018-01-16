@@ -13,8 +13,6 @@ const RayMarcher = function(){
     var mouse = new Vector2();
     function RayMarcher( distance, precision ){
 
-        this.sinSpeed = 0.03;
-        this.pNoiseSpeed = 0.001;
 
         this.distance = distance || 50;
         this.precision = precision || 0.01;
@@ -61,11 +59,10 @@ const RayMarcher = function(){
         return this;
     }
 
-    function setFragmentShader( fs, cb ){
+    function setFragmentShader(fs) {
 
         this.startTime = Date.now();
         this.mesh.material = this.material = new ShaderMaterial({
-
             uniforms :{
                 resolution:{ type:"v2", value:new Vector2( this.width, this.height ) },
                 time:{ type:"f", value:0 },
@@ -75,23 +72,13 @@ const RayMarcher = function(){
                 target:{ type:"v3", value: this.target },
                 raymarchMaximumDistance: { type:"f", value:this.distance },
                 raymarchPrecision:{ type: "f", value:this.precision},
-                // personnal uniforms
-                sinAmpl: { type: "f", value: 0.2 },
-                sinFrequency: { type: "f", value: 3 },
-                sinSpeed: { type: "f", value: this.sinSpeed },
-                pNoiseAmpl: { type: "f", value: 0.1 },
-                pNoiseFrequency: { type: "f", value: 0.1 },
-                pNoiseSpeed: { type: "f", value: this.pNoiseSpeed },
             },
             vertexShader : "void main() {gl_Position =  vec4( position, 1.0 );}",
             fragmentShader : fs,
             transparent:true
         });
-        this.update();
 
-        if( cb != null )cb( this );
         this.loaded = true;
-        return this;
     }
 
     function setTexture( name, url ){
@@ -177,14 +164,9 @@ const RayMarcher = function(){
     }
 
     function update(){
-
         if( this.material == null ) return;
-
-        // custom
-        this.material.uniforms.sinSpeed.value += this.sinSpeed;
-        this.material.uniforms.pNoiseSpeed.value += this.pNoiseSpeed;
-
-        this.material.uniforms.time.value = (Date.now() - this.startTime);
+        
+        this.material.uniforms.time.value = (Date.now() - this.startTime) * 0.005
         this.material.uniforms.randomSeed.value = Math.random();
 
         this.material.uniforms.fov.value = this.camera.fov * Math.PI / 180;

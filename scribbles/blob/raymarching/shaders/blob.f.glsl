@@ -9,6 +9,13 @@ uniform float sinSpeed;
 uniform float pNoiseAmpl;
 uniform float pNoiseFrequency;
 uniform float pNoiseSpeed;
+uniform float scatterScale;
+uniform float scatterRot;
+uniform float scatterAmpl;
+uniform float scatterSpeed;
+uniform float scatterSeed;
+
+uniform float blendDistance;
 
 //uses most of the StackGL methods
 //https://github.com/stackgl
@@ -159,14 +166,58 @@ vec2 field( vec3 position ) {
     // //composition
     // return smin(sce, smin(to0, smin(to1, subtract(sre, rb), pnoise), pnoise), pnoise);
 
+    // BIG BLOB ---------------------------------------------------------------------------------
+    // scatter
+    vec3 p1 = position;
+    float orientation = scatterRot;
+    p1.x += cos(orientation) * sin(scatterSpeed) * scatterAmpl;
+    p1.y -= sin(orientation) * sin(scatterSpeed) * scatterAmpl;
+    p1.z -= sin(orientation) * sin(scatterSpeed) * scatterAmpl;
 
+    float sinuzoide = sin(sinSpeed + (p1.y * sinFrequency)) * sinAmpl;
+    float pNoise = perlin((p1 * pNoiseFrequency) + pNoiseSpeed) * pNoiseAmpl;
+    vec2 mainSphere = sphere(p1, 3. - scatterScale, zero, quat) + sinuzoide + pNoise;
+    // return mainSphere;
 
-    // Sin
-    float sinuzoide = sin(sinSpeed + (position.y * sinFrequency)) * sinAmpl;
-    // Noise
-    float pNoise = perlin((position * pNoiseFrequency) + pNoiseSpeed) * pNoiseAmpl;
+    // MULTIPLE SPHERES --------------------------------------------------------------------------
+    vec3 p_1 = position;
+    float or_1 = scatterRot + 10.2;
+    p_1.x += cos(or_1) * sin(scatterSpeed) * scatterAmpl;
+    p_1.y -= sin(or_1) * sin(scatterSpeed) * scatterAmpl;
+    p_1.z -= sin(or_1) * sin(scatterSpeed) * scatterAmpl;
+    mainSphere = smin(mainSphere, sphere(p_1, 1., zero, quat), blendDistance);
 
-    return sphere( position, 3., zero, quat ) + sinuzoide + pNoise;
+    vec3 p_2 = position;
+    float or_2 = scatterRot + 20.2;
+    p_2.x += cos(or_2) * sin(scatterSpeed + 10.) * scatterAmpl;
+    p_2.y -= sin(or_2) * sin(scatterSpeed + 10.) * scatterAmpl;
+    p_2.z -= sin(or_2) * sin(scatterSpeed + 10.) * scatterAmpl;
+    mainSphere = smin(mainSphere, sphere(p_2, 1., zero, quat), blendDistance);
+
+    vec3 p_3 = position;
+    float or_3 = scatterRot + 32.;
+    p_3.x += cos(or_3) * sin(scatterSpeed + 14.) * scatterAmpl;
+    p_3.y -= sin(or_3) * sin(scatterSpeed + 14.) * scatterAmpl;
+    p_3.z += sin(or_3) * sin(scatterSpeed + 14.) * scatterAmpl;
+    mainSphere = smin(mainSphere, sphere(p_3, 1., zero, quat), blendDistance);
+    
+    // float size = 0.2 + 0.1 * abs(cos(time));
+    // vec3 q1 = position;
+    
+    // const int n = 10;
+    // for (int i = 1; i < n; i++){
+    //     float distX = -sin(time) * 0.4;
+    // 	float distY = cos(time) * 0.4;
+
+    //     // size = abs(cos(float(n) * size));
+    //     q1 += vec3(distX, distY, 0.);
+    // 	vec2 d1 = sphere(q1, sin(float(i) * 3.) * .8, zero, quat);
+
+    // 	float blendDistance = .8;
+    // 	d = smin(d, d1, blendDistance);
+    // }
+    
+    return mainSphere;
 }
 
 /////////////////////////////////////////////////////////////////////////
