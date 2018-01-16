@@ -17,6 +17,17 @@ uniform float scatterSeed;
 
 uniform float blendDistance;
 
+uniform float seed_1;
+uniform float seed_2;
+uniform float seed_3;
+uniform float seed_4;
+uniform float seed_5;
+uniform float seed_6;
+uniform float seed_7;
+uniform float seed_8;
+uniform float seed_9;
+uniform float seed_10;
+
 //uses most of the StackGL methods
 //https://github.com/stackgl
 
@@ -140,16 +151,28 @@ float perlin(vec3 p) {
 
 /////////////////////////////////////////////////////////////////////////
 
+vec3 zero = vec3(0.);
+vec4 quat = vec4( 1., .1 , 0., .2 );
+vec2 randomSphere(vec3 position, float seed) {
+    float or = scatterRot + (seed * 10.);
+    float dist = sin(scatterSpeed + (seed * 20.)) * scatterAmpl;
+    return sphere(vec3(
+        position.x + (cos(or) * dist),
+        position.y - (sin(or) * dist),
+        position.z + (sin(or * 19.) * dist)
+    ), scatterScale * 0.1, zero, quat);
+}
+
 
 const int steps = 50;
 const int shadowSteps = 4;
 const int ambienOcclusionSteps = 3;
 const float PI = 3.14159;
 vec2 field( vec3 position ) {
-    //position
-    vec3 zero = vec3(0.);
-    // rotation
-    vec4 quat = vec4( 1., .1 , 0., .2 );
+    // //position
+    // vec3 zero = vec3(0.);
+    // // rotation
+    // vec4 quat = vec4( 1., .1 , 0., .2 );
     // FIELD EXAMPLES ---------------------------------------------------------------------------------
     // //noise
     // vec3 noise = position * .25;
@@ -176,30 +199,20 @@ vec2 field( vec3 position ) {
 
     float sinuzoide = sin(sinSpeed + (p1.y * sinFrequency)) * sinAmpl;
     float pNoise = perlin((p1 * pNoiseFrequency) + pNoiseSpeed) * pNoiseAmpl;
-    vec2 mainSphere = sphere(p1, 3. - scatterScale, zero, quat) + sinuzoide + pNoise;
+    vec2 mainSphere = sphere(p1, 0.1 * scatterScale, zero, quat); // + sinuzoide + pNoise;
     // return mainSphere;
 
     // MULTIPLE SPHERES --------------------------------------------------------------------------
-    vec3 p_1 = position;
-    float or_1 = scatterRot + 10.2;
-    p_1.x += cos(or_1) * sin(scatterSpeed) * scatterAmpl;
-    p_1.y -= sin(or_1) * sin(scatterSpeed) * scatterAmpl;
-    p_1.z -= sin(or_1) * sin(scatterSpeed) * scatterAmpl;
-    mainSphere = smin(mainSphere, sphere(p_1, 1., zero, quat), blendDistance);
-
-    vec3 p_2 = position;
-    float or_2 = scatterRot + 20.2;
-    p_2.x += cos(or_2) * sin(scatterSpeed + 10.) * scatterAmpl;
-    p_2.y -= sin(or_2) * sin(scatterSpeed + 10.) * scatterAmpl;
-    p_2.z -= sin(or_2) * sin(scatterSpeed + 10.) * scatterAmpl;
-    mainSphere = smin(mainSphere, sphere(p_2, 1., zero, quat), blendDistance);
-
-    vec3 p_3 = position;
-    float or_3 = scatterRot + 32.;
-    p_3.x += cos(or_3) * sin(scatterSpeed + 14.) * scatterAmpl;
-    p_3.y -= sin(or_3) * sin(scatterSpeed + 14.) * scatterAmpl;
-    p_3.z += sin(or_3) * sin(scatterSpeed + 14.) * scatterAmpl;
-    mainSphere = smin(mainSphere, sphere(p_3, 1., zero, quat), blendDistance);
+    mainSphere = smin(mainSphere, randomSphere(position, seed_1), blendDistance);
+    mainSphere = smin(mainSphere, randomSphere(position, seed_2), blendDistance);
+    mainSphere = smin(mainSphere, randomSphere(position, seed_3), blendDistance);
+    mainSphere = smin(mainSphere, randomSphere(position, seed_4), blendDistance);
+    mainSphere = smin(mainSphere, randomSphere(position, seed_5), blendDistance);
+    mainSphere = smin(mainSphere, randomSphere(position, seed_6), blendDistance);
+    mainSphere = smin(mainSphere, randomSphere(position, seed_7), blendDistance);
+    mainSphere = smin(mainSphere, randomSphere(position, seed_8), blendDistance);
+    mainSphere = smin(mainSphere, randomSphere(position, seed_9), blendDistance);
+    mainSphere = smin(mainSphere, randomSphere(position, seed_10), blendDistance);
     
     // float size = 0.2 + 0.1 * abs(cos(time));
     // vec3 q1 = position;
@@ -217,7 +230,7 @@ vec2 field( vec3 position ) {
     // 	d = smin(d, d1, blendDistance);
     // }
     
-    return mainSphere;
+    return mainSphere + sinuzoide + pNoise;
 }
 
 /////////////////////////////////////////////////////////////////////////

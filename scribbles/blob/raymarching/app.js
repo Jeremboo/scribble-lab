@@ -42,7 +42,7 @@ const props = {
   },
   // Scatter: throw in various random directions
   scatter: {
-    scale: 0.1,
+    scale: 6,
     rotation: 0.9,
     ampl: 0.9,
     speed: Math.random() * 0.05,
@@ -98,6 +98,17 @@ function init()  {
     // TODO scatterSpeed
     // blendDistance
     blendDistance: { type: 'f', value: props.blendDistance },
+    // Seeds
+    seed_1: { type: 'f', value: Math.random() },
+    seed_2: { type: 'f', value: Math.random() },
+    seed_3: { type: 'f', value: Math.random() },
+    seed_4: { type: 'f', value: Math.random() },
+    seed_5: { type: 'f', value: Math.random() },
+    seed_6: { type: 'f', value: Math.random() },
+    seed_7: { type: 'f', value: Math.random() },
+    seed_8: { type: 'f', value: Math.random() },
+    seed_9: { type: 'f', value: Math.random() },
+    seed_10: { type: 'f', value: Math.random() },
   });
   rm.update();
 
