@@ -3,6 +3,13 @@ uniform vec2 resolution;
 uniform float time;
 uniform sampler2D map;
 
+uniform float sinAmpl;
+uniform float sinFrequency;
+uniform float sinSpeed;
+uniform float pNoiseAmpl;
+uniform float pNoiseFrequency;
+uniform float pNoiseSpeed;
+
 //uses most of the StackGL methods
 //https://github.com/stackgl
 
@@ -152,7 +159,17 @@ vec2 field( vec3 position ) {
     // //composition
     // return smin(sce, smin(to0, smin(to1, subtract(sre, rb), pnoise), pnoise), pnoise);
 
-    return sphere( position, 4., zero, quat ) + sin(time * 20. + (position.y * 5.) ) * 0.2;
+
+
+    // sinAmpl;
+    // sinFrequency;
+    // sinSpeed;
+    // pNoiseAmpl;
+    // pNoiseFrequency;
+    // pNoiseSpeed;
+    float sinuzoide = sin(sinSpeed + (position.y * sinFrequency)) * sinAmpl;
+    float pNoise = perlin((position * pNoiseFrequency) + pNoiseSpeed) * pNoiseAmpl;
+    return sphere( position, 1., zero, quat ) + sinuzoide + pNoise;
 }
 
 /////////////////////////////////////////////////////////////////////////
