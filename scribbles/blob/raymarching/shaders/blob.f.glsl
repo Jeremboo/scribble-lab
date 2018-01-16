@@ -161,15 +161,12 @@ vec2 field( vec3 position ) {
 
 
 
-    // sinAmpl;
-    // sinFrequency;
-    // sinSpeed;
-    // pNoiseAmpl;
-    // pNoiseFrequency;
-    // pNoiseSpeed;
+    // Sin
     float sinuzoide = sin(sinSpeed + (position.y * sinFrequency)) * sinAmpl;
+    // Noise
     float pNoise = perlin((position * pNoiseFrequency) + pNoiseSpeed) * pNoiseAmpl;
-    return sphere( position, 1., zero, quat ) + sinuzoide + pNoise;
+
+    return sphere( position, 3., zero, quat ) + sinuzoide + pNoise;
 }
 
 /////////////////////////////////////////////////////////////////////////

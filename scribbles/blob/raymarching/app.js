@@ -36,9 +36,9 @@ const props = {
   },
   // Perlin noise
   perlinNoise: {
-    ampl: 0.1,
-    frequency: 0.1,
-    speed: 0.001,
+    ampl: 0.2,
+    frequency: 0.74,
+    speed: -0.01,
   },
   // Colors
   color: {
