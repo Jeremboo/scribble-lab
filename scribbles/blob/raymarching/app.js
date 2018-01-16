@@ -6,6 +6,8 @@ import {
 import rm from 'RayMarcher';
 import { GUI } from 'dat-gui';
 
+import { getRandomFloat } from 'utils';
+
 import blobFrag from './shaders/blob.f.glsl';
 
 /**
@@ -30,25 +32,24 @@ import blobFrag from './shaders/blob.f.glsl';
 const props = {
   // Sinusoide
   sinuzoide: {
-    ampl: 0.2,
-    frequency: 3,
-    speed: 0.01,
+    ampl: 0.5,
+    frequency: 0.7,
+    speed: 0.1,
   },
   // Perlin noise
   perlinNoise: {
-    ampl: 0.2,
-    frequency: 0.74,
-    speed: -0.01,
+    ampl: 0.21,
+    frequency: 0.4,
+    speed: 0.01,
   },
   // Scatter: throw in various random directions
   scatter: {
-    scale: 6,
-    rotation: 0.9,
-    ampl: 0.9,
-    speed: Math.random() * 0.05,
+    scale: 0.3,
+    ampl: 3,
+    speed: 0.1,
   },
   // Blend Distance
-  blendDistance: 0.4,
+  blendDistance: 2,
   // Colors
   color: {
     brightness: 0.1,
@@ -92,23 +93,21 @@ function init()  {
     // scatter
     scatterSeed: { type: 'f', value: Math.random() },
     scatterScale: { type: 'f', value: props.scatter.scale },
-    scatterRot: { type: 'f', value: props.scatter.rotation },
     scatterSpeed: { type: 'f', value: props.scatter.speed },
     scatterAmpl: { type: 'f', value: props.scatter.ampl },
-    // TODO scatterSpeed
     // blendDistance
     blendDistance: { type: 'f', value: props.blendDistance },
     // Seeds
-    seed_1: { type: 'f', value: Math.random() },
-    seed_2: { type: 'f', value: Math.random() },
-    seed_3: { type: 'f', value: Math.random() },
-    seed_4: { type: 'f', value: Math.random() },
-    seed_5: { type: 'f', value: Math.random() },
-    seed_6: { type: 'f', value: Math.random() },
-    seed_7: { type: 'f', value: Math.random() },
-    seed_8: { type: 'f', value: Math.random() },
-    seed_9: { type: 'f', value: Math.random() },
-    seed_10: { type: 'f', value: Math.random() },
+    seed_1: { type: 'f', value: getRandomFloat(-1, 1) },
+    seed_2: { type: 'f', value: getRandomFloat(-1, 1) },
+    seed_3: { type: 'f', value: getRandomFloat(-1, 1) },
+    seed_4: { type: 'f', value: getRandomFloat(-1, 1) },
+    seed_5: { type: 'f', value: getRandomFloat(-1, 1) },
+    seed_6: { type: 'f', value: getRandomFloat(-1, 1) },
+    seed_7: { type: 'f', value: getRandomFloat(-1, 1) },
+    seed_8: { type: 'f', value: getRandomFloat(-1, 1) },
+    seed_9: { type: 'f', value: getRandomFloat(-1, 1) },
+    seed_10: { type: 'f', value: getRandomFloat(-1, 1) },
   });
   rm.update();
 
@@ -126,7 +125,7 @@ init();
 const gui = new GUI();
 
 // Blend Distance
-gui.add(props, 'blendDistance', 0.01, 10).onChange(() => {
+gui.add(props, 'blendDistance', 0.01, 5).onChange(() => {
   rm.material.uniforms.blendDistance.value = props.blendDistance;
 });
 
@@ -143,7 +142,7 @@ sinFolder.add(props.sinuzoide, 'speed', -0.2, 0.2);
 
 // PerlinNoise
 const perlinNoiseFolder = gui.addFolder('Perlin Noise');
-perlinNoiseFolder.add(props.perlinNoise, 'ampl', 0, 0.5).onChange(() => {
+perlinNoiseFolder.add(props.perlinNoise, 'ampl', 0, 2).onChange(() => {
   rm.material.uniforms.pNoiseAmpl.value = props.perlinNoise.ampl;
 });
 perlinNoiseFolder.add(props.perlinNoise, 'frequency', 0, 4).onChange(() => {
@@ -153,11 +152,8 @@ perlinNoiseFolder.add(props.perlinNoise, 'speed', -0.05, 0.05);
 
 // Scatter
 const scatterFolder = gui.addFolder('Scatter');
-scatterFolder.add(props.scatter, 'scale', 0, 12).onChange(() => {
+scatterFolder.add(props.scatter, 'scale', 0, 0.8).onChange(() => {
   rm.material.uniforms.scatterScale.value = props.scatter.scale;
-});
-scatterFolder.add(props.scatter, 'rotation', -10, 10).onChange(() => {
-  rm.material.uniforms.scatterRot.value = props.scatter.rotation;
 });
 scatterFolder.add(props.scatter, 'ampl', 0, 10).onChange(() => {
   rm.material.uniforms.scatterAmpl.value = props.scatter.ampl;

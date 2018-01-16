@@ -10,7 +10,6 @@ uniform float pNoiseAmpl;
 uniform float pNoiseFrequency;
 uniform float pNoiseSpeed;
 uniform float scatterScale;
-uniform float scatterRot;
 uniform float scatterAmpl;
 uniform float scatterSpeed;
 uniform float scatterSeed;
@@ -153,14 +152,20 @@ float perlin(vec3 p) {
 
 vec3 zero = vec3(0.);
 vec4 quat = vec4( 1., .1 , 0., .2 );
+
 vec2 randomSphere(vec3 position, float seed) {
-    float or = scatterRot + (seed * 10.);
-    float dist = sin(scatterSpeed + (seed * 20.)) * scatterAmpl;
-    return sphere(vec3(
-        position.x + (cos(or) * dist),
-        position.y - (sin(or) * dist),
-        position.z + (sin(or * 19.) * dist)
-    ), scatterScale * 0.1, zero, quat);
+  // rotiantation of the mvt and litte rotation
+  float orientation = (seed * 4.) + (seed * scatterSpeed * 0.5);
+  // fluctive distance with the center
+  float dist = sin(scatterSpeed + (seed * 20.)) * scatterAmpl - (seed * 3.);
+
+  vec3 pos = vec3(
+    position.x + (cos(orientation) * dist),
+    position.y - (sin(orientation) * dist),
+    position.z - (cos(orientation) * 1.)
+  );
+
+  return sphere(pos, 1. + ((seed - 1.0) * scatterScale), zero, quat);
 }
 
 
@@ -189,20 +194,22 @@ vec2 field( vec3 position ) {
     // //composition
     // return smin(sce, smin(to0, smin(to1, subtract(sre, rb), pnoise), pnoise), pnoise);
 
+    float sinuzoide = sin(sinSpeed + (position.y * sinFrequency)) * sinAmpl;
+    float pNoise = perlin((position * pNoiseFrequency) + pNoiseSpeed) * pNoiseAmpl;
+
     // BIG BLOB ---------------------------------------------------------------------------------
     // scatter
-    vec3 p1 = position;
-    float orientation = scatterRot;
-    p1.x += cos(orientation) * sin(scatterSpeed) * scatterAmpl;
-    p1.y -= sin(orientation) * sin(scatterSpeed) * scatterAmpl;
-    p1.z -= sin(orientation) * sin(scatterSpeed) * scatterAmpl;
-
-    float sinuzoide = sin(sinSpeed + (p1.y * sinFrequency)) * sinAmpl;
-    float pNoise = perlin((p1 * pNoiseFrequency) + pNoiseSpeed) * pNoiseAmpl;
-    vec2 mainSphere = sphere(p1, 0.1 * scatterScale, zero, quat); // + sinuzoide + pNoise;
+    // vec3 p1 = position;
+    // float orientation = scatterRot;
+    // p1.x += cos(orientation) * sin(scatterSpeed) * scatterAmpl;
+    // p1.y -= sin(orientation) * sin(scatterSpeed) * scatterAmpl;
+    // p1.z -= sin(orientation) * sin(scatterSpeed) * scatterAmpl;
+    //
+    // vec2 mainSphere = sphere(p1, 0.1 * scatterScale, zero, quat) + sinuzoide + pNoise;
     // return mainSphere;
 
     // MULTIPLE SPHERES --------------------------------------------------------------------------
+    vec2 mainSphere = randomSphere(position, 1.);
     mainSphere = smin(mainSphere, randomSphere(position, seed_1), blendDistance);
     mainSphere = smin(mainSphere, randomSphere(position, seed_2), blendDistance);
     mainSphere = smin(mainSphere, randomSphere(position, seed_3), blendDistance);
@@ -213,10 +220,10 @@ vec2 field( vec3 position ) {
     mainSphere = smin(mainSphere, randomSphere(position, seed_8), blendDistance);
     mainSphere = smin(mainSphere, randomSphere(position, seed_9), blendDistance);
     mainSphere = smin(mainSphere, randomSphere(position, seed_10), blendDistance);
-    
+
     // float size = 0.2 + 0.1 * abs(cos(time));
     // vec3 q1 = position;
-    
+
     // const int n = 10;
     // for (int i = 1; i < n; i++){
     //     float distX = -sin(time) * 0.4;
@@ -229,7 +236,7 @@ vec2 field( vec3 position ) {
     // 	float blendDistance = .8;
     // 	d = smin(d, d1, blendDistance);
     // }
-    
+
     return mainSphere + sinuzoide + pNoise;
 }
 
