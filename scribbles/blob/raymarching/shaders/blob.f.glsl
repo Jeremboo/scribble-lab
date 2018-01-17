@@ -1,6 +1,5 @@
 
 uniform vec2 resolution;
-uniform float time;
 uniform sampler2D map;
 
 uniform float sinAmpl;
@@ -81,11 +80,15 @@ mat3 rotationMatrix3(vec3 axis, float angle)
 
 //primitives
 
-vec2 sphere( vec3 p, float radius, vec3 pos , vec4 quat)
-{
-    mat3 transform = rotationMatrix3( quat.xyz, quat.w );
-    float d = length( ( p * transform )-pos ) - radius;
-    return vec2(d,1);
+// vec2 sphere( vec3 p, float radius, vec3 pos , vec4 quat)
+// {
+//     mat3 transform = rotationMatrix3( quat.xyz, quat.w );
+//     float d = length( ( p * transform )-pos ) - radius;
+//     return vec2(d,1);
+// }
+// OPTIMISATION MAMEN
+vec2 sphere(vec3 p, float radius) {
+  return vec2(length(p) - radius, 1);
 }
 
 vec2 roundBox(vec3 p, vec3 size, float corner, vec3 pos, vec4 quat )
@@ -149,10 +152,6 @@ float perlin(vec3 p) {
 // HAMMER TIME !
 
 /////////////////////////////////////////////////////////////////////////
-
-vec3 zero = vec3(0.);
-vec4 quat = vec4( 1., .1 , 0., .2 );
-
 vec2 randomSphere(vec3 position, float seed) {
   // rotiantation of the mvt and litte rotation
   float orientation = (seed * 4.) + (seed * scatterSpeed * 0.5);
@@ -165,7 +164,7 @@ vec2 randomSphere(vec3 position, float seed) {
     position.z - (cos(orientation) * 1.)
   );
 
-  return sphere(pos, 1. + ((seed - 1.0) * scatterScale), zero, quat);
+  return sphere(pos, 1. + ((seed - 1.0) * scatterScale));
 }
 
 
@@ -220,23 +219,6 @@ vec2 field( vec3 position ) {
     mainSphere = smin(mainSphere, randomSphere(position, seed_8), blendDistance);
     mainSphere = smin(mainSphere, randomSphere(position, seed_9), blendDistance);
     mainSphere = smin(mainSphere, randomSphere(position, seed_10), blendDistance);
-
-    // float size = 0.2 + 0.1 * abs(cos(time));
-    // vec3 q1 = position;
-
-    // const int n = 10;
-    // for (int i = 1; i < n; i++){
-    //     float distX = -sin(time) * 0.4;
-    // 	float distY = cos(time) * 0.4;
-
-    //     // size = abs(cos(float(n) * size));
-    //     q1 += vec3(distX, distY, 0.);
-    // 	vec2 d1 = sphere(q1, sin(float(i) * 3.) * .8, zero, quat);
-
-    // 	float blendDistance = .8;
-    // 	d = smin(d, d1, blendDistance);
-    // }
-
     return mainSphere + sinuzoide + pNoise;
 }
 
@@ -340,7 +322,7 @@ void main() {
     // vec2 xy = gl_FragCoord.xy / resolution;
     // gl_FragColor = vec4( mix( color0, color1, sin( xy.y + 0.5 ) ) * 2., 1. );
 
-    float cameraAngle   = 0.; // 0.8 * time;
+    float cameraAngle   = 0.2;
     float cameraRadius  = 20.;
 
     vec2  screenPos    = squareFrame( resolution );
