@@ -32,26 +32,28 @@ import blobFrag from './shaders/blob.f.glsl';
 const props = {
   // Sinusoide
   sinuzoide: {
-    ampl: 0.5,
+    ampl: 0, // 0.5,
     frequency: 0.7,
     speed: 0.1,
   },
   // Perlin noise
   perlinNoise: {
-    ampl: 0.21,
+    ampl: 0, // 0.21,
     frequency: 0.4,
     speed: 0.01,
   },
   // Scatter: throw in various random directions
   scatter: {
     scale: 0.3,
-    ampl: 3,
+    ampl: 0, // 3,
     speed: 0.1,
   },
   // Blend Distance
-  blendDistance: 2,
+  blendDistance: 7, // 2
   // Colors
-  color: {
+  colors: {
+    diffuse: '#d16e6e',
+    intensity: 0.1,
     brightness: 0.1,
     ambienColor: new Color('#ffffff'),
     // light position ?
@@ -108,6 +110,9 @@ function init()  {
     seed_8: { type: 'f', value: getRandomFloat(-1, 1) },
     seed_9: { type: 'f', value: getRandomFloat(-1, 1) },
     seed_10: { type: 'f', value: getRandomFloat(-1, 1) },
+    // colors
+    diffuseColor: { type: 'v3', value: new Color(props.colors.diffuse) },
+    intensityColor: { type: 'float', value: props.colors.intensity },
   });
   rm.update();
 
@@ -159,3 +164,12 @@ scatterFolder.add(props.scatter, 'ampl', 0, 10).onChange(() => {
   rm.material.uniforms.scatterAmpl.value = props.scatter.ampl;
 });
 scatterFolder.add(props.scatter, 'speed', 0, 0.5);
+
+// Colors
+const colorsFolder = gui.addFolder('Colors');
+colorsFolder.addColor(props.colors, 'diffuse').onChange(() => {
+  rm.material.uniforms.diffuseColor.value = new Color(props.colors.diffuse);
+});
+colorsFolder.add(props.colors, 'intensity', 0, 1).onChange(() => {
+  rm.material.uniforms.intensityColor.value = props.colors.intensity;
+});

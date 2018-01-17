@@ -26,6 +26,9 @@ uniform float seed_8;
 uniform float seed_9;
 uniform float seed_10;
 
+uniform vec3 diffuseColor;
+uniform float intensityColor;
+
 //uses most of the StackGL methods
 //https://github.com/stackgl
 
@@ -88,7 +91,7 @@ mat3 rotationMatrix3(vec3 axis, float angle)
 // }
 // OPTIMISATION MAMEN
 vec2 sphere(vec3 p, float radius) {
-  return vec2(length(p) - radius, 1);
+  return vec2(length(p) - radius, 4.8);
 }
 
 vec2 roundBox(vec3 p, vec3 size, float corner, vec3 pos, vec4 quat )
@@ -340,29 +343,29 @@ void main() {
         vec3 pos = rayOrigin + rayDirection * collision.x;
 
         //diffuse color
-        vec3 col = vec3( .8,.8,.8 );
+        vec3 col = diffuseColor;
 
         //normal vector
         vec3 nor = calcNormal( pos );
 
         //reflection (Spherical Environment Mapping)
-        vec2 uv = nor.xy / 2. + .5;
-        vec3 tex = texture2D( map, uv ).rgb;
-        col += tex * .1;
+        // vec2 uv = nor.xy / 2. + .5;
+        // vec3 tex = texture2D( map, uv ).rgb;
+        // col += tex * .1;
 
-        vec3 lig0 = normalize( vec3(-0.5, 0.75, -0.5) );
-        vec3 light0 =  max( 0.0, dot( lig0, nor) ) * color0;
+        vec3 lig0 = normalize( vec3(0., 0.5, 0.5) );
+        vec3 light0 = max(0.0, dot(lig0, nor)) * color0 * intensityColor;
 
-        vec3 lig1 = normalize( vec3( 0.5, -0.75, 0.5) );
+        vec3 lig1 = normalize( vec3( 0.5, 0.75, 0.5) );
         vec3 light1 = max( 0.0, dot( lig1, nor) ) * color1;
 
         //AO : usually too strong
-        float occ = calcAO( pos, nor );
+        // float occ = calcAO( pos, nor );
 
         //shadows ...?
         // float sha = softshadow( pos, lig0, .025, 2.5, 2. );
+        // float dep = ( ( collision.x + .5 ) / ( maxDist * .5 ) );
 
-        float dep = ( ( collision.x + .5 ) / ( maxDist * .5 ) );
-        gl_FragColor = vec4( ( col + light0 + light1 ) * occ * dep, 1. );
+        gl_FragColor = vec4( ( col + light0 ), 1. );
     }
 }
