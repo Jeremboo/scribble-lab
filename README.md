@@ -21,12 +21,6 @@ Prototypes for the [Watermelon wellness lab projet](http://watermelonsugar.cc/we
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview1.gif">
     <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview1.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview1.gif">
-    <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview1.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview.gif">
-    <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview.gif?raw=true" width="200">
-  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobMarchingCube/preview.gif">
     <img alt="Blob Marching Cube" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobMarchingCube/preview.gif?raw=true" width="200">
   </a>
