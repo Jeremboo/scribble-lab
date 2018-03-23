@@ -1,5 +1,37 @@
 [
   {
+    "name": "2D",
+    "path": "scribbles/2D/",
+    "link": "",
+    "visible": false,
+    "preview": "preview.gif",
+    "description": "",
+    "date": "2018-03-23T16:10:57.647Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "wave",
+        "path": "scribbles/2D/wave/",
+        "link": "",
+        "visible": false,
+        "preview": "scribbles/2D/wave/preview.gif",
+        "description": "",
+        "date": "2017-09-28T10:02:15.507Z",
+        "tags": []
+      },
+      {
+        "name": "boilingLoader",
+        "path": "scribbles/2D/boilingLoader/",
+        "link": "",
+        "visible": false,
+        "preview": "scribbles/2D/boilingLoader/preview.gif",
+        "description": "",
+        "date": "2017-09-21T13:52:57.633Z",
+        "tags": []
+      }
+    ]
+  },
+  {
     "name": "grid",
     "path": "scribbles/grid/",
     "link": "",
@@ -22,18 +54,35 @@
     ]
   },
   {
-    "name": "Blobs",
-    "path": "scribbles/blob/",
+    "name": "Blobs & Metaballs",
+    "path": "scribbles/blob&metaballs/",
     "link": "",
     "visible": true,
-    "preview": "scribbles/blob/preview.gif",
-    "description": "",
+    "preview": "scribbles/blob&metaballs/preview.gif",
+    "description": "Prototypes for the [Watermelon wellness lab projet](http://watermelonsugar.cc/wellnesslab/) by [Pamm Hong](http://frompamm.net/) exposed during the [Sydney Design Festival 2018](https://www.broadsheet.com.au/sydney/entertainment/article/tamagotchi-you-has-important-lesson-teach-you-about-internet)",
     "date": "2018-01-10T07:36:10.675Z",
     "tags": [],
     "scribbles": [
       {
-        "name": "blobMarchingCube",
-        "path": "scribbles/blob/blobMarchingCube/",
+        "name": "Blob Raymarching",
+        "path": "scribbles/blob&metaballs/blobRaymarching/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview.gif",
+          "preview1.gif",
+          "preview1.gif",
+          "preview3.gif",
+          "preview4.gif",
+          "preview5.gif"
+        ],
+        "description": "",
+        "date": "2018-02-10T16:36:55.799Z",
+        "tags": []
+      },
+      {
+        "name": "Blob Marching Cube",
+        "path": "scribbles/blob&metaballs/blobMarchingCube/",
         "link": "",
         "visible": true,
         "preview": "preview.gif",
@@ -42,8 +91,8 @@
         "tags": []
       },
       {
-        "name": "blobPostProcess1",
-        "path": "scribbles/blob/blobPostProcess1/",
+        "name": "Blob in PostProcess",
+        "path": "scribbles/blob&metaballs/blobPostProcess/",
         "link": "",
         "visible": true,
         "preview": [
@@ -56,73 +105,23 @@
         "tags": []
       },
       {
-        "name": "canvasmetaballs3",
-        "path": "scribbles/codevember2017/canvasmetaballs3/",
+        "name": "metaballsCanvas",
+        "path": "scribbles/codevember2017/metaballsCanvas/",
         "link": "",
-        "visible": true,
-        "preview": "scribbles/codevember2017/canvasmetaballs3/preview.gif",
-        "description": "",
-        "date": "2017-11-15T14:45:23.016Z",
-        "tags": []
-      },
-      {
-        "name": "canvasmetaballs",
-        "path": "scribbles/codevember2017/canvasmetaballs/",
-        "link": "",
-        "visible": true,
-        "preview": "scribbles/codevember2017/canvasmetaballs/preview.gif",
+        "visible": false,
+        "preview": "scribbles/codevember2017/metaballsCanvas/preview.gif",
         "description": "",
         "date": "2017-11-06T16:36:04.729Z",
         "tags": []
       },
       {
-        "name": "wave",
-        "path": "scribbles/codevember2017/wave/",
-        "link": "",
-        "visible": true,
-        "preview": "scribbles/codevember2017/wave/preview.gif",
-        "description": "",
-        "date": "2017-09-28T10:02:15.507Z",
-        "tags": []
-      },
-      {
-        "name": "boiling",
-        "path": "scribbles/codevember2017/boiling/",
-        "link": "",
-        "visible": true,
-        "preview": "scribbles/codevember2017/boiling/preview.gif",
-        "description": "",
-        "date": "2017-09-21T13:52:57.633Z",
-        "tags": []
-      },
-      {
         "name": "tonyBlob",
-        "path": "scribbles/blob/tonyBlob/",
+        "path": "scribbles/blob&metaballs/tonyBlob/",
         "link": "",
         "visible": false,
-        "preview": "scribbles/blob/tonyBlob/preview.gif",
+        "preview": "scribbles/blob&metaballs/blobTony/preview.gif",
         "description": "",
         "date": "2017-08-31T12:18:47.163Z",
-        "tags": []
-      },
-      {
-        "name": "withBlur",
-        "path": "scribbles/fluid/withBlur/",
-        "link": "",
-        "visible": true,
-        "preview": "scribbles/fluid/withBlur/preview.gif",
-        "description": "",
-        "date": "2017-08-14T13:22:54.546Z",
-        "tags": []
-      },
-      {
-        "name": "raymarching",
-        "path": "scribbles/shaders/raymarching/",
-        "link": "",
-        "visible": true,
-        "preview": "scribbles/shaders/raymarching/preview.gif",
-        "description": "",
-        "date": "2017-05-23T06:50:33.642Z",
         "tags": []
       }
     ]
@@ -174,6 +173,16 @@
         "preview": "preview.gif",
         "description": "",
         "date": "2017-11-16T15:42:16.185Z",
+        "tags": []
+      },
+      {
+        "name": "Incrusted Metaballs",
+        "path": "scribbles/postprocessing/textureShadingBalls/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-11-15T14:45:23.016Z",
         "tags": []
       }
     ]

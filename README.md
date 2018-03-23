@@ -3,24 +3,41 @@
 Just a regroupment of some searches, tests, experiments around javascript or CSS and their frameworks.
 
 ---
-</p>
 
-## Blobs
+## Blobs & Metaballs
 
-
+Prototypes for the [Watermelon wellness lab projet](http://watermelonsugar.cc/wellnesslab/) by [Pamm Hong](http://frompamm.net/) exposed during the [Sydney Design Festival 2018](https://www.broadsheet.com.au/sydney/entertainment/article/tamagotchi-you-has-important-lesson-teach-you-about-internet)
 
 <p align="center">
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobMarchingCube/preview.gif">
-    <img alt="blobMarchingCube" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobMarchingCube/preview.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview5.gif">
+    <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview5.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobPostProcess1/preview3.gif">
-    <img alt="blobPostProcess1" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobPostProcess1/preview3.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview4.gif">
+    <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview4.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobPostProcess1/preview1.gif">
-    <img alt="blobPostProcess1" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobPostProcess1/preview1.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview3.gif">
+    <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview3.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobPostProcess1/preview2.gif">
-    <img alt="blobPostProcess1" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob/blobPostProcess1/preview2.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview1.gif">
+    <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview1.gif">
+    <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview.gif">
+    <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobMarchingCube/preview.gif">
+    <img alt="Blob Marching Cube" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobMarchingCube/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview3.gif">
+    <img alt="Blob in PostProcess" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview3.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview1.gif">
+    <img alt="Blob in PostProcess" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview2.gif">
+    <img alt="Blob in PostProcess" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview2.gif?raw=true" width="200">
   </a>
 </p>
 
@@ -56,6 +73,9 @@ Some test about a concept of text animation
 <p align="center">
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/postprocessing/incrustation/preview.gif">
     <img alt="Incrustation" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/postprocessing/incrustation/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/postprocessing/textureShadingBalls/preview.gif">
+    <img alt="Incrusted Metaballs" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/postprocessing/textureShadingBalls/preview.gif?raw=true" width="200">
   </a>
 </p>
 
