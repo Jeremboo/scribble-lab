@@ -64,6 +64,16 @@
     "tags": [],
     "scribbles": [
       {
+        "name": "organism",
+        "path": "scribbles/blob&metaballs/organism/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2018-03-23T17:44:10.380Z",
+        "tags": []
+      },
+      {
         "name": "Blob Raymarching",
         "path": "scribbles/blob&metaballs/blobRaymarching/",
         "link": "",

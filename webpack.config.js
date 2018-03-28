@@ -30,14 +30,18 @@ var config = {
     output: {
       path: path.resolve(__dirname, scribble_path + '/'),
       filename: 'bundle.js',
-      publicPath: myLocalIp,
+      // publicPath: myLocalIp,
+      publicPath: '/',
       devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]',
     },
     devtool: "eval-source-map",
     devServer: {
       // compress: true,
       contentBase: path.resolve(__dirname, scribble_path + '/'),
-      headers: { 'Access-Control-Allow-Origin': '*' },
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+      },
       historyApiFallback: true,
       disableHostCheck: true,
       host: '0.0.0.0',

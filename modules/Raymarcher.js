@@ -17,7 +17,7 @@ const RayMarcher = function(){
       // scene setup
       this.scene = new Scene();
 
-      this.renderer = new WebGLRenderer({ alpha: true });
+      this.renderer = new WebGLRenderer();
       this.renderer.setSize( window.innerWidth, window.innerHeight );
       this.domElement = this.renderer.domElement;
 
@@ -61,6 +61,13 @@ const RayMarcher = function(){
     });
 
     this.loaded = true;
+  }
+
+  function setMaterial(material) {
+    material.uniforms.resolution = { type: 'v2', value: new Vector2(this.width, this.height) }
+    this.mesh.material = this.material = material
+    this.update()
+    this.loaded = true
   }
 
   function setTexture(name, url){
@@ -148,6 +155,7 @@ const RayMarcher = function(){
 
   _p.loadFragmentShader = loadFragmentShader;
   _p.setFragmentShader = setFragmentShader;
+  _p.setMaterial = setMaterial;
   _p.setTexture = setTexture;
   _p.setCubemap = setCubemap;
   _p.setUniform = setUniform;

@@ -6,9 +6,12 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 
 ## Blobs & Metaballs
 
-Prototypes for the [Watermelon wellness lab projet](http://watermelonsugar.cc/wellnesslab/) by [Pamm Hong](http://frompamm.net/) exposed during the [Sydney Design Festival 2018](https://www.broadsheet.com.au/sydney/entertainment/article/tamagotchi-you-has-important-lesson-teach-you-about-internet)
+Prototypes (and explorations) for the [Watermelon wellness lab projet](http://watermelonsugar.cc/wellnesslab/) by [Pamm Hong](http://frompamm.net/) exposed during the [Sydney Design Festival 2018](https://www.broadsheet.com.au/sydney/entertainment/article/tamagotchi-you-has-important-lesson-teach-you-about-internet)
 
 <p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/organism/preview.gif">
+    <img alt="organism" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/organism/preview.gif?raw=true" width="200">
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview5.gif">
     <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview5.gif?raw=true" width="200">
   </a>
