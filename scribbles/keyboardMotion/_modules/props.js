@@ -1,4 +1,4 @@
-import dat from 'dat.gui/build/dat.gui';
+import dat from  'dat-gui';
 
 export const gui = new dat.GUI();
 gui.close();

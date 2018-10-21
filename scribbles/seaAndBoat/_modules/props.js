@@ -1,4 +1,4 @@
-import { GUI } from 'dat.gui/build/dat.gui';
+import { GUI } from 'dat-gui';
 
 const props = {
   SCALE: 10,

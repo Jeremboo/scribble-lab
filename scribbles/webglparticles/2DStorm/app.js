@@ -1,4 +1,4 @@
-import { GUI } from 'dat.gui/build/dat.gui';
+import { GUI } from 'dat-gui';
 
 /**/ /* ---- CORE ---- */
 /**/ const canvas = document.createElement('canvas');

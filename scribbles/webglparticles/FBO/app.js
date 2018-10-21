@@ -2,7 +2,7 @@ import {
   WebGLRenderer, Scene, PerspectiveCamera, Color,
   ShaderMaterial, BufferGeometry, BufferAttribute, Points,
 } from 'three';
-import { GUI } from 'dat.gui/build/dat.gui';
+import { GUI } from 'dat-gui';
 
 import GPUSimulation from 'GPUSimulation';
 import Particles from 'Particles';
