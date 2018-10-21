@@ -167,7 +167,7 @@ Generate particles with different noises and renders
 
 ## [Pixi.js ropes](http://codepen.io/Jeremboo/full/QGVaYa)
 
-Generate and handle ropes with Pixi.js
+Usage of the Pixi.js mesh.Rope method to to create true ropes and looped hair.
 
 <p align="center">
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview2.gif">
