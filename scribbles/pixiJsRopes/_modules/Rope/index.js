@@ -1,22 +1,17 @@
-import { Container, Texture, Point, Graphics, mesh } from 'pixi.js';
-import { canvasBuilder, applyImageToCanvas, existingValueBy, getDistBetweenTwoVec2 } from 'utils';
-import props, { NONE, DRAWING, MOVING } from 'props';
-import rope from 'rope.png';
-import ropePattern from 'ropePattern.png';
-import ropeBegin from 'ropeBegin.png';
-import ropeEnd from 'ropeEnd.png';
+import { Container, Point, Graphics, mesh } from 'pixi.js';
+import { existingValueBy, getDistBetweenTwoVec2 } from 'utils';
+import props from 'props';
 
 import Marker from '../Marker';
 
 export default class Rope extends Container {
-  constructor(p1, p2, { color = 0xf4cd6a, textured = true } = {}) {
+  constructor(p1, p2) {
     super();
     if (!p1.x || !p1.y || !p2.x || !p2.y) {
       console.warging('the two first parameters must be vector2');
       return;
     }
 
-    this.texture = null;
     this.nbrOfNodes = 0;
     this.points = [];
     this.oldPoints = [];
@@ -24,6 +19,9 @@ export default class Rope extends Container {
     this.count = 0;
     this.interacitonDist = props.SEGMENT_LENGTH / 2;
     this.idxPointOverred = -1;
+    this.tention = { x: 1, y: 1 };
+
+    this.marker = new Marker(0, 0, 5);
 
     // Normalize and place point to the line
     // http://math.stackexchange.com/questions/175896/finding-a-point-along-a-line-a-certain-distance-away-from-another-point
@@ -42,62 +40,33 @@ export default class Rope extends Container {
     }
     this.addPoint(p2.x, p2.y);
 
-    // MARKER
-    this.marker = new Marker(0, 0, 5);
-
-    // DEBUG
-    if (textured) {
-      this.buildRopeTexture(() => {
-        this.rope = new mesh.Rope(this.texture, this.points);
-        this.rope.tint = color;
-        this.addChild(this.rope);
-        this.addChild(this.marker);
-      });
-    } else {
-      this.g = new Graphics();
-      this.addChild(this.g);
-    }
-
     this.update = this.update.bind(this);
     this.onCursorOver = this.onCursorOver.bind(this);
     this.onCursorOut = this.onCursorOut.bind(this);
     this.getAttachedPoint = this.getAttachedPoint.bind(this);
     this.updateCursorPosition = this.updateCursorPosition.bind(this);
+    this.addTexture = this.addTexture.bind(this);
   }
 
-  // INIT
+  // BUILD
   addPoint(x, y) {
     this.nbrOfNodes++;
     this.points.push(new Point(x, y));
     this.oldPoints.push(new Point(x, y));
   }
 
-  buildRopeTexture(callback) {
-    let canvasRopePattern = null;
-    let canvasRopeBegin = null;
-    applyImageToCanvas(ropePattern, props.ROPE_WIDTH, props.ROPE_WIDTH).then(cRopePattern => {
-      canvasRopePattern = cRopePattern;
-      return applyImageToCanvas(ropeBegin, props.ROPE_WIDTH, props.ROPE_WIDTH);
-    }).then(cRopeBegin => {
-      canvasRopeBegin = cRopeBegin;
-      return applyImageToCanvas(ropeEnd, props.ROPE_WIDTH, props.ROPE_WIDTH);
-    }).then(cRopeEnd => {
-      // build rope
-      const ropeWidth = this.nbrOfNodes * props.SEGMENT_LENGTH;
-      const { canvas, context } = canvasBuilder(ropeWidth, props.ROPE_WIDTH);
-      const nbrOfRopePattern = (ropeWidth / canvasRopePattern.height) - 1;
-      context.drawImage(canvasRopeBegin, 0, 0);
-      for (let i = 1; i < nbrOfRopePattern; i++) {
-        context.drawImage(canvasRopePattern, i * props.ROPE_WIDTH, 0);
-      }
-      context.drawImage(cRopeEnd, ropeWidth - props.ROPE_WIDTH, 0);
+  // VISUAL
+  addTexture(texture = false, color = 0xf4cd6a) {
+    if (texture) {
+      this.rope = new mesh.Rope(texture, this.points);
+      this.rope.tint = color;
 
-      // this.texture = Texture.fromImage(rope);
-      // this.texture = Texture.fromImage(canvas.toDataURL());
-      this.texture = Texture.fromCanvas(canvas);
-      callback();
-    })
-    .catch(console.log);
+      this.addChild(this.rope);
+      this.addChild(this.marker);
+    } else {
+      this.g = new Graphics();
+      this.addChild(this.g);
+    }
   }
 
   // CORE
@@ -175,7 +144,7 @@ export default class Rope extends Container {
         e.data.global.x,
         e.data.global.y,
         this.points[i].x,
-        this.points[i].y
+        this.points[i].y,
       );
 
       if (dist < this.interacitonDist) {
@@ -200,8 +169,8 @@ export default class Rope extends Container {
         y: this.points[i].y,
       };
 
-      this.points[i].x += props.GRAVITY_X;
-      this.points[i].y += props.GRAVITY_Y;
+      this.points[i].x += (props.GRAVITY_X * this.tention.x);
+      this.points[i].y += (props.GRAVITY_Y * this.tention.y);
 
       this.points[i].x += (this.points[i].x - this.oldPoints[i].x) * props.VEL;
       this.points[i].y += (this.points[i].y - this.oldPoints[i].y) * props.VEL;

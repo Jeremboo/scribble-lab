@@ -170,6 +170,12 @@ Generate particles with different noises and renders
 Generate and handle ropes with Pixi.js
 
 <p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview2.gif">
+    <img alt="Looped Hair" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview.gif">
+    <img alt="Looped Hair" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview.gif?raw=true" width="200">
+  </a>
   <a href="http://codepen.io/Jeremboo/full/QGVaYa">
     <img alt="Rope generator" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/ropeGenerator/preview2.gif?raw=true" width="200">
   </a>

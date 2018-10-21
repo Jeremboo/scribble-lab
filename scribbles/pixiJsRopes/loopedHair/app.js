@@ -1,17 +1,15 @@
 import { autoDetectRenderer, Graphics, Container, Texture } from 'pixi.js';
-import { getDistBetweenTwoVec2, canvasBuilder, applyImageToCanvas } from 'utils';
+import { getDistBetweenTwoVec2, getRandomFloat } from 'utils';
 import props, { NONE, DRAWING, MOVING } from 'props';
 import Rope from 'Rope';
 import Marker from 'Marker';
 
-import ropePattern from 'ropePattern.png';
-import ropeBegin from 'ropeBegin.png';
-import ropeEnd from 'ropeEnd.png';
+import hair from 'hair.png';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#0D0106';
 /**/ const secondaryColor = '0xFCFAF9';
-/**/ const bgColor = '0x2C2B3C';
+/**/ const bgColor = '0xCFDBDE';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
 /**/ class Renderer {
@@ -63,47 +61,41 @@ import ropeEnd from 'ropeEnd.png';
 /**/
 /* ---- CREATING ZONE ---- */
 
-const buildRopeTexture = (nbrOfNodes) => {
-  return new Promise((resolve, reject) => {
-    let canvasRopePattern = null;
-    let canvasRopeBegin = null;
+// https://sketchfab.com/models/bc25809331cc44268ff4d495b819280f
+// https://sketchfab.com/models/4312c92f7e3448e0bba0b8576be2a111
 
-    applyImageToCanvas(ropePattern, props.ROPE_WIDTH, props.ROPE_WIDTH).then((cRopePattern) => {
-      canvasRopePattern = cRopePattern;
-      return applyImageToCanvas(ropeBegin, props.ROPE_WIDTH, props.ROPE_WIDTH);
-    }).then((cRopeBegin) => {
-      canvasRopeBegin = cRopeBegin;
-      return applyImageToCanvas(ropeEnd, props.ROPE_WIDTH, props.ROPE_WIDTH);
-    }).then((cRopeEnd) => {
-      // build rope
-      const ropeWidth = nbrOfNodes * props.SEGMENT_LENGTH;
-      const { canvas, context } = canvasBuilder(ropeWidth, props.ROPE_WIDTH);
-      const nbrOfRopePattern = (ropeWidth / canvasRopePattern.height) - 1;
-      context.drawImage(canvasRopeBegin, 0, 0);
-      for (let i = 1; i < nbrOfRopePattern; i++) {
-        context.drawImage(canvasRopePattern, i * props.ROPE_WIDTH, 0);
-      }
-      context.drawImage(cRopeEnd, ropeWidth - props.ROPE_WIDTH, 0);
-      resolve(Texture.fromCanvas(canvas));
-    })
-      .catch(reject);
-  });
-};
+const COLORS = [
+  0xB87C0F,
+  // 0xB87C0F,
+  // 0xB87C0F,
+  // 0xB87C0F,
+  // 0x9C6600,
+  // 0x6C501A,
+  // 0x935725,
+  // 0x402D0B,
+  // 0x8E2323,
+];
 
-/**
- * ROPE FABRIC
- */
-class RopeFabric {
+// TODO add comments
+class HairFabric {
   constructor() {
     this.ropes = [];
     this.ropeAttachedToMouse = false;
     this.pointAttachedToMouse = false;
+    this.hairTexture = Texture.fromImage(hair);
+
     this.mouseStartMarker = new Marker();
     renderer.add(this.mouseStartMarker);
     this.mouseEndMarker = new Marker();
     renderer.add(this.mouseEndMarker);
     this.line = new Graphics();
     renderer.add(this.line);
+
+    this.pixiCircle = new Graphics();
+    this.pixiCircle.lineStyle(50, 0xFFFFFF);  // (thickness, color)
+    this.pixiCircle.drawCircle(windowWidth * 0.5, windowHeight * 0.5, 190);   //(x,y,radius)
+    this.pixiCircle.endFill();
+    renderer.add(this.pixiCircle);
 
     this.onMouseMove = this.onMouseMove.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
@@ -187,12 +179,15 @@ class RopeFabric {
   }
 
   // GRAPHIC
-  async createRope(p1, p2) {
+  createRope(p1, p2, ropeProps = {}) {
     const { dist } = getDistBetweenTwoVec2(p1.x, p1.y, p2.x, p2.y);
     if (dist > 30) {
-      const rope = new Rope(p1, p2);
-      const texture = await buildRopeTexture(rope.nbrOfNodes);
-      rope.addTexture(texture);
+      const rope = new Rope(p1, p2, ropeProps);
+      rope.addTexture(
+        this.hairTexture,
+        COLORS[Math.floor(Math.random() * COLORS.length)],
+      );
+      rope.tention.y = getRandomFloat(0.1, 2);
       this.ropes.push(rope);
       renderer.add(rope);
 
@@ -236,7 +231,22 @@ class RopeFabric {
 
 
 // START
-const ropeFabric = new RopeFabric();
+props.ROPE_WIDTH = 2;
+
+const ropeFabric = new HairFabric();
+
+for (let i = 0; i < 50; i++) {
+  setTimeout(() => {
+    ropeFabric.createRope({
+      x: getRandomFloat(windowWidth * 0.5 - 50, windowWidth * 0.5 + 50),
+      y: getRandomFloat(250, 350),
+    }, {
+      x: getRandomFloat(windowWidth * 0.5 - 100, windowWidth * 0.5 + 100),
+      y: getRandomFloat(450, 550),
+    });
+
+  }, 20 * i * Math.random());
+}
 
 /* ---- CREATING ZONE END ---- */
 /**/
@@ -252,6 +262,7 @@ const ropeFabric = new RopeFabric();
 /**/ /* ---- LOOP ---- */
 /**/ function _loop() {
 /**/ 	 renderer.animate();
+       props.GRAVITY_X += getRandomFloat(-0.015, 0.015);
 /**/ 	 requestAnimationFrame(_loop);
 /**/ }
 /**/ _loop();
