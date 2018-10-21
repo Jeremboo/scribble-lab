@@ -9,18 +9,30 @@ var port = 3333;
 var ipAdress = ip.address() + ':' + port;
 var myLocalIp = 'http://' + ipAdress + '/';
 
-// DIRECTORIES
-var assets = path.resolve(__dirname, process.env.GROUP_PATH + '/_assets/');
-var modules = path.resolve(__dirname, process.env.GROUP_PATH + '/_modules/');
-var scribble_path = process.env.SKETCH_PATH;
 var name = process.env.NAME;
-var node_modules = path.resolve(__dirname, './node_modules');
+
+// PATHS
+var scribblePath = path.resolve(__dirname, process.env.SKETCH_PATH);
+var assetsPaths       = [
+  path.resolve(__dirname, 'assets'),
+  path.resolve(__dirname, process.env.GROUP_PATH + '/_assets')
+];
+var modulesPaths      = [
+  path.resolve(__dirname, 'modules'),
+  path.resolve(__dirname, process.env.GROUP_PATH + '/_modules'),
+];
+var rawPaths          = [
+  path.resolve(assetsPaths[0], 'raw'),
+  path.resolve(assetsPaths[1], 'raw'),
+];
+var nodeModulesPath   = path.resolve(__dirname, './node_modules');
 
 // WEBPACK CONFIG
 var config = {
     node: {
       fs: "empty"
     },
+    mode: 'development',
     entry: [
       'babel-polyfill',
       'webpack/hot/dev-server',
@@ -28,7 +40,7 @@ var config = {
       path.resolve(__dirname, './bootstrap.js')
     ],
     output: {
-      path: path.resolve(__dirname, scribble_path + '/'),
+      path: scribblePath + '/',
       filename: 'bundle.js',
       // publicPath: myLocalIp,
       publicPath: '/',
@@ -37,7 +49,7 @@ var config = {
     devtool: "eval-source-map",
     devServer: {
       // compress: true,
-      contentBase: path.resolve(__dirname, scribble_path + '/'),
+      contentBase: scribblePath + '/',
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Credentials': 'true',
@@ -53,9 +65,9 @@ var config = {
     },
     resolve: {
       alias: {
-        html: path.resolve(__dirname, scribble_path + '/index.pug.html'),
-        style: path.resolve(__dirname, scribble_path + '/style.styl'),
-        app: path.resolve(__dirname, scribble_path + '/app.js'),
+        html: scribblePath + '/index.pug.html',
+        style: scribblePath + '/style.styl',
+        app: scribblePath + '/app.js',
         postprocessing: path.resolve(__dirname, './node_modules/postprocessing/build/postprocessing.js'),
       },
     },
@@ -63,12 +75,15 @@ var config = {
       rules: [
         {
           test: /\.jsx?$/,
-          exclude: node_modules,
           loader: 'babel-loader',
+          exclude: nodeModulesPath,
           query: {
             plugins: [
               [ 'module-resolver', {
-                'root': [modules, assets, './modules/', './assets/'],
+                'root': [
+                  ...assetsPaths,
+                  ...modulesPaths
+              ],
               }],
             ]
           },
@@ -90,13 +105,13 @@ var config = {
         {
           test: /\.(png|jpe?g|gif)$/,
           loader: 'file-loader?name=imgs/[hash].[ext]',
-          include: [ './assets/', assets ],
-          exclude: [ './assets/raw/', assets + 'raw/' ],
+          include: assetsPaths,
+          exclude: rawPaths,
         },
         {
           test: /\.(svg)$/,
           loader: 'raw-loader',
-          include: [ './assets/raw/', assets + 'raw/' ],
+          include: rawPaths,
         },
         {
           test: /\.(html|pug)$/,
@@ -105,10 +120,10 @@ var config = {
         {
           test: /\.(eot|svg|ttf|woff(2)?)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
           loader: 'file-loader?name=fonts/[name].[ext]',
-          include: [ './assets/', assets ],
+          include: assetsPaths,
         },
-        { test: /\.(glsl|frag|vert)$/, exclude: node_modules, loader: 'raw-loader' },
-        { test: /\.(glsl|frag|vert)$/, exclude: node_modules, loader: 'glslify-loader' },
+        { test: /\.(glsl|frag|vert)$/, exclude: nodeModulesPath, loader: 'raw-loader' },
+        { test: /\.(glsl|frag|vert)$/, exclude: nodeModulesPath, loader: 'glslify-loader' },
       ],
     },
     plugins: [

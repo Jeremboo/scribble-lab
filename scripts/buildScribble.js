@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 require('./getScribbleData')();
 
@@ -15,28 +16,54 @@ config.entry = [
 // config.debug = false;
 config.devServer = {};
 config.devtool = '';
+config.mode = 'production';
 config.output.path = path.resolve(__dirname, `../public/${dirs[1]}/${dirs[2]}`);
 config.output.publicPath = '';
 config.plugins.splice(0, 1);
-config.plugins.push(new webpack.optimize.UglifyJsPlugin({
-  compress: { warnings: true, drop_console: true },
-  comments: false,
-  sourceMap: false,
-  mangle: true,
-  minimize: true,
-}));
+config.optimization = {
+  minimizer: [
+    new UglifyJsPlugin({
+      uglifyOptions: {
+        compress: { warnings: true, drop_console: true },
+        comments: false,
+        sourceMap: false,
+        mangle: true,
+        minimize: true,
+      },
+    }),
+  ],
+};
 
-// TODO add extractTextPlugin
-// config.module.rules[1].loader = ExtractTextPlugin.extract('style', 'css?sourceMap!stylus');
-// config.plugins.push(new ExtractTextPlugin('styles.css', {
-//   disable: false,
-//   allChunks: true,
-// }));
+// https://github.com/webpack-contrib/mini-css-extract-plugin
+if (config.module.rules[1].use[0] === 'style-loader') {
+  config.module.rules[1].use[0] = MiniCssExtractPlugin.loader;
+  config.plugins.push(new MiniCssExtractPlugin({
+    // Options similar to the same options in webpackOptions.output
+    // both options are optional
+    filename: '[name].css',
+    chunkFilename: '[id].css',
+  }));
+} else {
+  throw new Error('ERROR: Cannot extract css files. The webpack style-loader rule is not correctly linked. See buildScrible.js l.36');
+}
 
 // Compile
-console.log(config)
-const compiler = webpack(config);
-compiler.run((err, stats) => {
-  console.log(err);
-  console.log(stats);
+console.log('🌪 Webpack compilation...');
+webpack(config, (err, stats) => {
+  // https://webpack.js.org/api/node/#error-handling
+  if (err) {
+    console.error(err.stack || err);
+    if (err.details) {
+      console.error(err.details);
+    }
+    return;
+  }
+  const info = stats.toJson();
+  if (stats.hasErrors()) {
+    console.error(info.errors);
+  }
+  if (stats.hasWarnings()) {
+    console.warn(info.warnings);
+  }
+  console.log('👌 DONE');
 });
