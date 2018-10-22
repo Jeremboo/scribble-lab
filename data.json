@@ -196,6 +196,33 @@
     ]
   },
   {
+    "name": "fluidBackground",
+    "path": "scribbles/fluidBackground/",
+    "link": "",
+    "visible": true,
+    "preview": "preview.gif",
+    "description": "Webgl fluid background researches",
+    "date": "2017-10-21T20:41:50.665Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "fluidWithBlob",
+        "path": "scribbles/fluidBackground/fluidWithBlob/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview.gif",
+          "preview1.gif",
+          "preview2.gif",
+          "preview3.gif"
+        ],
+        "description": "Simulate the fluid background with a blob",
+        "date": "2017-10-21T20:42:53.887Z",
+        "tags": []
+      }
+    ]
+  },
+  {
     "name": "Codevember2017",
     "path": "scribbles/codevember2017/",
     "link": "",

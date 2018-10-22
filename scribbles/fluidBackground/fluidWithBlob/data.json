@@ -3,8 +3,8 @@
   "path": "scribbles/fluidBackground/fluidWithBlob/",
   "link": "",
   "visible": true,
-  "preview": "preview.gif",
+  "preview": ["preview.gif", "preview1.gif", "preview2.gif", "preview3.gif"],
   "description": "Simulate the fluid background with a blob",
-  "date": "2018-10-21T20:42:53.887Z",
+  "date": "2017-10-21T20:42:53.887Z",
   "tags": []
 }

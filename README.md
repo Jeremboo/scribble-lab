@@ -76,6 +76,25 @@ Some test about a concept of text animation
   </a>
 </p>
 
+## fluidBackground
+
+Webgl fluid background researches
+
+<p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview3.gif">
+    <img alt="fluidWithBlob" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview3.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview2.gif">
+    <img alt="fluidWithBlob" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview1.gif">
+    <img alt="fluidWithBlob" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview.gif">
+    <img alt="fluidWithBlob" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview.gif?raw=true" width="200">
+  </a>
+</p>
+
 ## Codevember2017
 
 My contributions of the Codevember challenge 2017.
