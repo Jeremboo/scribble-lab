@@ -1,6 +1,6 @@
 import { ShaderMaterial, Color, TextureLoader } from 'three'
 import { TweenLite } from 'gsap'
-import { GUI } from 'dat-gui'
+import { GUI } from 'dat.gui'
 
 import blobFragmentShader from './shaders/blob.f.glsl'
 

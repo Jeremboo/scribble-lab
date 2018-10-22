@@ -5,7 +5,7 @@ import {
   AxisHelper,
 } from 'three';
 
-import { GUI } from 'dat-gui';
+import { GUI } from 'dat.gui';
 
 import { getRandomFloat } from 'utils';
 

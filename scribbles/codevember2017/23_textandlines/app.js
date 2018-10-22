@@ -4,7 +4,7 @@ import {
   FontLoader,
 } from 'three';
 import { TimelineLite } from 'gsap';
-import { GUI } from 'dat-gui';
+import { GUI } from 'dat.gui';
 
 import { MeshLine, MeshLineMaterial } from 'three.meshline';
 

@@ -4,7 +4,7 @@ import {
 } from 'three';
 
 import rm from 'RayMarcher';
-import { GUI } from 'dat-gui';
+import { GUI } from 'dat.gui';
 
 import { getRandomFloat } from 'utils';
 

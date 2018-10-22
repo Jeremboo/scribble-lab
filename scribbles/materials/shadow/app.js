@@ -5,7 +5,7 @@ import {
   Vector3, MeshPhongMaterial, SphereGeometry, MeshBasicMaterial, ShaderLib,
 } from 'three';
 import OrbitControls from 'OrbitControl';
-import { GUI } from 'dat-gui';
+import { GUI } from 'dat.gui';
 
 import vertShadow from './shaders/shadow.v.glsl';
 import fragShadow from './shaders/shadow.f.glsl';

@@ -5,7 +5,7 @@ import {
   PointLight,
 } from 'three';
 
-import dat from 'dat-gui';
+import dat from 'dat.gui';
 
 import OrbitControls from 'OrbitControl';
 

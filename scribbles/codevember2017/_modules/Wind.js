@@ -6,7 +6,7 @@ import { MeshLine, MeshLineMaterial } from 'three.meshline';
 
 import { getRandomFloat } from 'utils';
 
-import { GUI } from 'dat-gui';
+import { GUI } from 'dat.gui';
 const gui = new GUI();
 
 const props = {
