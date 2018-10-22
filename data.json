@@ -552,8 +552,8 @@
         "link": "",
         "visible": true,
         "preview": [
-          "/preview.gif",
-          "/preview2.gif"
+          "/preview2.gif",
+          "/preview.gif"
         ],
         "description": "Pixi.js Looped Hair",
         "date": "2018-05-09T10:22:18.068Z",
