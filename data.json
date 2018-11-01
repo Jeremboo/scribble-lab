@@ -342,7 +342,7 @@
     "link": "",
     "visible": true,
     "preview": "scribbles/webglparticles/preview.gif",
-    "description": "Generate particles with different noises and renders",
+    "description": "Generate particles with different techniques. Other projects here: [Northern Boreal Typhoon](http://jeremieboulay.fr/typhoon/) & [FBO Particles at Grow Paris 2017](http://jeremieboulay.fr/grow-workshop/)",
     "date": "2017-04-25T13:08:33.190Z",
     "tags": [],
     "scribbles": [
@@ -359,10 +359,11 @@
       {
         "name": "fbo&Instances",
         "path": "scribbles/webglparticles/fbo&Instances/",
-        "link": "",
+        "link": "http://jeremieboulay.fr/grow-workshop/",
         "visible": true,
         "preview": [
-          "preview.gif"
+          "preview.gif",
+          "preview1.gif"
         ],
         "description": "",
         "date": "2017-09-08T14:47:14.783Z",
@@ -371,14 +372,15 @@
       {
         "name": "3DStorm",
         "path": "scribbles/webglparticles/3DStorm/",
-        "link": "",
+        "link": "http://jeremieboulay.fr/typhoon/",
         "visible": true,
         "preview": [
           "/preview.gif",
           "/preview2.gif",
           "/preview3.gif",
           "/preview4.gif",
-          "/preview5.gif"
+          "/preview5.gif",
+          "/preview6.gif"
         ],
         "description": "",
         "date": "2017-06-01T09:27:17.688Z",

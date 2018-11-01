@@ -2,7 +2,7 @@
 
 Just a regroupment of some searches, tests, experiments around javascript or CSS and their frameworks.
 
--[See all previews](/PREVIEWS.md)
+-[All GIFs](/PREVIEWS.md)
 
 ## Blobs & Metaballs
 
@@ -128,25 +128,31 @@ My contributions of the Codevember challenge 2017.
 
 ## Webgl Particles
 
-Generate particles with different noises and renders
+Generate particles with different techniques. Other projects here: [Northern Boreal Typhoon](http://jeremieboulay.fr/typhoon/) & [FBO Particles at Grow Paris 2017](http://jeremieboulay.fr/grow-workshop/)
 
 <p align="center">undefined
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/fbo&Instances/preview.gif">
+  <a href="http://jeremieboulay.fr/grow-workshop/">
+    <img alt="fbo&Instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/fbo&Instances/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="http://jeremieboulay.fr/grow-workshop/">
     <img alt="fbo&Instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/fbo&Instances/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview5.gif">
+  <a href="http://jeremieboulay.fr/typhoon/">
+    <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview6.gif?raw=true" width="200">
+  </a>
+  <a href="http://jeremieboulay.fr/typhoon/">
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview5.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview4.gif">
+  <a href="http://jeremieboulay.fr/typhoon/">
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview4.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview3.gif">
+  <a href="http://jeremieboulay.fr/typhoon/">
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview3.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview2.gif">
+  <a href="http://jeremieboulay.fr/typhoon/">
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview2.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview.gif">
+  <a href="http://jeremieboulay.fr/typhoon/">
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview.gif?raw=true" width="200">
   </a>undefined
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO//preview2.gif">
