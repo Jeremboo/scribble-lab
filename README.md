@@ -130,7 +130,7 @@ My contributions of the Codevember challenge 2017.
 
 Generate particles with different techniques. Other projects here: [Northern Boreal Typhoon](http://jeremieboulay.fr/typhoon/) & [FBO Particles at Grow Paris 2017](http://jeremieboulay.fr/grow-workshop/)
 
-<p align="center">undefined
+<p align="center">
   <a href="http://jeremieboulay.fr/grow-workshop/">
     <img alt="fbo&Instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/fbo&Instances/preview1.gif?raw=true" width="200">
   </a>
@@ -154,7 +154,7 @@ Generate particles with different techniques. Other projects here: [Northern Bor
   </a>
   <a href="http://jeremieboulay.fr/typhoon/">
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview.gif?raw=true" width="200">
-  </a>undefined
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO//preview2.gif">
     <img alt="FBO" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO//preview2.gif?raw=true" width="200">
   </a>
