@@ -1,21 +1,31 @@
-/**/ /* ---- CORE ---- */
-/**/ const canvas = document.createElement('canvas');
-/**/ const context = canvas.getContext('2d');
-/**/ let windowWidth = canvas.width = window.innerWidth;
-/**/ let windowHeight = canvas.height = window.innerHeight;
-/**/ canvas.id = 'canvas';
-/**/ document.body.insertBefore(canvas, document.body.firstChild);
-/**/ window.onresize = () => {
-/**/   windowWidth = canvas.width = window.innerWidth;
-/**/   windowHeight = canvas.height = window.innerHeight;
-/**/ };
-/**/ /* ---- CORE END ---- */
-/* ---- CREATING ZONE ---- */
+/**
+ * * *******************
+ * * CORE
+ * * *******************
+ */
+const canvas = document.createElement('canvas');
+const context = canvas.getContext('2d');
+let windowWidth = canvas.width = window.innerWidth;
+let windowHeight = canvas.height = window.innerHeight;
+canvas.id = 'canvas';
+document.body.insertBefore(canvas, document.body.firstChild);
+window.onresize = () => {
+  windowWidth = canvas.width = window.innerWidth;
+  windowHeight = canvas.height = window.innerHeight;
+};
 
+
+/**
+ * * *******************
+ * * CREATING ZONE
+ * * *******************
+ */
 
 class ExempleCanvasItem {
   // Save state here
-  constructor() {}
+  constructor() {
+
+  }
 
   // Update values here
   update() {}
@@ -28,7 +38,7 @@ class ExempleCanvasItem {
   }
 }
 
-let exempleCI = new ExempleCanvasItem();
+const exempleCI = new ExempleCanvasItem();
 
 function loop() {
   exempleCI.update();
@@ -36,12 +46,14 @@ function loop() {
 }
 
 
-/* ---- CREATING ZONE END ---- */
-/**/ /* ---- LOOP ---- */
-/**/ function _loop(){
-/**/   context.clearRect(0,0, windowWidth, windowHeight);
-/**/   loop();
-/**/ 	 requestAnimationFrame(_loop);
-/**/ }
-/**/ _loop();
-/**/ /* ---- LOOP END ---- */
+/**
+ * * *******************
+ * * LOOP
+ * * *******************
+ */
+function _loop() {
+  context.clearRect(0, 0, windowWidth, windowHeight);
+  loop();
+ 	requestAnimationFrame(_loop);
+}
+_loop();
