@@ -2,6 +2,7 @@ import { Vector3, Euler, Raycaster } from 'three';
 
 Math.sqr = x => x * x;
 
+
 export const getDistBetweenTwoVec2 = (x1, y1, x2, y2) => {
   const x = x1 - x2;
   const y = y1 - y2;
@@ -19,6 +20,7 @@ export const getRandomAttribute = (json) => {
   const keys = Object.keys(json);
   return json[keys[getRandomInt(0, keys.length - 1)]];
 };
+export const getRandomItem = arr => arr[getRandomInt(0, arr.length - 1)];
 
 // https://gist.github.com/jedfoster/7939513
 export const mixColors = (color_1, color_2, weight) => {
