@@ -1,9 +1,9 @@
 {
   "name": "physics",
-  "path": "scribbles/portfolio/physics/",
+  "path": "scribbles/floatingBoxes/physics/",
   "link": "",
   "visible": true,
-  "preview": "preview.gif",
+  "preview": ["preview.gif", "preview2.gif", "preview3.gif"],
   "description": "2D to 3D phisics",
   "date": "2018-11-03T21:39:37.787Z",
   "tags": []

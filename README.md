@@ -4,6 +4,31 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 
 -[All GIFs](/PREVIEWS.md)
 
+## Floating Boxes
+
+Play with physics to make interactives floating boxes
+
+<p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview3.gif">
+    <img alt="physics" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview3.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview2.gif">
+    <img alt="physics" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview.gif">
+    <img alt="physics" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview2.gif">
+    <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif">
+    <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview.gif">
+    <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview.gif?raw=true" width="200">
+  </a>
+</p>
+
 ## Blobs & Metaballs
 
 Prototypes (and explorations) for the [Watermelon wellness lab projet](http://watermelonsugar.cc/wellnesslab/) by [Pamm Hong](http://frompamm.net/) exposed during the [Sydney Design Festival 2018](https://www.broadsheet.com.au/sydney/entertainment/article/tamagotchi-you-has-important-lesson-teach-you-about-internet)

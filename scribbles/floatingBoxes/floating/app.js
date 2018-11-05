@@ -33,7 +33,6 @@ class Webgl {
     this.scene = new Scene();
 
     // this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
-    // this.camera.position.set(0, 0, 10);
     this.camera = new OrthographicCamera(-5 * (w / h), 5 * (w / h), 5, -5, 1, 1000);
     this.camera.position.set(0, 0, 10);
 
@@ -111,14 +110,6 @@ webgl.add(directionalLight);
  * * *******************
  */
 
-const MARGIN = 0.15;
-const RECURCIVE_RANDOM = 0.3;
-
-const LEFT  = 'left';
-const RIGHT = 'right';
-const UP    = 'top';
-const DOWN  = 'bottom';
-
 // Floating object
 function createFloatingCube(x = 0, y = 0, props) {
   const floatingObj = new FloatingCube(x, y, Object.assign({ color: MAIN_COLOR }, props));
@@ -126,59 +117,71 @@ function createFloatingCube(x = 0, y = 0, props) {
 }
 
 // V1 --------------------------------------------------------------------------------------------------------------------
+// const NBR_OF_CUBES = 15;
+// const FREQUENCY = 0.9;
+// let nbrOfCubes = 0;
 // webgl.addLoop(() => {
-// if (Math.random() > 0.95) {
-//   createFloatingCube(
-//     getRandomFloat(-4, 4),
-//     getRandomFloat(-3, 3),
-//   );
-// }
+//   if (nbrOfCubes <= NBR_OF_CUBES && Math.random() > FREQUENCY) {
+//     nbrOfCubes++;
+//     createFloatingCube(
+//       getRandomFloat(-4, 4),
+//       getRandomFloat(-3, 3),
+//       { scale: 1 }
+//     );
+//   }
 // });
 
 // V2 --------------------------------------------------------------------------------------------------------------------
-// function createCubeGroup(x, y, scale, forbidenFaces = []) {
-//   // create the current cube
-//   createFloatingCube(x, y, { scale, force: 0.003 });
+const MARGIN = 0.15;
+const RECURCIVE_RANDOM = 0.3;
 
-//   setTimeout(() => {
-//     // Compute the new sizes
-//     const newScale = scale * 0.4;
-//     const border = (scale * 0.5) - (newScale * 0.5);
-//     const pos = (scale * 0.5) + (newScale * 0.5) + MARGIN;
+const LEFT  = 'left';
+const RIGHT = 'right';
+const UP    = 'top';
+const DOWN  = 'bottom';
+function createCubeGroup(x, y, scale, forbidenFaces = []) {
+  // create the current cube
+  createFloatingCube(x, y, { scale, force: 0.003 });
 
-//     if (newScale > 0.1) {
-//       // LEFT
-//       if (Math.random() > RECURCIVE_RANDOM && forbidenFaces.indexOf(LEFT) === -1) {
-//         (Math.random() > 0.5)
-//           ? createCubeGroup(x - pos, y + border, newScale, [...forbidenFaces, RIGHT]) // Left - Up
-//           : createCubeGroup(x - pos, y - border, newScale, [...forbidenFaces, RIGHT]) // Left - Down
-//         ;
-//       }
-//       // RIGTH
-//       if (Math.random() > RECURCIVE_RANDOM && forbidenFaces.indexOf(RIGHT) === -1) {
-//         (Math.random() > 0.5)
-//           ? createCubeGroup(x + pos, y + border, newScale, [...forbidenFaces, LEFT]) // Right - Up
-//           : createCubeGroup(x + pos, y - border, newScale, [...forbidenFaces, LEFT]) // Right - Down
-//         ;
-//       }
-//       // UP
-//       if (Math.random() > RECURCIVE_RANDOM && forbidenFaces.indexOf(UP) === -1) {
-//         (Math.random() > 0.5)
-//           ? createCubeGroup(x - border, y + pos, newScale, [...forbidenFaces, DOWN]) // Up - Left
-//           : createCubeGroup(x + border, y + pos, newScale, [...forbidenFaces, DOWN]) // Up - Right
-//         ;
-//       }
-//       // DOWN
-//       if (Math.random() > RECURCIVE_RANDOM && forbidenFaces.indexOf(DOWN) === -1) {
-//         (Math.random() > 0.5)
-//           ? createCubeGroup(x - border, y - pos, newScale, [...forbidenFaces, UP]) // Down - Left
-//           : createCubeGroup(x + border, y - pos, newScale, [...forbidenFaces, UP]) // Down - Right
-//         ;
-//       }
-//     }
-//   }, 200);
-// }
-// createCubeGroup(0, 0, 3.5);
+  setTimeout(() => {
+    // Compute the new sizes
+    const newScale = scale * 0.4;
+    const border = (scale * 0.5) - (newScale * 0.5);
+    const pos = (scale * 0.5) + (newScale * 0.5) + MARGIN;
+
+    if (newScale > 0.1) {
+      // LEFT
+      if (Math.random() > RECURCIVE_RANDOM && forbidenFaces.indexOf(LEFT) === -1) {
+        (Math.random() > 0.5)
+          ? createCubeGroup(x - pos, y + border, newScale, [...forbidenFaces, RIGHT]) // Left - Up
+          : createCubeGroup(x - pos, y - border, newScale, [...forbidenFaces, RIGHT]) // Left - Down
+        ;
+      }
+      // RIGTH
+      if (Math.random() > RECURCIVE_RANDOM && forbidenFaces.indexOf(RIGHT) === -1) {
+        (Math.random() > 0.5)
+          ? createCubeGroup(x + pos, y + border, newScale, [...forbidenFaces, LEFT]) // Right - Up
+          : createCubeGroup(x + pos, y - border, newScale, [...forbidenFaces, LEFT]) // Right - Down
+        ;
+      }
+      // UP
+      if (Math.random() > RECURCIVE_RANDOM && forbidenFaces.indexOf(UP) === -1) {
+        (Math.random() > 0.5)
+          ? createCubeGroup(x - border, y + pos, newScale, [...forbidenFaces, DOWN]) // Up - Left
+          : createCubeGroup(x + border, y + pos, newScale, [...forbidenFaces, DOWN]) // Up - Right
+        ;
+      }
+      // DOWN
+      if (Math.random() > RECURCIVE_RANDOM && forbidenFaces.indexOf(DOWN) === -1) {
+        (Math.random() > 0.5)
+          ? createCubeGroup(x - border, y - pos, newScale, [...forbidenFaces, UP]) // Down - Left
+          : createCubeGroup(x + border, y - pos, newScale, [...forbidenFaces, UP]) // Down - Right
+        ;
+      }
+    }
+  }, 200);
+}
+createCubeGroup(0, 0, 3.5);
 
 /**
  * * *******************
