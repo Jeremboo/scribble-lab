@@ -15,17 +15,11 @@ Play with physics to make interactives floating boxes
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview2.gif">
     <img alt="physics" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview2.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview.gif">
-    <img alt="physics" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview.gif?raw=true" width="200">
-  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview2.gif">
     <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview2.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif">
     <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview.gif">
-    <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview.gif?raw=true" width="200">
   </a>
 </p>
 
