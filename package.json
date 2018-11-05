@@ -17,6 +17,7 @@
     "mo-js": "^0.288.1",
     "mojs-player": "^0.43.15",
     "noisejs": "^2.1.0",
+    "p2": "^0.7.1",
     "pixi.js": "^4.3.2",
     "postprocessing": "^4.3.3",
     "react": "^15.3.2",

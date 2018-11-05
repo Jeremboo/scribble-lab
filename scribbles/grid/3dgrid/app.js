@@ -5,7 +5,7 @@ import {
   Vector3,
 } from 'three';
 
-import { addCursorMoveListener, getDistBetweenTwoVec2 } from 'utils';
+import { onCursorTouchMeshes, getDistBetweenTwoVec2 } from 'utils';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#070707';
@@ -161,11 +161,11 @@ const tracer = new Mesh(
 // tracer.position.add(vectorToCenterize);
 webgl.add(tracer);
 
-addCursorMoveListener(tracer, webgl.camera, webgl.scene, (intersect) => {
+onCursorTouchMeshes(webgl.camera, webgl.scene, (intersect) => {
   for (let i = 0; i < PROJECTS_NUMBER; i++) {
     panels[i].updatePosition(intersect.point);
   }
-});
+}, tracer);
 
 /* ---- CREATING ZONE END ---- */
 /**/

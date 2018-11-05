@@ -83,7 +83,7 @@ export const getRandomPosAroundASphere = (r) => {
 // Ty Robin <3
 // https://codepen.io/robin-dela/pen/dZXVrQ?editors=0010
 // https://threejs.org/docs/#api/core/Raycaster
-export const addCursorMoveListener = (mesh, camera, scene, callback) => {
+export const onCursorTouchMeshes = (camera, scene, callback, targetedMesh = false) => {
   const raycaster = new Raycaster();
   const moveEvent = 'ontouchstart' in (window || navigator.msMaxTouchPoints) ? 'touchmove' : 'mousemove';
   window.addEventListener(moveEvent, (e) => {
@@ -93,17 +93,33 @@ export const addCursorMoveListener = (mesh, camera, scene, callback) => {
     );
     raycaster.setFromCamera(mouseVec, camera);
     const intersects = raycaster.intersectObjects(scene.children);
-
-    let i = 0;
-    let targetedObjectIntersected = false;
-    while (i < intersects.length && !targetedObjectIntersected) {
-      if (intersects[i].object.uuid === mesh.uuid) {
-        targetedObjectIntersected = true;
-        callback(intersects[i]);
+    if (!targetedMesh) {
+      callback(intersects);
+    } else {
+      let i = 0;
+      let targetedObjectIntersected = false;
+      while (i < intersects.length && !targetedObjectIntersected) {
+        if (intersects[i].object.uuid === targetedMesh.uuid) {
+          targetedObjectIntersected = true;
+          callback(intersects[i]);
+        }
+        i += 1;
       }
-      i += 1;
     }
   });
+};
+
+/**
+ * Get the width and the height of the field size from a specific distance
+ */
+export const getCameraVisionFieldSizeFromPosition = (position = new Vector3(), camera) => {
+  // (2 * Math.tan(radians(camera.fov) / 2)) => Always the same number. Can be optimized
+  const height = (2 * Math.tan(radians(camera.fov) / 2)) * (camera.position.distanceTo(position));
+  const width = camera.aspect * height;
+  return {
+    width,
+    height,
+  };
 };
 
 // ARRAY
