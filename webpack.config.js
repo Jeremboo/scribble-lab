@@ -114,10 +114,6 @@ var config = {
           include: rawPaths,
         },
         {
-          test: /\.(html|pug)$/,
-          loader: 'pug-loader',
-        },
-        {
           test: /\.(eot|svg|ttf|woff(2)?)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
           loader: 'file-loader?name=fonts/[name].[ext]',
           include: assetsPaths,
@@ -138,6 +134,7 @@ var config = {
       }),
       new HtmlWebpackPlugin({
         title: name,
+        description: '',
         template: path.resolve(__dirname, './index.html'),
       }),
     ],

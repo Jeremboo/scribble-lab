@@ -1,11 +1,22 @@
-import { getDistBetweenTwoVec2, getRandomInt, getRandomItem } from 'utils';
+// UTILS (duplicate to the utils.js
+Math.sqr = x => x * x;
+const getDistBetweenTwoVec2 = (x1, y1, x2, y2) => {
+  const x = x1 - x2;
+  const y = y1 - y2;
+  const dist = Math.sqrt(Math.sqr(y) + Math.sqr(x));
+  return { x, y, dist };
+};
+const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const getRandomItem = arr => arr[getRandomInt(0, arr.length - 1)];
 
-// const WIDTH = 80;
-// const HEIGHT = 60;
-const WIDTH = 80;
-const HEIGHT = 60;
+/**
+ * * *******************
+ * * CORE
+ * * *******************
+ */
 
-const ZOOM = 2;
+const WIDTH = window.WIDTH;
+const HEIGHT = window.HEIGHT;
 
 const BUILDING_SIZE_MIN = 1;
 const BUILDING_SIZE_MAX = 4;
@@ -23,7 +34,6 @@ const POINTER_SIZE_MAX = 4;
 // 80x60 === 0.9
 const FREQUENCY = Math.max(0.001, Math.min(0.999, (1 - (0.017 * ((WIDTH + HEIGHT) / 10)))));
 
-
 const CLEAN_SPEED = 0.01;
 const PERSPECTIVE = 0.75;
 
@@ -40,21 +50,8 @@ const COLORS = [
 
 const BACKGROUND_COLOR = '0, 0, 0';
 
-/**
- * * *******************
- * * CORE
- * * *******************
- */
-const canvas = document.createElement('canvas');
+const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-
-canvas.id = 'canvas';
-canvas.width = WIDTH;
-canvas.height = HEIGHT;
-canvas.style.width = `${WIDTH * ZOOM}px`;
-canvas.style.height = `${HEIGHT * ZOOM}px`;
-document.body.insertBefore(canvas, document.body.firstChild);
-
 
 /**
  * * *******************

@@ -10,7 +10,7 @@ const dirs = process.env.SKETCH_PATH.split(path.sep);
 // Update webpack config
 const config = require('../webpack.config');
 config.entry = [
-  'babel-polyfill',
+  // 'babel-polyfill',
   path.resolve(__dirname, '../bootstrap.js'),
 ];
 // config.debug = false;
