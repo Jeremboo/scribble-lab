@@ -14,6 +14,9 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview2.gif">
     <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview2.gif?raw=true" width="200">
   </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/rotationForce/preview1.gif">
+    <img alt="rotationForce" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/rotationForce/preview1.gif?raw=true" width="200">
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif">
     <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif?raw=true" width="200">
   </a>

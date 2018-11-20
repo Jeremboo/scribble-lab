@@ -34,7 +34,7 @@ function applyAttraction(current, target, gravity, velocity) {
  * * *******************
  */
 export default class FloatingCube extends Mesh {
-  constructor(x, y, { force = 0.004, scale = getRandomFloat(0.5, 2), color = '#C9F0FF' }) {
+  constructor(x, y, { force = 0.004, scale = getRandomFloat(0.5, 2), color = '#C9F0FF', disapear = true }) {
     // Create object
     const material = new MeshToonMaterial({
       color: new Color(color),
@@ -61,14 +61,16 @@ export default class FloatingCube extends Mesh {
     this.attractPosition = applyAttraction(this.position, this.targetedPosition, force, 0.92);
     this.attractRotation = applyAttraction(this.rotation, this.targetedRotation, force * 2, 0.96);
 
-    setTimeout(() => {
-      this.targetedPosition.set(x, y, -scale);
-      this.targetedRotation.set(
-        getRandomFloat(radians(-30), radians(30)),
-        getRandomFloat(radians(-30), radians(30)),
-        0,
-      );
-    }, getRandomFloat(4000, 4500));
+    if (disapear) {
+      setTimeout(() => {
+        this.targetedPosition.set(x, y, -scale);
+        this.targetedRotation.set(
+          getRandomFloat(radians(-30), radians(30)),
+          getRandomFloat(radians(-30), radians(30)),
+          0,
+        );
+      }, getRandomFloat(4000, 4500));
+    }
 
     this.update = this.update.bind(this);
   }
@@ -76,5 +78,11 @@ export default class FloatingCube extends Mesh {
   update() {
     this.attractPosition();
     this.attractRotation();
+
+    this.targetedRotation.multiplyScalar(0.1);
+  }
+
+  applyForce(force) {
+    this.targetedRotation.add(force);
   }
 }

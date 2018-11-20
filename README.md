@@ -21,6 +21,9 @@ Play with physics to make interactives floating boxes
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif">
     <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif?raw=true" width="200">
   </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/rotationForce/preview1.gif">
+    <img alt="rotationForce" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/rotationForce/preview1.gif?raw=true" width="200">
+  </a>
 </p>
 
 ## Blobs & Metaballs
