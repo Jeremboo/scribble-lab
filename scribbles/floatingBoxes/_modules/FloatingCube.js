@@ -12,19 +12,19 @@ import { getRandomFloat, radians } from 'utils';
  * @param {Number} gravity
  * @param {Number} velocity
  */
-function applyAttraction(current, target, gravity, velocity) {
+function applyAttraction(current, target, velocity, friction) {
   const force = new Vector3();
   return () => {
     // const vecForce = current.clone().sub(target);
-    // force.sub(vecForce.multiplyScalar(gravity));
-    force.x -= ((current.x - target.x) * gravity);
-    force.y -= ((current.y - target.y) * gravity);
-    force.z -= ((current.z - target.z) * gravity);
+    // force.sub(vecForce.multiplyScalar(velocity));
+    force.x -= ((current.x - target.x) * velocity);
+    force.y -= ((current.y - target.y) * velocity);
+    force.z -= ((current.z - target.z) * velocity);
     // current.add(force);
     current.x += force.x;
     current.y += force.y;
     current.z += force.z;
-    force.multiplyScalar(velocity);
+    force.multiplyScalar(friction);
   };
 }
 
@@ -34,13 +34,24 @@ function applyAttraction(current, target, gravity, velocity) {
  * * *******************
  */
 export default class FloatingCube extends Mesh {
-  constructor(x, y, { force = 0.004, scale = getRandomFloat(0.5, 2), color = '#C9F0FF', disapear = true }) {
+  constructor(x, y, {
+    force = 0.004, scale = getRandomFloat(0.5, 2), color = '#C9F0FF', disapear = true,
+    rotationFriction = 0.96,
+  }) {
     // Create object
     const material = new MeshToonMaterial({
-      color: new Color(color),
+      color,
     });
+    const faceMaterials = [
+      material, // Left side
+      material, // Right side
+      material, // Top side
+      material, // Bottom side
+      material, // Front side
+      undefined,  // Back side. Not need to be rendered
+    ];
     const geometry = new BoxGeometry(scale, scale, scale);
-    super(geometry, material);
+    super(geometry, faceMaterials);
     this.castShadow = true;
     this.receiveShadow = false;
 
@@ -59,7 +70,7 @@ export default class FloatingCube extends Mesh {
     this.targetedRotation = new Vector3();
 
     this.attractPosition = applyAttraction(this.position, this.targetedPosition, force, 0.92);
-    this.attractRotation = applyAttraction(this.rotation, this.targetedRotation, force * 2, 0.96);
+    this.attractRotation = applyAttraction(this.rotation, this.targetedRotation, force * 2, rotationFriction);
 
     if (disapear) {
       setTimeout(() => {
@@ -84,5 +95,20 @@ export default class FloatingCube extends Mesh {
 
   applyForce(force) {
     this.targetedRotation.add(force);
+  }
+
+  /**
+   * * *******************
+   * * FRONT MATERIAL
+   * * *******************
+   */
+  setTexture(texture) {
+    this.material[4] = new MeshToonMaterial({
+      map: texture,
+    });
+  }
+
+  setMaterial(material) {
+    this.material[4] = material;
   }
 }
