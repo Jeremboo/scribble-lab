@@ -1,5 +1,5 @@
 import {
-  BoxGeometry, MeshToonMaterial, Mesh, Color, Vector3,
+  BoxGeometry, MeshToonMaterial, Mesh, Vector3,
 } from 'three';
 
 import { getRandomFloat, radians } from 'utils';
@@ -69,8 +69,12 @@ export default class FloatingCube extends Mesh {
     this.targetedPosition = new Vector3(x, y, -((scale * 0.5) - 0.5));
     this.targetedRotation = new Vector3();
 
-    this.attractPosition = applyAttraction(this.position, this.targetedPosition, force, 0.92);
-    this.attractRotation = applyAttraction(this.rotation, this.targetedRotation, force * 2, rotationFriction);
+    this.positionForce = new Vector3();
+    this.positionVelocity = force;
+    this.positionFriction = 0.92;
+    this.rotationForce = new Vector3();
+    this.rotationVelocity = force * 2;
+    this.rotationFriction = rotationFriction;
 
     if (disapear) {
       setTimeout(() => {
@@ -87,14 +91,33 @@ export default class FloatingCube extends Mesh {
   }
 
   update() {
-    this.attractPosition();
-    this.attractRotation();
+    this.updatePosition();
+    this.updateRotation();
 
     this.targetedRotation.multiplyScalar(0.1);
   }
 
   applyForce(force) {
     this.targetedRotation.add(force);
+  }
+
+  updateRotation() {
+    this.rotationForce.x -= ((this.rotation.x - this.targetedRotation.x) * this.rotationVelocity);
+    this.rotationForce.y -= ((this.rotation.y - this.targetedRotation.y) * this.rotationVelocity);
+    // this.rotationForce.z -= ((this.rotation.z - this.targetedRotation.z) * this.rotationVelocity);
+
+    this.rotation.x += this.rotationForce.x;
+    this.rotation.y += this.rotationForce.y;
+    // this.rotation.z += this.rotationForce.z;
+    this.rotationForce.multiplyScalar(this.rotationFriction);
+  }
+
+  updatePosition() {
+    const vecForce = this.position.clone().sub(this.targetedPosition);
+    this.positionForce.sub(vecForce.multiplyScalar(this.positionVelocity));
+
+    this.position.add(this.positionForce);
+    this.positionForce.multiplyScalar(this.positionFriction);
   }
 
   /**

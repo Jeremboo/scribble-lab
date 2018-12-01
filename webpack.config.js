@@ -109,6 +109,12 @@ var config = {
           exclude: rawPaths,
         },
         {
+          test: /\.(mp4)$/,
+          loader: 'file-loader?name=videos/[hash].[ext]',
+          include: assetsPaths,
+          exclude: rawPaths,
+        },
+        {
           test: /\.(svg)$/,
           loader: 'raw-loader',
           include: rawPaths,

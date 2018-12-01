@@ -3,21 +3,28 @@ import {
   Mesh, Color, PlaneGeometry, MeshBasicMaterial,
   Vector3, AmbientLight, DirectionalLight, PCFSoftShadowMap, ShadowMaterial,
   OrthographicCamera, Raycaster, VideoTexture,
-  LinearFilter, RGBFormat,
+  LinearFilter, RGBFormat, TextureLoader,
 } from 'three';
 
 import FloatingCube from 'FloatingCube';
 import TransitionalTextureMaterial from 'TransitionalTextureMaterial';
 
-import { getNormalizedPosFromScreen } from 'utils';
+import { getNormalizedPosFromScreen, getPosXBetweenTwoNumbers } from 'utils';
 
-import omniwomenURL from 'Omniwomen.mp4';
-import sweetPursuitURL from 'SweetPursuit.mp4';
+import video1 from 'videoTest1.mp4';
+import video2 from 'videoTest2.mp4';
+
+import distortionImage from 'flowmap.png';
 
 // PROPS
 const MAIN_COLOR = '#C9F0FF';
 const SECONDARY_COLOR = '#070707';
 const BACKGROUND_COLOR = '#ffffff';
+
+const ROTATION_VEL = 0.01;
+const ROTATION_VEL_DRAG = 0.0085;
+const DISTANCE_VEL = 0.12;
+const DISTANCE_MAX = 0.1;
 
 const HAS_TOUCH = 'ontouchstart' in document.documentElement ||
   navigator.maxTouchPoints > 0 ||
@@ -134,29 +141,7 @@ let texture1 = false;
 let texture2 = false;
 let videoOmniwomen = false;
 let videoSweetPursuit = false;
-const textureTransitionMaterial = new TransitionalTextureMaterial(
-  texture1,
-  texture2,
-  {
-    isVideo: true,
-    transitionDuration: 0.5,
-  },
-);
-
-/**
- * * *******************
- * * CREATE CUBE TOOL
- */
-
-function createFloatingCube(x = 0, y = 0, props) {
-  floatingCube = new FloatingCube(x, y, props);
-  // HACK floating cube
-  floatingCube.update = () => {
-    floatingCube.attractPosition();
-    floatingCube.attractRotation();
-  };
-  webgl.add(floatingCube);
-}
+let textureTransitionMaterial = false;
 
 /**
  * * *******************
@@ -192,21 +177,19 @@ function loadVideo(url) {
 
 async function loadVideos() {
   try {
-    videoOmniwomen = await loadVideo(omniwomenURL);
+    videoOmniwomen = await loadVideo(video1);
     videoOmniwomen.play();
     texture1 = new VideoTexture(videoOmniwomen);
     texture1.minFilter = LinearFilter;
     texture1.magFilter = LinearFilter;
     texture1.format = RGBFormat;
-    textureTransitionMaterial.uniforms.u_texture1.value = texture1;
 
-    videoSweetPursuit = await loadVideo(sweetPursuitURL);
+    videoSweetPursuit = await loadVideo(video2);
     // videoSweetPursuit.play();
     texture2 = new VideoTexture(videoSweetPursuit);
     texture2.minFilter = LinearFilter;
     texture2.magFilter = LinearFilter;
     texture2.format = RGBFormat;
-    textureTransitionMaterial.uniforms.u_texture2.value = texture2;
   } catch (e) {
     console.error(e);
     // TODO ne charger qu'une image
@@ -222,6 +205,7 @@ function handleDownEvent(e) {
   if (currentCubeIntersect) {
     // TODO play videos
     cubeDragged = currentCubeIntersect.object;
+    cubeDragged.rotationVelocity = ROTATION_VEL_DRAG;
     document.body.style.cursor = 'grabbing';
 
     draggingPoint.x = e.x || e.clientX || (e.touches && e.touches[0].clientX) || 0;
@@ -233,6 +217,7 @@ function handleUpEvent() {
   if (cubeDragged) {
     document.body.style.cursor = (currentCubeIntersect) ? 'grab' : 'auto';
     cubeDragged.targetedRotation.set(0, 0, 0);
+    cubeDragged.rotationVelocity = ROTATION_VEL;
     cubeDragged = false;
   }
 }
@@ -244,16 +229,11 @@ function handleMoveEvent(e) {
   // Apply force to the cube
   if (cubeDragged) {
     draggingVector.set(
-      (y - draggingPoint.y) || 0,
-      (x - draggingPoint.x) || 0,
+      (y - draggingPoint.y) * DISTANCE_VEL || 0,
+      (x - draggingPoint.x) * DISTANCE_VEL || 0,
       0,
     );
-    const dist = draggingVector.length();
     currentCubeIntersect.object.targetedRotation.copy(draggingVector.multiplyScalar(0.009));
-    if (dist > 150) {
-      textureTransitionMaterial.switch();
-      handleUpEvent();
-    }
   } else {
      // Check the intersections between the mouse and a cube
     const normalizedPosition = getNormalizedPosFromScreen(x, y);
@@ -272,16 +252,60 @@ function handleMoveEvent(e) {
 
 /**
  * * *******************
+ * * CREATE CUBE TOOL
+ */
+
+function createFloatingCube(x = 0, y = 0, props) {
+  floatingCube = new FloatingCube(x, y, props);
+  floatingCube.targetedPosition.z = -props.scale * 0.25;
+
+  // HACK floating cube
+  floatingCube.update = () => {
+    const dist = floatingCube.rotation.toVector3().length();
+    textureTransitionMaterial.uniforms.u_distortionOrientation.value.set(
+      -floatingCube.rotation.y,
+      floatingCube.rotation.x,
+      ).normalize();
+    textureTransitionMaterial.uniforms.u_distortionForce.value = (1 - getPosXBetweenTwoNumbers(0, DISTANCE_MAX, dist));
+    // Check if the switch have to be done
+    if (cubeDragged && (
+      Math.abs(floatingCube.rotation.x) > DISTANCE_MAX ||
+      Math.abs(floatingCube.rotation.y) > DISTANCE_MAX
+    )) {
+      textureTransitionMaterial.switch();
+      handleUpEvent();
+    }
+
+    floatingCube.updatePosition();
+    floatingCube.updateRotation();
+  };
+  webgl.add(floatingCube);
+}
+
+/**
+ * * *******************
  * * START
  */
 
 loadVideos().then(() => {
   createFloatingCube(0, 0, {
-    scale: 4,
+    scale: 5,
     color: MAIN_COLOR,
     disapear: false,
     rotationFriction: 0.9,
   });
+
+  // TODO async loader requested
+  const distortionTexture = new TextureLoader().load(distortionImage);
+  textureTransitionMaterial = new TransitionalTextureMaterial(
+    texture1,
+    texture2,
+    distortionTexture,
+    {
+      isVideo: true,
+      transitionDuration: 0.5,
+    },
+  );
 
   // V1 ------------------------------------------------------------
   // floatingCube.setMaterial(new MeshToonMaterial({

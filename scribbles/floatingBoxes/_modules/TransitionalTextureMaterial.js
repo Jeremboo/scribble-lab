@@ -1,11 +1,11 @@
-import { ShaderMaterial } from 'three';
+import { ShaderMaterial, Vector2 } from 'three';
 import { TweenLite } from 'gsap';
 
 import fragTextureTransition from './shaders/textureTransition.f.glsl';
 import vertTextureTransition from './shaders/textureTransition.v.glsl';
 
 export default class TransitionalTextureMaterial extends ShaderMaterial {
-  constructor(texture1, texture2, { isVideo = false, transitionDuration = 1 } = {}) {
+  constructor(texture1, texture2, distortionTexture, { isVideo = false, transitionDuration = 5 } = {}) {
     super({
       vertexShader: vertTextureTransition,
       fragmentShader: fragTextureTransition,
@@ -13,6 +13,10 @@ export default class TransitionalTextureMaterial extends ShaderMaterial {
         u_transition: { value: 0 },
         u_texture1: { value: texture1 },
         u_texture2: { value: texture2 },
+
+        u_distortionForce: { value: 0 },
+        u_distortionMap: { value: distortionTexture },
+        u_distortionOrientation: { value: new Vector2(1, 1) },
       },
       // depthWrite: false,
     });
