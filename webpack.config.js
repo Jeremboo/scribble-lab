@@ -68,7 +68,7 @@ var config = {
         html: scribblePath + '/index.pug.html',
         style: scribblePath + '/style.styl',
         app: scribblePath + '/app.js',
-        postprocessing: path.resolve(__dirname, './node_modules/postprocessing/build/postprocessing.js'),
+        postprocessing: path.resolve(__dirname, './node_modules/metabubbles/build/postprocessing.js'),
       },
     },
     module: {

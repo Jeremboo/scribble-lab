@@ -7,8 +7,7 @@ import { TimelineLite } from 'gsap';
 import { GUI } from 'dat.gui';
 
 import { MeshLine, MeshLineMaterial } from 'three.meshline';
-
-import fontFile from './font'
+import AnimatedText3D from 'AnimatedText3D';
 import { getRandomFloat, getRandomInt } from 'utils';
 
 const gui = new GUI();
@@ -200,59 +199,13 @@ class Wind extends Object3D {
     }
   }
 }
-class AnimatedText extends Object3D {
-  constructor(text, font, { size = 0.3, letterSpacing = 0.03, color = '#000000' } = {}) {
-    super();
 
-    this.basePosition = 0;
-    this.size = size;
-
-    const letters = [...text];
-    letters.forEach((letter) => {
-      if (letter === ' ') {
-        this.basePosition += size * 0.5;
-      } else {
-        const geom = new ShapeGeometry(
-          font.generateShapes(letter, size, 1),
-        );
-        geom.computeBoundingBox();
-        const mat = new MeshBasicMaterial({
-          color,
-          opacity: 0,
-          transparent: true,
-        });
-        const mesh = new Mesh(geom, mat);
-
-        mesh.position.x = this.basePosition;
-        this.basePosition += geom.boundingBox.max.x + letterSpacing;
-        this.add(mesh);
-      }
-    });
-  }
-  show(duration = 0.6) {
-    const tm = new TimelineLite();
-    tm.set({}, {}, `+=${duration * 1.1}`)
-    this.children.forEach((letter) => {
-      const data = {
-        opacity: 0,
-        position: -0.5,
-      };
-      tm.to(data, duration, { opacity: 1, position: 0, ease: Back.easeOut.config(2), onUpdate: () => {
-        letter.material.opacity = data.opacity;
-        letter.position.y = data.position;
-        letter.position.z = data.position * 2;
-        letter.rotation.x = data.position * 2;
-      } }, `-=${duration - 0.03}`);
-    });
-  }
-}
 
 // START
 // load font
 // https://gero3.github.io/facetype.js/
-const fontLoader = new FontLoader()
-const fontAsset = fontLoader.parse(fontFile);
-const text = new AnimatedText('CODEVEMBER DAY.23', fontAsset);
+
+const text = new AnimatedText3D('CODEVEMBER DAY.23');
 text.position.x -= text.basePosition * 0.5;
 text.position.y -= 0.5;
 webgl.add(text);

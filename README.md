@@ -9,6 +9,12 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 Play with physics to make interactives floating boxes
 
 <p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/switchVideo/preview1.gif">
+    <img alt="switchVideo" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/switchVideo/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/rotationForce/preview1.gif">
+    <img alt="rotationForce" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/rotationForce/preview1.gif?raw=true" width="200">
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview3.gif">
     <img alt="physics" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/physics/preview3.gif?raw=true" width="200">
   </a>
@@ -20,12 +26,6 @@ Play with physics to make interactives floating boxes
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif">
     <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/rotationForce/preview1.gif">
-    <img alt="rotationForce" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/rotationForce/preview1.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/switchVideo/preview1.gif">
-    <img alt="switchVideo" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/switchVideo/preview1.gif?raw=true" width="200">
   </a>
 </p>
 
@@ -88,16 +88,22 @@ Some test about a concept of text animation
   </a>
 </p>
 
-## Custom Postprocessings
+## Metabubbles & PostProcessing
 
 
 
 <p align="center">
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/postprocessing/incrustation/preview.gif">
-    <img alt="Incrustation" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/postprocessing/incrustation/preview.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview2.gif">
+    <img alt="bubbles" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview2.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/postprocessing/textureShadingBalls/preview.gif">
-    <img alt="Incrusted Metaballs" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/postprocessing/textureShadingBalls/preview.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview1.gif">
+    <img alt="bubbles" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/incrustation/preview.gif">
+    <img alt="Incrustation" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/incrustation/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/textureShadingBalls/preview.gif">
+    <img alt="Incrusted Metaballs" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/textureShadingBalls/preview.gif?raw=true" width="200">
   </a>
 </p>
 

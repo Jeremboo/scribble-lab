@@ -10,6 +10,30 @@
     "tags": [],
     "scribbles": [
       {
+        "name": "switchVideo",
+        "path": "scribbles/floatingBoxes/switchVideo/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview1.gif"
+        ],
+        "description": "",
+        "date": "2018-11-23T01:11:58.117Z",
+        "tags": []
+      },
+      {
+        "name": "rotationForce",
+        "path": "scribbles/floatingBoxes/rotationForce/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview1.gif"
+        ],
+        "description": "",
+        "date": "2018-11-13T01:11:58.117Z",
+        "tags": []
+      },
+      {
         "name": "physics",
         "path": "scribbles/floatingBoxes/physics/",
         "link": "",
@@ -30,30 +54,6 @@
         "preview": [
           "preview1.gif",
           "preview2.gif"
-        ],
-        "description": "",
-        "date": "2018-11-03T01:11:58.117Z",
-        "tags": []
-      },
-      {
-        "name": "rotationForce",
-        "path": "scribbles/floatingBoxes/rotationForce/",
-        "link": "",
-        "visible": true,
-        "preview": [
-          "preview1.gif"
-        ],
-        "description": "",
-        "date": "2018-11-03T01:11:58.117Z",
-        "tags": []
-      },
-      {
-        "name": "switchVideo",
-        "path": "scribbles/floatingBoxes/switchVideo/",
-        "link": "",
-        "visible": true,
-        "preview": [
-          "preview1.gif"
         ],
         "description": "",
         "date": "2018-11-03T01:11:58.117Z",
@@ -288,18 +288,31 @@
     ]
   },
   {
-    "name": "Custom Postprocessings",
-    "path": "scribbles/postprocessing/",
+    "name": "Metabubbles & PostProcessing",
+    "path": "scribbles/metabubbles/",
     "link": "",
     "visible": true,
-    "preview": "scribbles/postprocessing/preview.gif",
+    "preview": "scribbles/metabubbles/preview.gif",
     "description": "",
     "date": "2017-11-16T15:41:01.185Z",
     "tags": [],
     "scribbles": [
       {
+        "name": "bubbles",
+        "path": "scribbles/metabubbles/bubbles/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview1.gif",
+          "preview2.gif"
+        ],
+        "description": "",
+        "date": "2018-12-03T17:25:52.117Z",
+        "tags": []
+      },
+      {
         "name": "Incrustation",
-        "path": "scribbles/postprocessing/incrustation/",
+        "path": "scribbles/metabubbles/incrustation/",
         "link": "",
         "visible": true,
         "preview": "preview.gif",
@@ -309,7 +322,7 @@
       },
       {
         "name": "Incrusted Metaballs",
-        "path": "scribbles/postprocessing/textureShadingBalls/",
+        "path": "scribbles/metabubbles/textureShadingBalls/",
         "link": "",
         "visible": true,
         "preview": "preview.gif",
