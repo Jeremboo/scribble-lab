@@ -2,7 +2,7 @@
   "name": "SurfaceAnimation.js",
   "path": "scribbles/surfaceAnimation/",
   "link": "",
-  "visible": true,
+  "visible": false,
   "preview": "scribbles/surfaceAnimation/preview.gif",
   "description": "Some test about a concept of text animation",
   "date": "2017-11-30T08:27:48.306Z",

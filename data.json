@@ -262,7 +262,7 @@
     "name": "SurfaceAnimation.js",
     "path": "scribbles/surfaceAnimation/",
     "link": "",
-    "visible": true,
+    "visible": false,
     "preview": "scribbles/surfaceAnimation/preview.gif",
     "description": "Some test about a concept of text animation",
     "date": "2017-11-30T08:27:48.306Z",
@@ -290,17 +290,17 @@
   {
     "name": "Metabubbles & PostProcessing",
     "path": "scribbles/metabubbles/",
-    "link": "",
+    "link": "https://codepen.io/Jeremboo/pen/XyQdXK",
     "visible": true,
     "preview": "scribbles/metabubbles/preview.gif",
-    "description": "",
+    "description": "Use a custom postprocessing to use the meshes as a mask.",
     "date": "2017-11-16T15:41:01.185Z",
     "tags": [],
     "scribbles": [
       {
         "name": "bubbles",
         "path": "scribbles/metabubbles/bubbles/",
-        "link": "",
+        "link": "https://codepen.io/Jeremboo/pen/XyQdXK",
         "visible": true,
         "preview": [
           "preview1.gif",

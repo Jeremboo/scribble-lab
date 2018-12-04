@@ -5,11 +5,11 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 - [All Projects](/README.md)
 
 <p align="center">
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview1.gif">
-    <img alt="bubbles" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview1.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview2.gif">
+  <a href="https://codepen.io/Jeremboo/pen/XyQdXK">
     <img alt="bubbles" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="https://codepen.io/Jeremboo/pen/XyQdXK">
+    <img alt="bubbles" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview1.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/switchVideo/preview1.gif">
     <img alt="switchVideo" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/switchVideo/preview1.gif?raw=true" width="200">
@@ -38,14 +38,14 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/organism/preview.gif">
     <img alt="organism" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/organism/preview.gif?raw=true" width="200">
   </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview3.gif">
+    <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview3.gif?raw=true" width="200">
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview5.gif">
     <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview5.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview4.gif">
     <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview4.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview3.gif">
-    <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview3.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview1.gif">
     <img alt="Blob Raymarching" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobRaymarching/preview1.gif?raw=true" width="200">
@@ -53,32 +53,14 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobMarchingCube/preview.gif">
     <img alt="Blob Marching Cube" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobMarchingCube/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview3.gif">
-    <img alt="Blob in PostProcess" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview3.gif?raw=true" width="200">
-  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview1.gif">
     <img alt="Blob in PostProcess" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview1.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview2.gif">
     <img alt="Blob in PostProcess" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview2.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview3.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview3.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview4.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview4.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview5.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview5.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview1.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview1.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview2.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview2.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview3.gif">
+    <img alt="Blob in PostProcess" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/blobPostProcess/preview3.gif?raw=true" width="200">
   </a>
   <a href="https://codepen.io/Jeremboo/full/XzBQGe">
     <img alt=" Metaballs and Bloom postprocessing" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/27_metaballsandbloom/preview.gif?raw=true" width="200">
@@ -86,10 +68,10 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
   <a href="https://codepen.io/Jeremboo/full/BmxOyB">
     <img alt="Text animation and animated lines (THREE.MeshLine fork)" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/23_textandlines/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/incrustation/preview.gif">
+  <a href="https://codepen.io/Jeremboo/pen/XyQdXK">
     <img alt="Incrustation" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/incrustation/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/textureShadingBalls/preview.gif">
+  <a href="https://codepen.io/Jeremboo/pen/XyQdXK">
     <img alt="Incrusted Metaballs" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/textureShadingBalls/preview.gif?raw=true" width="200">
   </a>
   <a href="https://codepen.io/Jeremboo/full/aVdxPw?editors=0100">
@@ -110,9 +92,6 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
   <a href="https://codepen.io/Jeremboo/full/XzmEEJ">
     <img alt="Digital HUD" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/codevember2017/01_digitalhud//preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview3.gif">
-    <img alt="fluidWithBlob" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview3.gif?raw=true" width="200">
-  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview2.gif">
     <img alt="fluidWithBlob" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview2.gif?raw=true" width="200">
   </a>
@@ -122,6 +101,9 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview1.gif">
     <img alt="fluidWithBlob" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview1.gif?raw=true" width="200">
   </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview3.gif">
+    <img alt="fluidWithBlob" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview3.gif?raw=true" width="200">
+  </a>
   <a href="http://jeremieboulay.fr/grow-workshop/">
     <img alt="fbo&Instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/fbo&Instances/preview1.gif?raw=true" width="200">
   </a>
@@ -129,7 +111,10 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
     <img alt="fbo&Instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/fbo&Instances/preview.gif?raw=true" width="200">
   </a>
   <a href="http://jeremieboulay.fr/typhoon/">
-    <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview3.gif?raw=true" width="200">
+    <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview2.gif?raw=true" width="200">
+  </a>
+  <a href="http://jeremieboulay.fr/typhoon/">
+    <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview.gif?raw=true" width="200">
   </a>
   <a href="http://jeremieboulay.fr/typhoon/">
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview4.gif?raw=true" width="200">
@@ -141,10 +126,7 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview6.gif?raw=true" width="200">
   </a>
   <a href="http://jeremieboulay.fr/typhoon/">
-    <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview.gif?raw=true" width="200">
-  </a>
-  <a href="http://jeremieboulay.fr/typhoon/">
-    <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview2.gif?raw=true" width="200">
+    <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview3.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO//preview.gif">
     <img alt="FBO" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO//preview.gif?raw=true" width="200">
@@ -158,23 +140,23 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview2.gif">
     <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview2.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview2.gif">
-    <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview2.gif?raw=true" width="200">
-  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview.gif">
     <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/seaAndBoat/sea//preview2.gif">
-    <img alt="Sea, fog and boat" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/seaAndBoat/sea//preview2.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview2.gif">
+    <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview2.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/seaAndBoat/sea//preview.gif">
     <img alt="Sea, fog and boat" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/seaAndBoat/sea//preview.gif?raw=true" width="200">
   </a>
-  <a href="http://codepen.io/Jeremboo/full/QGVaYa">
-    <img alt="Rope generator" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/ropeGenerator/preview.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/seaAndBoat/sea//preview2.gif">
+    <img alt="Sea, fog and boat" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/seaAndBoat/sea//preview2.gif?raw=true" width="200">
   </a>
   <a href="http://codepen.io/Jeremboo/full/QGVaYa">
     <img alt="Rope generator" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/ropeGenerator/preview1.gif?raw=true" width="200">
+  </a>
+  <a href="http://codepen.io/Jeremboo/full/QGVaYa">
+    <img alt="Rope generator" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/ropeGenerator/preview.gif?raw=true" width="200">
   </a>
   <a href="http://codepen.io/Jeremboo/full/QGVaYa">
     <img alt="Rope generator" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/ropeGenerator/preview2.gif?raw=true" width="200">

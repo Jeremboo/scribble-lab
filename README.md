@@ -63,40 +63,15 @@ Prototypes (and explorations) for the [Watermelon wellness lab projet](http://wa
   </a>
 </p>
 
-## SurfaceAnimation.js
+## [Metabubbles & PostProcessing](https://codepen.io/Jeremboo/pen/XyQdXK)
 
-Some test about a concept of text animation
-
-<p align="center">
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview2.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview2.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview1.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview1.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview5.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview5.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview4.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview4.gif?raw=true" width="200">
-  </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview3.gif">
-    <img alt="2dCanvas" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/surfaceAnimation/2dCanvas/preview3.gif?raw=true" width="200">
-  </a>
-</p>
-
-## Metabubbles & PostProcessing
-
-
+Use a custom postprocessing to use the meshes as a mask.
 
 <p align="center">
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview2.gif">
+  <a href="https://codepen.io/Jeremboo/pen/XyQdXK">
     <img alt="bubbles" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview2.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview1.gif">
+  <a href="https://codepen.io/Jeremboo/pen/XyQdXK">
     <img alt="bubbles" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/bubbles/preview1.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/metabubbles/incrustation/preview.gif">
