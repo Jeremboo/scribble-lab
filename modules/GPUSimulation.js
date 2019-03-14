@@ -60,7 +60,7 @@ const DEFAULT_SIMULATION_VERTEX_SHADER = `
 varying vec2 vUv;
 
 void main() {
-  vUv = vec2(uv.x, uv.y);
+  vUv = uv;
   gl_Position = vec4( position, 1.0 );
 }
 `;
@@ -103,7 +103,7 @@ export default class GPUSimulation {
     this.orthoCamera = new OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow(2, 53), 1);
 
     // Mesh to show each simulation texture
-    const geom = new BufferGeometry(); // or new PlaneBufferGeometry( 1, 1 );
+    const geom = new BufferGeometry(); // or new PlaneBufferGeometry( 2, 2 );
     geom.addAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]), 3));
     geom.addAttribute('uv', new BufferAttribute(new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]), 2));
     const material = this.createSimulationShaderMaterial(
@@ -147,6 +147,7 @@ export default class GPUSimulation {
     type = FloatType, // ( /(iPad|iPhone|iPod)/g.test( navigator.userAgent ) ) ? HalfFloatType : FloatType,
    } = {}) {
     /* FBO to capture the texture render */
+    console.log(width, height)
     const fbo = new WebGLRenderTarget(width, height, {
       wrapS,
       wrapT,
@@ -158,9 +159,11 @@ export default class GPUSimulation {
       // depthBuffer: false,
     });
     // fbo.texture.generateMipmaps = false;
+    const fboClone = fbo.clone();
 
     // Set the first render with the inital values
     this.renderTexture(initialDataTexture, fbo);
+    this.renderTexture(initialDataTexture, fboClone);
 
 
     /* MATERIAL to compute the new texture */
@@ -175,13 +178,17 @@ export default class GPUSimulation {
       material,
       initialDataTexture,
       // two fbo (render targets) per simulatioin, to make ping-pong.
-      fbos: [fbo, fbo.clone()],
+      fbos: [fbo, fboClone],
       output: fbo,
     };
 
     // save the new simulation
     this.simulations.push(simulation);
-    if (this.helper) this.helper.attach(simulation.output, name);
+    if (this.helper) {
+      // this.helper.attach(simulation.output, name);
+      this.helper.attach(simulation.fbos[0], name);
+      this.helper.attach(simulation.fbos[1], name + "1");
+    }
 
     return simulation;
   }
@@ -210,7 +217,7 @@ export default class GPUSimulation {
    * @param {Object} uniforms optionnal uniforms
    * @returns {ShaderMaterial}
    */
-  createSimulationShaderMaterial(simFragmentShader, uniforms = {}) {
+  createSimulationShaderMaterial(simFragmentShader, uniforms) {
     const material = new ShaderMaterial({
       uniforms,
       vertexShader: DEFAULT_SIMULATION_VERTEX_SHADER,
@@ -256,7 +263,7 @@ export default class GPUSimulation {
     this.mesh.material = simulation.material;
     // compute
     this.renderTexture(
-      input,
+      input.texture,
       simulation.fbos[this.currentFboTextureIdx]
     );
     // save the render to the output
@@ -271,8 +278,14 @@ export default class GPUSimulation {
    * @param {WebGLRenderTarget} output
    */
   renderTexture(input, output) {
+    const currentRenderTarget = this.renderer.getRenderTarget();
+
     this.mesh.material.uniforms.texture.value = input;
-    this.renderer.render(this.scene, this.orthoCamera, output, true);
+
+    this.renderer.setRenderTarget(output);
+    this.renderer.render(this.scene, this.orthoCamera);
+
+    this.renderer.setRenderTarget( currentRenderTarget );
   }
 
 

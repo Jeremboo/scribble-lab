@@ -12,3 +12,5 @@ scribbles/-test/*
 !scribbles/-test/.keep
 
 public/
+
+.vscode/

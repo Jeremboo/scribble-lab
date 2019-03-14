@@ -19,7 +19,7 @@ class Webgl {
     this.meshCount = 0;
     this.meshListeners = [];
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setPixelRatio(Math.min(1.6, window.devicePixelRatio) || 1);
     this.renderer.setClearColor(new Color(BACKGROUND_COLOR));
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
