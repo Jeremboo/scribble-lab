@@ -9,10 +9,10 @@ import {
 import FloatingCube from 'FloatingCube';
 import TransitionalTextureMaterial from 'TransitionalTextureMaterial';
 
-import { getNormalizedPosFromScreen, getPosXBetweenTwoNumbers } from 'utils';
+import { getNormalizedPosFromScreen, getPosXBetweenTwoNumbers, loadVideo } from 'utils';
 
-import video1 from 'videoTest1.mp4';
-import video2 from 'videoTest2.mp4';
+import videoUrl1 from 'videoTest1.mp4';
+import videoUrl2 from 'videoTest2.mp4';
 
 import distortionImage from 'flowmap.png';
 
@@ -139,8 +139,8 @@ const draggingPoint = new Vector3();
 // Material variables
 let texture1 = false;
 let texture2 = false;
-let videoOmniwomen = false;
-let videoSweetPursuit = false;
+let video1 = false;
+let video2 = false;
 let textureTransitionMaterial = false;
 
 /**
@@ -177,16 +177,16 @@ function loadVideo(url) {
 
 async function loadVideos() {
   try {
-    videoOmniwomen = await loadVideo(video1);
-    videoOmniwomen.play();
-    texture1 = new VideoTexture(videoOmniwomen);
+    video1 = await loadVideo(videoUrl1, { width: 512, height: 512, loop: true, muted: true });
+    video1.play();
+    texture1 = new VideoTexture(video1);
     texture1.minFilter = LinearFilter;
     texture1.magFilter = LinearFilter;
     texture1.format = RGBFormat;
 
-    videoSweetPursuit = await loadVideo(video2);
-    // videoSweetPursuit.play();
-    texture2 = new VideoTexture(videoSweetPursuit);
+    video2 = await loadVideo(videoUrl2, { width: 512, height: 512, loop: true, muted: true });
+    video2.play();
+    texture2 = new VideoTexture(video2);
     texture2.minFilter = LinearFilter;
     texture2.magFilter = LinearFilter;
     texture2.format = RGBFormat;

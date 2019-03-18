@@ -200,10 +200,10 @@ instanceGeom.addAttribute('position', vertices);
 // instanceGeom.addAttribute('uv', uvs);
 
 const coords = new InstancedBufferAttribute(
-  new Float32Array(INSTANCE_COUNT * 2), 2, 1,
+  new Float32Array(INSTANCE_COUNT * 2), 2,
 );
 const colors = new InstancedBufferAttribute(
-  new Float32Array(INSTANCE_COUNT * 3), 3, 1,
+  new Float32Array(INSTANCE_COUNT * 3), 3,
 );
 
 for (i = 0, ul = INSTANCE_COUNT; i < ul; i++) {

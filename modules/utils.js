@@ -257,9 +257,9 @@ export const hexToRgb = (hex) => {
 
 // https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
 export const shadeColor = (color, percent) => {
-  const R = parseInt(color.substring(1,3),16);
-  const G = parseInt(color.substring(3,5),16);
-  const B = parseInt(color.substring(5,7),16);
+  let R = parseInt(color.substring(1,3),16);
+  let G = parseInt(color.substring(3,5),16);
+  let B = parseInt(color.substring(5,7),16);
 
   R = parseInt(R * (100 + percent) / 100);
   G = parseInt(G * (100 + percent) / 100);
@@ -274,4 +274,34 @@ export const shadeColor = (color, percent) => {
   const BB = ((B.toString(16).length==1)?'0'+B.toString(16):B.toString(16));
 
   return RR+GG+BB;
+}
+
+
+export const loadVideo = (url, { width = 512, height = 512, loop = false, muted = false } = {}) => {
+  return new Promise((resolve, reject) => {
+    const videoPlayer = document.createElement('video');
+
+    videoPlayer.width = width;
+    videoPlayer.height = height;
+
+    videoPlayer.loop = loop;
+    videoPlayer.muted = muted;
+    const source = document.createElement('source');
+    source.id = 'mp4';
+    source.type = 'video/mp4';
+    videoPlayer.appendChild(source);
+
+    if (!videoPlayer.canPlayType('video/mp4')) {
+      reject();
+      return;
+    }
+
+    videoPlayer.addEventListener('canplaythrough', () => {
+      resolve(videoPlayer);
+    });
+    videoPlayer.src = url;
+    if (videoPlayer.readyState > 3) {
+      resolve(videoPlayer);
+    }
+  });
 }
