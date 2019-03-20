@@ -57,36 +57,3 @@ function init() {
 }
 
 init();
-
-
-// /* ---- CREATING ZONE END ---- */
-// class CameraMouseControl {
-//   constructor(camera) {
-//     this.t = 0;
-//     this.speed = 0;
-//     this.camera = camera;
-//     this.lookAt = new Vector3();
-//     this.position = { x: 0, y: 0 };
-//     this.handleMouseMove = this.handleMouseMove.bind(this);
-//     this.update = this.update.bind(this);
-//     document.body.addEventListener('mousemove', this.handleMouseMove);
-//   }
-//   handleMouseMove(event) {
-//     this.speed = ((event.clientX / window.innerWidth) - 0.5);
-//     this.position.y = (((event.clientY / window.innerHeight) - 0.5) * 5);
-//   }
-//   update() {
-//     this.t += 0.04 * this.speed;
-//      // Position
-//      this.camera.position.x = Math.cos(this.t) * 10;
-//      this.camera.position.z = Math.sin(this.t) * 10;
-//      this.camera.rotation.z = 10.3;
-//     // this.camera.position.x += (this.position.x - this.camera.position.x) * 0.1;
-//     this.camera.position.y += (this.position.y - this.camera.position.y) * 0.1;
-//     for (let i = 0; i < bubbles.length; i++) {
-//       bubbles[i].lookAt(this.camera.position)
-//     }
-//     this.camera.lookAt(this.lookAt);
-//   }
-// }
-// const cameraControl = new CameraMouseControl(webgl.camera);

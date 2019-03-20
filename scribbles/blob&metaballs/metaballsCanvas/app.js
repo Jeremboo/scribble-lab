@@ -1,4 +1,4 @@
-import { drawGradientArc, canvasBuilder, applyImageToCanvas } from 'utils';
+import { drawRadialGradient, canvasBuilder, applyImageToCanvas } from 'utils';
 
 Math.sqr = a => a * a;
 const getVec2Length = (x, y) => Math.sqrt(Math.sqr(y) + Math.sqr(x));
@@ -94,8 +94,8 @@ class BubbleCanvas {
       this.context.globalCompositeOperation = 'source-over';
 
       // Gradient circles
-      drawGradientArc(this.context, { x: this.center.x, y: this.center.y, size: this.bubbleSize, ratio: 0.4 });
-      drawGradientArc(this.context, { x: this.littleBubble.x, y: this.littleBubble.y, size: this.littleBubbleSize, ratio: 0.2 });
+      drawRadialGradient(this.context, { x: this.center.x, y: this.center.y, size: this.bubbleSize, ratio: 0.4 });
+      drawRadialGradient(this.context, { x: this.littleBubble.x, y: this.littleBubble.y, size: this.littleBubbleSize, ratio: 0.2 });
 
       // threshold
       this.renderThershold();

@@ -6,6 +6,8 @@ attribute vec2 fboUv;
 varying vec2 vVideoUv;
 varying vec3 vViewPosition;
 
+varying float vTileDepth;
+
 #ifndef FLAT_SHADED
  varying vec3 vNormal;
 #endif
@@ -41,8 +43,11 @@ void main()	{
   vec3 pos = texture2D(positions, fboUv).xyz;
   vec4 worldPosition = modelMatrix * vec4(position + pos, 1.0);
 
+  vTileDepth = pos.z;
+
   vec4 mvPosition = viewMatrix * worldPosition;
   vViewPosition = -mvPosition.xyz;
+
 
   gl_Position = projectionMatrix * mvPosition;
 

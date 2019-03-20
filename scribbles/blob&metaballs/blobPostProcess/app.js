@@ -8,8 +8,7 @@ import {
   EffectComposer, RenderPass, BlurPass, BloomPass,
 } from 'postprocessing';
 
-
-import OrbitControl from 'OrbitControl';
+import CameraMouseControl from 'CameraMouseControl';
 
 import MetaballPass from 'MetaballPass';
 
@@ -158,26 +157,7 @@ for (let i = 0; i < 50; i++) {
 
 
 /* ---- CREATING ZONE END ---- */
-class CameraMouseControl {
-  constructor(camera) {
-    this.camera = camera;
-    this.lookAt = new Vector3();
-    this.position = { x: 0, y: 0 };
-    this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.update = this.update.bind(this);
-    document.body.addEventListener('mousemove', this.handleMouseMove);
-  }
-  handleMouseMove(event) {
-    this.position.x = -((event.clientX / window.innerWidth) - 0.5) * 80;
-    this.position.y = ((event.clientY / window.innerHeight) - 0.5) * 40;
-  }
-  update() {
-    this.camera.position.x += (this.position.x - this.camera.position.x) * 0.5;
-    this.camera.position.y += (this.position.y - this.camera.position.y) * 0.5;
-    this.camera.lookAt(this.lookAt);
-  }
-}
-const cameraControl = new CameraMouseControl(webgl.camera);
+const cameraControl = new CameraMouseControl(webgl.camera, { mouseMove: [80, 40], velocity: [0.5, 0.5] });
 /**/
 /**/
 /**/ /* ---- ON RESIZE ---- */

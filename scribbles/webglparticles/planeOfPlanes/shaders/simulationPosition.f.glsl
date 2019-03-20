@@ -4,6 +4,10 @@ uniform float perlinTime;
 uniform float perlinDimention;
 uniform float perlinForce;
 
+uniform vec2 mousePosition;
+uniform float attractionDistanceMax;
+uniform float attractionVelocity;
+
 varying vec2 vUv;
 
 // Perlin method
@@ -50,6 +54,30 @@ void main() {
   // Create the noise depending on coordinate, time, dimention, force.
   float noise = cnoise((vUv + perlinTime) * perlinDimention) * perlinForce;
 
+  vec3 newPosition = initialPos + noise;
+
+  // Define the  mouse force depending of the distance with it.
+  float dist = min(attractionDistanceMax, distance(newPosition.xy, mousePosition));
+  float force = (attractionDistanceMax - dist) * attractionVelocity;
+
+  // V1 - Attract particle close to the mouse ------------------------------------------------------
+  // Attract particles close to the mouse
+  // vec2 attractedDistance = newPosition.xy + ((mousePosition - newPosition.xy) * force * 0.2);
+  // newPosition = vec3(attractedDistance, newPosition.z);
+
+  // V2 - Increase the Z close to the mouse --------------------------------------------------------
+  float attractiveZ = (newPosition.z * force) + (newPosition.z * 0.2);
+  newPosition = vec3(newPosition.xy, attractiveZ);
+
+  // V3 - Vibrations close to the mouse ------------------------------------------------------------
+  float vibSpeed = 0.4;
+  float vibDimention = 50.0;
+  float vibForce = 1.0;
+  float vibrationNoise = cnoise((vUv - (perlinTime * vibSpeed)) * vibDimention) * vibForce;
+
+  float vibrationZ = (newPosition.z + (vibrationNoise * force)) + (newPosition.z * 0.2);
+  newPosition = vec3(newPosition.xy, vibrationZ);
+
   // Displace the initial position with the noise
-  gl_FragColor = vec4(initialPos + noise, 1.0);
+  gl_FragColor = vec4(newPosition, 1.0);
 }

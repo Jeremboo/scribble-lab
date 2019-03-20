@@ -83,7 +83,7 @@ export const getRandomPosAroundASphere = (r) => {
 // Ty Robin <3
 // https://codepen.io/robin-dela/pen/dZXVrQ?editors=0010
 // https://threejs.org/docs/#api/core/Raycaster
-export const onCursorTouchMeshes = (camera, scene, callback, targetedMesh = false) => {
+export const onCursorTouchMeshes = (camera, sceneChildren = [], callback, targetedMesh = false) => {
   const raycaster = new Raycaster();
   const moveEvent = 'ontouchstart' in (window || navigator.msMaxTouchPoints) ? 'touchmove' : 'mousemove';
   window.addEventListener(moveEvent, (e) => {
@@ -92,7 +92,7 @@ export const onCursorTouchMeshes = (camera, scene, callback, targetedMesh = fals
       e.clientY || e.touches[0].clientY,
     );
     raycaster.setFromCamera(mouseVec, camera);
-    const intersects = raycaster.intersectObjects(scene.children);
+    const intersects = raycaster.intersectObjects(sceneChildren);
     if (!targetedMesh) {
       callback(intersects);
     } else {
@@ -277,12 +277,12 @@ export const shadeColor = (color, percent) => {
 }
 
 
-export const loadVideo = (url, { width = 512, height = 512, loop = false, muted = false } = {}) => {
+export const loadVideo = (url, { width = false, height = false, loop = false, muted = false } = {}) => {
   return new Promise((resolve, reject) => {
     const videoPlayer = document.createElement('video');
 
-    videoPlayer.width = width;
-    videoPlayer.height = height;
+    if (width) videoPlayer.width = width;
+    if (height) videoPlayer.height = height;
 
     videoPlayer.loop = loop;
     videoPlayer.muted = muted;

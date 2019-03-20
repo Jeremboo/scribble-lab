@@ -6,6 +6,8 @@ import {
 import { TimelineLite } from 'gsap';
 import { GUI } from 'dat.gui';
 
+import CameraMouseControl from 'CameraMouseControl';
+
 import { MeshLine, MeshLineMaterial } from 'three.meshline';
 import AnimatedText3D from 'AnimatedText3D';
 import { getRandomFloat, getRandomInt } from 'utils';
@@ -224,26 +226,8 @@ webgl.add(windLines);
 
 /* --------------------------- */
 /* ------- CORE FOOTER ------- */
-class CameraMouseControl {
-  constructor(camera) {
-    this.camera = camera;
-    this.lookAt = new Vector3();
-    this.position = { x: 0, y: 0 };
-    this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.update = this.update.bind(this);
-    document.body.addEventListener('mousemove', this.handleMouseMove);
-  }
-  handleMouseMove(event) {
-    this.position.x = -((event.clientX / window.innerWidth) - 0.5) * 8;
-    this.position.y = ((event.clientY / window.innerHeight) - 0.5) * 4;
-  }
-  update() {
-    this.camera.position.x += (this.position.x - this.camera.position.x) * 0.05;
-    this.camera.position.y += (this.position.y - this.camera.position.y) * 0.05;
-    this.camera.lookAt(this.lookAt);
-  }
-}
-const cameraControl = new CameraMouseControl(webgl.camera);
+const cameraControl = new CameraMouseControl(webgl.camera, { mouseMove : [8, 4], velocity : [0.05, 0.05]});
+
 function _onResize() {
   windowWidth = window.innerWidth;
   windowHeight = window.innerHeight;

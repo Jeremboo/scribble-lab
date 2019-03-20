@@ -253,7 +253,7 @@ let touchedBox = false;
 let currentIntersectBox = false;
 let currentMousePosition = { x: 0, y: 0 };
 
-onCursorTouchMeshes(webgl.camera, webgl.scene, (intersects) => {
+onCursorTouchMeshes(webgl.camera, webgl.scene.children, (intersects) => {
   currentIntersectBox =
     intersects[0] &&
     (intersects[0].object.uuid !== planeShadow.uuid) &&

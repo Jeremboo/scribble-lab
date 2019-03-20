@@ -7,6 +7,8 @@ import {
   EffectComposer, RenderPass, BlurPass,
 } from 'postprocessing';
 
+import CameraMouseControl from 'CameraMouseControl';
+
 import IncrustationPass from 'IncrustationPass';
 
 import { getRandomFloat } from 'utils';
@@ -133,26 +135,8 @@ loader.load('https://i.imgur.com/462xXUs.png', (texture) => {
 });
 
 /* ---- CREATING ZONE END ---- */
-class CameraMouseControl {
-  constructor(camera) {
-    this.camera = camera;
-    this.lookAt = new Vector3();
-    this.position = { x: 0, y: 0 };
-    this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.update = this.update.bind(this);
-    document.body.addEventListener('mousemove', this.handleMouseMove);
-  }
-  handleMouseMove(event) {
-    this.position.x = ((event.clientX / window.innerWidth) - 0.5) * 3;
-    this.position.y = -((event.clientY / window.innerHeight) - 0.5) * 3;
-  }
-  update() {
-    this.camera.position.x += (this.position.x - this.camera.position.x) * 0.1;
-    this.camera.position.y += (this.position.y - this.camera.position.y) * 0.1;
-    this.camera.lookAt(this.lookAt);
-  }
-}
-const cameraControl = new CameraMouseControl(webgl.camera);
+const cameraControl = new CameraMouseControl(webgl.camera, { mouseMove : [3, 3], velocity : [0.1, 0.1]});
+
 /**/
 /**/
 /**/ /* ---- ON RESIZE ---- */

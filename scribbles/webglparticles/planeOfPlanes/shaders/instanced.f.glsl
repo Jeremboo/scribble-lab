@@ -5,8 +5,10 @@ uniform float shininess;
 uniform float opacity;
 
 uniform sampler2D videoTexture;
+uniform float depthLightingForce;
 
 varying vec2 vVideoUv;
+varying float vTileDepth;
 
 #include <common>
 #include <packing>
@@ -33,8 +35,7 @@ void main() {
 	#include <lights_fragment_end>
 
 	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular;
-	gl_FragColor = vec4( outgoingLight, diffuseColor.a );
+	outgoingLight += vTileDepth * depthLightingForce;
 
-	// gl_FragColor = vec4(vVideoUv.x, vVideoUv.y, 1.0, 1.0 );
-	// gl_FragColor = vec4(vVideoUv.x, vVideoUv.x, vVideoUv.x, 1.0 );
+	gl_FragColor = vec4( outgoingLight, diffuseColor.a );
 }
