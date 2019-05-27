@@ -28,8 +28,8 @@
  *
  * - initHelper(w, h); - Enable the FBOHelper to show the textures computed
  * - createDataTexture(); - create a DataTexture() directly usable
- * - createSimulationShaderMaterial(simFragmentShader); - create a Material for the simulation
- *
+ * - createSimulationShaderMaterial(simFragmentShader, { uniforms }); - create a Material for the simulation
+ * - defineTextureSize(nbrOfParticle); - Return the texture optimal texture size to use.
  */
 import {
   Scene, Mesh, OrthographicCamera, NearestFilter, RGBAFormat, FloatType,
@@ -48,25 +48,22 @@ import FBOHelper from 'three.fbo-helper';
 /* Default fragment shader for the begining */
 const DEFAULT_SIMULATION_FRAGMENT_SHADER = `
 uniform sampler2D texture;
-varying vec2 vUv;
 
 void main() {
-  gl_FragColor = texture2D( texture, vUv );
+  vec2 uv = gl_FragCoord.xy / resolution.xy;
+  gl_FragColor = texture2D( texture, uv );
 }
 `;
 
 /* Default vertex shader for each Simulation Shader Material */
 const DEFAULT_SIMULATION_VERTEX_SHADER = `
-varying vec2 vUv;
-
 void main() {
-  vUv = uv;
   gl_Position = vec4( position, 1.0 );
 }
 `;
 
 /* Default uniform to each FBO texture */
-const DEFAULT_UNIFORM = { texture: { type: 't', value: null } };
+const DEFAULT_UNIFORM = { texture: { value: null } };
 
 
 /**
@@ -76,6 +73,21 @@ const DEFAULT_UNIFORM = { texture: { type: 't', value: null } };
  * GPU Compuration to texture rendering
  */
 export default class GPUSimulation {
+  /**
+   * Define which multiple of two can be used to match with the nbr of particule.
+   * @param {number} nbrOfParticle - The total number of particle we need
+   * @param {number} textureSize - The texture size tested. Start at 16
+   */
+  static defineTextureSize(nbrOfParticle, textureSize = 16) {
+    if (textureSize > 2048) {
+      console.warn('GPUSimulation.defineTextureSize : The texture will be taller than 2048px');
+    }
+    return (textureSize * textureSize < nbrOfParticle) ?
+      GPUSimulation.defineTextureSize(nbrOfParticle, textureSize * 2) :
+      textureSize
+    ;
+  }
+
   /**
    * Create a GPUSimulation to render a plane where is mapped a computed texture
    * @param {number} width - the size of each textures
@@ -105,11 +117,9 @@ export default class GPUSimulation {
     // Mesh to show each simulation texture
     const geom = new BufferGeometry(); // or new PlaneBufferGeometry( 2, 2 );
     geom.addAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]), 3));
-    geom.addAttribute('uv', new BufferAttribute(new Float32Array([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0]), 2));
-    const material = this.createSimulationShaderMaterial(
-      DEFAULT_SIMULATION_FRAGMENT_SHADER,
-      DEFAULT_UNIFORM
-    );
+
+    // Create a default material
+    const material = this.createSimulationShaderMaterial(DEFAULT_SIMULATION_FRAGMENT_SHADER);
     this.mesh = new Mesh(geom, material);
     this.scene.add(this.mesh);
   }
@@ -123,16 +133,16 @@ export default class GPUSimulation {
 
   /**
    * Create a simulation computed by the renderer to update a FBO texture
-   * @param {String} name - the name of the simulation
-   * @param {String} simFragmentShader - the shader used to compute
+   * @param {string} name - the name of the simulation
+   * @param {string} simFragmentShader - the shader used to compute
    * @param {DataTexture} initialDataTexture - the initial value of the texture
-   * @param {Object} props -
-   *   @param {Number} width - width for the WegGLRenderer. By default the same as the class.
-   *   @param {Number} height - height for the WegGLRenderer. By default the same as the class.
-   *   @param {Object} uniforms - uniforms for the shader material built
-   *   @param {...} ... - another params for the WebGLRenderTarget class
+   * @param {object} props -
+   * @param {number} props.width - width for the WegGLRenderer. By default the same as the class.
+   * @param {number} props.height - height for the WegGLRenderer. By default the same as the class.
+   * @param {object} props.uniforms - uniforms for the shader material built
+   * @param {...} ... - another params for the WebGLRenderTarget class
    *
-   * @return {Object} Simulation -
+   * @return {object} Simulation -
    */
   // TODO create a simulation who update only with the initial dataTexture
   createSimulation(name, simFragmentShader, initialDataTexture, {
@@ -147,7 +157,6 @@ export default class GPUSimulation {
     type = FloatType, // ( /(iPad|iPhone|iPod)/g.test( navigator.userAgent ) ) ? HalfFloatType : FloatType,
    } = {}) {
     /* FBO to capture the texture render */
-    console.log(width, height)
     const fbo = new WebGLRenderTarget(width, height, {
       wrapS,
       wrapT,
@@ -165,11 +174,10 @@ export default class GPUSimulation {
     this.renderTexture(initialDataTexture, fbo);
     this.renderTexture(initialDataTexture, fboClone);
 
-
     /* MATERIAL to compute the new texture */
     const material = this.createSimulationShaderMaterial(
       simFragmentShader,
-      Object.assign(uniforms, DEFAULT_UNIFORM),
+      { width, height, uniforms }
     );
 
     /* SIMULATION - TODO could be a class */
@@ -211,17 +219,31 @@ export default class GPUSimulation {
   }
 
   /**
-   * Create a Simulation Shader Material to compute the texture.
-   * Vertex shader is added by default because it is just a texture render
-   * @param {String} simFragmentShader the shader to compute the texture
-   * @param {Object} uniforms optionnal uniforms
+   * @param {string} simFragmentShader - The required fragment shader
+   * @param {object} props properties
+   * @param {number} props.width - A specific simulation resolution width
+   * @param {number} props.height - A specific simulation resolution height
+   * @param {object} props.uniforms - The shader uniforms
+   * @param {string} props.vertexShader - The vertext shader (you don't need to overwrite it)
    * @returns {ShaderMaterial}
    */
-  createSimulationShaderMaterial(simFragmentShader, uniforms) {
+  createSimulationShaderMaterial(fragmentShader, {
+    width = this.width,
+    height = this.height,
+    uniforms = {},
+    vertexShader = DEFAULT_SIMULATION_VERTEX_SHADER,
+  } = {}) {
+    if (uniforms.texture) {
+      console.error('ERROR.createSimulationShaderMaterial : the uniform named texture is protected');
+      return;
+    }
     const material = new ShaderMaterial({
-      uniforms,
-      vertexShader: DEFAULT_SIMULATION_VERTEX_SHADER,
-      fragmentShader: simFragmentShader,
+      defines : {
+        resolution: `vec2(${width.toFixed(1)}, ${height.toFixed(1)})`
+      },
+      uniforms : Object.assign(uniforms, DEFAULT_UNIFORM),
+      vertexShader,
+      fragmentShader,
     });
     return material;
   }
