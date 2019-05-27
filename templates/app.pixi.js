@@ -51,12 +51,19 @@ class Renderer {
     }
     this.renderer.render(this.scene);
   }
-  resizeHandler(w, h) {
-    this.renderer.resize(w, h);
-    let i = this.renderableCount;
-    while (--i >= 0) {
-      if (this.renderables[i].resize) this.renderables[i].resize();
+  resizeHandler = (w, h) => {
+    this.app.resize(w, h);
+    let i = this.renderableCount - 1;
+    while (i >= 0) {
+      if (this.renderables[i].resize) this.renderables[i].resize(this.width, this.height);
+      i -= 1;
     }
+  }
+  get width() {
+    return this.app.screen.width;
+  }
+  get height() {
+    return this.app.screen.height;
   }
 }
 const renderer = new Renderer(windowWidth, windowHeight);

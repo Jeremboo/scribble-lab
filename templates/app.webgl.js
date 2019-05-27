@@ -83,8 +83,6 @@ class Example extends Object3D {
 
 // START
 const ex = new Example();
-
-// ADDS
 webgl.add(ex);
 
 /**

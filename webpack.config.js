@@ -25,7 +25,13 @@ var rawPaths          = [
   path.resolve(assetsPaths[0], 'raw'),
   path.resolve(assetsPaths[1], 'raw'),
 ];
-var nodeModulesPath   = path.resolve(__dirname, './node_modules');
+var workersPath       = [
+  path.resolve(__dirname, 'workers'),
+];
+
+// var nodeModulesPath   = path.resolve(__dirname, './node_modules');
+// https://github.com/vanruesc/postprocessing/issues/115
+var nodeModulesPath   = /node_modules\/(?!(postprocessing)\/).*/;
 
 // WEBPACK CONFIG
 var config = {
@@ -68,7 +74,6 @@ var config = {
         html: scribblePath + '/index.pug.html',
         style: scribblePath + '/style.styl',
         app: scribblePath + '/app.js',
-        postprocessing: path.resolve(__dirname, './node_modules/metabubbles/build/postprocessing.js'),
       },
     },
     module: {
@@ -76,7 +81,10 @@ var config = {
         {
           test: /\.jsx?$/,
           loader: 'babel-loader',
-          exclude: nodeModulesPath,
+          exclude: [
+            nodeModulesPath,
+            ...workersPath
+          ],
           query: {
             plugins: [
               [ 'module-resolver', {
@@ -87,6 +95,11 @@ var config = {
               }],
             ]
           },
+        },
+        {
+          test: /\.(js)$/,
+          loader: 'file-loader?name=workers/[name].[ext]',
+          include: workersPath,
         },
         {
           test: /\.(styl|css)$/,
@@ -115,6 +128,12 @@ var config = {
           exclude: rawPaths,
         },
         {
+          test: /\.(obj)$/,
+          loader: 'file-loader?name=objects/[hash].[ext]',
+          include: assetsPaths,
+          exclude: rawPaths,
+        },
+        {
           test: /\.(svg)$/,
           loader: 'raw-loader',
           include: rawPaths,
@@ -124,8 +143,14 @@ var config = {
           loader: 'file-loader?name=fonts/[name].[ext]',
           include: assetsPaths,
         },
-        { test: /\.(glsl|frag|vert)$/, exclude: nodeModulesPath, loader: 'raw-loader' },
-        { test: /\.(glsl|frag|vert)$/, exclude: nodeModulesPath, loader: 'glslify-loader' },
+        { test: /\.(glsl|frag|vert)$/, exclude: nodeModulesPath, use: [
+          {
+            loader: 'raw-loader',
+          },
+          {
+            loader: 'glslify-loader',
+          }]
+        }
       ],
     },
     plugins: [
