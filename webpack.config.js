@@ -47,7 +47,8 @@ var config = {
     ],
     output: {
       path: scribblePath + '/',
-      filename: 'bundle.js',
+      filename: 'app.js',
+      chunkFilename: 'vendors.js',
       // publicPath: myLocalIp,
       publicPath: '/',
       devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]',

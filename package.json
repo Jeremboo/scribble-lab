@@ -7,6 +7,7 @@
     "create:group": "node scripts/createGroup.js",
     "create:scribble": "node scripts/createScribble.js",
     "build:scribble": "node scripts/buildScribble.js",
+    "build:scribble:noMinified": "node scripts/buildScribble.js noMinified",
     "build:data": "node scripts/buildData.js"
   },
   "author": "Jérémie Boulay <jeremi.boulay@gmail.com>",
