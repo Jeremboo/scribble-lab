@@ -26,7 +26,7 @@ config.plugins.splice(0, 1);
 config.optimization = {
   minimizer: [
     new UglifyJsPlugin({
-      exclude: minimizeApp ? '' : 'app.js', // Minimize the app.js or not
+      exclude: minimizeApp ? 'app.js' : '', // Minimize the app.js or not
       uglifyOptions: {
         compress: {
           warnings: true,
