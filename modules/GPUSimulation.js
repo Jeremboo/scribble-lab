@@ -34,10 +34,8 @@
 import {
   Scene, Mesh, OrthographicCamera, NearestFilter, RGBAFormat, FloatType,
   WebGLRenderTarget, BufferGeometry, BufferAttribute, DataTexture,
-  ClampToEdgeWrapping, ShaderMaterial,
+  ClampToEdgeWrapping, ShaderMaterial
 } from 'three';
-
-import FBOHelper from 'three.fbo-helper';
 
 /**
  * *********
@@ -63,7 +61,7 @@ void main() {
 `;
 
 /* Default uniform to each FBO texture */
-const DEFAULT_UNIFORM = { texture: { value: null } };
+const DEFAULT_UNIFORM = { texture : { value : null } };
 
 
 /**
@@ -90,17 +88,18 @@ export default class GPUSimulation {
 
   /**
    * Create a GPUSimulation to render a plane where is mapped a computed texture
-   * @param {number} width - the size of each textures
-   * @param {number} height - the size of each textures
    * @param {object} renderer - The webgl renderer
+   * @param {object} props - the size of each textures
+   * @param {number} props.width - the size of each textures
+   * @param {number} props.height - the size of each textures
    */
-  constructor(width, height, renderer) {
+  constructor(renderer, { width = 64, height = 64 } = {}) {
     if (!renderer.extensions.get('OES_texture_float')) {
-      return 'No OES_texture_float support for float textures.';
+      throw 'GPUSimulation ERROR : OES_texture_float support for float textures.';
     }
 
     if (renderer.capabilities.maxVertexTextures === 0) {
-      return 'No support for vertex shader textures.';
+      throw 'GPUSimulation ERROR : No support for vertex shader textures.';
     }
 
     this.width = width;
@@ -154,8 +153,8 @@ export default class GPUSimulation {
     minFilter = NearestFilter,
     magFilter = NearestFilter,
     format = RGBAFormat, // RGBFormat
-    type = FloatType, // ( /(iPad|iPhone|iPod)/g.test( navigator.userAgent ) ) ? HalfFloatType : FloatType,
-   } = {}) {
+    type = FloatType // ( /(iPad|iPhone|iPod)/g.test( navigator.userAgent ) ) ? HalfFloatType : FloatType,
+  } = {}) {
     /* FBO to capture the texture render */
     const fbo = new WebGLRenderTarget(width, height, {
       wrapS,
@@ -163,10 +162,11 @@ export default class GPUSimulation {
       minFilter,
       magFilter,
       format, // Could be RGBFormat
-      type, // important as we need precise coordinates (not ints)
+      type // important as we need precise coordinates (not ints)
       // stencilBuffer: false,
       // depthBuffer: false,
     });
+
     // fbo.texture.generateMipmaps = false;
     const fboClone = fbo.clone();
 
@@ -185,9 +185,10 @@ export default class GPUSimulation {
       name,
       material,
       initialDataTexture,
+
       // two fbo (render targets) per simulatioin, to make ping-pong.
-      fbos: [fbo, fboClone],
-      output: fbo,
+      fbos   : [fbo, fboClone],
+      output : fbo
     };
 
     // save the new simulation
@@ -195,7 +196,7 @@ export default class GPUSimulation {
     if (this.helper) {
       // this.helper.attach(simulation.output, name);
       this.helper.attach(simulation.fbos[0], name);
-      this.helper.attach(simulation.fbos[1], name + "1");
+      this.helper.attach(simulation.fbos[1], name + '1');
     }
 
     return simulation;
@@ -209,7 +210,7 @@ export default class GPUSimulation {
    * @returns {DataTexture}
    */
   createDataTexture({
-    format = RGBAFormat, type = FloatType, width = this.width, height = this.height,
+    format = RGBAFormat, type = FloatType, width = this.width, height = this.height
   } = {}) {
     const dt = new DataTexture(new Float32Array(width * height * 4), width, height, format, type);
     dt.minFilter = NearestFilter;
@@ -231,7 +232,7 @@ export default class GPUSimulation {
     width = this.width,
     height = this.height,
     uniforms = {},
-    vertexShader = DEFAULT_SIMULATION_VERTEX_SHADER,
+    vertexShader = DEFAULT_SIMULATION_VERTEX_SHADER
   } = {}) {
     if (uniforms.texture) {
       console.error('ERROR.createSimulationShaderMaterial : the uniform named texture is protected');
@@ -239,11 +240,11 @@ export default class GPUSimulation {
     }
     const material = new ShaderMaterial({
       defines : {
-        resolution: `vec2(${width.toFixed(1)}, ${height.toFixed(1)})`
+        resolution : `vec2(${width.toFixed(1)}, ${height.toFixed(1)})`
       },
       uniforms : Object.assign(uniforms, DEFAULT_UNIFORM),
       vertexShader,
-      fragmentShader,
+      fragmentShader
     });
     return material;
   }
@@ -283,11 +284,13 @@ export default class GPUSimulation {
   updateSimulation(simulation, input = simulation.output) {
     // set the current simulation material
     this.mesh.material = simulation.material;
+
     // compute
     this.renderTexture(
       input.texture,
       simulation.fbos[this.currentFboTextureIdx]
     );
+
     // save the render to the output
     simulation.output = simulation.fbos[this.currentFboTextureIdx];
   }
@@ -323,8 +326,12 @@ export default class GPUSimulation {
    * @param {number} width for the size of the canvas
    * @param {number} height for the size of the canvas
    */
-  initHelper(w, h) {
-    this.helper = new FBOHelper(this.renderer);
-    this.helper.setSize(w, h);
-  }
+  // initHelper(width, height) {
+  //   return import('three.fbo-helper')
+  //   .then((FBOHelper) => {
+  //     this.helper = new FBOHelper.default(this.renderer);
+  //     this.helper.setSize(width, height);
+  //     document.getElementById('bfoh-grid').style.zIndex = '1001';
+  //   });
+  // }
 }

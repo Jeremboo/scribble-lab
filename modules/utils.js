@@ -2,7 +2,6 @@ import { Vector3, Euler, Raycaster } from 'three';
 
 Math.sqr = x => x * x;
 
-
 export const getDistBetweenTwoVec2 = (x1, y1, x2, y2) => {
   const x = x1 - x2;
   const y = y1 - y2;
@@ -122,6 +121,46 @@ export const getCameraVisionFieldSizeFromPosition = (position = new Vector3(), c
   };
 };
 
+// LOADERS
+export const loadImage = (url) => new Promise((resolve, reject) => {
+  const image = new Image();
+  image.crossOrigin = 'Anonymous';
+  image.onload = () => { resolve(image); };
+  image.onerror = () => {
+    reject('ERROR : Image cannot be loaded');
+  };
+  image.src = url;
+});
+
+export const loadVideo = (url, { width = false, height = false, loop = false, muted = false } = {}) => {
+  return new Promise((resolve, reject) => {
+    const videoPlayer = document.createElement('video');
+
+    if (width) videoPlayer.width = width;
+    if (height) videoPlayer.height = height;
+
+    videoPlayer.loop = loop;
+    videoPlayer.muted = muted;
+    const source = document.createElement('source');
+    source.id = 'mp4';
+    source.type = 'video/mp4';
+    videoPlayer.appendChild(source);
+
+    if (!videoPlayer.canPlayType('video/mp4')) {
+      reject();
+      return;
+    }
+
+    videoPlayer.addEventListener('canplaythrough', () => {
+      resolve(videoPlayer);
+    });
+    videoPlayer.src = url;
+    if (videoPlayer.readyState > 3) {
+      resolve(videoPlayer);
+    }
+  });
+}
+
 // ARRAY
 export const existingValueBy = (arr, comparator) =>
   arr.filter(value => comparator(value))[0]
@@ -147,9 +186,7 @@ export const applyImageToCanvas = (url, w, h) => new Promise((resolve, reject) =
   xhr.onload = (e) => {
     if (e.target.status === 200) {
       const blob = e.target.response;
-      const image = new Image();
-      image.crossOrigin = 'Anonymous';
-      image.onload = () => {
+      loadImage(window.URL.createObjectURL(blob)).then(() => {
         const width = w || image.width;
         const height = h || image.height;
         const canvasB = canvasBuilder(width, height);
@@ -157,11 +194,7 @@ export const applyImageToCanvas = (url, w, h) => new Promise((resolve, reject) =
         context.drawImage(image, 0, 0, width, height);
         window.URL.revokeObjectURL(blob);
         resolve(canvas);
-      };
-      image.onerror = () => {
-        reject('Err : Canvas cannot be loaded');
-      };
-      image.src = window.URL.createObjectURL(blob);
+      }).catch(reject);
     }
   };
   xhr.send();
@@ -274,34 +307,4 @@ export const shadeColor = (color, percent) => {
   const BB = ((B.toString(16).length==1)?'0'+B.toString(16):B.toString(16));
 
   return RR+GG+BB;
-}
-
-
-export const loadVideo = (url, { width = false, height = false, loop = false, muted = false } = {}) => {
-  return new Promise((resolve, reject) => {
-    const videoPlayer = document.createElement('video');
-
-    if (width) videoPlayer.width = width;
-    if (height) videoPlayer.height = height;
-
-    videoPlayer.loop = loop;
-    videoPlayer.muted = muted;
-    const source = document.createElement('source');
-    source.id = 'mp4';
-    source.type = 'video/mp4';
-    videoPlayer.appendChild(source);
-
-    if (!videoPlayer.canPlayType('video/mp4')) {
-      reject();
-      return;
-    }
-
-    videoPlayer.addEventListener('canplaythrough', () => {
-      resolve(videoPlayer);
-    });
-    videoPlayer.src = url;
-    if (videoPlayer.readyState > 3) {
-      resolve(videoPlayer);
-    }
-  });
 }
