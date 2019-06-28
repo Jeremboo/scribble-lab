@@ -15,7 +15,7 @@
  * -------------
  *
  * // In each frame...
- * gpuCompute.update();
+ * gpuCompute.updateAll();
  *
  * // Update texture uniforms in your visualization materials with the gpu renderer output
  * myMaterial.uniforms.myTexture.value = positionFBO.output.texture;
@@ -30,12 +30,21 @@
  * - createDataTexture(); - create a DataTexture() directly usable
  * - createSimulationShaderMaterial(simFragmentShader, { uniforms }); - create a Material for the simulation
  * - defineTextureSize(nbrOfParticle); - Return the texture optimal texture size to use.
+ *
+ *
+ * TODO
+ * -------------
+ * Dynamically set the format to use depending to the number of channel we want
+ * Limit the usage to a square (Safari support)
  */
+
 import {
-  Scene, Mesh, OrthographicCamera, NearestFilter, RGBAFormat, FloatType,
+  Scene, Mesh, OrthographicCamera, NearestFilter, RGBAFormat, RGBFormat, AlphaFormat, FloatType,
   WebGLRenderTarget, BufferGeometry, BufferAttribute, DataTexture,
-  ClampToEdgeWrapping, ShaderMaterial
+  ClampToEdgeWrapping, RawShaderMaterial
 } from 'three';
+
+import FBOHelper from 'three.fbo-helper';
 
 /**
  * *********
@@ -45,6 +54,8 @@ import {
 
 /* Default fragment shader for the begining */
 const DEFAULT_SIMULATION_FRAGMENT_SHADER = `
+precision highp float;
+
 uniform sampler2D texture;
 
 void main() {
@@ -55,6 +66,10 @@ void main() {
 
 /* Default vertex shader for each Simulation Shader Material */
 const DEFAULT_SIMULATION_VERTEX_SHADER = `
+precision highp float;
+
+attribute vec3 position;
+
 void main() {
   gl_Position = vec4( position, 1.0 );
 }
@@ -83,15 +98,15 @@ export default class GPUSimulation {
     return (textureSize * textureSize < nbrOfParticle) ?
       GPUSimulation.defineTextureSize(nbrOfParticle, textureSize * 2) :
       textureSize
-    ;
+      ;
   }
 
   /**
    * Create a GPUSimulation to render a plane where is mapped a computed texture
    * @param {object} renderer - The webgl renderer
-   * @param {object} props - the size of each textures
-   * @param {number} props.width - the size of each textures
-   * @param {number} props.height - the size of each textures
+   * @param {object} optionalProps
+   * @param {number} optionalProps.width - The width used by default by each simulation
+   * @param {number} optionalProps.height - The height used by default by each simulation
    */
   constructor(renderer, { width = 64, height = 64 } = {}) {
     if (!renderer.extensions.get('OES_texture_float')) {
@@ -106,7 +121,6 @@ export default class GPUSimulation {
     this.height = height;
     this.renderer = renderer;
     this.simulations = [];
-    this.currentFboTextureIdx = 0;
     this.helper = false;
 
     // Scene and camera
@@ -162,7 +176,7 @@ export default class GPUSimulation {
       minFilter,
       magFilter,
       format, // Could be RGBFormat
-      type // important as we need precise coordinates (not ints)
+      type    // important as we need precise coordinates (not int)
       // stencilBuffer: false,
       // depthBuffer: false,
     });
@@ -185,21 +199,43 @@ export default class GPUSimulation {
       name,
       material,
       initialDataTexture,
-
-      // two fbo (render targets) per simulatioin, to make ping-pong.
-      fbos   : [fbo, fboClone],
-      output : fbo
+      // two fbo (render targets) per simulation, to make ping-pong.
+      currentFboIdx : 0,
+      fbos          : [fbo, fboClone],
+      output        : fbo,
+      input         : fboClone
     };
 
-    // save the new simulation
-    this.simulations.push(simulation);
     if (this.helper) {
       // this.helper.attach(simulation.output, name);
       this.helper.attach(simulation.fbos[0], name);
-      this.helper.attach(simulation.fbos[1], name + '1');
     }
 
     return simulation;
+  }
+
+  /**
+   * Add the simulation to the array of simulations to automatically update those
+   * @param simulation
+   */
+  addSimulation(simulation) {
+    // Test if the same simulation already exist
+    if (this.simulations.filter((sim) => sim.name === name).length) {
+      console.error('ERROR : A simulation with the same name already exist');
+      return;
+    }
+
+    // save the new simulation
+    this.simulations.push(simulation);
+  }
+
+  removeSimulation(simulation) {
+    this.simulations = this.simulations.filter((sim) => {
+      return sim.name !== simulation.name;
+    });
+    simulation = null;
+
+    // TODO 2019-06-14 jeremieb: Remove the simulation from the helper
   }
 
   /**
@@ -212,7 +248,27 @@ export default class GPUSimulation {
   createDataTexture({
     format = RGBAFormat, type = FloatType, width = this.width, height = this.height
   } = {}) {
-    const dt = new DataTexture(new Float32Array(width * height * 4), width, height, format, type);
+    let nbrOfChannel;
+
+    // TODO manage the other possible Channels https://threejs.org/docs/#api/en/constants/Textures
+    switch (format) {
+      case RGBAFormat:
+        nbrOfChannel = 4;
+        break;
+      case RGBFormat:
+        nbrOfChannel = 3;
+        break;
+      case AlphaFormat:
+        nbrOfChannel = 1;
+        break;
+      default:
+        console.error('ERROR: The format requested is not supported. Format id: ', format);
+        return;
+    }
+
+    const dt = new DataTexture(
+      new Float32Array(width * height * nbrOfChannel), width, height, format, type
+    );
     dt.minFilter = NearestFilter;
     dt.magFilter = NearestFilter;
     dt.needsUpdate = true;
@@ -238,7 +294,8 @@ export default class GPUSimulation {
       console.error('ERROR.createSimulationShaderMaterial : the uniform named texture is protected');
       return;
     }
-    const material = new ShaderMaterial({
+
+    return new RawShaderMaterial({
       defines : {
         resolution : `vec2(${width.toFixed(1)}, ${height.toFixed(1)})`
       },
@@ -246,7 +303,6 @@ export default class GPUSimulation {
       vertexShader,
       fragmentShader
     });
-    return material;
   }
 
 
@@ -259,8 +315,8 @@ export default class GPUSimulation {
   /**
    * Update each simulations
    */
-  update() {
-    // Update the current index to switch between fbos input/output
+  updateAll() {
+    // Update the current index to switch between FBOs input/output
     this.currentFboTextureIdx = 1 - this.currentFboTextureIdx;
 
     let i;
@@ -276,31 +332,33 @@ export default class GPUSimulation {
    * Compute a simulation. Could be called alone to update only one simulation
    * with a different input.
    * EX: gpuSim.updateSimulation(sim, sim.initialDataTexture);
-   * WARNING: if the input is not referenced, you must manually update the
-   * currentFboTextureIdx : this.currentFboTextureIdx = 1 - this.currentFboTextureIdx;
    * @param {Simulation} simulation - simulation build by the GPUSim
    * @param {WebGLRenderTarget} {DataTexture} input
    */
   updateSimulation(simulation, input = simulation.output) {
+    // Update the current index to switch between fbos input/output
+    simulation.currentFboIdx = 1 - simulation.currentFboIdx;
+
     // set the current simulation material
     this.mesh.material = simulation.material;
 
-    // compute
+    // Render the new FBO texture
     this.renderTexture(
       input.texture,
-      simulation.fbos[this.currentFboTextureIdx]
+      simulation.fbos[simulation.currentFboIdx]
     );
 
-    // save the render to the output
-    simulation.output = simulation.fbos[this.currentFboTextureIdx];
+    // save the new input and output
+    simulation.input  = input;
+    simulation.output = simulation.fbos[simulation.currentFboIdx];
   }
 
 
   /**
    * Compute the input texture and save the
    * result in the output.
-   * @param {WebGLRenderTarget} {DataTexture} input
-   * @param {WebGLRenderTarget} output
+   * @param {WebGLRenderTarget||DataTexture}  input
+   * @param {WebGLRenderTarget}               output
    */
   renderTexture(input, output) {
     const currentRenderTarget = this.renderer.getRenderTarget();
@@ -312,7 +370,6 @@ export default class GPUSimulation {
 
     this.renderer.setRenderTarget( currentRenderTarget );
   }
-
 
   /**
    * *********
@@ -326,12 +383,9 @@ export default class GPUSimulation {
    * @param {number} width for the size of the canvas
    * @param {number} height for the size of the canvas
    */
-  // initHelper(width, height) {
-  //   return import('three.fbo-helper')
-  //   .then((FBOHelper) => {
-  //     this.helper = new FBOHelper.default(this.renderer);
-  //     this.helper.setSize(width, height);
-  //     document.getElementById('bfoh-grid').style.zIndex = '1001';
-  //   });
-  // }
+  initHelper(width, height) {
+    this.helper = new FBOHelper(this.renderer);
+    this.helper.setSize(width, height);
+    document.getElementById('bfoh-grid').style.zIndex = '1001';
+  }
 }
