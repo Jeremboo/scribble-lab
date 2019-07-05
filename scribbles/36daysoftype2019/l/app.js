@@ -139,7 +139,7 @@ loader.load(letterL, obj => {
 
     const tm = new TimelineMax({
     });
-    tm.fromTo(l.position, 2, { y : -0.5, }, { y : 0, ease : Power4.easeOut });
+    tm.fromTo(l.position, 2, { y : -0.5, }, { y : 0.15, ease : Power4.easeOut });
     tm.fromTo(l.scale, 2, { x : 0.0001, y : 0.0001, z : 0.0001, }, { x : 1, y : 1, z : 1, ease : Power4.easeOut }, 0);
     tm.add(() => {
       l.timeline.play();

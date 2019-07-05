@@ -145,7 +145,7 @@ void main() {
 
 
 	float y = transformed.y; // - (torsionForce * 0.01);
-	transformed.x += 0.15;
+	transformed.x += 0.1;
   vec4 torced = DoTwist(vec4( transformed, 1.0 ), y * torsionForce);
   vec4 mvPosition = modelViewMatrix * torced;
 
