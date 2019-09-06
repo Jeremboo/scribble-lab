@@ -132,12 +132,12 @@ export const loadImage = (url) => new Promise((resolve, reject) => {
   image.src = url;
 });
 
-export const loadVideo = (url, { width = false, height = false, loop = false, muted = false } = {}) => {
+export const loadVideo = (url, { width = 512, height = 512, loop = false, muted = false } = {}) => {
   return new Promise((resolve, reject) => {
     const videoPlayer = document.createElement('video');
 
-    if (width) videoPlayer.width = width;
-    if (height) videoPlayer.height = height;
+    videoPlayer.width = width;
+    videoPlayer.height = height;
 
     videoPlayer.loop = loop;
     videoPlayer.muted = muted;

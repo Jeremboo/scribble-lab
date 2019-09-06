@@ -11,7 +11,7 @@ uniform float attractionDistanceMax;
 uniform float attractionVelocity;
 uniform float anchorVelocity;
 uniform float anchorFriction;
-uniform float screenRatio;
+uniform float aspectRatio;
 
 
 void main() {
@@ -25,11 +25,7 @@ void main() {
   vec4 initialData = texture2D(initialDataTexture, uv);
 
   // The position
-  vec2 maskUv = vec2(
-    (initialData.x / screenRatio) + 0.5,
-    initialData.y + 0.5
-  );
-  float mask = texture2D(mask, maskUv).x;
+  float mask = texture2D(mask, initialData.xy + 0.5).x;
 
   if (mask == 0.) {
     gl_FragColor = vec4(-9999., -9999., 0., 0.);
@@ -40,7 +36,11 @@ void main() {
   }
 
   // Define the mouse attraction depending of the distance with it.
-  float dist = min(attractionDistanceMax, distance(currentPosition, mousePosition));
+  // Use the aspect ratio to correct the dist scale
+  vec2 currentPos = vec2(currentPosition.x * aspectRatio, currentPosition.y);
+  vec2 mousePos = vec2(mousePosition.x * aspectRatio, mousePosition.y);
+  float dist = min(attractionDistanceMax, distance(currentPos, mousePos));
+
   float force = (attractionDistanceMax - dist) * attractionVelocity;
 
   // V1 - Attract particle close to the mouse ------------------------------------------------------

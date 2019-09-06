@@ -1,5 +1,295 @@
 [
   {
+    "name": "webAr",
+    "path": "scribbles/webAr/",
+    "link": "",
+    "visible": false,
+    "preview": "preview.gif",
+    "description": "Use the web as an AR project",
+    "date": "2019-07-02T20:35:15.535Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "city",
+        "path": "scribbles/webAr/city/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-07-03T22:42:43.180Z",
+        "tags": []
+      },
+      {
+        "name": "aRjsTest",
+        "path": "scribbles/webAr/aRjsTest/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-07-03T15:12:18.278Z",
+        "tags": []
+      },
+      {
+        "name": "building",
+        "path": "scribbles/webAr/building/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-07-02T20:38:30.869Z",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "name": "watercolor",
+    "path": "scribbles/watercolor/",
+    "link": "",
+    "visible": false,
+    "preview": "preview.gif",
+    "description": "",
+    "date": "2019-05-31T18:50:10.388Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "watercolorScribble",
+        "path": "scribbles/watercolor/watercolorScribble/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-05-31T18:50:44.802Z",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "name": "36DaysOfType 2019",
+    "path": "scribbles/36daysoftype2019/",
+    "link": "https://36days.reflektor.digital/",
+    "visible": false,
+    "preview": "",
+    "description": "My participations of the [36 Days Of Types](https://36days.reflektor.digital) challenge did with the [Reflektor Digital](https://reflektor.digital/) team.",
+    "date": "2019-04-03T21:39:03.891Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "9",
+        "path": "scribbles/36daysoftype2019/9/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-05-07T14:26:14.913Z",
+        "tags": []
+      },
+      {
+        "name": "5",
+        "path": "scribbles/36daysoftype2019/5/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-05-03T12:58:53.985Z",
+        "tags": []
+      },
+      {
+        "name": "3",
+        "path": "scribbles/36daysoftype2019/3/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-05-01T22:06:05.909Z",
+        "tags": []
+      },
+      {
+        "name": "x",
+        "path": "scribbles/36daysoftype2019/x/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-04-24T14:48:33.905Z",
+        "tags": []
+      },
+      {
+        "name": "t",
+        "path": "scribbles/36daysoftype2019/t/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-04-18T00:08:16.497Z",
+        "tags": []
+      },
+      {
+        "name": "p",
+        "path": "scribbles/36daysoftype2019/p/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-04-17T21:00:04.220Z",
+        "tags": []
+      },
+      {
+        "name": "l",
+        "path": "scribbles/36daysoftype2019/l/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-04-13T14:26:40.100Z",
+        "tags": []
+      },
+      {
+        "name": "h",
+        "path": "scribbles/36daysoftype2019/h/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-04-09T20:56:05.750Z",
+        "tags": []
+      },
+      {
+        "name": "e",
+        "path": "scribbles/36daysoftype2019/e/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-04-06T16:23:14.899Z",
+        "tags": []
+      },
+      {
+        "name": "b",
+        "path": "scribbles/36daysoftype2019/b/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-04-03T21:39:26.467Z",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "name": "shapes",
+    "path": "scribbles/shapes&Masks/",
+    "link": "",
+    "visible": false,
+    "preview": "preview.gif",
+    "description": "",
+    "date": "2019-03-07T18:04:56.726Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "circlesTransitions",
+        "path": "scribbles/shapes&Masks/circlesTransitions/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-03-11T17:11:22.780Z",
+        "tags": []
+      },
+      {
+        "name": "retroComposition",
+        "path": "scribbles/shapes&Masks/retroComposition/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-03-08T15:39:11.885Z",
+        "tags": []
+      },
+      {
+        "name": "bwToColorCircle",
+        "path": "scribbles/shapes&Masks/bwToColorCircle/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-03-07T18:05:32.187Z",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "name": "surfaceShader",
+    "path": "scribbles/surfaceShader/",
+    "link": "",
+    "visible": false,
+    "preview": "preview.gif",
+    "description": "A surface shader from scratch",
+    "date": "2019-01-29T15:38:21.106Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "flatColors",
+        "path": "scribbles/surfaceShader/flatColors/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-04-23T14:36:19.394Z",
+        "tags": []
+      },
+      {
+        "name": "fluidLines",
+        "path": "scribbles/surfaceShader/fluidLines/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-04-23T14:36:19.394Z",
+        "tags": []
+      },
+      {
+        "name": "translatedText",
+        "path": "scribbles/surfaceShader/translatedText/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-04-15T15:34:00.193Z",
+        "tags": []
+      },
+      {
+        "name": "pixiFilter",
+        "path": "scribbles/surfaceShader/pixiFilter/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-02-11T22:45:58.257Z",
+        "tags": []
+      },
+      {
+        "name": "regl",
+        "path": "scribbles/surfaceShader/regl/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-02-08T23:04:48.814Z",
+        "tags": []
+      },
+      {
+        "name": "nativePlaneShader",
+        "path": "scribbles/surfaceShader/nativePlaneShader/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-01-29T15:38:56.697Z",
+        "tags": []
+      }
+    ]
+  },
+  {
     "name": "Floating Boxes",
     "path": "scribbles/floatingBoxes/",
     "link": "",
@@ -62,68 +352,6 @@
     ]
   },
   {
-    "name": "lowRender",
-    "path": "scribbles/lowRender/",
-    "link": "",
-    "visible": false,
-    "preview": "preview.gif",
-    "description": "Low renderers without many pixels",
-    "date": "2018-11-02T03:43:32.188Z",
-    "tags": [],
-    "scribbles": [
-      {
-        "name": "lines",
-        "path": "scribbles/lowRender/lines/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2018-11-09T16:09:08.144Z",
-        "tags": []
-      },
-      {
-        "name": "lines",
-        "path": "scribbles/lowRender/lines/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2018-11-09T16:09:08.144Z",
-        "tags": []
-      },
-      {
-        "name": "building2",
-        "path": "scribbles/lowRender/building2/",
-        "link": "",
-        "visible": false,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2018-11-06T20:47:36.356Z",
-        "tags": []
-      },
-      {
-        "name": "building2",
-        "path": "scribbles/lowRender/building2/",
-        "link": "",
-        "visible": false,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2018-11-06T20:47:36.356Z",
-        "tags": []
-      },
-      {
-        "name": "buildings",
-        "path": "scribbles/lowRender/buildings/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "Buildings in low poly",
-        "date": "2018-11-02T03:44:23.569Z",
-        "tags": []
-      }
-    ]
-  },
-  {
     "name": "2D",
     "path": "scribbles/2D/",
     "link": "",
@@ -133,6 +361,16 @@
     "date": "2018-03-23T16:10:57.647Z",
     "tags": [],
     "scribbles": [
+      {
+        "name": "canvasGrid",
+        "path": "scribbles/2D/canvasGrid/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-03-05T02:10:31.295Z",
+        "tags": []
+      },
       {
         "name": "wave",
         "path": "scribbles/2D/wave/",
@@ -462,6 +700,26 @@
     "tags": [],
     "scribbles": [
       {
+        "name": "reflective",
+        "path": "scribbles/materials/reflective/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-05-09T22:18:17.480Z",
+        "tags": []
+      },
+      {
+        "name": "shadow",
+        "path": "scribbles/shaders/shadow/",
+        "link": "",
+        "visible": false,
+        "preview": "scribbles/shaders/shadow/preview.gif",
+        "description": "",
+        "date": "2017-04-15T06:31:59.010Z",
+        "tags": []
+      },
+      {
         "name": "shadow",
         "path": "scribbles/shaders/shadow/",
         "link": "",
@@ -483,6 +741,40 @@
     "date": "2017-04-25T13:08:33.190Z",
     "tags": [],
     "scribbles": [
+      {
+        "name": "curl",
+        "path": "scribbles/webglparticles/curl/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview.gif"
+        ],
+        "description": "Curl noise",
+        "date": "2019-05-23T09:11:31.305Z",
+        "tags": []
+      },
+      {
+        "name": "planeOfPlanes",
+        "path": "scribbles/webglparticles/planeOfPlanes/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview.gif"
+        ],
+        "description": "",
+        "date": "2019-03-15T20:41:15.048Z",
+        "tags": []
+      },
+      {
+        "name": "Grid",
+        "path": "scribbles/webglparticles/grid/",
+        "link": "",
+        "visible": true,
+        "preview": [],
+        "description": "",
+        "date": "2019-03-05T02:10:31.295Z",
+        "tags": []
+      },
       {
         "name": "storm",
         "path": "scribbles/codevember2017/storm/",
@@ -531,16 +823,6 @@
         "preview": "scribbles/webglparticles/2DStorm/preview.gif",
         "description": "",
         "date": "2017-05-30T13:47:29.756Z",
-        "tags": []
-      },
-      {
-        "name": "curl",
-        "path": "scribbles/webglparticles/curl/",
-        "link": "",
-        "visible": false,
-        "preview": "scribbles/webglparticles/curl/preview.gif",
-        "description": "Curl noise",
-        "date": "2017-05-23T09:11:31.305Z",
         "tags": []
       },
       {

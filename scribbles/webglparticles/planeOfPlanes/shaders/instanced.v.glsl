@@ -22,16 +22,10 @@ void main()	{
     (position.y * 0.5) + 0.5
   );
 
-  // The UVs of the whole grid
-  vec2 pixellateVideoUv = vec2(
-    fboUv.x,
-    1. - fboUv.y
-  );
-
   // The UVs to map the video on the grid
   vVideoUv = vec2(
-    pixellateVideoUv.x + (planeUv.x / tileGrid.x),
-    pixellateVideoUv.y + (planeUv.y / tileGrid.y)
+    fboUv.x + (planeUv.x / tileGrid.x),
+    fboUv.y + (planeUv.y / tileGrid.y)
   );
 
 

@@ -117,7 +117,10 @@ class VideoGrid extends Object3D {
 
     // Create the FBO simulation
     // TODO try to not create a simulation each time
-    this.simulation = new GPUSimulation(this.horizontalTileNbr, this.verticalTileNbr, webgl.renderer);
+    this.simulation = new GPUSimulation(webgl.renderer, {
+      width: this.horizontalTileNbr,
+      height: this.verticalTileNbr
+    });
     // this.simulation.initHelper(windowWidth, windowHeight);
     this.positionFBO = this.createFBOPosition();
 
@@ -258,7 +261,7 @@ class VideoGrid extends Object3D {
    */
   update() {
     // FBO update
-    this.simulation.update();
+    this.simulation.updateAll();
     // this.simulation.helper.update();
     this.positionFBO.material.uniforms.perlinTime.value += WAVE_SPEED;
 

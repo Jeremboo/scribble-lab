@@ -3,7 +3,7 @@
   "path": "scribbles/webglparticles/planeOfPlanes/",
   "link": "",
   "visible": true,
-  "preview": "preview.gif",
+  "preview": ["preview.gif"],
   "description": "",
   "date": "2019-03-15T20:41:15.048Z",
   "tags": []

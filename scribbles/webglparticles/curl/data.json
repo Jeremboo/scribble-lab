@@ -2,9 +2,9 @@
   "name": "curl",
   "path": "scribbles/webglparticles/curl/",
   "link": "",
-  "visible": false,
-  "preview": "scribbles/webglparticles/curl/preview.gif",
+  "visible": true,
+  "preview": ["preview.gif"],
   "description": "Curl noise",
-  "date": "2017-05-23T09:11:31.305Z",
+  "date": "2019-05-23T09:11:31.305Z",
   "tags": []
 }

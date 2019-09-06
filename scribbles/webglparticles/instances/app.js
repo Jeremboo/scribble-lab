@@ -133,18 +133,19 @@ const instanceGeom = new InstancedBufferGeometry();
 // copy vertices into the instace geometry
 const vertices = geom.attributes.position.clone();
 instanceGeom.addAttribute('position', vertices);
+// instGeom.copy(bufferGeom); can also be used
 // for the matrix
 const mcol0 = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 3), 3, 1
+	new Float32Array(instanceCount * 3), 3
 );
 const mcol1 = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 3), 3, 1
+	new Float32Array(instanceCount * 3), 3
 );
 const mcol2 = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 3), 3, 1
+	new Float32Array(instanceCount * 3), 3
 );
 const mcol3 = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 3), 3, 1
+	new Float32Array(instanceCount * 3), 3
 );
 instanceGeom.addAttribute('mcol0', mcol0);
 instanceGeom.addAttribute('mcol1', mcol1);
@@ -152,7 +153,7 @@ instanceGeom.addAttribute('mcol2', mcol2);
 instanceGeom.addAttribute('mcol3', mcol3);
 // for the color
 const colors = new InstancedBufferAttribute(
-	new Float32Array(instanceCount * 3), 3, 1
+	new Float32Array(instanceCount * 3), 3
 );
 for (let i = 0, ul = colors.count; i < ul; i++) {
   const c = new Color(getRandomAttribute(COLORS));

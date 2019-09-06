@@ -13,17 +13,11 @@ import particleVert from './shaders/particle.v.glsl';
 import particleFrag from './shaders/particle.f.glsl';
 
 import positionFrag from './shaders/position.f.glsl';
-import { toUnicode } from 'punycode';
 import { TweenMax, Power4, TimelineLite } from 'gsap';
 
 /* ---- CORE ---- */
-const mainColor = '#070707';
-const secondaryColor = '#C9F0FF';
-const bgColor = false // 'rgb(0, 0, 0)';
-
 let windowWidth = window.innerWidth;
 let windowHeight = window.innerHeight;
-let aspectRatio = windowWidth / windowHeight;
 
 class Webgl {
   constructor(w, h) {
@@ -31,12 +25,11 @@ class Webgl {
     this.meshListeners = [];
     this.renderer = new WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    if (bgColor) this.renderer.setClearColor(new Color(bgColor));
     this.scene = new Scene();
     // this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
     this.camera = new OrthographicCamera(
-      aspectRatio / -2,
-      aspectRatio / 2,
+      1 / -2,
+      1 / 2,
       1 / 2,
       1 / -2,
       1, 1000);
@@ -186,7 +179,7 @@ mask.fadeIn();
  * * FBO
  * * *******************
  */
-const gpuSim = new GPUSimulation(TEXTURE_SIZE, TEXTURE_SIZE, webgl.renderer);
+const gpuSim = new GPUSimulation(webgl.renderer, { width : TEXTURE_SIZE, height : TEXTURE_SIZE });
 gpuSim.initHelper(windowWidth, windowHeight);
 
 /**
@@ -204,7 +197,7 @@ for (i = 0; i < textureLength; i += 4) {
     const positionX = ((currentPoint % NBR_OF_ROWS) / NBR_OF_ROWS) + shiftX;
     const positionY = (Math.floor(currentPoint / NBR_OF_ROWS) / NBR_OF_LINES) + shiftY;
 
-    dataDotPosition.image.data[i] = (positionX - 0.5) * webgl.camera.aspect;
+    dataDotPosition.image.data[i] = positionX - 0.5;
     dataDotPosition.image.data[i + 1] = positionY - 0.5;
   } else {
     dataDotPosition.image.data[i] = 999;
@@ -220,13 +213,13 @@ for (i = 0; i < textureLength; i += 4) {
 const positionFBO = gpuSim.createSimulation('texturePositions', positionFrag, dataDotPosition, {
   uniforms: {
     positionTexture         : { value : null },
-    initialDataTexture  : { value: dataDotPosition },
+    initialDataTexture      : { value: dataDotPosition },
     mousePosition           : { value: new Vector2(-9999, -9999) },
     attractionDistanceMax   : { value : PROPS.attractionDistanceMax },
     attractionVelocity      : { value : PROPS.attractionVelocity },
     anchorVelocity          : { value : PROPS.anchorVelocity },
     anchorFriction          : { value : PROPS.anchorFriction },
-    screenRatio             : { value : webgl.camera.aspect },
+    aspectRatio             : { value : webgl.camera.aspect },
     mask                    : { value : canvasTexture },
   },
 });
@@ -253,7 +246,7 @@ webgl.add(particles);
 window.addEventListener('mousemove', (e) => {
   const x = (e.offsetX / windowWidth) - 0.5;
   const y = 0.5 - (e.offsetY / windowHeight);
-  positionFBO.material.uniforms.mousePosition.value.set(x * webgl.camera.aspect, y);
+  positionFBO.material.uniforms.mousePosition.value.set(x, y);
 });
 
 /**
@@ -262,6 +255,7 @@ window.addEventListener('mousemove', (e) => {
  **********
  */
 
+console.log(positionFBO);
 webgl.onUpdate = () => {
   mask.update();
   mask.render();
@@ -269,7 +263,8 @@ webgl.onUpdate = () => {
   canvasTexture.needsUpdate = true;
 
   // update all simulations with the textures computed
-  gpuSim.update();
+  gpuSim.updateAll();
+
   // update only one simulation always with the initialDataTexture.
   // gpuSim.updateSimulation(positionFBO, positionFBO.initialDataTexture);
   gpuSim.helper.update();
@@ -280,7 +275,7 @@ webgl.onUpdate = () => {
 function onResize() {
   windowWidth = window.innerWidth;
   windowHeight = window.innerHeight;
-  aspectRatio = windowWidth / windowHeight;
+  positionFBO.material.uniforms.aspectRatio.value = webgl.camera.aspect;
   webgl.resize(windowWidth, windowHeight);
 }
 window.addEventListener('resize', onResize);
