@@ -84,10 +84,10 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
     <img alt="floating" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/floatingBoxes/floating/preview1.gif?raw=true" width="200">
   </a>
   <a href="http://codepen.io/Jeremboo/full/QGVaYa">
-    <img alt="Looped Hair" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview2.gif?raw=true" width="200">
+    <img alt="Looped Hair" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview.gif?raw=true" width="200">
   </a>
   <a href="http://codepen.io/Jeremboo/full/QGVaYa">
-    <img alt="Looped Hair" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview.gif?raw=true" width="200">
+    <img alt="Looped Hair" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview2.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/organism/preview.gif">
     <img alt="organism" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/organism/preview.gif?raw=true" width="200">

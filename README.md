@@ -273,11 +273,11 @@ Experimentations around interactive shapes in 2d with the native canvas API
 Usage of the Pixi.js mesh.Rope method to to create true ropes and looped hair.
 
 <p align="center">
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview.gif">
-    <img alt="Looped Hair" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview.gif?raw=true" width="200">
-  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview2.gif">
     <img alt="Looped Hair" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview.gif">
+    <img alt="Looped Hair" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/loopedHair/preview.gif?raw=true" width="200">
   </a>
   <a href="http://codepen.io/Jeremboo/full/QGVaYa">
     <img alt="Rope generator" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/pixiJsRopes/ropeGenerator/preview2.gif?raw=true" width="200">
