@@ -1,10 +1,9 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Object3D, BoxGeometry,
-  MeshBasicMaterial, Mesh, Color, FlatShading, PlaneBufferGeometry,
-  BoxBufferGeometry
+  MeshBasicMaterial, Mesh, Color, PlaneBufferGeometry,
 } from 'three';
 
-import ReflectorMaterial from 'ReflectorMaterial';
+import Reflector from 'Reflector/index.js';
 
 import CameraMouseControl from 'CameraMouseControl';
 
