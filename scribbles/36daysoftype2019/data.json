@@ -3,8 +3,8 @@
   "path": "scribbles/36daysoftype2019/",
   "link": "https://36days.reflektor.digital/",
   "visible": true,
-  "preview": "",
-  "description": "My participation of the [36 Days Of Types](https://36days.reflektor.digital) challenge did with the [Reflektor Digital](https://reflektor.digital/) team.",
+  "preview": ["preview.gif", "preview2.gif"],
+  "description": "My participation of the [36 Days Of Types](https://36days.reflektor.digital) challenge did with the [Reflektor Digital](https://reflektor.digital/) team",
   "date": "2019-04-03T21:39:03.891Z",
   "tags": []
 }

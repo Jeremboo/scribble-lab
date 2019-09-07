@@ -6,37 +6,43 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 
 ## [36DaysOfType 2019](https://36days.reflektor.digital/)
 
-My participation of the [36 Days Of Types](https://36days.reflektor.digital) challenge did with the [Reflektor Digital](https://reflektor.digital/) team.
+My participation of the [36 Days Of Types](https://36days.reflektor.digital) challenge did with the [Reflektor Digital](https://reflektor.digital/) team
 
 <p align="center">
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/9/preview.gif">
+  <a href="https://36days.reflektor.digital">
+    <img alt="Main website" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/website/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://creativecodingto-demo1.netlify.com/">
+    <img alt="Creative Coding TO - Demo" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/demo/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://36days.reflektor.digital/letter/9">
     <img alt="9" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/9/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/5/preview.gif">
+  <a href="https://36days.reflektor.digital/letter/5">
     <img alt="5" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/5/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/3/preview.gif">
+  <a href="https://36days.reflektor.digital/letter/3">
     <img alt="3" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/3/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/x/preview.gif">
+  <a href="https://36days.reflektor.digital/letter/X">
     <img alt="x" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/x/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/t/preview.gif">
+  <a href="https://36days.reflektor.digital/letter/T">
     <img alt="t" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/t/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/p/preview.gif">
+  <a href="https://36days.reflektor.digital/letter/P">
     <img alt="p" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/p/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/l/preview.gif">
+  <a href="https://36days.reflektor.digital/letter/L">
     <img alt="l" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/l/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/h/preview.gif">
+  <a href="https://36days.reflektor.digital/letter/H">
     <img alt="h" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/h/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/e/preview.gif">
+  <a href="https://36days.reflektor.digital/letter/E">
     <img alt="e" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/e/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/b/preview.gif">
+  <a href="https://36days.reflektor.digital/letter/B">
     <img alt="b" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/b/preview.gif?raw=true" width="200">
   </a>
 </p>
