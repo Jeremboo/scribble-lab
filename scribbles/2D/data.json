@@ -1,10 +1,10 @@
 {
-  "name": "2D",
+  "name": "2D Canvas API",
   "path": "scribbles/2D/",
   "link": "",
-  "visible": false,
+  "visible": true,
   "preview": "preview.gif",
-  "description": "",
-  "date": "2018-03-23T16:10:57.647Z",
+  "description": "Experimentations around interactive shapes in 2d with the native canvas API",
+  "date": "2017-01-23T16:10:57.647Z",
   "tags": []
 }

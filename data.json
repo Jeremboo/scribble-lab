@@ -352,48 +352,6 @@
     ]
   },
   {
-    "name": "2D",
-    "path": "scribbles/2D/",
-    "link": "",
-    "visible": false,
-    "preview": "preview.gif",
-    "description": "",
-    "date": "2018-03-23T16:10:57.647Z",
-    "tags": [],
-    "scribbles": [
-      {
-        "name": "canvasGrid",
-        "path": "scribbles/2D/canvasGrid/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-03-05T02:10:31.295Z",
-        "tags": []
-      },
-      {
-        "name": "wave",
-        "path": "scribbles/2D/wave/",
-        "link": "",
-        "visible": false,
-        "preview": "scribbles/2D/wave/preview.gif",
-        "description": "",
-        "date": "2017-09-28T10:02:15.507Z",
-        "tags": []
-      },
-      {
-        "name": "boilingLoader",
-        "path": "scribbles/2D/boilingLoader/",
-        "link": "",
-        "visible": false,
-        "preview": "scribbles/2D/boilingLoader/preview.gif",
-        "description": "",
-        "date": "2017-09-21T13:52:57.633Z",
-        "tags": []
-      }
-    ]
-  },
-  {
     "name": "grid",
     "path": "scribbles/grid/",
     "link": "",
@@ -954,6 +912,51 @@
           "fog",
           "boat"
         ]
+      }
+    ]
+  },
+  {
+    "name": "2D Canvas API",
+    "path": "scribbles/2D/",
+    "link": "",
+    "visible": true,
+    "preview": "preview.gif",
+    "description": "Experimentations around interactive shapes in 2d with the native canvas API",
+    "date": "2017-01-23T16:10:57.647Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "canvasGrid",
+        "path": "scribbles/2D/canvasGrid/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview.gif",
+          "preview2.gif"
+        ],
+        "description": "",
+        "date": "2019-03-05T02:10:31.295Z",
+        "tags": []
+      },
+      {
+        "name": "wave",
+        "path": "scribbles/2D/wave/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-09-28T10:02:15.507Z",
+        "tags": []
+      },
+      {
+        "name": "boilingLoader",
+        "path": "scribbles/2D/boilingLoader/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2017-09-21T13:52:57.633Z",
+        "tags": []
       }
     ]
   },

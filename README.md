@@ -200,6 +200,25 @@ Generate particles with different techniques. Other projects here: [Northern Bor
   </a>
 </p>
 
+## 2D Canvas API
+
+Experimentations around interactive shapes in 2d with the native canvas API
+
+<p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/canvasGrid/preview2.gif">
+    <img alt="canvasGrid" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/canvasGrid/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/canvasGrid/preview.gif">
+    <img alt="canvasGrid" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/canvasGrid/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/wave/preview.gif">
+    <img alt="wave" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/wave/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/boilingLoader/preview.gif">
+    <img alt="boilingLoader" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/boilingLoader/preview.gif?raw=true" width="200">
+  </a>
+</p>
+
 ## [Pixi.js ropes](http://codepen.io/Jeremboo/full/QGVaYa)
 
 Usage of the Pixi.js mesh.Rope method to to create true ropes and looped hair.

@@ -2,8 +2,8 @@
   "name": "wave",
   "path": "scribbles/2D/wave/",
   "link": "",
-  "visible": false,
-  "preview": "scribbles/2D/wave/preview.gif",
+  "visible": true,
+  "preview": "preview.gif",
   "description": "",
   "date": "2017-09-28T10:02:15.507Z",
   "tags": []
