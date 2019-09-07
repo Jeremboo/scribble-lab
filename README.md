@@ -87,6 +87,12 @@ Use a custom postprocessing to use the meshes as a mask.
 Webgl fluid background researches
 
 <p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/distordedPlaneTexture/preview2.gif">
+    <img alt="flatColors" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/distordedPlaneTexture/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/distordedPlaneTexture/preview.gif">
+    <img alt="flatColors" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/distordedPlaneTexture/preview.gif?raw=true" width="200">
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview3.gif">
     <img alt="fluidWithBlob" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/fluidWithBlob/preview3.gif?raw=true" width="200">
   </a>

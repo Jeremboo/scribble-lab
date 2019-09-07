@@ -1,69 +1,5 @@
 [
   {
-    "name": "webAr",
-    "path": "scribbles/webAr/",
-    "link": "",
-    "visible": false,
-    "preview": "preview.gif",
-    "description": "Use the web as an AR project",
-    "date": "2019-07-02T20:35:15.535Z",
-    "tags": [],
-    "scribbles": [
-      {
-        "name": "city",
-        "path": "scribbles/webAr/city/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-07-03T22:42:43.180Z",
-        "tags": []
-      },
-      {
-        "name": "aRjsTest",
-        "path": "scribbles/webAr/aRjsTest/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-07-03T15:12:18.278Z",
-        "tags": []
-      },
-      {
-        "name": "building",
-        "path": "scribbles/webAr/building/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-07-02T20:38:30.869Z",
-        "tags": []
-      }
-    ]
-  },
-  {
-    "name": "watercolor",
-    "path": "scribbles/watercolor/",
-    "link": "",
-    "visible": false,
-    "preview": "preview.gif",
-    "description": "",
-    "date": "2019-05-31T18:50:10.388Z",
-    "tags": [],
-    "scribbles": [
-      {
-        "name": "watercolorScribble",
-        "path": "scribbles/watercolor/watercolorScribble/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-05-31T18:50:44.802Z",
-        "tags": []
-      }
-    ]
-  },
-  {
     "name": "36DaysOfType 2019",
     "path": "scribbles/36daysoftype2019/",
     "link": "https://36days.reflektor.digital/",
@@ -228,46 +164,6 @@
     "tags": [],
     "scribbles": [
       {
-        "name": "flatColors",
-        "path": "scribbles/surfaceShader/flatColors/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-04-23T14:36:19.394Z",
-        "tags": []
-      },
-      {
-        "name": "fluidLines",
-        "path": "scribbles/surfaceShader/fluidLines/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-04-23T14:36:19.394Z",
-        "tags": []
-      },
-      {
-        "name": "translatedText",
-        "path": "scribbles/surfaceShader/translatedText/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-04-15T15:34:00.193Z",
-        "tags": []
-      },
-      {
-        "name": "pixiFilter",
-        "path": "scribbles/surfaceShader/pixiFilter/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-02-11T22:45:58.257Z",
-        "tags": []
-      },
-      {
         "name": "regl",
         "path": "scribbles/surfaceShader/regl/",
         "link": "",
@@ -347,28 +243,6 @@
         ],
         "description": "",
         "date": "2018-11-03T01:11:58.117Z",
-        "tags": []
-      }
-    ]
-  },
-  {
-    "name": "grid",
-    "path": "scribbles/grid/",
-    "link": "",
-    "visible": false,
-    "preview": "scribbles/grid/preview.gif",
-    "description": "",
-    "date": "2018-01-13T08:44:51.687Z",
-    "tags": [],
-    "scribbles": [
-      {
-        "name": "3dgrid",
-        "path": "scribbles/grid/3dgrid/",
-        "link": "",
-        "visible": true,
-        "preview": "scribbles/grid/3dgrid/preview.gif",
-        "description": "",
-        "date": "2018-01-13T08:45:22.048Z",
         "tags": []
       }
     ]
@@ -538,6 +412,19 @@
     "date": "2017-10-21T20:41:50.665Z",
     "tags": [],
     "scribbles": [
+      {
+        "name": "flatColors",
+        "path": "scribbles/fluidBackground/distordedPlaneTexture/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview.gif",
+          "preview2.gif"
+        ],
+        "description": "",
+        "date": "2019-04-23T14:36:19.394Z",
+        "tags": []
+      },
       {
         "name": "fluidWithBlob",
         "path": "scribbles/fluidBackground/fluidWithBlob/",
