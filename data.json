@@ -3,9 +3,9 @@
     "name": "36DaysOfType 2019",
     "path": "scribbles/36daysoftype2019/",
     "link": "https://36days.reflektor.digital/",
-    "visible": false,
+    "visible": true,
     "preview": "",
-    "description": "My participations of the [36 Days Of Types](https://36days.reflektor.digital) challenge did with the [Reflektor Digital](https://reflektor.digital/) team.",
+    "description": "My participation of the [36 Days Of Types](https://36days.reflektor.digital) challenge did with the [Reflektor Digital](https://reflektor.digital/) team.",
     "date": "2019-04-03T21:39:03.891Z",
     "tags": [],
     "scribbles": [
@@ -107,48 +107,6 @@
         "preview": "preview.gif",
         "description": "",
         "date": "2019-04-03T21:39:26.467Z",
-        "tags": []
-      }
-    ]
-  },
-  {
-    "name": "shapes",
-    "path": "scribbles/shapes&Masks/",
-    "link": "",
-    "visible": false,
-    "preview": "preview.gif",
-    "description": "",
-    "date": "2019-03-07T18:04:56.726Z",
-    "tags": [],
-    "scribbles": [
-      {
-        "name": "circlesTransitions",
-        "path": "scribbles/shapes&Masks/circlesTransitions/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-03-11T17:11:22.780Z",
-        "tags": []
-      },
-      {
-        "name": "retroComposition",
-        "path": "scribbles/shapes&Masks/retroComposition/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-03-08T15:39:11.885Z",
-        "tags": []
-      },
-      {
-        "name": "bwToColorCircle",
-        "path": "scribbles/shapes&Masks/bwToColorCircle/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2019-03-07T18:05:32.187Z",
         "tags": []
       }
     ]
@@ -587,6 +545,18 @@
     "tags": [],
     "scribbles": [
       {
+        "name": "planeOfPlanes",
+        "path": "scribbles/webglparticles/planeOfPlanes/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview.gif"
+        ],
+        "description": "",
+        "date": "2019-05-24T20:41:15.048Z",
+        "tags": []
+      },
+      {
         "name": "curl",
         "path": "scribbles/webglparticles/curl/",
         "link": "",
@@ -596,18 +566,6 @@
         ],
         "description": "Curl noise",
         "date": "2019-05-23T09:11:31.305Z",
-        "tags": []
-      },
-      {
-        "name": "planeOfPlanes",
-        "path": "scribbles/webglparticles/planeOfPlanes/",
-        "link": "",
-        "visible": true,
-        "preview": [
-          "preview.gif"
-        ],
-        "description": "",
-        "date": "2019-03-15T20:41:15.048Z",
         "tags": []
       },
       {
@@ -812,6 +770,36 @@
     "date": "2017-01-23T16:10:57.647Z",
     "tags": [],
     "scribbles": [
+      {
+        "name": "circlesTransitions",
+        "path": "scribbles/shapes&Masks/circlesTransitions/",
+        "link": "",
+        "visible": false,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-03-11T17:11:22.780Z",
+        "tags": []
+      },
+      {
+        "name": "retroComposition",
+        "path": "scribbles/shapes&Masks/retroComposition/",
+        "link": "",
+        "visible": false,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-03-08T15:39:11.885Z",
+        "tags": []
+      },
+      {
+        "name": "bwToColorCircle",
+        "path": "scribbles/shapes&Masks/bwToColorCircle/",
+        "link": "",
+        "visible": false,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-03-07T18:05:32.187Z",
+        "tags": []
+      },
       {
         "name": "canvasGrid",
         "path": "scribbles/2D/canvasGrid/",

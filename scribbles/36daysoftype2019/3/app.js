@@ -211,7 +211,7 @@ class ParticleObject extends Object3D {
    */
   update() {
     // FBO update
-    this.simulation.update();
+    this.simulation.updateAll();
     // this.simulation.helper.update();
     // this.positionFBO.material.uniforms.perlinTime.value += WAVE_SPEED;
 

@@ -4,6 +4,43 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 
 -[All GIFs](/PREVIEWS.md)
 
+## [36DaysOfType 2019](https://36days.reflektor.digital/)
+
+My participation of the [36 Days Of Types](https://36days.reflektor.digital) challenge did with the [Reflektor Digital](https://reflektor.digital/) team.
+
+<p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/9/preview.gif">
+    <img alt="9" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/9/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/5/preview.gif">
+    <img alt="5" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/5/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/3/preview.gif">
+    <img alt="3" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/3/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/x/preview.gif">
+    <img alt="x" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/x/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/t/preview.gif">
+    <img alt="t" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/t/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/p/preview.gif">
+    <img alt="p" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/p/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/l/preview.gif">
+    <img alt="l" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/l/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/h/preview.gif">
+    <img alt="h" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/h/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/e/preview.gif">
+    <img alt="e" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/e/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/b/preview.gif">
+    <img alt="b" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/b/preview.gif?raw=true" width="200">
+  </a>
+</p>
+
 ## Floating Boxes
 
 Play with physics to make interactives floating boxes
@@ -143,11 +180,11 @@ My contributions of the Codevember challenge 2017.
 Generate particles with different techniques. Other projects here: [Northern Boreal Typhoon](http://jeremieboulay.fr/typhoon/) & [FBO Particles at Grow Paris 2017](http://jeremieboulay.fr/grow-workshop/)
 
 <p align="center">
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/curl/preview.gif">
-    <img alt="curl" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/curl/preview.gif?raw=true" width="200">
-  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/planeOfPlanes/preview.gif">
     <img alt="planeOfPlanes" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/planeOfPlanes/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/curl/preview.gif">
+    <img alt="curl" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/curl/preview.gif?raw=true" width="200">
   </a>
   <a href="http://jeremieboulay.fr/grow-workshop/">
     <img alt="fbo&Instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/fbo&Instances/preview1.gif?raw=true" width="200">
