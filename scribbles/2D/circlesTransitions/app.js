@@ -1,6 +1,5 @@
 import { autoDetectRenderer, Graphics, Container, Texture, Sprite } from 'pixi.js';
-import { linearGradient, hexToRgb, rgbToHex, componentToHex  } from 'utils';
-import { cpus } from 'os';
+import { linearGradient } from 'utils';
 import { TimelineMax, TweenMax } from 'gsap';
 
 /**
@@ -17,7 +16,7 @@ class Renderer {
     this.renderableCount = 0;
     this.renderables = [];
     this.renderer = autoDetectRenderer(width, height, {
-      antialias: true, transparent: true, resolution: 1,
+      antialias: true, transparent: false, resolution: 1,
     });
     this.dom = this.renderer.view;
     this.scene = new Container();
@@ -65,7 +64,8 @@ document.body.appendChild(renderer.dom);
  * * *******************
  */
 
-const CIRCLE_MARGIN = 60;
+const NBR_CIRCLE_MAX = 12;
+const DEFAULT_CIRCLE_MARGIN = 60;
 const ANIMATION_STAGGER = 0.04;
 
 const POSITION_VELOCITY = 0.1;
@@ -194,11 +194,19 @@ class CircleMask extends Container {
 // Create circles
 const circles = [];
 let currentCircleSize = MAIN_SIZE * 0.75;
-while(currentCircleSize > 0) {
+
+// Define the number of circle and the margin
+const nbrOfCircleMax = Math.min(
+  NBR_CIRCLE_MAX,
+  Math.floor(currentCircleSize / DEFAULT_CIRCLE_MARGIN)
+);
+const circleMargin = currentCircleSize / nbrOfCircleMax;
+
+while (currentCircleSize > 0) {
   const circle = new CircleMask(currentCircleSize);
   circles.push(circle);
   renderer.add(circle);
-  currentCircleSize -= CIRCLE_MARGIN;
+  currentCircleSize -= circleMargin;
 }
 circles.reverse();
 

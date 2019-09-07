@@ -134,18 +134,23 @@ renderer.add(circleWithMask);
 
 
 // VIDEO
-const texture = Texture.fromVideoUrl(oldVideoMovieEffectUrl);
-const movieSprite = new Sprite(texture);
-movieSprite.blendMode = PIXI.BLEND_MODES.ADD;
-renderer.add(movieSprite);
+const loader = new loaders.Loader();
+loader.add('backgroundVideo', oldVideoMovieEffectUrl);
+loader.load((loader, resources) => {
+  const video = resources.backgroundVideo.data;
+  video.loop = true;
+  video.muted = true;
 
-movieSprite.width = windowWidth;
-movieSprite.height = windowHeight;
-movieSprite.alpha = 0.1;
-movieSprite.mask = layers[layers.length - 1].mask;
+  const texture = Texture.fromVideo(video);
+  const movieSprite = new Sprite(texture);
+  movieSprite.blendMode = BLEND_MODES.ADD;
+  renderer.add(movieSprite);
 
-const video = texture.baseTexture.source;
-video.loop = true;
+  movieSprite.width = WINDOW_WIDTH;
+  movieSprite.height = WINDOW_HEIGHT;
+  movieSprite.alpha = 0.1;
+  movieSprite.mask = layers[layers.length - 1].mask;
+});
 
 
 

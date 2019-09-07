@@ -127,16 +127,17 @@ for (i = 0; i < data.length; i++) {
         const link = scribble.link.length && scribble.link || data[i].link.length && data[i].link || '';
 
         // TODO: rework that (function in a loop)
-        const injectPreview = (previewPath) => {
+        const injectPreview = (previewFileName) => {
+          const path = scribble.path + previewFileName;
           const previewData = buildPreview(
-            scribble.path + previewPath,
+            path,
             scribble.name,
             link,
           );
           if (typeof previewData !== 'undefined') {
             previewsListed.push({ data: previewData, date });
           } else {
-            console.log(`ERROR: ${previewPath} not found.`);
+            console.log(`ERROR: ${path} not found.`);
           }
         };
 

@@ -10,6 +10,8 @@
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
+import { loadImage } from 'utils';
+
 const IMAGES = [
   'http://jeremieboulay.fr/assets/bg3.jpg',
   'http://jeremieboulay.fr/assets/bg2.jpg',
@@ -198,14 +200,6 @@ let background = false;
 let codevemberText = false;
 const loopItems = [];
 
-function loadImage(url, callback) {
-  const img = new Image();
-  img.crossOrigin = 'Anonymous';
-  img.onload = () => {
-    callback(img);
-  };
-  img.src = url;
-}
 function transitionLoop(key) {
   const currentImg = IMAGES[key % IMAGES.length];
   codevemberText.change(currentImg, () => {
@@ -216,7 +210,7 @@ function transitionLoop(key) {
   });
 }
 
-loadImage(IMAGES[0], (firstImage) => {
+loadImage(IMAGES[0]).then((firstImage) => {
   background = new ImageTransition(firstImage);
   loopItems.push(background);
   codevemberText = new Text(['CODEVEMBER', 'day 1'], firstImage);
