@@ -40,7 +40,6 @@ var config = {
     },
     mode: 'development',
     entry: [
-      'babel-polyfill',
       'webpack/hot/dev-server',
       'webpack-dev-server/client?' + myLocalIp,
       path.resolve(__dirname, './bootstrap.js')
@@ -87,6 +86,7 @@ var config = {
             ...workersPath
           ],
           query: {
+            // NOTE: Babel plugings are setted here instead of .babelrc to be dynamic
             plugins: [
               [ 'module-resolver', {
                 'root': [

@@ -12,7 +12,6 @@ const minimizeApp = arguments.includes('noMinified');
 // Update webpack config
 const config = require('../webpack.config');
 config.entry = [
-  // 'babel-polyfill',
   path.resolve(__dirname, '../bootstrap.js'),
 ];
 // config.debug = false;
