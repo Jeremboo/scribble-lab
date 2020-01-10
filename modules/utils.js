@@ -82,7 +82,7 @@ export const getRandomPosAroundASphere = (r) => {
 // Ty Robin <3
 // https://codepen.io/robin-dela/pen/dZXVrQ?editors=0010
 // https://threejs.org/docs/#api/core/Raycaster
-export const onCursorTouchMeshes = (camera, sceneChildren = [], callback, targetedMesh = false) => {
+export const onCursorTouchMeshes = (camera, sceneChildren = [], callback, targetedMesh) => {
   const raycaster = new Raycaster();
   const moveEvent = 'ontouchstart' in (window || navigator.msMaxTouchPoints) ? 'touchmove' : 'mousemove';
   window.addEventListener(moveEvent, (e) => {
