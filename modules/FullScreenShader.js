@@ -1,4 +1,4 @@
-import { createProgramFromScript } from 'utils.webgl';
+import { createProgramFromScript, createTexture, createTextureFromUrl } from 'utils.webgl';
 import { hexToRgb } from 'utils';
 
 /**
@@ -11,27 +11,22 @@ import { hexToRgb } from 'utils';
  *
  */
 export default class FullScreenShader {
-  constructor(canvas, vert, frag) {
+  constructor(canvas, vert, frag, { responsive = true, preserveDrawingBuffer = false } = {}) {
     this.canvas = canvas;
-    this.gl = this.canvas.getContext('webgl');
+    this.gl = this.canvas.getContext('webgl', { preserveDrawingBuffer });
 
     if (!this.gl) {
       console.error('ERROR: Webgl not supported !');
       return;
     }
 
-    // Init the canvas size to fullscreen
     this.resize();
-    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-    this.gl.clearColor(0, 0, 0, 0);
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
     // INIT PROGRAM
     // Create the shaders and link them into a program
     this.program = createProgramFromScript(this.gl, vert, frag);
     // Tell to gl we want to use this program
     this.gl.useProgram(this.program);
-
 
     // Rendering
     // Turn the attribute on
@@ -53,11 +48,17 @@ export default class FullScreenShader {
     this.gl.vertexAttribPointer(positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
 
     this.update = this.update.bind(this);
+    this.resize = this.resize.bind(this);
+
+    // Init the canvas size to fullscreen
+    if (responsive) window.addEventListener('resize', this.resize);
   }
 
   // Resize the canvas to match in fullscreen
   resize() {
     const realToCSSPixels = window.devicePixelRatio;
+
+    console.log('realToCSSPixels', realToCSSPixels);
 
     // Lookup the size the browser is displaying the canvas in CSS pixels
     // and compute a size needed to make our drawingbuffer match it in
@@ -73,6 +74,10 @@ export default class FullScreenShader {
       this.canvas.width  = displayWidth;
       this.canvas.height = displayHeight;
     }
+
+    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    this.gl.clearColor(0, 0, 0, 0);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
   }
 
   /**
@@ -84,6 +89,14 @@ export default class FullScreenShader {
     return this.gl.getUniformLocation(this.program, name);
   }
 
+  // float
+  uniformFloat(name, f) {
+    return this.setUniformFloat(this.getUniformLocation(name), f);
+  }
+  setUniformFloat(uniformLoc, f) {
+    this.gl.uniform1f(uniformLoc, f);
+    return uniformLoc;
+  }
   // vec2
   uniform2f(name, x, y) {
     return this.setUniform2f(this.getUniformLocation(name), x, y);
@@ -109,11 +122,11 @@ export default class FullScreenShader {
     return uniformLoc;
   }
   // sampler2D
-  uniformTexture(name, texture) {
-    return this.setUniformTexture(this.getUniformLocation(name), texture);
+  uniformTexture(name, textureId) {
+    return this.setUniformTexture(this.getUniformLocation(name), textureId);
   }
-  setUniformTexture(uniformLoc, texture) {
-    this.gl.uniform1i(uniformLoc, texture);
+  setUniformTexture(uniformLoc, textureId) {
+    this.gl.uniform1i(uniformLoc, textureId);
     return uniformLoc;
   }
   // Color
@@ -128,6 +141,35 @@ export default class FullScreenShader {
 
   /**
    * * *******************
+   * * TEXTURE
+   * * *******************
+   */
+  createTexture(data, props) {
+    return createTexture(this.gl, data, props);
+  }
+
+  createTextureFromUrl(url, props) {
+    return createTextureFromUrl(this.gl, url, props);
+  }
+
+  createRenderTarget(textureProps) {
+    const texture = createTexture(this.gl, undefined, textureProps);
+
+    // Create and bind the framebuffer
+    const frameBuffer = this.gl.createFramebuffer();
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, frameBuffer);
+
+    // attach the texture as the first color attachment
+    const attachmentPoint = this.gl.COLOR_ATTACHMENT0;
+    this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, attachmentPoint, this.gl.TEXTURE_2D, texture, 0);
+
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+
+    return { frameBuffer, texture };
+  }
+
+  /**
+   * * *******************
    * * RENDER
    * * *******************
    */
@@ -136,15 +178,30 @@ export default class FullScreenShader {
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 3);
   }
 
+  renderRenderTarget(frameBuffer, texture, size) {
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, fb);
+
+    // render cube with our 3x2 texture
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+
+    // Tell WebGL how to convert from clip space to pixels
+    this.gl.viewport(0, 0, targetTextureWidth, targetTextureHeight);
+
+    // Clear the attachment(s).
+    this.gl.clearColor(0, 0, 1, 1);   // clear to blue
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+  }
+
   /**
    * * *******************
    * * LOOP
    * * *******************
    */
 
-  start() {
+  start(callback) {
     if (!this.isUpdated) {
       this.isUpdated = true;
+      this.updateCallback = callback;
       this.update();
     }
   }
@@ -154,6 +211,7 @@ export default class FullScreenShader {
   }
 
   update() {
+    if (this.updateCallback) this.updateCallback();
     this.render();
     if (this.isUpdated) requestAnimationFrame(this.update);
   }
