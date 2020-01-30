@@ -57,8 +57,6 @@ export const createProgramFromScript = (gl, vert, frag) => {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
-  console.log(data && data.constructor === HTMLCanvasElement);
-
   // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D
   if (data && data.constructor !== Float32Array) {
     gl.texImage2D(

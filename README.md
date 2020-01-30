@@ -9,11 +9,11 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 My participation of the [36 Days Of Types](https://36days.reflektor.digital) challenge did with the [Reflektor Digital](https://reflektor.digital/) team
 
 <p align="center">
-  <a href="https://36days.reflektor.digital">
-    <img alt="Main website" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/website/preview.gif?raw=true" width="200">
-  </a>
   <a href="https://creativecodingto-demo1.netlify.com/">
     <img alt="Creative Coding TO - Demo" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/demo/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://36days.reflektor.digital">
+    <img alt="Main website" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/website/preview.gif?raw=true" width="200">
   </a>
   <a href="https://36days.reflektor.digital/letter/9">
     <img alt="9" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/9/preview.gif?raw=true" width="200">
@@ -130,6 +130,9 @@ Use a custom postprocessing to use the meshes as a mask.
 Webgl fluid background researches
 
 <p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/delayedShape/preview.gif">
+    <img alt="delayedShape" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/delayedShape/preview.gif?raw=true" width="200">
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/distordedPlaneTexture/preview2.gif">
     <img alt="flatColors" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/distordedPlaneTexture/preview2.gif?raw=true" width="200">
   </a>
@@ -216,11 +219,11 @@ Generate particles with different techniques. Other projects here: [Northern Bor
   <a href="http://jeremieboulay.fr/typhoon/">
     <img alt="3DStorm" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/3DStorm//preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO//preview2.gif">
-    <img alt="FBO" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO//preview2.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO/preview2.gif">
+    <img alt="FBO" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO/preview2.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO//preview.gif">
-    <img alt="FBO" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO//preview.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO/preview.gif">
+    <img alt="FBO" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO/preview.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview2.gif">
     <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview2.gif?raw=true" width="200">

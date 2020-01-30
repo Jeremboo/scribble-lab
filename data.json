@@ -13,9 +13,9 @@
     "tags": [],
     "scribbles": [
       {
-        "name": "Main website",
-        "path": "scribbles/36daysoftype2019/website/",
-        "link": "https://36days.reflektor.digital",
+        "name": "Creative Coding TO - Demo",
+        "path": "scribbles/36daysoftype2019/demo/",
+        "link": "https://creativecodingto-demo1.netlify.com/",
         "visible": true,
         "preview": "preview.gif",
         "description": "",
@@ -23,9 +23,9 @@
         "tags": []
       },
       {
-        "name": "Creative Coding TO - Demo",
-        "path": "scribbles/36daysoftype2019/demo/",
-        "link": "https://creativecodingto-demo1.netlify.com/",
+        "name": "Main website",
+        "path": "scribbles/36daysoftype2019/website/",
+        "link": "https://36days.reflektor.digital",
         "visible": true,
         "preview": "preview.gif",
         "description": "",
@@ -394,6 +394,28 @@
     "tags": [],
     "scribbles": [
       {
+        "name": "delayedShape",
+        "path": "scribbles/fluidBackground/delayedShape/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "preview.gif"
+        ],
+        "description": "",
+        "date": "2020-01-14T20:25:53.534Z",
+        "tags": []
+      },
+      {
+        "name": "delayedTexture",
+        "path": "scribbles/fluidBackground/delayedTexture/",
+        "link": "",
+        "visible": false,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2020-01-10T21:44:41.970Z",
+        "tags": []
+      },
+      {
         "name": "flatColors",
         "path": "scribbles/fluidBackground/distordedPlaneTexture/",
         "link": "",
@@ -526,6 +548,16 @@
     "tags": [],
     "scribbles": [
       {
+        "name": "sphereTransition",
+        "path": "scribbles/materials/sphereTransition/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2019-11-21T20:00:18.219Z",
+        "tags": []
+      },
+      {
         "name": "reflective",
         "path": "scribbles/materials/reflective/",
         "link": "",
@@ -657,8 +689,8 @@
         "link": "",
         "visible": true,
         "preview": [
-          "/preview.gif",
-          "/preview2.gif"
+          "preview.gif",
+          "preview2.gif"
         ],
         "description": "",
         "date": "2017-05-15T09:47:25.983Z",
