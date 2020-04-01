@@ -16,7 +16,8 @@ export default class CameraMouseControl {
     this.velocity = velocity;
 
     this.lookAt = new Vector3();
-    this.position = { x: 0, y: 0 };
+    this.position = { x: this.camera.position.x, y: this.camera.position.y };
+    this.initialPosition = { x: this.camera.position.x, y: this.camera.position.y };
 
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.update = this.update.bind(this);
@@ -24,8 +25,8 @@ export default class CameraMouseControl {
     document.body.addEventListener('mousemove', this.handleMouseMove);
   }
   handleMouseMove(event) {
-    this.position.x = ((event.clientX / window.innerWidth) - 0.5) * this.mouseMove[0];
-    this.position.y = -((event.clientY / window.innerHeight) - 0.5) * this.mouseMove[1];
+    this.position.x = this.initialPosition.x + ((event.clientX / window.innerWidth) - 0.5) * this.mouseMove[0];
+    this.position.y = this.initialPosition.x - ((event.clientY / window.innerHeight) - 0.5) * this.mouseMove[1];
   }
   update() {
     this.camera.position.x += (this.position.x - this.camera.position.x) * this.velocity[0];

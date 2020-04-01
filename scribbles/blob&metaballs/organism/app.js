@@ -19,17 +19,17 @@ const composer = new EffectComposer(rm.renderer, {
 });
 composer.setSize(window.innerWidth, window.innerHeight);
 const renderPass = new RenderPass(rm.scene, rm.renderCamera);
-// renderPass.renderToScreen = true;
+renderPass.renderToScreen = true;
 composer.addPass(renderPass);
 
-const bloomPass = new BloomPass({
-  intensity: 5,
-  resolution: 5,
-  kernelSize: 3,
-  distinction: 0.9,
-});
-bloomPass.renderToScreen = true;
-composer.addPass(bloomPass);
+// const bloomPass = new BloomPass({
+//   intensity: 5,
+//   resolution: 5,
+//   kernelSize: 3,
+//   distinction: 0.9,
+// });
+// bloomPass.renderToScreen = true;
+// composer.addPass(bloomPass);
 
 
 // START

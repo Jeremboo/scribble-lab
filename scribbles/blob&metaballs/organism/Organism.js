@@ -346,7 +346,7 @@ export default class Blob {
     this.timer += 0.05;
     this.range = (Math.sin(1 + this.timer) + Math.sin(2.4 + (this.timer * 1.5))) * 0.1;
 
-    const r = 0.9 + this.range;
+    const r = 0.8 + this.range;
     if (Math.random() > r) {
       this.setRandomly(getRandomInt(0, PARAMS.length - 1))
     }

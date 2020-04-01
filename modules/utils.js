@@ -90,17 +90,18 @@ export const onCursorTouchMeshes = (camera, sceneChildren = [], callback, target
       e.clientX || e.touches[0].clientX,
       e.clientY || e.touches[0].clientY,
     );
+
     raycaster.setFromCamera(mouseVec, camera);
     const intersects = raycaster.intersectObjects(sceneChildren);
     if (!targetedMesh) {
-      callback(intersects);
+      callback(intersects, mouseVec);
     } else {
       let i = 0;
       let targetedObjectIntersected = false;
       while (i < intersects.length && !targetedObjectIntersected) {
         if (intersects[i].object.uuid === targetedMesh.uuid) {
           targetedObjectIntersected = true;
-          callback(intersects[i]);
+          callback(intersects[i], mouseVec);
         }
         i += 1;
       }
