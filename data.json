@@ -4,10 +4,7 @@
     "path": "scribbles/36daysoftype2019/",
     "link": "https://36days.reflektor.digital/",
     "visible": true,
-    "preview": [
-      "preview.gif",
-      "preview2.gif"
-    ],
+    "preview": ["preview.gif", "preview2.gif"],
     "description": "My participation of the [36 Days Of Types](https://36days.reflektor.digital) challenge did with the [Reflektor Digital](https://reflektor.digital/) team",
     "date": "2019-04-03T21:39:03.891Z",
     "tags": [],
@@ -181,9 +178,7 @@
         "path": "scribbles/floatingBoxes/switchVideo/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview1.gif"
-        ],
+        "preview": ["preview1.gif"],
         "description": "",
         "date": "2018-11-23T01:11:58.117Z",
         "tags": []
@@ -193,9 +188,7 @@
         "path": "scribbles/floatingBoxes/rotationForce/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview1.gif"
-        ],
+        "preview": ["preview1.gif"],
         "description": "",
         "date": "2018-11-13T01:11:58.117Z",
         "tags": []
@@ -205,10 +198,7 @@
         "path": "scribbles/floatingBoxes/physics/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview2.gif",
-          "preview3.gif"
-        ],
+        "preview": ["preview2.gif", "preview3.gif"],
         "description": "2D to 3D phisics",
         "date": "2018-11-03T21:39:37.787Z",
         "tags": []
@@ -218,10 +208,7 @@
         "path": "scribbles/floatingBoxes/floating/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview1.gif",
-          "preview2.gif"
-        ],
+        "preview": ["preview1.gif", "preview2.gif"],
         "description": "",
         "date": "2018-11-03T01:11:58.117Z",
         "tags": []
@@ -238,6 +225,16 @@
     "date": "2018-01-10T07:36:10.675Z",
     "tags": [],
     "scribbles": [
+      {
+        "name": "nebula",
+        "path": "scribbles/blob&metaballs/nebula/",
+        "link": "",
+        "visible": true,
+        "preview": ["preview.gif", "preview2.gif"],
+        "description": "",
+        "date": "2020-03-29T01:47:52.263Z",
+        "tags": []
+      },
       {
         "name": "organism",
         "path": "scribbles/blob&metaballs/organism/",
@@ -278,11 +275,7 @@
         "path": "scribbles/blob&metaballs/blobPostProcess/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview2.gif",
-          "preview1.gif",
-          "preview3.gif"
-        ],
+        "preview": ["preview2.gif", "preview1.gif", "preview3.gif"],
         "description": "",
         "date": "2018-01-10T07:36:41.323Z",
         "tags": []
@@ -353,10 +346,7 @@
         "path": "scribbles/metabubbles/bubbles/",
         "link": "https://codepen.io/Jeremboo/pen/XyQdXK",
         "visible": true,
-        "preview": [
-          "preview1.gif",
-          "preview2.gif"
-        ],
+        "preview": ["preview1.gif", "preview2.gif"],
         "description": "",
         "date": "2018-12-03T17:25:52.117Z",
         "tags": []
@@ -398,9 +388,7 @@
         "path": "scribbles/fluidBackground/delayedShape/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview.gif"
-        ],
+        "preview": ["preview.gif"],
         "description": "",
         "date": "2020-01-14T20:25:53.534Z",
         "tags": []
@@ -420,10 +408,7 @@
         "path": "scribbles/fluidBackground/distordedPlaneTexture/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview.gif",
-          "preview2.gif"
-        ],
+        "preview": ["preview.gif", "preview2.gif"],
         "description": "",
         "date": "2019-04-23T14:36:19.394Z",
         "tags": []
@@ -604,9 +589,7 @@
         "path": "scribbles/webglparticles/planeOfPlanes/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview.gif"
-        ],
+        "preview": ["preview.gif"],
         "description": "",
         "date": "2019-05-24T20:41:15.048Z",
         "tags": []
@@ -616,9 +599,7 @@
         "path": "scribbles/webglparticles/curl/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview.gif"
-        ],
+        "preview": ["preview.gif"],
         "description": "Curl noise",
         "date": "2019-05-23T09:11:31.305Z",
         "tags": []
@@ -648,10 +629,7 @@
         "path": "scribbles/webglparticles/fbo&Instances/",
         "link": "http://jeremieboulay.fr/grow-workshop/",
         "visible": true,
-        "preview": [
-          "preview.gif",
-          "preview1.gif"
-        ],
+        "preview": ["preview.gif", "preview1.gif"],
         "description": "",
         "date": "2017-09-08T14:47:14.783Z",
         "tags": []
@@ -688,10 +666,7 @@
         "path": "scribbles/webglparticles/FBO/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview.gif",
-          "preview2.gif"
-        ],
+        "preview": ["preview.gif", "preview2.gif"],
         "description": "",
         "date": "2017-05-15T09:47:25.983Z",
         "tags": []
@@ -701,10 +676,7 @@
         "path": "scribbles/webglparticles/shading/",
         "link": "",
         "visible": true,
-        "preview": [
-          "/preview.gif",
-          "/preview2.gif"
-        ],
+        "preview": ["/preview.gif", "/preview2.gif"],
         "description": "shading with instanced",
         "date": "2017-04-13T09:13:30.098Z",
         "tags": []
@@ -714,10 +686,7 @@
         "path": "scribbles/webglparticles/instances/",
         "link": "",
         "visible": true,
-        "preview": [
-          "/preview.gif",
-          "/preview2.gif"
-        ],
+        "preview": ["/preview.gif", "/preview2.gif"],
         "description": "25 000 instances of one geometry",
         "date": "2017-04-13T09:13:29.098Z",
         "tags": []
@@ -784,34 +753,17 @@
     "preview": "scribbles/seaAndBoat/preview.gif",
     "description": "3D infinite sea inspirated by the work of [Nathan Grodon](https://cinemont.com/) on [Wind Waker Graphics Analiysis](https://medium.com/@gordonnl/wind-waker-graphics-analysis-a0b575a31127#.r6fmvc396) and [The Ocean](https://medium.com/@gordonnl/the-ocean-170fdfd659f1#.jdhpe2tmg)",
     "date": "2017-02-09T23:07:08.459Z",
-    "tags": [
-      "three.js",
-      "webgl",
-      "zelda",
-      "sea",
-      "fog",
-      "boat"
-    ],
+    "tags": ["three.js", "webgl", "zelda", "sea", "fog", "boat"],
     "scribbles": [
       {
         "name": "Sea, fog and boat",
         "path": "scribbles/seaAndBoat/sea/",
         "link": "",
         "visible": true,
-        "preview": [
-          "/preview.gif",
-          "/preview2.gif"
-        ],
+        "preview": ["/preview.gif", "/preview2.gif"],
         "description": "Add params to the work of Nathan",
         "date": "2017-02-09T23:07:41.305Z",
-        "tags": [
-          "three.js",
-          "webgl",
-          "zelda",
-          "sea",
-          "fog",
-          "boat"
-        ]
+        "tags": ["three.js", "webgl", "zelda", "sea", "fog", "boat"]
       }
     ]
   },
@@ -860,10 +812,7 @@
         "path": "scribbles/2D/canvasGrid/",
         "link": "",
         "visible": true,
-        "preview": [
-          "preview.gif",
-          "preview2.gif"
-        ],
+        "preview": ["preview.gif", "preview2.gif"],
         "description": "",
         "date": "2019-03-05T02:10:31.295Z",
         "tags": []
@@ -905,37 +854,20 @@
         "path": "scribbles/pixiJsRopes/loopedHair",
         "link": "",
         "visible": true,
-        "preview": [
-          "/preview.gif",
-          "/preview2.gif"
-        ],
+        "preview": ["/preview.gif", "/preview2.gif"],
         "description": "Pixi.js Looped Hair",
         "date": "2018-05-09T10:22:18.068Z",
-        "tags": [
-          "rope",
-          "gravity",
-          "generator",
-          "pixi.js"
-        ]
+        "tags": ["rope", "gravity", "generator", "pixi.js"]
       },
       {
         "name": "Rope generator",
         "path": "scribbles/pixiJsRopes/ropeGenerator",
         "link": "http://codepen.io/Jeremboo/full/QGVaYa",
         "visible": true,
-        "preview": [
-          "/preview.gif",
-          "/preview1.gif",
-          "/preview2.gif"
-        ],
+        "preview": ["/preview.gif", "/preview1.gif", "/preview2.gif"],
         "description": "Pixi.js Random rope generator",
         "date": "2017-01-10T10:22:18.068Z",
-        "tags": [
-          "rope",
-          "gravity",
-          "generator",
-          "pixi.js"
-        ]
+        "tags": ["rope", "gravity", "generator", "pixi.js"]
       }
     ]
   },

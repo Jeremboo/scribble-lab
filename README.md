@@ -77,6 +77,12 @@ Play with physics to make interactives floating boxes
 Prototypes (and explorations) for the [Watermelon wellness lab projet](http://watermelonsugar.cc/wellnesslab/) by [Pamm Hong](http://frompamm.net/) exposed during the [Sydney Design Festival 2018](https://www.broadsheet.com.au/sydney/entertainment/article/tamagotchi-you-has-important-lesson-teach-you-about-internet)
 
 <p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview2.gif">
+    <img alt="nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview2.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview.gif">
+    <img alt="nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview.gif?raw=true" width="200">
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/organism/preview.gif">
     <img alt="organism" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/organism/preview.gif?raw=true" width="200">
   </a>
