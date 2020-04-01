@@ -11,6 +11,9 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview2.gif">
     <img alt="nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview2.gif?raw=true" width="200">
   </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview3.gif">
+    <img alt="nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview3.gif?raw=true" width="200">
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/delayedShape/preview.gif">
     <img alt="delayedShape" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/fluidBackground/delayedShape/preview.gif?raw=true" width="200">
   </a>
@@ -204,16 +207,16 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
     <img alt="FBO" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO/preview2.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading/preview.gif">
-    <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview.gif?raw=true" width="200">
+    <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading/preview.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading/preview2.gif">
-    <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview2.gif?raw=true" width="200">
+    <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading/preview2.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances/preview.gif">
-    <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview.gif?raw=true" width="200">
+    <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview2.gif">
-    <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview2.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances/preview2.gif">
+    <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances/preview2.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/seaAndBoat/sea//preview.gif">
     <img alt="Sea, fog and boat" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/seaAndBoat/sea//preview.gif?raw=true" width="200">

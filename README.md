@@ -77,6 +77,9 @@ Play with physics to make interactives floating boxes
 Prototypes (and explorations) for the [Watermelon wellness lab projet](http://watermelonsugar.cc/wellnesslab/) by [Pamm Hong](http://frompamm.net/) exposed during the [Sydney Design Festival 2018](https://www.broadsheet.com.au/sydney/entertainment/article/tamagotchi-you-has-important-lesson-teach-you-about-internet)
 
 <p align="center">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview3.gif">
+    <img alt="nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview3.gif?raw=true" width="200">
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview2.gif">
     <img alt="nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview2.gif?raw=true" width="200">
   </a>
@@ -231,17 +234,17 @@ Generate particles with different techniques. Other projects here: [Northern Bor
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO/preview.gif">
     <img alt="FBO" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/FBO/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview2.gif">
-    <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview2.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading/preview2.gif">
+    <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading/preview2.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview.gif">
-    <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading//preview.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading/preview.gif">
+    <img alt="shading" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/shading/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview2.gif">
-    <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview2.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances/preview2.gif">
+    <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances/preview2.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview.gif">
-    <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances//preview.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances/preview.gif">
+    <img alt="instances" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/instances/preview.gif?raw=true" width="200">
   </a>
 </p>
 

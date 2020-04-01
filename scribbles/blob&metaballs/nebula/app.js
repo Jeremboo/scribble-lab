@@ -6,10 +6,10 @@ import {
   Color,
   PlaneBufferGeometry,
   ShaderMaterial,
-  DoubleSide,
   TextureLoader,
   Object3D,
-  AdditiveBlending
+  AdditiveBlending,
+  Vector2
 } from 'three';
 import { GUI } from 'dat.gui';
 
@@ -75,11 +75,16 @@ document.body.appendChild(webgl.dom);
 
 const PROPS = {
   color: '#4118ca',
-  brightness: 5,
-  turbulence: 1.3,
+  brightness: 3.5,
+  turbulence: 0.5,
   scale: 1,
   distance: 1,
-  rotation: 0.01
+  rotation: 0.01,
+  // Global Noise
+  noiseSpeed: 0.01,
+  noiseSize: 0.15,
+  noiseIntensity: 1.39,
+  noiseOrientation: 1
 };
 
 const textureLoader = new TextureLoader();
@@ -99,7 +104,12 @@ export default class Glow extends Mesh {
         alpha: { value: 1 },
         time: { value: 0 },
         texture: { value: null },
-        scale: { value: PROPS.scale }
+        scale: { value: PROPS.scale },
+        resolution: { value: new Vector2(windowWidth, windowHeight) },
+        globalTime: { value: 0 },
+        noiseSize: { value: PROPS.noiseSize },
+        noiseIntensity: { value: PROPS.noiseIntensity },
+        noiseOrientation: { value: PROPS.noiseOrientation }
       },
       transparent: true,
       depthWrite: false
@@ -143,6 +153,7 @@ export default class Glow extends Mesh {
 
   update() {
     this.t += this.increment * PROPS.turbulence;
+    this.material.uniforms.globalTime.value += PROPS.noiseSpeed;
 
     this.position.x =
       this.initialPositionX + Math.sin(this.t) * this.translationXForce;
@@ -197,6 +208,23 @@ gui.add(PROPS, 'turbulence', 0, 2);
 //     glow.updateDistance();
 //   });
 // });
+
+gui.add(PROPS, 'noiseSpeed', -0.03, 0.03);
+gui.add(PROPS, 'noiseSize', 0, 10).onChange(value => {
+  glows.children.forEach(glow => {
+    glow.material.uniforms.noiseSize.value = value;
+  });
+});
+gui.add(PROPS, 'noiseOrientation', -1, 1).onChange(value => {
+  glows.children.forEach(glow => {
+    glow.material.uniforms.noiseOrientation.value = value;
+  });
+});
+gui.add(PROPS, 'noiseIntensity', 0, 1.5).onChange(value => {
+  glows.children.forEach(glow => {
+    glow.material.uniforms.noiseIntensity.value = value;
+  });
+});
 
 /**
  * * *******************

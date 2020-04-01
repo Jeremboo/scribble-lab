@@ -230,7 +230,7 @@
         "path": "scribbles/blob&metaballs/nebula/",
         "link": "",
         "visible": true,
-        "preview": ["preview.gif", "preview2.gif"],
+        "preview": ["preview.gif", "preview2.gif", "preview3.gif"],
         "description": "",
         "date": "2020-03-29T01:47:52.263Z",
         "tags": []
@@ -676,7 +676,7 @@
         "path": "scribbles/webglparticles/shading/",
         "link": "",
         "visible": true,
-        "preview": ["/preview.gif", "/preview2.gif"],
+        "preview": ["preview.gif", "preview2.gif"],
         "description": "shading with instanced",
         "date": "2017-04-13T09:13:30.098Z",
         "tags": []
@@ -686,7 +686,7 @@
         "path": "scribbles/webglparticles/instances/",
         "link": "",
         "visible": true,
-        "preview": ["/preview.gif", "/preview2.gif"],
+        "preview": ["preview.gif", "preview2.gif"],
         "description": "25 000 instances of one geometry",
         "date": "2017-04-13T09:13:29.098Z",
         "tags": []
