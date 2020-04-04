@@ -17,9 +17,9 @@ export default class Starts extends Mesh {
     const instanciedStars = new InstancedGeom(starGeometry, nbrOfStars);
 
     // PROPS
-    const positionAttribute = instanciedStars.createAttribute('_position', 3);
-    const scaleAttribute = instanciedStars.createAttribute('_scale', 1);
-    const rotationAttribute = instanciedStars.createAttribute('_rotation', 1);
+    const positionAttribute = instanciedStars.setAttribute('_position', 3);
+    const scaleAttribute = instanciedStars.setAttribute('_scale', 1);
+    const rotationAttribute = instanciedStars.setAttribute('_rotation', 1);
 
     for (let i = 0; i < nbrOfStars; i++) {
       const scalar = getRandomFloat(2, 10);
@@ -37,8 +37,8 @@ export default class Starts extends Mesh {
     const material = new ShaderMaterial({
       uniforms: {
         time: { value: 0 },
-        opacity: { value: 0.5 },
-        color: { value: new Color('#ecf0f1') }
+        opacity: { value: 0.75 },
+        color: { value: new Color('#ffffff') }
       },
       vertexShader: `
       attribute float _scale;
