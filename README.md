@@ -80,11 +80,11 @@ Prototypes (and explorations) for the [Watermelon wellness lab projet](http://wa
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview3.gif">
     <img alt="nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview3.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview2.gif">
-    <img alt="nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview2.gif?raw=true" width="200">
-  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview.gif">
     <img alt="nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebula/preview.gif?raw=true" width="200">
+  </a>
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebulaTouchable/preview.gif">
+    <img alt="Touchable Nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebulaTouchable/preview.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/organism/preview.gif">
     <img alt="organism" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/organism/preview.gif?raw=true" width="200">

@@ -37,7 +37,6 @@ class Webgl {
     this.meshListeners = [];
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setPixelRatio(Math.min(1.6, window.devicePixelRatio) || 1);
-    // this.renderer.setClearColor(new Color(BACKGROUND_COLOR));
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
     this.controls = new OrbitControl(this.camera, this.renderer.domElement);
@@ -78,23 +77,22 @@ document.body.appendChild(webgl.dom);
 const NUMBER_OF_PARTICLES = 300;
 
 const PROPS = {
-  color: '#4118ca',
-  brightness: 3.5,
-  turbulence: 0.5,
-  scale: 1,
-  distance: 1,
+  color: '#1621ca',
+  brightness: 5,
+  scale: 2,
+  turbulence: 0.95,
+  distance: 1.3,
   rotation: 0.01,
-  // Global Noise
-  noiseSpeed: 0.01,
-  noiseSize: 0.15,
-  noiseIntensity: 1.39,
-  noiseOrientation: 1
+  mouseDistance: 1.5,
+  mouseForceVelocity: 0.095,
+  colorFriction: 0.99,
+  colorIncrement: 0.02
 };
 
 const textureLoader = new TextureLoader();
 
 const mouseForce = new Vector3();
-const mousePosition = new Vector3();
+const mousePosition = new Vector3(99, 99, 99);
 
 const instancePosition = new Vector3();
 
@@ -135,19 +133,15 @@ export default class Nebula extends Mesh {
     );
 
     for (let i = 0; i < nbr; i++) {
+      // scale
+      const scale = getRandomFloat(0.2, 1);
+      scaleAttribute.setXY(i, scale, scale);
       // position
       const { x, y, z } = getRandomPosition(i);
       positionAttribute.setXYZ(i, x, y, z);
-      initialPositions[i * 3 + 0] = x;
-      initialPositions[i * 3 + 1] = y;
+      initialPositions[i * 3 + 0] = x * scale;
+      initialPositions[i * 3 + 1] = y * scale;
       initialPositions[i * 3 + 2] = z;
-      // scale
-      const scale = getRandomFloat(0.1, 4);
-      scaleAttribute.setXY(
-        i,
-        getRandomFloat(0.8, 1.2) * scale,
-        getRandomFloat(0.8, 1.2) * scale
-      );
       // alpha
       const alpha = getRandomFloat(0.15, 0.3);
       alphaAttribute.setX(i, alpha);
@@ -235,14 +229,19 @@ export default class Nebula extends Mesh {
         this.geometry.attributes._position.getZ(i)
       );
 
-      const distance = mousePosition.distanceTo(instancePosition);
-      if (distance < 1.5) {
-        instancePosition.sub(mouseForce.clone().multiplyScalar(distance * 2));
+      const distance =
+        (mousePosition.distanceTo(instancePosition) / mouseForce.length()) *
+        0.2;
+      if (distance < PROPS.mouseDistance) {
+        const dist = PROPS.mouseDistance - distance;
+        instancePosition.sub(mouseForce.clone().multiplyScalar(dist * 2));
 
         // Incremented
         this.geometry.attributes._incrementedColor.setX(
           i,
-          (this.geometry.attributes._incrementedColor.getX(i) + 0.02) % 1
+          (this.geometry.attributes._incrementedColor.getX(i) +
+            PROPS.colorIncrement) %
+            1
         );
       }
       let x = this.initialPositions[i * 3 + 0];
@@ -271,7 +270,7 @@ export default class Nebula extends Mesh {
 
       this.geometry.attributes._incrementedColor.setX(
         i,
-        this.geometry.attributes._incrementedColor.getX(i) * 0.995
+        this.geometry.attributes._incrementedColor.getX(i) * PROPS.colorFriction
       );
     }
 
@@ -301,14 +300,19 @@ const mousePlaneMat = new MeshBasicMaterial({ visible: false });
 const mousePlane = new Mesh(mousePlaneGeom, mousePlaneMat);
 // mousePlane.rotation.x = radians(-30);
 webgl.add(mousePlane);
+let firstIntersection = true;
 onCursorTouchMeshes(webgl.camera, [mousePlane], intersects => {
   const objectIntersected = intersects[0];
   if (objectIntersected) {
+    if (firstIntersection) {
+      firstIntersection = false;
+      mousePosition.copy(objectIntersected.point);
+    }
     mouseForce.add(
       mousePosition
         .clone()
         .sub(objectIntersected.point)
-        .multiplyScalar(0.1)
+        .multiplyScalar(PROPS.mouseForceVelocity)
     );
     mousePosition.copy(objectIntersected.point);
   }
@@ -324,26 +328,20 @@ const gui = new GUI();
 gui.addColor(PROPS, 'color').onChange(value => {
   nebula.material.uniforms.color.value.set(value);
 });
-gui.add(PROPS, 'rotation', 0, 0.1);
+gui.add(PROPS, 'rotation', 0, 1);
 gui.add(PROPS, 'brightness', 0, 25);
-gui.add(PROPS, 'turbulence', 0, 2);
 gui.add(PROPS, 'scale', 0.001, 3).onChange(value => {
   nebula.updateScale();
 });
-gui.add(PROPS, 'distance', 0.001, 10).onChange(value => {
+gui.add(PROPS, 'turbulence', 0, 2);
+gui.add(PROPS, 'distance', 0.001, 3).onChange(value => {
   nebula.updatePosition();
 });
 
-gui.add(PROPS, 'noiseSpeed', -0.03, 0.03);
-gui.add(PROPS, 'noiseSize', 0, 10).onChange(value => {
-  nebula.material.uniforms.noiseSize.value = value;
-});
-gui.add(PROPS, 'noiseOrientation', -1, 1).onChange(value => {
-  nebula.material.uniforms.noiseOrientation.value = value;
-});
-gui.add(PROPS, 'noiseIntensity', 0, 1.5).onChange(value => {
-  nebula.material.uniforms.noiseIntensity.value = value;
-});
+gui.add(PROPS, 'mouseForceVelocity', 0.001, 0.1);
+gui.add(PROPS, 'colorFriction', 0.95, 0.99999).step(0.0001);
+gui.add(PROPS, 'mouseDistance', 0.1, 4);
+gui.add(PROPS, 'colorIncrement', 0.001, 0.1);
 
 /**
  * * *******************
