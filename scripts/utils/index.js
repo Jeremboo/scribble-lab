@@ -1,6 +1,5 @@
 const readlineSync = require('readline-sync');
 const fs = require('fs');
-const path = require('path');
 const camelCase = require('camelcase');
 
 
@@ -153,40 +152,7 @@ const askToCreateDir = (parentPath, type = '') => {
   return askToCreateDir(parentPath, type);
 };
 
-/**
- * PRIVATE
- */
 
-/**
- * create JSON file
- * require('fs');
- * @param  {String} name the file name
- * @param  {String} path the parent path
- */
-const createDataJSON = (name, path) => {
-  const description = ask(`Description to ${name}: `);
-  const link = ask(`External link ? : `);
-  const visible = askBool('Visible ? : ');
-  const data = {
-    name,
-    path,
-    link,
-    visible,
-    preview: `preview.gif`,
-    description,
-    date: new Date(),
-    tags: [],
-  };
-
-  try {
-    fs.writeFileSync(
-      `${path}/data.json`,
-      JSON.stringify(data, null, 2), 'utf8'
-    );
-  } catch (err) {
-    console.log(`ERROR : ${err}`);
-  }
-};
 
 
 module.exports = {
@@ -200,5 +166,4 @@ module.exports = {
   createDir,
   createDirsDepth,
   getFilteredDirList,
-  createDataJSON,
 };

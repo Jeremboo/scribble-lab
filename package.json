@@ -13,6 +13,7 @@
   "author": "Jérémie Boulay <jeremi.boulay@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "canvas-sketch": "^0.7.3",
     "core-js": "^3.6.4",
     "dat.gui": "^0.7.7",
     "dat.gui.image": "^1.0.2",
@@ -41,6 +42,7 @@
     "babel-loader": "^8.1.0",
     "babel-plugin-module-resolver": "^3.2.0",
     "camelcase": "^4.0.0",
+    "canvas-sketch-cli": "^1.11.7",
     "copy-dir": "^0.3.0",
     "css-loader": "^3.5.0",
     "eslint": "^4.19.1",

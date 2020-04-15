@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { askWitchChildDir, pathExist } = require('./utils');
+const { askWitchChildDir, pathExist } = require('.');
 
 module.exports = () => {
   // DIRECTORY TO TEST
@@ -24,8 +24,5 @@ module.exports = () => {
     name = scribbleData.name;
   }
 
-  // SAVE FOR WEBPACK
-  process.env.GROUP_PATH = groupPath;
-  process.env.SKETCH_PATH = scribblePath;
-  process.env.NAME = name;
+  return { groupPath, scribblePath, name };
 };

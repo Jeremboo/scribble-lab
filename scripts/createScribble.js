@@ -1,9 +1,11 @@
 const fs = require('fs');
-const copyDir = require('copy-dir');
 
-const { askWitchChoice, askWitchChildDir, pathExist, askToCreateDir, createDataJSON } = require('./utils');
+const startServer = require('./startServer');
 
-// WITCH REPO
+const createDataJSON = require('./utils/createDataJSON');
+const { askWitchChoice, askWitchChildDir, pathExist, askToCreateDir, askBool } = require('./utils');
+
+// Get the group directory
 let groupPath = process.env.DIR;
 
 if (!groupPath || !pathExist(groupPath)) {
@@ -12,30 +14,32 @@ if (!groupPath || !pathExist(groupPath)) {
   groupPath += `${askWitchChildDir(groupPath, 'group')}/`;
 }
 
-// WITCH TYPE
-// Get all app name
-const templatePath = 'templates/';
-const templateFiles = fs.readdirSync(templatePath);
-const types = templateFiles.filter(fileName => (fileName.indexOf('app.') !== -1));
-
-// CREATE DIR
+// Create the directory
 const { path, name } = askToCreateDir(groupPath, 'Sketch');
 
-// CLONE TEMPLATE AND KEEP THE GOOD APP
-const typeFileName = askWitchChoice(types, 'template');
-copyDir.sync(templatePath, path, (stat, filepath, filename) => {
-  if (filename.indexOf('app.') !== -1) {
-    return (filename === typeFileName);
-  }
-  return true;
-});
-fs.renameSync(`${path}/${typeFileName}`, `${path}/app.js`);
+// Get the template requested
+const types = ['default', 'three', 'regl', 'penplot'];
+// TODO 2020-04-14 jeremboo: Redo the templates propertly, remove the useless ones
+// const templatePath = 'templates/';
+// const templateFiles = fs.readdirSync(templatePath);
+// const types = templateFiles.filter(fileName => (fileName.indexOf('app.') !== -1));
+const templateType = askWitchChoice(types, 'template');
 
-// CREATE DATA.json
+// Create the data.json
 createDataJSON(name, path);
 
-// NPM START
-process.env.GROUP_PATH = groupPath;
-process.env.SKETCH_PATH = path;
-process.env.NAME = name;
-require('./startWebpack')();
+// Create the style.css file by copying the css template
+fs.copyFileSync('templates/style.css', `${path}/style.css`);
+
+// Create the index.html if the user what a custom one
+const customHTMLRequested = askBool('Custom index.html ? : ', false);
+if (customHTMLRequested) {
+  fs.copyFileSync('templates/index.html', `${path}/index.html`);
+}
+
+// START
+const args = ['--new'];
+if (templateType) {
+  args.push(`--template=${templateType}`)
+}
+startServer(path, name, args);
