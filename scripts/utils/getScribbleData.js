@@ -1,28 +1,23 @@
 const fs = require('fs');
-const path = require('path');
-const { askWitchChildDir, pathExist } = require('.');
+
+const { askWitchChildDir } = require('.');
+const { SCRIBBLE_PATH } = require('./constants');
 
 module.exports = () => {
-  // DIRECTORY TO TEST
-  let scribblePath = process.env.DIR;
-
-  if (!scribblePath || !pathExist(scribblePath)) {
-    // Select a dir in command line
-    scribblePath = 'scribbles/';
-    scribblePath += `${askWitchChildDir(scribblePath, 'group')}/`;
-    scribblePath += `${askWitchChildDir(scribblePath, 'scribble')}/`;
-  }
-
-  // Get the group path
-  const groupPath = path.dirname(scribblePath);
+  // Get the scribble path
+  let scribblePath = SCRIBBLE_PATH;
+  const groupName = askWitchChildDir(scribblePath, 'group');
+  scribblePath += `${groupName}/`;
+  const scribbleName = askWitchChildDir(scribblePath, 'scribble');
+  scribblePath += `${scribbleName}/`;
 
   // Get data
   const dataPath = `${scribblePath}/data.json`;
-  let name = 'A scribble';
+  let name = false;
   if (fs.existsSync(dataPath)) {
     const scribbleData = JSON.parse(fs.readFileSync(dataPath));
     name = scribbleData.name;
   }
 
-  return { groupPath, scribblePath, name };
+  return { scribblePath, groupName, scribbleName, name };
 };

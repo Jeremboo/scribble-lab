@@ -7,8 +7,9 @@ const { ask, askBool } = require('.');
  * @param  {String} name the file name
  * @param  {String} path the parent path
  */
-module.exports = (name, path) => {
-  const description = ask(`Description of ${name} : `);
+module.exports = (pathName, path) => {
+  const name = ask(`Title (${pathName}) : `) || pathName;
+  const description = ask(`Description : `);
   // /const link = ask(`External link ? : `);
   const visible = askBool('Should it be visible ? : ');
   const data = {

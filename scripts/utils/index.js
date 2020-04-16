@@ -34,18 +34,20 @@ const pathExist = path => {
  * Create a directory into the path passed into parameter
  * @param  {String} parentPath    valid parent path
  * @param  {String} dirName       name of the directory
+ * @param  {String} noOverwrite   name of the directory
  * @return {Object.String.String} name and path
  */
-const createDir = (parentPath, name) => {
+const createDir = (parentPath, name, errorIfExist = false) => {
   const path = `${parentPath}${name}/`;
 
   if (fs.existsSync(path)) {
-    console.log(`ERROR : ${path} already exist !`);
-    return false;
+    if (errorIfExist) {
+      throw(`ERROR : ${path} already exist !`);
+    }
+  } else {
+    fs.mkdirSync(path);
   }
-
-  fs.mkdirSync(path);
-  return { name, path };
+  return path;
 };
 
 /**
@@ -144,16 +146,14 @@ const askToCreateDir = (parentPath, type = '') => {
   const name = ask(`${type} name : `);
   const nameToCamelCase = camelCase(name);
 
-  const result = createDir(parentPath, nameToCamelCase);
-  if (result) {
-    return result;
+  let path = false;
+  try {
+    path = createDir(parentPath, nameToCamelCase, true);
+  } catch (e) {
+    console.log(`ERROR : The folder ${name} already exist! Please write another name`);
   }
-  console.log('ERROR : Please write another');
-  return askToCreateDir(parentPath, type);
+  return path ? { name, path } : askToCreateDir(parentPath, type);
 };
-
-
-
 
 module.exports = {
   removeInstanceFromArray,

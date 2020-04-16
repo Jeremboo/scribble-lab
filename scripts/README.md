@@ -1,18 +1,29 @@
-# Codevember 2016
+# Scribble Lab
+
+Based on canvas-sketch tool
 
 ## Start dev env' on a specific day
 
-`DIR=[path] npm start`
+`npm start`
 
-## Bootstrap a new Sketch
+## Create a new Group
 
-`DIR=[path] npm run create:scribble`
+`npm run create:group`
 
-## Bootstrap a new Group
+## Create a new Sketch
 
-`DIR=[path] npm run create:group`
+`npm run create:scribble`
 
-## TODO
+## Update the main README.md
 
-- title = name into data.json and not the path.
-- build HTML preview
+## Build a external file
+
+# TODO
+
+- Redo the templates
+- Make all old scribbles works
+- Solution for the images
+- Fix the build script with images
+- Remove all duplicate files
+- Add "latest" option when you get a scribble
+- Create unit tests to easily debug the scripts.

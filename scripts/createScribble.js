@@ -1,18 +1,12 @@
 const fs = require('fs');
 
 const startServer = require('./startServer');
-
+const { askWitchChoice, askWitchChildDir, askToCreateDir, askBool } = require('./utils');
+const { DEFAULT_ARGS, SCRIBBLE_PATH } = require('./utils/constants');
 const createDataJSON = require('./utils/createDataJSON');
-const { askWitchChoice, askWitchChildDir, pathExist, askToCreateDir, askBool } = require('./utils');
 
-// Get the group directory
-let groupPath = process.env.DIR;
-
-if (!groupPath || !pathExist(groupPath)) {
-  // Select a dir in command line
-  groupPath = 'scribbles/';
-  groupPath += `${askWitchChildDir(groupPath, 'group')}/`;
-}
+// Get the group
+const groupPath = `${SCRIBBLE_PATH}${askWitchChildDir(SCRIBBLE_PATH, 'group')}/`;
 
 // Create the directory
 const { path, name } = askToCreateDir(groupPath, 'Sketch');
@@ -38,7 +32,7 @@ if (customHTMLRequested) {
 }
 
 // START
-const args = ['--new'];
+const args = ['--new', ...DEFAULT_ARGS];
 if (templateType) {
   args.push(`--template=${templateType}`)
 }
