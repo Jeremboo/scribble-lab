@@ -20,18 +20,17 @@ Based on canvas-sketch tool
 
 # TODO
 
-- Enable gif/mp4 exports
 - Make all old scribbles works
-- Solution for the images
-- Fix the build script with images
-- Remove all duplicate files
+- Fix script/build.js to export images too
 - Add "latest" option when you get a scribble
-- Create unit tests to easily debug the scripts.
+- Remove all duplicate files
 - babel: Make arrow function into class working
 - babel: Make decorator works
+- Make a script to export a gif to mp4 (based on canvas-sketch-mp4)
+- Create unit tests to easily debug the scripts.
 
 
 # QUESTION - ISSUES
 
 - canvas-sketch: Documentation can include all variables you can inject into the html template (like {{title}})
-- canvas-sketch: is performance consuming to always allow the --stream?
+- canvas-sketch: issue with --stream [ gif --size:512:-1 ]

@@ -58,10 +58,10 @@ export default class Renderer extends WebGLRenderer {
    * * UPDATE
    * * *******************
    */
-  update() {
+  update(props) {
    let i = this.meshCount;
    while (--i >= 0) {
-      this.meshListeners[i].apply(this, null);
+      this.meshListeners[i](props)
     }
     this.render(this.scene, this.camera);
   }

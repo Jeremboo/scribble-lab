@@ -9,8 +9,9 @@ import Renderer from '../../../modules/Renderer.three';
 import OrbitControls from '../../../modules/OrbitControls';
 
 const PROPS = {
-  speed: 0.03,
+  speed: 1,
   mainColor: '#C9F0FF',
+  bgColor: '#ffffff',
 };
 
 class CustomMesh extends Mesh {
@@ -42,14 +43,15 @@ class CustomMesh extends Mesh {
     this.update = this.update.bind(this);
   }
 
-  update() {
-    this.rotation.x += PROPS.speed;
-    this.rotation.y += PROPS.speed;
+  update({ playhead }) {
+    this.rotation.x = playhead * (Math.PI * 2) * PROPS.speed;
+    this.rotation.y = playhead * (Math.PI * 2) * PROPS.speed;
   }
 }
 
 canvasSketch(({ context }) => {
   const renderer = new Renderer({ canvas: context.canvas });
+  renderer.setClearColor(PROPS.bgColor, 1);
   const controls = new OrbitControls(renderer.camera, context.canvas);
 
   // * START *****
@@ -58,16 +60,15 @@ canvasSketch(({ context }) => {
 
   // * GUI *******
   const gui = new GUI();
-  gui.add(PROPS, 'speed', 0, 0.1);
+  gui.add(PROPS, 'speed', 1, 10);
 
   return {
     resize({ pixelRatio, viewportWidth, viewportHeight }) {
       renderer.setPixelRatio(pixelRatio);
       renderer.resize(viewportWidth, viewportHeight);
     },
-    render({ time, playhead }) {
-      // rendere.scene.rotation.y = playhead * (Math.PI * 2);
-      renderer.update();
+    render(props) {
+      renderer.update(props);
     },
     unload() {
       controls.dispose();
@@ -75,10 +76,10 @@ canvasSketch(({ context }) => {
     }
   };
 }, {
-  // fps: 30,
-  // duration: 3,
+  fps: 24,
+  duration: 4,
+  dimensions: [1024, 1024],
   // scaleToView: true,
-  // dimensions: [1024, 1024],
   animate: true,
   context: 'webgl',
 });
