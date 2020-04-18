@@ -1,59 +1,58 @@
-/**
- * * *******************
- * * CORE
- * * *******************
- */
-const canvas = document.createElement('canvas');
-const context = canvas.getContext('2d');
-let windowWidth = canvas.width = window.innerWidth;
-let windowHeight = canvas.height = window.innerHeight;
-canvas.id = 'canvas';
-document.body.insertBefore(canvas, document.body.firstChild);
-window.onresize = () => {
-  windowWidth = canvas.width = window.innerWidth;
-  windowHeight = canvas.height = window.innerHeight;
+import canvasSketch from 'canvas-sketch';
+import { GUI } from 'dat.gui';
+
+const PROPS = {
+  speed: 0.03,
+  size: 100,
+  mainColor: '#C9F0FF',
+  bgColor: '#ffffff'
 };
 
+class Circle {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.time = 0;
+    this.size = PROPS.size;
 
-/**
- * * *******************
- * * CREATING ZONE
- * * *******************
- */
-
-class ExempleCanvasItem {
-  // Save state here
-  constructor() {
-
+    this.update = this.update.bind(this);
+    this.render = this.render.bind(this);
   }
 
-  // Update values here
-  update() {}
+  update() {
+    this.time += PROPS.speed;
+    this.size = (Math.sin(this.time + PROPS.speed) * PROPS.size) + PROPS.size * 2;
+  }
 
-  render() {
+  render(context) {
     context.beginPath();
-    // draw Something Here
-    context.stroke();
+    context.fillStyle = PROPS.mainColor;
+    context.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     context.fill();
   }
 }
 
-const exempleCI = new ExempleCanvasItem();
+canvasSketch(({ width, height }) => {
 
-function loop() {
-  exempleCI.update();
-  exempleCI.render();
-}
+  // * START *****
+  const circle = new Circle(width * 0.5, height * 0.5);
 
+  // * GUI *******
+  const gui = new GUI();
+  gui.add(PROPS, 'speed', 0, 0.1);
 
-/**
- * * *******************
- * * LOOP
- * * *******************
- */
-function _loop() {
-  context.clearRect(0, 0, windowWidth, windowHeight);
-  loop();
- 	requestAnimationFrame(_loop);
-}
-_loop();
+  return ({ context, width, height }) => {
+    context.fillStyle = PROPS.bgColor;
+    context.fillRect(0, 0, width, height);
+
+    // * UPDATE **
+    circle.update();
+    circle.render(context);
+  };
+}, {
+  // fps: 30,
+  // duration: 3,
+  dimensions: [ 2048, 2048 ],
+  scaleToView: true,
+  animate: true,
+});

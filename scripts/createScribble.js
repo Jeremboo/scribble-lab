@@ -11,13 +11,24 @@ const groupPath = `${SCRIBBLE_PATH}${askWitchChildDir(SCRIBBLE_PATH, 'group')}/`
 // Create the directory
 const { path, name } = askToCreateDir(groupPath, 'Sketch');
 
-// Get the template requested
-const types = ['default', 'three', 'regl', 'penplot'];
-// TODO 2020-04-14 jeremboo: Redo the templates propertly, remove the useless ones
-// const templatePath = 'templates/';
-// const templateFiles = fs.readdirSync(templatePath);
-// const types = templateFiles.filter(fileName => (fileName.indexOf('app.') !== -1));
-const templateType = askWitchChoice(types, 'template');
+// Get the possibles templates
+const types = {};
+const templatePath = './templates/';
+const templateFiles = fs.readdirSync(templatePath);
+templateFiles.forEach(fileName => {
+  if (fileName.includes('app.')) {
+    const name = fileName.split('.')[1];
+    types[name] = `${templatePath}${fileName}`;
+  }
+});
+// Add default templates at the end
+types['regl'] = 'regl';
+types['penplot'] = 'penplot';
+types['canvas (default)'] = 'default';
+types['three (default)'] = 'three';
+// Get the template type requested
+const templateKey = askWitchChoice(Object.keys(types), 'template');
+const templateType = types[templateKey];
 
 // Create the data.json
 createDataJSON(name, path);
