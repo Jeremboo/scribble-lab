@@ -8,7 +8,7 @@ module.exports = () => {
   let scribblePath = SCRIBBLE_PATH;
   const groupName = askWitchChildDir(scribblePath, 'group');
   scribblePath += `${groupName}/`;
-  const scribbleName = askWitchChildDir(scribblePath, 'scribble');
+  const scribbleName = askWitchChildDir(scribblePath, 'scribble', true);
   scribblePath += `${scribbleName}/`;
 
   // Get data

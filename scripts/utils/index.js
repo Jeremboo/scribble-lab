@@ -68,11 +68,22 @@ const createDirsDepth = (parentPath, arr) => {
 };
 
 // TODO use regex
-const getFilteredDirList = (dirPath) => fs.readdirSync(dirPath).filter(directory => !(
-  directory[0] === '.' ||
-  directory[0] === '_' ||
-  directory === 'data.json'
-  ))
+const getFilteredDirList = (dirPath, removeFolderWithoutApp) => fs.readdirSync(dirPath).filter(filePath => {
+  const path = `${dirPath}${filePath}`;
+  const isDirectory = fs.lstatSync(path).isDirectory();
+  const isNotAssetFolder = !(filePath[0] === '_');
+
+  let isContainingApp = true;
+  if (removeFolderWithoutApp && isDirectory) {
+    isContainingApp = false;
+    fs.readdirSync(path).forEach(fileName => {
+      if (fileName === 'app.js') {
+        isContainingApp = true;
+      }
+    });
+  }
+  return isDirectory && isNotAssetFolder && isContainingApp;
+})
 ;
 
 /**
@@ -95,7 +106,7 @@ const ask = question => readlineSync.question(question);
  * @return {arr[]}       one value of the array
  */
 const askWitchChoice = (arr, type = '') =>
-  arr[readlineSync.keyInSelect(arr, `Witch ${type} ? : `)]
+  arr[readlineSync.keyInSelect(arr, `Which ${type} ? : `)]
 ;
 
 /**
@@ -104,8 +115,8 @@ const askWitchChoice = (arr, type = '') =>
  * @param  {String} type    type of values to select
  * @return {String}         directory path selected
  */
-const askWitchChildDir = (dirPath, type) => {
-  const dir = getFilteredDirList(dirPath);
+const askWitchChildDir = (dirPath, type, removeFolderWithoutApp) => {
+  const dir = getFilteredDirList(dirPath, removeFolderWithoutApp);
   return askWitchChoice(dir, type);
 };
 
