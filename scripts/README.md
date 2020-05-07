@@ -20,8 +20,6 @@ Based on canvas-sketch tool
 
 # TODO
 
-- Make all old scribbles works
-- Replace glslify by strings
 - Remove folders without app.js included
 - Fix script/build.js to export images too
 - Avoid asset duplication per project (external URL from the github repo?)

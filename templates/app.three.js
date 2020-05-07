@@ -2,7 +2,6 @@ import {
   Mesh, ShaderMaterial, Color, BoxBufferGeometry
 } from 'three';
 import canvasSketch from 'canvas-sketch';
-import glslify from 'glslify';
 import { GUI } from 'dat.gui';
 
 import Renderer from '../../../modules/Renderer.three';
@@ -22,21 +21,21 @@ class CustomMesh extends Mesh {
       uniforms: {
         color: { value: new Color(PROPS.mainColor) }
       },
-      fragmentShader: glslify(`
+      fragmentShader: `
         uniform vec3 color;
         varying vec2 vUv;
         void main() {
           gl_FragColor = vec4(color * vec3(vUv, 1.0), 1.0);
         }
-      `),
-      vertexShader: glslify(`
+      `,
+      vertexShader: `
         varying vec2 vUv;
         void main () {
           vUv = uv;
           vec3 transformed = position.xyz;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
         }
-      `),
+      `,
     });
     super(geometry, material);
 
