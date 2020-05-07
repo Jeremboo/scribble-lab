@@ -1,7 +1,6 @@
 import { Noise } from 'noisejs'
-import TweenLite from 'gsap'
 
-import SurfaceAnimation from 'SurfaceAnimation';
+import SurfaceAnimation from '../_modules/SurfaceAnimation';
 
 const SHUFFLING_VALUES = [
   '!', '§', '$', '%',
@@ -28,6 +27,10 @@ const WORDS = [
   ' ++                                     ++',
   ' ++   -------------------------------   ++',
 ];
+
+const wrapper = document.createElement('div');
+wrapper.id = 'wrapper';
+document.body.append(wrapper);
 
 // START
 const surfaceAnimation = new SurfaceAnimation(
