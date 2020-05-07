@@ -5,14 +5,12 @@ import {
   RepeatWrapping, NearestFilter
 } from 'three';
 
-import CameraMouseControl from 'CameraMouseControl';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
-import nineVert from './shaders/nine.v.glsl';
-import nineFrag from './shaders/nine.f.glsl';
+import { vert, frag } from './shader';
 
-import nineTexture from 'nine-texture.jpg';
-import gradientTexture from 'gradient.jpg';
-
+const nineTexture = './assets/nine-texture.jpg';
+const gradientTexture = './assets/gradient.jpg';
 
 const BACKGROUND_COLOR = '#040507';
 
@@ -95,8 +93,8 @@ class Nine extends Object3D {
         perlinTransition : { value : 0 },
         torcedForce      : { value : TORCED_FORCE },
       },
-      vertexShader: nineVert,
-      fragmentShader: nineFrag,
+      vertexShader: vert,
+      fragmentShader: frag,
       side : DoubleSide,
       wireframe: true,
     });

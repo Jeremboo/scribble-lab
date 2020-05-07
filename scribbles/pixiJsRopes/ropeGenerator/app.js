@@ -1,15 +1,14 @@
 import { autoDetectRenderer, Graphics, Container, Texture } from 'pixi.js';
-import { getDistBetweenTwoVec2, canvasBuilder, applyImageToCanvas } from 'utils';
-import props, { NONE, DRAWING, MOVING } from 'props';
-import Rope from 'Rope';
-import Marker from 'Marker';
+import { getDistBetweenTwoVec2, canvasBuilder, applyImageToCanvas } from '../../../modules/utils';
+import props, { NONE, DRAWING, MOVING } from '../_modules/props';
+import Rope from '../_modules/Rope';
+import Marker from '../_modules/Marker';
 
-import ropePattern from 'ropePattern.png';
-import ropeBegin from 'ropeBegin.png';
-import ropeEnd from 'ropeEnd.png';
+const ropePattern = './assets/ropePattern.png';
+const ropeBegin = './assets/ropeBegin.png';
+const ropeEnd = './assets/ropeEnd.png';
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#0D0106';
 /**/ const secondaryColor = '0xFCFAF9';
 /**/ const bgColor = '0x2C2B3C';
 /**/ let windowWidth = window.innerWidth;

@@ -1,5 +1,5 @@
 import { Graphics } from 'pixi.js';
-import { radians, easing } from 'utils';
+import { radians, easing } from '../../../../modules/utils';
 
 export default class Marker extends Graphics {
   constructor(x, y, size = 10) {

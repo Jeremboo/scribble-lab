@@ -4,11 +4,9 @@ import {
   ShaderMaterial, PointLightHelper, AmbientLight, PointLight,
   Vector3, Quaternion,
 } from 'three';
-import OrbitControls from 'OrbitControl';
-import { GUI } from 'dat.gui';
+import OrbitControls from '../../../modules/OrbitControls';
 
-import vertShadow from './shaders/shadow.v.glsl';
-import fragShadow from './shaders/shadow.f.glsl';
+import { vertShadow, fragShadow } from './shader.glsl';
 
 /* ---- CORE ---- */
 const bgColor = 0x222222;

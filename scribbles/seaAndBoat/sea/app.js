@@ -5,10 +5,10 @@ import {
   AmbientLight, Fog, HemisphereLight
 } from 'three';
 
-import OrbitControls from 'OrbitControl';
+import OrbitControls from '../../../modules/OrbitControls';
 
-import props from 'props';
-import water from 'water.png';
+import props from '../_modules/props';
+import water from './assets/water.png';
 
 import { createImageTexture } from 'threejs-texture-tool';
 

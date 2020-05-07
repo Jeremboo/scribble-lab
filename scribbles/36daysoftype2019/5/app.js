@@ -5,15 +5,12 @@ import {
   ShaderLib, UniformsUtils,
   ShaderMaterial,
 } from 'three';
-
-
-import vert from './shaders/vertex.v.glsl';
-import frag from './shaders/fragment.f.glsl';
-
 import {
   EffectComposer, RenderPass, EffectPass, OutlineEffect,
   BlendFunction, SMAAEffect
 } from 'postprocessing';
+
+import { vert, frag } from './shader.js'
 
 const MAIN_COLOR = '#F64062';
 const SECOND_COLOR = '#5127AB'; // '#7136ED';
@@ -21,9 +18,9 @@ const BACKGROUND_COLOR = 0x070707;
 
 const clock = new Clock();
 
-import fontFile from 'Glence Black_Regular';
+import fontFile from '../_assets/Glence Black_Regular';
 
-import CameraMouseControl from 'CameraMouseControl';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
 const fontLoader = new FontLoader();
 const font = fontLoader.parse(fontFile);

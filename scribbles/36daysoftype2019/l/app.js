@@ -6,14 +6,13 @@ import {
 
 import { TimelineMax, Power2, Power4 } from 'gsap'
 
-import OBJLoader from 'OBJLoader';
+import OBJLoader from '../../../modules/OBJLoader';
 
-import letterL from 'letter_l.obj';
+const letterL = './assets/letter_l.obj';
 
-import CameraMouseControl from 'CameraMouseControl';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
-import torsionVert from '../l/shaders/torsion.v.glsl';
-import torsionFrag from '../l/shaders/torsion.f.glsl';
+import { frag, vert } from './shader';
 
 const MAIN_COLOR = '#ffffff';
 const BACKGROUND_COLOR = '#040507';
@@ -99,8 +98,8 @@ class L extends Object3D {
 
     const mat = new ShaderMaterial({
       uniforms,
-      vertexShader: torsionVert,
-      fragmentShader: torsionFrag,
+      vertexShader: vert,
+      fragmentShader: frag,
       lights: true,
       side : DoubleSide,
     });

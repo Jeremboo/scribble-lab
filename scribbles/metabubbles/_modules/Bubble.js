@@ -1,12 +1,11 @@
 
 import {
-  Mesh, PlaneGeometry, ShaderMaterial, MeshBasicMaterial, Vector2, Color,
+  Mesh, PlaneGeometry, ShaderMaterial, Vector2, Color,
 } from 'three';
 
 import TweenLite, { Elastic } from 'gsap';
 
-import vertMetaball from '../_shaders/metaball.v.glsl';
-import fragMetaball from '../_shaders/metaball.f.glsl';
+import { bubbleVert, bubbleFrag } from './shaders.glsl';
 
 const BUBBLE_FORCE_FRICTION = 0.8;
 const BUBBLE_GRAVITY_VELOCITY = 0.3;
@@ -18,8 +17,8 @@ export default class Bubble extends Mesh {
     const geometry = new PlaneGeometry(size, size, 1, 1);
     // TODO raw shader material
     const material = new ShaderMaterial({
-      vertexShader: vertMetaball,
-      fragmentShader: fragMetaball,
+      vertexShader: bubbleVert,
+      fragmentShader: bubbleFrag,
       uniforms: {
         backgroundTexture: { type: 't', value: false },
         littleBubblePosition: { type: 'v2', value: new Vector2(0.5, 0.5) },

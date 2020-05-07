@@ -1,15 +1,12 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Object3D, SphereGeometry,
-  MeshStandardMaterial, Mesh, Color, FlatShading, AmbientLight, DirectionalLight,
-  WebGLRenderTarget, RGBAFormat, ClampToEdgeWrapping, NearestFilter, FloatType, PlaneBufferGeometry, MeshBasicMaterial, ShaderMaterial, ShaderChunk, ShaderLib, Vector2,
-  RGBFormat
+  MeshStandardMaterial, Mesh, Color, AmbientLight, DirectionalLight,
+  WebGLRenderTarget, Vector2, RGBFormat
 } from 'three';
 
-import PostFX from 'PostFX';
+import PostFX from '../../../modules/PostFX';
 
 const MAIN_COLOR = '#5435FF';
-const SECONDARY_COLOR = '#070707';
-const BACKGROUND_COLOR = '#ffffff';
 
 const FRAGMENT_SHADER = `
   precision highp float;

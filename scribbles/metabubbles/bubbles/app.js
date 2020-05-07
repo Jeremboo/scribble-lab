@@ -7,13 +7,14 @@ import {
 import {
   EffectComposer, RenderPass,
 } from 'postprocessing';
-import IncrustationPass from 'IncrustationPass';
-import Bubble from 'Bubble';
-import AnimatedText3D from 'AnimatedText3D';
 
-import { getNormalizedPosFromScreen, getRandomFloat } from 'utils';
+import Bubble from '../_modules/Bubble';
 
-import mask3 from 'bubble_mask_1.jpg';
+import AnimatedText3D from '../../../modules/AnimatedText3D';
+import IncrustationPass from '../../../modules/IncrustationPass';
+import { getNormalizedPosFromScreen, getRandomFloat } from '../../../modules/utils';
+
+const mask3 = './assets/bubble_mask_1.jpg';
 
 const BACKGROUND_COLOR = '#ffffff';
 

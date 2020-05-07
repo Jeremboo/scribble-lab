@@ -1,19 +1,17 @@
 import {
-  WebGLRenderer, Scene, Color,
+  WebGLRenderer, Scene,
   ShaderMaterial, OrthographicCamera, Vector2,
   Texture, ClampToEdgeWrapping, NearestFilter
 } from 'three';
 import { GUI } from 'dat.gui';
 
-import GPUSimulation from 'GPUSimulation';
-import Particles from 'Particles';
+import GPUSimulation from '../../../modules/GPUSimulation';
+import Particles from '../_modules/Particles';
 
 
-import particleVert from './shaders/particle.v.glsl';
-import particleFrag from './shaders/particle.f.glsl';
+import { particleVert, particleFrag, positionFrag } from './shader.glsl';
 
-import positionFrag from './shaders/position.f.glsl';
-import { TweenMax, Power4, TimelineLite } from 'gsap';
+import { Power4, TimelineLite } from 'gsap';
 
 /* ---- CORE ---- */
 let windowWidth = window.innerWidth;
@@ -255,6 +253,7 @@ window.addEventListener('mousemove', (e) => {
  **********
  */
 
+
 console.log(positionFBO);
 webgl.onUpdate = () => {
   mask.update();
@@ -263,7 +262,7 @@ webgl.onUpdate = () => {
   canvasTexture.needsUpdate = true;
 
   // update all simulations with the textures computed
-  gpuSim.updateAll();
+  gpuSim.updateSimulation(positionFBO);
 
   // update only one simulation always with the initialDataTexture.
   // gpuSim.updateSimulation(positionFBO, positionFBO.initialDataTexture);

@@ -4,10 +4,9 @@ import {
   Vector3, AmbientLight, PointLight, DirectionalLight, Fog,
 } from 'three';
 
-import { getRandomFloat, getNormalizedPosFromScreen, getDistanceBetweenNormalizedMousePosAndPos, radians } from 'utils';
+import { getRandomFloat, getNormalizedPosFromScreen, getDistanceBetweenNormalizedMousePosAndPos, radians } from '../../../modules/utils';
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#070707';
 /**/ const secondaryColor = '#7e44a1';
 /**/ const bgColor = 0x49475B;
 /**/ let windowWidth = window.innerWidth;

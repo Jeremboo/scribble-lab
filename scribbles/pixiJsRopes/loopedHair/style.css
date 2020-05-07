@@ -1,0 +1,16 @@
+:root {
+  --bg-color: #F92282;
+  --main-color: #0D0106;
+  --second-color: #B76D68;
+}
+
+body {
+  background-color: var(--bg-color);
+}
+
+.f {
+  color: var(--main-color);
+}
+.f a {
+  color: var(--second-color);
+}

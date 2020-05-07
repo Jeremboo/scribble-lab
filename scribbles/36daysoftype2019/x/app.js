@@ -9,27 +9,20 @@ import {
 } from 'three';
 
 import {
-  EffectComposer, RenderPass, EffectPass, BloomEffect,
-  BlendFunction,
-  KernelSize
+  EffectComposer, RenderPass, EffectPass, BlendFunction
 } from 'postprocessing';
 
-import SelectiveBloomEffect from 'SelectiveBloomEffect';
+import SelectiveBloomEffect from './SelectiveBloomEffect';
 
-import stoneMap from 'stone-map.jpg';
-import stoneTexture from 'stone-texture.jpg';
-import stoneNormalMap from 'stone-normalMap.jpg';
-import stoneGlowMap from 'stone-glow.jpg';
+const stoneMap = './assets/stone-map.jpg';
+const stoneTexture = './assets/stone-texture.jpg';
+const stoneNormalMap = './assets/stone-normalMap.jpg';
+const stoneGlowMap = './assets/stone-glow.jpg';
+const letterX = './assets/letter_x.obj';
 
-import { getRandomFloat } from 'utils';
+import OBJLoader from '../../../modules/OBJLoader';
 
-import OBJLoader from 'OBJLoader';
-import letterX from 'letter_x.obj';
-
-import CameraMouseControl from 'CameraMouseControl';
-
-// import torsionVert from './shaders/torsion.v.glsl';
-// import torsionFrag from './shaders/torsion.f.glsl';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
 const MAIN_COLOR = '#D028C5';
 const BACKGROUND_COLOR = '#040507';

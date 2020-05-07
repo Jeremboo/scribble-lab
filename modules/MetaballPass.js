@@ -1,4 +1,4 @@
-import { ShaderMaterial, Color } from 'three';
+import { ShaderMaterial } from 'three';
 import { Pass } from 'postprocessing/';
 
 const metaballShader = {

@@ -1,19 +1,17 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Color, Raycaster,
-  Mesh, PlaneGeometry, Vector3, ShaderMaterial, TextureLoader,
+  Mesh, PlaneGeometry, ShaderMaterial, TextureLoader,
   Vector2,
 } from 'three';
 
-import CameraMouseControl from 'CameraMouseControl';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
-import { getNormalizedPosFromScreen, getRandomFloat } from 'utils';
+import { getNormalizedPosFromScreen, getRandomFloat } from '../../../modules/utils';
 
-import fragMetaball from '../shaders/metaball.f.glsl';
-import vertMetaball from '../shaders/metaball.v.glsl';
+import { bubbleVert, bubbleFrag } from '../_modules/shaders.glsl';
+
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#070707';
-/**/ const secondaryColor = '#C9F0FF';
 /**/ const bgColor = '#ffffff';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
@@ -71,15 +69,15 @@ class Bubble extends Mesh {
   constructor(backgroundTexture) {
     const geom = new PlaneGeometry(5, 5, 10, 10);
     const material = new ShaderMaterial({
-      vertexShader: vertMetaball,
-      fragmentShader: fragMetaball,
+      vertexShader: bubbleVert,
+      fragmentShader: bubbleFrag,
       uniforms: {
         backgroundTexture: { type: 't', value: backgroundTexture },
         littleBubblePosition: { type: 'v2', value: new Vector2(0.5, 0.5) },
         color: { value: new Color('#00ff00') },
       },
       transparent: true,
-      // overdraw: true,
+      depthWrite: false,
     });
     super(geom, material);
 
@@ -130,6 +128,9 @@ const bubbles = [];
 // Load background image and create bubbles
 const loader = new TextureLoader();
 loader.load('https://i.imgur.com/462xXUs.png', (texture) => {
+  if (!texture.img) {
+    console.log('TEXTURE NOT LOADED');
+  }
   for (let i = 0; i < 30; i++) {
     const bubble = new Bubble(texture);
     bubbles.push(bubble);

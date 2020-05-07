@@ -1,21 +1,15 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera,
-  MeshBasicMaterial, Mesh, Color, TextureLoader, Clock,
-  Vector3, PlaneBufferGeometry, ShaderMaterial, SphereGeometry, DoubleSide,
-  MeshDepthMaterial,
+  Mesh, Color, Clock,
+  PlaneBufferGeometry, ShaderMaterial, DoubleSide,
 } from 'three';
 import {
-  EffectComposer, RenderPass, BlurPass, BloomPass,
+  EffectComposer, RenderPass,
 } from 'postprocessing';
 
-import CameraMouseControl from 'CameraMouseControl';
-
-import MetaballPass from 'MetaballPass';
-
-import fragMetaball from './shaders/metaball.f.glsl';
-import vertMetaball from './shaders/metaball.v.glsl';
-
-import { getRandomFloat, radians, getRandomPosAroundASphere } from 'utils';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
+import MetaballPass from '../../../modules/MetaballPass';
+import { getRandomFloat, getRandomPosAroundASphere } from '../../../modules/utils';
 
 const clock = new Clock();
 
@@ -42,7 +36,7 @@ const props = {
 /**/     this.scene = new Scene();
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 35);
-// this.controls = new OrbitControl(this.camera, this.renderer.domElement);
+// this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 /**/     this.dom = this.renderer.domElement;
 
   this._composer = false;
@@ -115,8 +109,32 @@ class Bubble extends Mesh {
     // const geom = new SphereGeometry(size, 32, 32, 0, Math.PI)
     // const geom = new SphereGeometry(size, 32, 32)
     const material = new ShaderMaterial({
-      vertexShader: vertMetaball,
-      fragmentShader: fragMetaball,
+      vertexShader: `
+        varying vec2 vUv;
+
+        void main() {
+          vUv = uv;
+          vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+          gl_Position = projectionMatrix * mvPosition;
+        }`,
+      fragmentShader: `
+        uniform vec3 color;
+
+        varying vec2 vUv;
+
+        float drawRadialGradient(vec2 center, vec2 currentPosition, float scale) {
+          float dist = distance(center, currentPosition) * (2.0 / scale);
+          return 1.0 - dist;
+        }
+
+        void main() {
+          vec2 center = vec2(0.5, 0.5);
+          float alpha = drawRadialGradient(center, vUv, 1.0);
+          gl_FragColor = vec4(vec3(color), alpha);
+
+          // gl_FragColor = vec4(vec3(color), 1.0);
+        }
+      `,
       uniforms: {
         color: { type: 'c', value: new Color(COLORS[Math.floor(Math.random() * COLORS.length)]) },
       },

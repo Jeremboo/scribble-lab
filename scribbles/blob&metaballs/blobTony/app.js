@@ -1,13 +1,12 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Object3D, SphereGeometry,
-  MeshBasicMaterial, Mesh, Color, FlatShading, ShaderMaterial,
+  MeshBasicMaterial, Mesh, Color, ShaderMaterial,
   DoubleSide,
 } from 'three';
 
-import OrbitControl from 'OrbitControl';
+import OrbitControls from '../../../modules/OrbitControls';
 
-import vertBlob from './shaders/blob.v.glsl';
-import fragBlob from './shaders/blob.f.glsl';
+import { vertBlob, fragBlob } from './shaders.glsl';
 
 /**/ /* ---- CORE ---- */
 /**/ const mainColor = '#1A1754';
@@ -25,7 +24,7 @@ import fragBlob from './shaders/blob.f.glsl';
 /**/     this.scene = new Scene();
 /**/     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 /**/     this.camera.position.set(0, 0, 10);
-/**/     this.controls = new OrbitControl(this.camera, this.renderer.domElement);
+/**/     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 /**/     this.dom = this.renderer.domElement;
 /**/     this.update = this.update.bind(this);
 /**/     this.resize = this.resize.bind(this);

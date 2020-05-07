@@ -5,12 +5,9 @@ import {
   ShaderMaterial,
 } from 'three';
 
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
 
-import OrbitControl from 'OrbitControl';
-
-import lineVert from './shaders/line.v.glsl';
-import lineFrag from './shaders/line.f.glsl';
+import OrbitControls from '../../../modules/OrbitControls';
 
 /* ---- CORE ---- */
 let windowWidth = window.innerWidth;
@@ -24,7 +21,7 @@ class Webgl {
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
     this.camera.position.set(0, 0, 2);
-    this.controls = new OrbitControl(this.camera, this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.dom = this.renderer.domElement;
     this.update = this.update.bind(this);
     this.resize = this.resize.bind(this);
@@ -89,8 +86,34 @@ class RandomLineCurve extends Line {
     const path = new Path(curve.getPoints(50));
     const geometry = path.createPointsGeometry(50);
     const material = new ShaderMaterial({
-      vertexShader: lineVert,
-      fragmentShader: lineFrag,
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vPos;
+
+        void main() {
+          vUv = uv;
+          vPos = position;
+          vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 color;
+        uniform float timer;
+        uniform float lineHeight;
+        uniform float spaceHeight;
+
+        varying vec2 vUv;
+        varying vec3 vPos;
+
+        void main() {
+          float t = ceil(lineHeight - mod(vPos.x + timer, spaceHeight));
+          // if (t > 0.0) {
+          //   t = 1.0;
+          // }
+          gl_FragColor = vec4(color, t);
+        }
+      `,
       uniforms: {
         color: { type: 'v3', value: new Color(0xffffff) },
         timer: { type: 'f', value: getRandomFloat(0, 100) },

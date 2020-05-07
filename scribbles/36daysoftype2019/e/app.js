@@ -5,11 +5,11 @@ import {
   TextBufferGeometry, PointLight, MeshStandardMaterial
 } from 'three';
 
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
 
-import fontFile from 'Glence Black_Regular';
+import fontFile from '../_assets/Glence Black_Regular';
 
-import CameraMouseControl from 'CameraMouseControl';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
 const fontLoader = new FontLoader();
 const font = fontLoader.parse(fontFile);

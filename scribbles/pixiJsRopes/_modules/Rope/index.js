@@ -1,6 +1,6 @@
 import { Container, Point, Graphics, mesh } from 'pixi.js';
-import { existingValueBy, getDistBetweenTwoVec2 } from 'utils';
-import props from 'props';
+import { existingValueBy, getDistBetweenTwoVec2 } from '../../../../modules/utils';
+import props from '../props';
 
 import Marker from '../Marker';
 

@@ -1,13 +1,12 @@
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Object3D, BoxGeometry, MeshPhongMaterial,
-  MeshBasicMaterial, Mesh, Color, FlatShading, DirectionalLight, PointLight, AmbientLight,
-  Vector3,
+  WebGLRenderer, Scene, PerspectiveCamera, MeshPhongMaterial,
+  Color, PointLight, AmbientLight, Vector3,
 } from 'three';
 
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
 
-import MarchingCubes from 'MarchingCubes';
-import OrbitControls from 'OrbitControl';
+import MarchingCubes from '../../../modules/MarchingCubes';
+import OrbitControls from '../../../modules/OrbitControls';
 
 const props = {
   turbulence: 0.0019,

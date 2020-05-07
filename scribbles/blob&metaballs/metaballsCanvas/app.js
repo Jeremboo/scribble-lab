@@ -1,4 +1,4 @@
-import { drawRadialGradient, canvasBuilder, applyImageToCanvas } from 'utils';
+import { drawRadialGradient, canvasBuilder, applyImageToCanvas } from '../../../modules/utils';
 
 Math.sqr = a => a * a;
 const getVec2Length = (x, y) => Math.sqrt(Math.sqr(y) + Math.sqr(x));

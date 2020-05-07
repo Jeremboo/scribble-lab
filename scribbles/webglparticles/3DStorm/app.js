@@ -1,27 +1,22 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera, Color,
-  BufferGeometry, BufferAttribute,
-  ShaderMaterial, Points, Vector3,
-  AxisHelper,
+  ShaderMaterial, AxesHelper,
 } from 'three';
 
 import { GUI } from 'dat.gui';
 
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
 
-import OrbitControls from 'OrbitControl';
-import GPUSimulation from 'GPUSimulation';
-import Particles from 'Particles';
+import OrbitControls from '../../../modules/OrbitControls';
+import GPUSimulation from '../../../modules/GPUSimulation';
+import Particles from '../_modules/Particles';
 
-import shaderSimulationPosition from './shaders/simulationPosition.f.glsl';
-import shaderSimulationVelocity from './shaders/simulationVelocity.f.glsl';
-
-import particleVert from './shaders/particle.v.glsl';
-import particleFrag from './shaders/particle.f.glsl';
+import {
+  particleFrag, particleVert,
+  positionSimFrag, velocitySimFrag,
+} from './shaders.glsl';
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#070707';
-/**/ const secondaryColor = '#C9F0FF';
 /**/ const bgColor = 'rgb(112, 112, 112)';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
@@ -99,7 +94,7 @@ const TEXTURE_HEIGHT = TEXTURE_SIZE;
 const TEXTURE_WIDTH = TEXTURE_SIZE;
 
 /* ---- GPUSimulation ---- */
-const gpuSim = new GPUSimulation(TEXTURE_WIDTH, TEXTURE_HEIGHT, webgl.renderer);
+const gpuSim = new GPUSimulation(webgl.renderer, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 gpuSim.initHelper(windowWidth, windowHeight);
 
 // Create textures
@@ -161,7 +156,7 @@ initDataPosition(dataPosition);
 
 // Initalize simulations
 const velocityFBO = gpuSim.createSimulation(
-  'textureVelocity', shaderSimulationVelocity, dataVelocity, {
+  'textureVelocity', velocitySimFrag, dataVelocity, {
     uniforms: {
       // positionfBO texture (should be updated)
       positionTexture: { type: 't', value: null },
@@ -178,7 +173,7 @@ const velocityFBO = gpuSim.createSimulation(
   }
 );
 const positionFBO = gpuSim.createSimulation(
-  'texturePosition', shaderSimulationPosition, dataPosition, {
+  'texturePosition', positionSimFrag, dataPosition, {
     uniforms: {
       // Fist position of each particle
       initialPositionTexture: { type: 't', value: dataPosition },
@@ -213,15 +208,17 @@ const particles = new Particles(TEXTURE_WIDTH, TEXTURE_HEIGHT, particleMaterial)
 
 // Add to the scene
 webgl.add(particles);
+gpuSim.addSimulation(velocityFBO);
+gpuSim.addSimulation(positionFBO);
 
 /* ---- Update ---- */
 const update = () => {
-  gpuSim.update();
+  gpuSim.updateAll();
 };
 
 /* ---- Helpers ---- */
 // axis
-const axisHelper = new AxisHelper(1);
+const axisHelper = new AxesHelper(1);
 webgl.add(axisHelper);
 
 // gui

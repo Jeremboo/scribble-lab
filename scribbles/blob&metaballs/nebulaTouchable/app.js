@@ -14,15 +14,14 @@ import {
 } from 'three';
 import { GUI } from 'dat.gui';
 
-import Stars from 'Stars';
-import OrbitControl from 'OrbitControl';
-import InstancedGeom, { createPlaneBuffer } from 'InstancedGeom';
+import Stars from '../../../modules/Stars';
+import OrbitControls from '../../../modules/OrbitControls';
+import InstancedGeom, { createPlaneBuffer } from '../../../modules/InstancedGeom';
 
-import fragGlow from './shaders/glow.f.glsl';
-import vertGlow from './shaders/glow.v.glsl';
-import textureUrl from 'glow-texture.png';
+import { fragGlow, vertGlow } from './shaders.glsl';
+const textureUrl = './assets/glow-texture.png';
 
-import { getRandomFloat, onCursorTouchMeshes } from 'utils';
+import { getRandomFloat, onCursorTouchMeshes } from '../../../modules/utils';
 
 /**
  * * *******************
@@ -39,7 +38,7 @@ class Webgl {
     this.renderer.setPixelRatio(Math.min(1.6, window.devicePixelRatio) || 1);
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
-    this.controls = new OrbitControl(this.camera, this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.camera.position.set(0, 0, 10);
     this.dom = this.renderer.domElement;
     this.update = this.update.bind(this);
@@ -111,23 +110,23 @@ const getRandomPosition = () => {
 
 export default class Nebula extends Mesh {
   constructor(nbr = 100) {
-    const instanciedMesh = new InstancedGeom(createPlaneBuffer(), nbr);
+    const instanciedGeom = new InstancedGeom(createPlaneBuffer(), nbr);
 
     // PROPS
-    const positionAttribute = instanciedMesh.setAttribute('_position', 3);
+    const positionAttribute = instanciedGeom.setAttribute('_position', 3);
     const initialPositions = new Float32Array(nbr * 3);
 
-    const scaleAttribute = instanciedMesh.setAttribute('_scale', 2);
+    const scaleAttribute = instanciedGeom.setAttribute('_scale', 2);
 
-    const alphaAttribute = instanciedMesh.setAttribute('_alpha', 1);
+    const alphaAttribute = instanciedGeom.setAttribute('_alpha', 1);
     const initialAlpha = new Float32Array(nbr);
 
-    const timeAttribute = instanciedMesh.setAttribute('_time', 1);
+    const timeAttribute = instanciedGeom.setAttribute('_time', 1);
     const timeSpeed = new Float32Array(nbr);
 
     const translationForce = new Float32Array(nbr * 2);
 
-    const incrementedColor = instanciedMesh.setAttribute(
+    const incrementedColor = instanciedGeom.setAttribute(
       '_incrementedColor',
       1
     );
@@ -175,7 +174,7 @@ export default class Nebula extends Mesh {
     });
     material.blending = AdditiveBlending;
 
-    super(instanciedMesh, material);
+    super(instanciedGeom, material);
 
     this.nbrOfInstances = nbr;
 

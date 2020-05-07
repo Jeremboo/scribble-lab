@@ -205,7 +205,8 @@ class TextShuffler {
 
 
 // START
-const wrapper = document.getElementById('wrapper')
+const wrapper = document.createElement('div');
+document.body.appendChild(wrapper);
 const text = new TextShuffler(wrapper, WORDS)
 text.show();
 

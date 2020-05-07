@@ -1,13 +1,12 @@
 import { autoDetectRenderer, Graphics, Container, Texture } from 'pixi.js';
-import { getDistBetweenTwoVec2, getRandomFloat } from 'utils';
-import props, { NONE, DRAWING, MOVING } from 'props';
-import Rope from 'Rope';
-import Marker from 'Marker';
+import { getDistBetweenTwoVec2, getRandomFloat } from '../../../modules/utils';
+import props, { NONE, DRAWING, MOVING } from '../_modules/props';
+import Rope from '../_modules/Rope';
+import Marker from '../_modules/Marker';
 
-import hair from 'hair.png';
+const hair = './assets/hair.png';
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#0D0106';
 /**/ const secondaryColor = '0xFCFAF9';
 /**/ const bgColor = '0xCFDBDE';
 /**/ let windowWidth = window.innerWidth;

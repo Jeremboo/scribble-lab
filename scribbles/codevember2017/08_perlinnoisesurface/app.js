@@ -7,7 +7,7 @@ import {
 
 import dat from 'dat.gui';
 
-import OrbitControls from 'OrbitControl';
+import OrbitControls from '../../../modules/OrbitControls';
 
 import { Noise } from 'noisejs';
 

@@ -2,12 +2,52 @@ import {
   WebGLRenderer, Scene, PerspectiveCamera, Object3D,
   MeshBasicMaterial, Mesh, Color, ShaderMaterial, SphereBufferGeometry, Vector3,
 } from 'three';
-import OrbitControls from 'OrbitControl';
+import OrbitControls from '../../../modules/OrbitControls';
 import { GUI } from 'dat.gui';
-import { onCursorTouchMeshes } from 'utils'
 
-import vertexShader from './shaders/sphereTransition.v.glsl';
-import fragmentShader from './shaders/sphereTransition.f.glsl';
+const vertexShader = `
+  uniform vec3 touchPosition;
+
+  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying vec3 vPosition;
+
+  void main()	{
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    vUv = uv;
+    vNormal = normal;
+    vPosition = position;
+  }
+`;
+const fragmentShader = `
+  uniform vec3 touchPosition;
+  uniform float shift;
+  uniform float gradientSize;
+  uniform float speed;
+  uniform vec3 color;
+  uniform vec3 rayColor;
+
+  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying vec3 vPosition;
+
+  void main() {
+    // Gradien throught the sphere
+    vec3 normal = normalize(vNormal) + (touchPosition * (shift + speed));
+    vec3 direction = normalize(touchPosition - vPosition) * gradientSize;
+    float diffuseLighting = abs(dot(normal, direction));
+    // float diffuseLighting = dot(normal, direction);
+
+    // Ripple
+    // float noiseRippleAmpl = 50.;
+    // float xx = noise * noiseRippleAmpl * sin((time * rippleSpeed) + diffuseLighting * rippleMultiplier);
+    // float ripple = mix(diffuseLighting, xx, explode) * explode;
+
+    vec3 c = mix(rayColor, color, min(1., max(0., diffuseLighting)));
+
+    gl_FragColor = vec4(c, 1.);
+  }
+`;
 
 const MAIN_COLOR = '#C9F0FF';
 const BACKGROUND_COLOR = '#212121';

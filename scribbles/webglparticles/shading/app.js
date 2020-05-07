@@ -2,25 +2,23 @@ import {
   WebGLRenderer, Scene, PerspectiveCamera,
   Mesh, Color, FlatShading,
   TetrahedronBufferGeometry, InstancedBufferGeometry, InstancedBufferAttribute,
-  Matrix4, Quaternion, Euler, Vector3, PointLight, ShaderMaterial, AmbientLight,
+  Matrix4, Quaternion, Euler, Vector3, ShaderMaterial, AmbientLight,
   DoubleSide, UniformsUtils, UniformsLib, PCFSoftShadowMap,
-  PlaneBufferGeometry, MeshStandardMaterial, PointLightHelper,
-  DirectionalLight, DirectionalLightHelper, CameraHelper, ShaderLib
+  PlaneBufferGeometry, MeshStandardMaterial,
+  DirectionalLight, DirectionalLightHelper, CameraHelper
 } from 'three';
 
-import { getRandomAttribute, getRandomFloat, radians } from 'utils';
-import OrbitControls from 'OrbitControl';
+import { getRandomAttribute, getRandomFloat, radians } from '../../../modules/utils';
+import OrbitControls from '../../../modules/OrbitControls';
 
-import fragInstanced from './shaders/instanced.f.glsl';
-import vertInstanced from './shaders/instanced.v.glsl';
-import vertDeth from './shaders/depth.v.glsl';
-import fragDeth from './shaders/depth.f.glsl';
+import { fragInstanced,
+vertInstanced,
+vertDeth,
+fragDeth } from './shader.glsl';
 
 const COLORS = ['#c15455', '#6394c6', '#daf4ec'];
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#070707';
-/**/ const secondaryColor = '#C9F0FF';
 /**/ const bgColor = 0xaaaaaa;
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;

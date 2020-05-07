@@ -1,22 +1,16 @@
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Color,
-  ShaderMaterial, BufferGeometry, BufferAttribute, Points,
+  WebGLRenderer, Scene, PerspectiveCamera, Color, ShaderMaterial
 } from 'three';
 import { GUI } from 'dat.gui';
 
-import GPUSimulation from 'GPUSimulation';
-import Particles from 'Particles';
+import GPUSimulation from '../../../modules/GPUSimulation';
+import Particles from '../_modules/Particles';
 
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
 
-import particleVert from './shaders/particle.v.glsl';
-import particleFrag from './shaders/particle.f.glsl';
-
-import positionFrag from './shaders/position.f.glsl';
+import { particleVert, particleFrag, positionFrag } from './shaders.glsl';
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#070707';
-/**/ const secondaryColor = '#C9F0FF';
 /**/ const bgColor = false // 'rgb(0, 0, 0)';
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
@@ -109,7 +103,7 @@ const guiShape = gui.add(props, 'TO_SQUARE', 0, 1);
  * FBO
  **********
  */
-const gpuSim = new GPUSimulation(TEXTURE_WIDTH, TEXTURE_HEIGHT, webgl.renderer);
+const gpuSim = new GPUSimulation(webgl.renderer, { width: TEXTURE_WIDTH, height: TEXTURE_HEIGHT });
 gpuSim.initHelper(windowWidth, windowHeight);
 
 /**
@@ -185,10 +179,8 @@ webgl.onUpdate = () => {
   timer += props.SPEED;
   positionFBO.material.uniforms.timer.value = timer;
 
-  // update all simulations with the textures computed
-  // gpuSim.update();
   // update only one simulation always with the initialDataTexture.
-  gpuSim.updateSimulation(positionFBO, positionFBO.initialDataTexture);
+  gpuSim.updateSimulation(positionFBO);
   gpuSim.helper.update();
 };
 

@@ -1,4 +1,4 @@
-import { getDistBetweenTwoVec2 } from 'utils';
+import { getDistBetweenTwoVec2 } from '../../../modules/utils';
 
 /**
  * * *******************

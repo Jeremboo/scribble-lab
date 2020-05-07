@@ -4,10 +4,10 @@ import {
   AmbientLight, MeshBasicMaterial,
   BoxGeometry, Vector3, DirectionalLight, Fog
 } from 'three';
-
-import CameraMouseControl from 'CameraMouseControl';
-
 import Physijs from 'physi.js';
+
+import CameraMouseControl from '../../../modules/CameraMouseControl';
+
 import physijsWorkedUrl from '../../../workers/physijs_worker';
 import ammoUrl from '../../../workers/ammo';
 
@@ -15,9 +15,9 @@ Physijs.scripts.worker = physijsWorkedUrl;
 // Physijs.scripts.ammo = ammoUrl;
 
 
-import OBJLoader from 'OBJLoader';
+import OBJLoader from '../../../modules/OBJLoader';
 
-import letterP from 'letter_p.obj';
+const letterP = './assets/letter_p.obj';
 
 const MAIN_COLOR = '#D741A7';
 const BACKGROUND_COLOR = '#040507';

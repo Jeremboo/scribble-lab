@@ -1,0 +1,27 @@
+:root {
+  --bg-color: #ECE9E6;
+  --main-color: #070707;
+  --second-color: #EF476F;
+}
+
+body {
+  background-color: var(--bg-color);
+}
+
+.f {
+  color: var(--main-color);
+}
+.f a {
+  color: var(--second-color);
+}
+
+.message {
+  position: absolute;
+  color: secondaryColor;
+  text-transform: uppercase;
+  text-align: center;
+  width: 100%;
+  bottom: 20%;
+  pointer-events: none;
+  opacity: 0.8;
+}

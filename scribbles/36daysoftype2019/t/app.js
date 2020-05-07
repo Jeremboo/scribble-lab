@@ -4,19 +4,18 @@ import {
   PlaneBufferGeometry, ShaderMaterial, TextureLoader,
   FontLoader, ShapeGeometry,
 } from 'three';
-
-import OBJLoader from 'OBJLoader';
-
-import CameraMouseControl from 'CameraMouseControl';
-
-import coloredPlaneVert from './shaders/coloredPlane.v.glsl';
-import coloredPlaneFrag from './shaders/coloredPlane.f.glsl';
-
-import gradient from 'gradient.jpg';
-import fontFile from 'Glence Black_Regular';
-import letterTReversed from 'letter_t_reversed.obj';
-
 import { TweenMax, Power4 } from 'gsap';
+
+
+import OBJLoader from '../../../modules/OBJLoader';
+
+import CameraMouseControl from '../../../modules/CameraMouseControl';
+
+import { vert, frag } from './shader';
+
+const gradient = './assets/gradient.jpg';
+const letterTReversed = './assets/letter_t_reversed.obj';
+import fontFile from '../_assets/Glence Black_Regular';
 
 const fontLoader = new FontLoader();
 const font = fontLoader.parse(fontFile);
@@ -220,8 +219,8 @@ class ColoredBackground extends Object3D {
         gradientDistortion : { value : 1.2 },
         gradientTexture    : { value : gradient }
       },
-      vertexShader   : coloredPlaneVert,
-      fragmentShader : coloredPlaneFrag
+      vertexShader   : vert,
+      fragmentShader : frag
     });
 
     this.background = new Mesh(geometry, material);

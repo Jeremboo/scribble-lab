@@ -5,23 +5,17 @@ import {
   ShaderMaterial, AmbientLight,
   DoubleSide, UniformsUtils, UniformsLib, PCFSoftShadowMap,
   PlaneBufferGeometry, MeshStandardMaterial,
-  DirectionalLight, DirectionalLightHelper, CameraHelper,
+  DirectionalLight,
   OctahedronBufferGeometry,
 } from 'three';
-import OrbitControls from 'OrbitControl';
+import OrbitControls from '../../../modules/OrbitControls';
 
-import GPUSimulation from 'GPUSimulation';
-import { getRandomAttribute, getRandomFloat, radians } from 'utils';
+import GPUSimulation from '../../../modules/GPUSimulation';
+import { getRandomAttribute, getRandomFloat, radians } from '../../../modules/utils';
 
-import fragInstanced from './shaders/instanced.f.glsl';
-import vertInstanced from './shaders/instanced.v.glsl';
-import vertDeth from './shaders/depth.v.glsl';
-import fragDeth from './shaders/depth.f.glsl';
-import shaderSimulationPosition from './shaders/simulationPosition.f.glsl';
+import { fragInstanced, vertInstanced, vertDeth, fragDeth, shaderSimulationPosition } from './shaders.glsl';
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#070707';
-/**/ const secondaryColor = '#C9F0FF';
 /**/ const bgColor = 0xaaaaaa;
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;
@@ -131,7 +125,7 @@ webgl.scene.add(plane);
 /* ---- GPUSimulation ---- */
 /* ----------------------- */
 
-const gpuSim = new GPUSimulation(TEXTURE_WIDTH, TEXTURE_HEIGHT, webgl.renderer);
+const gpuSim = new GPUSimulation(webgl.renderer, { width: TEXTURE_WIDTH, height: TEXTURE_HEIGHT });
 gpuSim.initHelper(windowWidth, windowHeight);
 
 // Create textures and init
@@ -233,9 +227,11 @@ mesh.customDepthMaterial = new ShaderMaterial({
 
 webgl.scene.add(mesh);
 
+gpuSim.addSimulation(positionFBO);
+
 /* ---- Update ---- */
 const update = () => {
-  gpuSim.update();
+  gpuSim.updateAll();
   mesh.material.uniforms.positions.value = positionFBO.output.texture;
   webgl.update();
 };

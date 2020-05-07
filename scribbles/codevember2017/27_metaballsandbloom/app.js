@@ -1,18 +1,15 @@
 import {
   WebGLRenderer, Scene, PerspectiveCamera,
-  MeshBasicMaterial, Mesh, Color, TextureLoader, Clock,
+  Mesh, Color, TextureLoader, Clock,
   Vector3, PlaneBufferGeometry, ShaderMaterial,
 } from 'three';
 import {
-  EffectComposer, RenderPass, BlurPass, BloomPass,
+  EffectComposer, RenderPass, BloomPass,
 } from 'postprocessing';
 
-import MetaballPass from 'MetaballPass';
+import MetaballPass from '../../../modules/MetaballPass';
 
-import fragMetaball from './shaders/metaball.f.glsl';
-import vertMetaball from './shaders/metaball.v.glsl';
-
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
 
 const clock = new Clock();
 
@@ -104,8 +101,31 @@ class Bubble extends Mesh {
   constructor() {
     const geom = new PlaneBufferGeometry(1, 1, 1, 1);
     const material = new ShaderMaterial({
-      vertexShader: vertMetaball,
-      fragmentShader: fragMetaball,
+      vertexShader: `
+        varying vec2 vUv;
+
+        void main() {
+          vUv = uv;
+          vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 color;
+
+        varying vec2 vUv;
+
+        float drawRadialGradient(vec2 center, vec2 currentPosition, float scale) {
+          float dist = distance(center, currentPosition) * (2.0 / scale);
+          return 1.0 - dist;
+        }
+
+        void main() {
+          vec2 center = vec2(0.5, 0.5);
+          float alpha = drawRadialGradient(center, vUv, 1.0);
+          gl_FragColor = vec4(vec3(color), alpha);
+        }
+      `,
       uniforms: {
         color: { type: 'c', value: new Color(COLORS[Math.floor(Math.random() * COLORS.length)]) },
       },
