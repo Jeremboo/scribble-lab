@@ -34,8 +34,8 @@ const groupsName = getFilteredDirList(path);
 let data = [];
 
 for (i = 0; i < groupsName.length; i++) {
-  const groupPath = `${path}${groupsName[i]}`;
-  const dataPath = `${groupPath}/data.json`;
+  const groupPath = `${path}${groupsName[i]}/`;
+  const dataPath = `${groupPath}data.json`;
 
   if (fs.existsSync(dataPath)) {
     const groupData = JSON.parse(fs.readFileSync(dataPath));
