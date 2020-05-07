@@ -1,7 +1,7 @@
-const { copyFileSync } = require('fs');
+const { copyFileSync, existsSync } = require('fs');
 
 const { createDir } = require('./utils');
-const { PUBLIC_PATH } = require('./utils/constants');
+const { PUBLIC_PATH, DEFAULT_CSS_PATH } = require('./utils/constants');
 const getScribbleData = require('./utils/getScribbleData');
 const startServer = require('./startServer');
 
@@ -13,9 +13,13 @@ const outputGroupPath = createDir(PUBLIC_PATH, groupName);
 const outputPath = createDir(outputGroupPath, scribbleName);
 
 // Create the style.css file by copying the css template
-copyFileSync(`${scribblePath}/style.css`, `${outputPath}/style.css`);
+let stylePath = `${scribblePath}style.css`;
+if (!existsSync(stylePath)) {
+  stylePath = DEFAULT_CSS_PATH;
+}
+copyFileSync(stylePath, `${outputPath}style.css`);
 
-const args = ['--build', '--js:bundle.js'];
+const args = ['--name=index', '--js=app.js', '--build'];
 
 // Is minified or not
 const arguments = process.argv.splice(2);
