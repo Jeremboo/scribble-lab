@@ -1,4 +1,4 @@
-const { copyFileSync, existsSync } = require('fs');
+const { copyFileSync, existsSync, copySync, mkdirSync } = require('fs-extra');
 
 const { createDir } = require('./utils');
 const { PUBLIC_PATH, DEFAULT_CSS_PATH } = require('./utils/constants');
@@ -18,6 +18,14 @@ if (!existsSync(stylePath)) {
   stylePath = DEFAULT_CSS_PATH;
 }
 copyFileSync(stylePath, `${outputPath}style.css`);
+
+// Copy the assets
+let assetsPath = `${scribblePath}assets`;
+if (existsSync(assetsPath)) {
+  const outputAssetPath = `${outputPath}assets`;
+  mkdirSync(outputAssetPath);
+  copySync(assetsPath, outputAssetPath);
+}
 
 const args = ['--name=index', '--js=app.js', '--build'];
 
