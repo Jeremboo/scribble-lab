@@ -20,21 +20,21 @@ Based on canvas-sketch tool
 
 # TODO
 
-- Remove folders without app.js included
-- Fix script/build.js to export images too
-- Avoid asset duplication per project (external URL from the github repo?)
-- Add prettier auto update
-- Add "latest" option when you get a scribble
+## Scribbles
+
+- Clean utils files
+- Clean modules
 - Replace the postprocessing package by an handmade one
-- Remove all duplicate files
-- babel: Make arrow function into class working
-- babel: Make decorator works
+
+## Core
+
 - Make a script to export a gif to mp4 (based on canvas-sketch-mp4)
 - Create unit tests to easily debug the scripts.
-- Remove useless sketches
-
+- Avoid asset duplication per project (external URL from the github repo?)
 
 # QUESTION - ISSUES
 
 - canvas-sketch: Documentation can include all variables you can inject into the html template (like {{title}})
 - canvas-sketch: issue with --stream [ gif --size:512:-1 ]
+- canvas-sketch-cli: add @babel/plugin-proposal-class-properties
+- canvas-sketch-cli: allow decorators
