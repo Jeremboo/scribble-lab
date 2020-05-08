@@ -105,9 +105,11 @@ const ask = question => readlineSync.question(question);
  * @param  {String} type type of values to select
  * @return {arr[]}       one value of the array
  */
-const askWitchChoice = (arr, type = '') =>
-  arr[readlineSync.keyInSelect(arr, `Which ${type} ? : `)]
-;
+const askWitchChoice = (arr, type = '') => {
+  const idx = readlineSync.keyInSelect(arr, `Which ${type} ? : `);
+  if (idx === -1) process.exit();
+  return arr[idx];
+}
 
 /**
  * ask a question to select a child directory from a path
