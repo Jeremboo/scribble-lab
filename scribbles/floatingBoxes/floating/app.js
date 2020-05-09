@@ -5,7 +5,7 @@ import {
   OrthographicCamera,
 } from 'three';
 
-import FloatingCube from 'FloatingCube';
+import FloatingCube from '../_modules/FloatingCube';
 
 
 const MAIN_COLOR = '#C9F0FF';
