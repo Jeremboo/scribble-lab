@@ -23,8 +23,8 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
   <a href="https://36days.reflektor.digital">
     <img alt="Main website" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/36daysoftype2019/website/preview.gif?raw=true" width="200">
   </a>
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/planeOfPlanes/preview.gif">
-    <img alt="planeOfPlanes" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/planeOfPlanes/preview.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/screenGrid/preview.gif">
+    <img alt="screenGrid" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/screenGrid/preview.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/curl/preview.gif">
     <img alt="curl" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/curl/preview.gif?raw=true" width="200">

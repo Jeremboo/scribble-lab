@@ -198,8 +198,8 @@ My contributions of the Codevember challenge 2017.
 Generate particles with different techniques. Other projects here: [Northern Boreal Typhoon](http://jeremieboulay.fr/typhoon/) & [FBO Particles at Grow Paris 2017](http://jeremieboulay.fr/grow-workshop/)
 
 <p align="center">
-  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/planeOfPlanes/preview.gif">
-    <img alt="planeOfPlanes" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/planeOfPlanes/preview.gif?raw=true" width="200">
+  <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/screenGrid/preview.gif">
+    <img alt="screenGrid" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/screenGrid/preview.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/curl/preview.gif">
     <img alt="curl" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/webglparticles/curl/preview.gif?raw=true" width="200">
