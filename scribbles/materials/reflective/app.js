@@ -3,9 +3,8 @@ import {
   MeshBasicMaterial, Mesh, Color, PlaneBufferGeometry,
 } from 'three';
 
-import Reflector from 'Reflector/index.js';
-
-import CameraMouseControl from 'CameraMouseControl';
+import Reflector from '../../../modules/Reflector';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
 
 const MAIN_COLOR = '#C9F0FF';

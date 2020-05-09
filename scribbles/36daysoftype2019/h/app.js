@@ -4,14 +4,13 @@ import {
   TextureLoader
 } from 'three';
 
-import fontFile from 'Glence Black_Regular';
+import fontFile from '../_assets/Glence Black_Regular';
 
-import CameraMouseControl from 'CameraMouseControl';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
-import fluidVert from '../h/shaders/fluid.v.glsl';
-import fluidFrag from '../h/shaders/fluid.f.glsl';
+import { vert, frag } from './shader';
 
-import gradientTexture from 'gradient.jpg';
+const gradientTexture = './assets/gradient.jpg';
 
 const BACKGROUND_COLOR = '#040507';
 
@@ -84,8 +83,8 @@ class H extends Object3D {
         timer: { value: 0 },
         texture: { value: texture },
       },
-      vertexShader: fluidVert,
-      fragmentShader: fluidFrag,
+      vertexShader: vert,
+      fragmentShader: frag,
     });
 
     this.mesh = new Mesh(this.geom, this.mat);

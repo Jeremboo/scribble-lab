@@ -2,12 +2,16 @@ import {
   WebGLRenderer, Scene, PerspectiveCamera, Mesh, Color,
   Vector3, SplineCurve, Path,
 } from 'three';
-
-import CameraMouseControl from 'CameraMouseControl';
-
 import { MeshLine, MeshLineMaterial } from 'three.meshline';
 
-import { getRandomFloat, getRandomInt } from 'utils';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
+
+import { getRandomFloat, getRandomInt } from '../../../modules/utils';
+
+const message = document.createElement('p');
+message.className = 'message';
+message.innerHTML = 'Click to randomize';
+document.body.appendChild(message);
 
 /* --------------------------- */
 /* ----------- CORE ---------- */

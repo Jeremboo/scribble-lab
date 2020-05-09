@@ -1,4 +1,5 @@
-const { askToCreateDir, createDir, createDataJSON } = require('./utils');
+const { askToCreateDir, createDir } = require('./utils');
+const createDataJSON = require('./utils/createDataJSON');
 
 // Create directories
 const { name, path } = askToCreateDir('scribbles/', 'Group');

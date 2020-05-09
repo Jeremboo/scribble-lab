@@ -1,0 +1,19 @@
+:root {
+  --bg-color-1: #000000;
+  --bg-color-2: #0e0e0f;
+  --bg-color-3: #000000;
+  --main-color: #000000;
+  --second-color: #FD65FC;
+}
+
+body {
+  background-color: var(--bg-color);
+  background: radial-gradient(ellipse at 130% 0,var(--bg-color-1) 45%,var(--bg-color-2) 60%,var(--bg-color-3) 120%);
+}
+
+.f {
+  color: var(--main-color);
+}
+.f a {
+  color: var(--second-color);
+}

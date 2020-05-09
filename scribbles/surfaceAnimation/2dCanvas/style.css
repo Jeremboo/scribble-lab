@@ -1,0 +1,57 @@
+:root {
+  --bg-color: #23446F;
+  --main-color: #070707;
+  --second-color: #101B25;
+}
+
+body {
+  background-color: var(--bg-color);
+}
+
+.f {
+  color: var(--main-color);
+}
+.f a {
+  color: var(--second-color);
+}
+
+
+#wrapper {
+  position: absolute;
+  left: 40px
+  top: 50%
+  transform: translate(0, -50%)
+}
+
+.SurfaceAnimation {
+  font-family: monospace;
+}
+
+.SurfaceAnimation-helper {
+  position: fixed;
+  transform-origin: 0 0;
+  top: 16px;
+  left: 16px;
+  transition: transform 0.1s
+}
+
+.SurfaceAnimation-helper:hover {
+  transform: scale(5);
+}
+
+.SurfaceAnimation span {
+  display: block;
+  width: 0.8em;
+  height: 1em;
+}
+
+
+.SurfaceAnimation p {
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  height: 1.5em;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}

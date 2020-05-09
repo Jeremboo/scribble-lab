@@ -3,7 +3,7 @@ import {
 } from 'three';
 import { MeshLine, MeshLineMaterial } from 'three.meshline';
 
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
 
 
 export default class AnimatedMeshLine extends Mesh {

@@ -2,11 +2,11 @@ import { ShaderMaterial, Color, TextureLoader } from 'three'
 import { TweenLite } from 'gsap'
 import { GUI } from 'dat.gui'
 
-import blobFragmentShader from './shaders/blob.f.glsl'
+import blobFragmentShader from './fragment.glsl'
 
-import { getRandomFloat, getRandomInt, mixColors, getRandomColor } from 'utils'
+import { getRandomFloat, getRandomInt, mixColors, getRandomColor } from '../../../modules/utils'
 
-import texture from 'texture.jpg'
+const texture = './assets/texture.jpg'
 
 const TRANSITION_DURATION = 0.5;
 const PARAMS = [

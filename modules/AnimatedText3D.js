@@ -1,7 +1,7 @@
 import { Object3D, ShapeGeometry, MeshBasicMaterial, Mesh, FontLoader } from 'three';
 import { TimelineLite } from 'gsap';
 
-import fontFile from 'font';
+import fontFile from './font';
 
 const fontLoader = new FontLoader();
 const font = fontLoader.parse(fontFile);

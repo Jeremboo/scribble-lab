@@ -14,3 +14,5 @@ scribbles/-test/*
 public/
 
 .vscode/
+
+.cache

@@ -1,5 +1,5 @@
-import { createProgramFromScript, createTexture, createTextureFromUrl } from 'utils.webgl';
-import { hexToRgb } from 'utils';
+import { createProgramFromScript, createTexture, createTextureFromUrl } from './utils.webgl';
+import { hexToRgb } from './utils';
 
 /**
  * FULL SCREEN SHADER:

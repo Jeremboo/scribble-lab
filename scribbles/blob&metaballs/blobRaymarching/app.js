@@ -1,14 +1,13 @@
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Object3D, BoxGeometry,
-  MeshBasicMaterial, Mesh, Color, FlatShading,
+ Color
 } from 'three';
 
-import rm from 'RayMarcher';
+import rm from '../../../modules/RayMarcher';
 import { GUI } from 'dat.gui';
 
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
 
-import blobFrag from './shaders/blob.f.glsl';
+import blobFrag from './fragment.glsl';
 
 /**
  * DOCS

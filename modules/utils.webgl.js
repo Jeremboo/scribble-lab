@@ -1,4 +1,4 @@
-import { loadImage } from 'utils';
+import { loadImage } from './utils';
 
 
 export const createShader = (gl, type, source) => {

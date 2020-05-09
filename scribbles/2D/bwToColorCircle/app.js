@@ -1,11 +1,10 @@
 import { autoDetectRenderer, Graphics, Container, Sprite, Texture, BLEND_MODES } from 'pixi.js';
-import RGBSplitFilter from 'RGBSplitFilter.pixi';
-import { linearGradient } from 'utils';
-
-import textureUrl from 'texture.jpg';
+import RGBSplitFilter from '../../../modules/RGBSplitFilter.pixi';
+import { linearGradient } from '../../../modules/utils';
 
 PIXI.settings.PRECISION_FRAGMENT = PIXI.PRECISION.HIGH
 
+const textureUrl = './assets/texture.jpg';
 
 /**
  * * *******************

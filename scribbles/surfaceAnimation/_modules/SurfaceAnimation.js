@@ -38,7 +38,7 @@
  *
  */
 
-import { canvasBuilder } from 'utils'
+import { canvasBuilder } from '../../../modules/utils'
 
 
 export default class SurfaceAnimation {

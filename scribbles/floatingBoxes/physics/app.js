@@ -7,7 +7,7 @@ import p2 from 'p2';
 
 import {
   getRandomFloat, getCameraVisionFieldSizeFromPosition, onCursorTouchMeshes, radians,
-} from 'utils';
+} from '../../../modules/utils';
 
 
 // GLOBAL

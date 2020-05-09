@@ -1,18 +1,40 @@
-# Codevember 2016
+# Scribble Lab
+
+Based on canvas-sketch tool
 
 ## Start dev env' on a specific day
 
-`DIR=[path] npm start`
+`npm start`
 
-## Bootstrap a new Sketch
+## Create a new Group
 
-`DIR=[path] npm run create:scribble`
+`npm run create:group`
 
-## Bootstrap a new Group
+## Create a new Sketch
 
-`DIR=[path] npm run create:group`
+`npm run create:scribble`
 
-## TODO
+## Update the main README.md
 
-- title = name into data.json and not the path.
-- build HTML preview
+## Build a external file
+
+# TODO
+
+## Scribbles
+
+- Clean utils files
+- Clean modules
+- Replace the postprocessing package by an handmade one
+
+## Core
+
+- Make a script to export a gif to mp4 (based on canvas-sketch-mp4)
+- Create unit tests to easily debug the scripts.
+- Avoid asset duplication per project (external URL from the github repo?)
+
+# QUESTION - ISSUES
+
+- canvas-sketch: Documentation can include all variables you can inject into the html template (like {{title}})
+- canvas-sketch: issue with --stream [ gif --size:512:-1 ]
+- canvas-sketch-cli: add @babel/plugin-proposal-class-properties
+- canvas-sketch-cli: allow decorators

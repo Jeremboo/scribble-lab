@@ -3,14 +3,14 @@ import {
   Vector3, SplineCurve, Path, Object3D, MeshBasicMaterial, ShapeGeometry,
   FontLoader,
 } from 'three';
+import { MeshLine, MeshLineMaterial } from 'three.meshline';
 import { TimelineLite } from 'gsap';
 import { GUI } from 'dat.gui';
 
-import CameraMouseControl from 'CameraMouseControl';
+import AnimatedText3D from '../../../modules/AnimatedText3D';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
-import { MeshLine, MeshLineMaterial } from 'three.meshline';
-import AnimatedText3D from 'AnimatedText3D';
-import { getRandomFloat, getRandomInt } from 'utils';
+import { getRandomFloat, getRandomInt } from '../../../modules/utils';
 
 const gui = new GUI();
 

@@ -1,17 +1,16 @@
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Object3D, BoxGeometry,
-  MeshBasicMaterial, Mesh, Color, FlatShading, TextureLoader, Clock,
-  Vector3,
+  WebGLRenderer, Scene, PerspectiveCamera, BoxGeometry,
+  MeshBasicMaterial, Mesh, Color, TextureLoader, Clock,
 } from 'three';
 import {
-  EffectComposer, RenderPass, BlurPass,
+  EffectComposer, RenderPass,
 } from 'postprocessing';
 
-import CameraMouseControl from 'CameraMouseControl';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
-import IncrustationPass from 'IncrustationPass';
+import IncrustationPass from '../../../modules/IncrustationPass';
 
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
 
 const clock = new Clock();
 

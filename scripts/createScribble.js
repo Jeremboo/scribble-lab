@@ -1,41 +1,50 @@
 const fs = require('fs');
-const copyDir = require('copy-dir');
 
-const { askWitchChoice, askWitchChildDir, pathExist, askToCreateDir, createDataJSON } = require('./utils');
+const startServer = require('./startServer');
+const { askWitchChoice, askWitchChildDir, askToCreateDir, askBool } = require('./utils');
+const { DEFAULT_ARGS, SCRIBBLE_PATH } = require('./utils/constants');
+const createDataJSON = require('./utils/createDataJSON');
 
-// WITCH REPO
-let groupPath = process.env.DIR;
+// Get the group
+const groupPath = `${SCRIBBLE_PATH}${askWitchChildDir(SCRIBBLE_PATH, 'group')}/`;
 
-if (!groupPath || !pathExist(groupPath)) {
-  // Select a dir in command line
-  groupPath = 'scribbles/';
-  groupPath += `${askWitchChildDir(groupPath, 'group')}/`;
-}
-
-// WITCH TYPE
-// Get all app name
-const templatePath = 'templates/';
-const templateFiles = fs.readdirSync(templatePath);
-const types = templateFiles.filter(fileName => (fileName.indexOf('app.') !== -1));
-
-// CREATE DIR
+// Create the directory
 const { path, name } = askToCreateDir(groupPath, 'Sketch');
 
-// CLONE TEMPLATE AND KEEP THE GOOD APP
-const typeFileName = askWitchChoice(types, 'template');
-copyDir.sync(templatePath, path, (stat, filepath, filename) => {
-  if (filename.indexOf('app.') !== -1) {
-    return (filename === typeFileName);
+// Get the possibles templates
+const types = {};
+const templatePath = './templates/';
+const templateFiles = fs.readdirSync(templatePath);
+templateFiles.forEach(fileName => {
+  if (fileName.includes('app.')) {
+    const name = fileName.split('.')[1];
+    types[name] = `${templatePath}${fileName}`;
   }
-  return true;
 });
-fs.renameSync(`${path}/${typeFileName}`, `${path}/app.js`);
+// Add default templates at the end
+types['regl'] = 'regl';
+types['penplot'] = 'penplot';
+types['canvas (default)'] = 'default';
+types['three (default)'] = 'three';
+// Get the template type requested
+const templateKey = askWitchChoice(Object.keys(types), 'template');
+const templateType = types[templateKey];
 
-// CREATE DATA.json
+// Create the data.json
 createDataJSON(name, path);
 
-// NPM START
-process.env.GROUP_PATH = groupPath;
-process.env.SKETCH_PATH = path;
-process.env.NAME = name;
-require('./startWebpack')();
+// Create the style.css file by copying the css template
+fs.copyFileSync('templates/style.css', `${path}/style.css`);
+
+// Create the index.html if the user what a custom one
+const customHTMLRequested = askBool('Custom index.html ? : ', false);
+if (customHTMLRequested) {
+  fs.copyFileSync('templates/index.html', `${path}/index.html`);
+}
+
+// START
+const args = ['--new', ...DEFAULT_ARGS];
+if (templateType) {
+  args.push(`--template=${templateType}`)
+}
+startServer(path, name, args);

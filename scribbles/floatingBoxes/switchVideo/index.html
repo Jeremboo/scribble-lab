@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="author" content="Jérémie Boulay">
+  <meta name="owner" content="Jérémie Boulay">
+  <meta name="location" content="Paris, FRANCE">
+  <meta name="keywords" content="scribble, lab, creative developer">
+  <meta name="description" content="">
+  <meta name="copyright" content="© Copyright 2020 - Jérémie Boulay" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@jeremboo">
+  <meta name="twitter:creator" content="@jeremboo">
+  <meta name="twitter:title" content="{{title}}">
+  <meta name="twitter:description" content="">
+  <meta name="twitter:image:src" content="">
+  <!-- Facebook -->
+  <!-- <meta property="og:title" content="{{title}}"/>
+  <meta property="og:image" content=""/>
+  <meta property="og:url" content=""/>
+  <meta property="og:site-name" content=""/> -->
+
+  <meta name="viewport" content="width=device-width, shrink-to-fit=0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>{{title}}</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin: 0;
+      overflow: hidden;
+      color: #070707;
+      font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif
+    }
+    canvas {
+      margin: auto;
+      display: block;
+      box-shadow: 0px 2px 12px -2px rgba(0, 0, 0, 0.15);
+    }
+    .f {
+      position: fixed;
+      bottom: 5px;
+      right: 15px;
+      font-family: 'Arial';
+      font-size: 0.7rem;
+      text-align: center;
+    }
+    .f a {
+      color: #C9F0FF;
+      font-size: 0.8rem;
+    }
+    video {
+      display: none;
+    }
+  </style>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <video id="video" controls width="512" height="512" loop="true">
+    <source id="mp4" type="video/mp4" />
+  </video>
+
+  <p class="f">
+    <a target="_blank" href="http://www.jeremieboulay.fr">@Jeremboo</a>
+    <br /> ┗|｀O´|┛
+  </p>
+  {{entry}}
+</body>
+</html>

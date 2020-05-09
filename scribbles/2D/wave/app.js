@@ -12,7 +12,7 @@
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
-import { getDistBetweenTwoVec2, getPosXBetweenTwoNumbers } from 'utils';
+import { getDistBetweenTwoVec2, getPosXBetweenTwoNumbers } from '../../../modules/utils';
 
 const NBR_OF_POINTS = 50;
 const MOUSE_DIST = 8;

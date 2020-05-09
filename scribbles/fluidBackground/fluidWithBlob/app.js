@@ -8,10 +8,10 @@ import {
 } from 'postprocessing';
 // import OrbitControls from 'vendors/OrbitControls';
 
-import props, { gui } from 'props';
+import NoisePass from '../../../modules/NoisePass';
 
-import NoisePass from 'NoisePass';
-import Blob from './objects/Blob';
+import Blob from './modules/Blob';
+import props, { gui } from './modules/props';
 
 const clock = new Clock();
 
@@ -64,7 +64,7 @@ class Webgl {
     });
     // this.passes.blurPass.renderToScreen = true;
     this.composer.addPass(this.passes.blurPass);
-    
+
     // NoisePass
     this.passes.noisePass = new NoisePass({
       speed: props.NOISE_SPEED,
@@ -123,7 +123,9 @@ class Webgl {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
-    this.composer.setSize(this.width, this.height);
+    if (this.composer) {
+      this.composer.setSize(this.width, this.height);
+    }
   }
 }
 

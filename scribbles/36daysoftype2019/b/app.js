@@ -1,12 +1,12 @@
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, Object3D, BoxGeometry,
-  MeshBasicMaterial, Mesh, Color, FlatShading, FontLoader, ShapeGeometry, TextGeometry, Vector3,
+  WebGLRenderer, Scene, PerspectiveCamera, Object3D,
+  MeshBasicMaterial, Mesh, Color, FontLoader, ShapeGeometry, Vector3,
   Fog
 } from 'three';
 
 import fontFile from 'font';
 
-import CameraMouseControl from 'CameraMouseControl';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
 
 const fontLoader = new FontLoader();
 const font = fontLoader.parse(fontFile);

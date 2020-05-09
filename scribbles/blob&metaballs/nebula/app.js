@@ -13,14 +13,14 @@ import {
 } from 'three';
 import { GUI } from 'dat.gui';
 
-import OrbitControl from 'OrbitControl';
-import Stars from 'Stars';
+import OrbitControls from '../../../modules/OrbitControls';
+import Stars from '../../../modules/Stars';
 
-import fragGlow from './shaders/glow.f.glsl';
-import vertGlow from './shaders/glow.v.glsl';
-import textureUrl from 'glow-texture.png';
+import { fragGlow, vertGlow } from './shaders.glsl';
 
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
+
+const textureUrl = './assets/glow-texture.png';
 
 /**
  * * *******************
@@ -38,7 +38,7 @@ class Webgl {
     // this.renderer.setClearColor(new Color(BACKGROUND_COLOR));
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
-    this.controls = new OrbitControl(this.camera, this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.camera.position.set(0, 0, 10);
     this.dom = this.renderer.domElement;
     this.update = this.update.bind(this);

@@ -7,14 +7,151 @@ import {
   DirectionalLight, TextBufferGeometry, FontLoader,
 } from 'three';
 
-import CameraMouseControl from 'CameraMouseControl';
-import GPUSimulation from 'GPUSimulation';
+import CameraMouseControl from '../../../modules/CameraMouseControl';
+import GPUSimulation from '../../../modules/GPUSimulation';
 
-import fragInstanced from './shaders/particle.f.glsl';
-import vertInstanced from './shaders/particle.v.glsl';
-import shaderSimulationPosition from './shaders/position.f.glsl';
+const fragInstanced = `uniform vec3 diffuse;
+uniform vec3 emissive;
+uniform vec3 specular;
+uniform float shininess;
+uniform float opacity;
 
-import { getRandomAttribute } from 'utils';
+uniform sampler2D videoTexture;
+uniform float depthLightingForce;
+
+varying vec2 vVideoUv;
+varying float vDepth;
+
+varying vec3 vColor;
+
+#include <common>
+#include <packing>
+#include <bsdfs>
+#include <lights_pars_begin>
+#include <lights_phong_pars_fragment>
+#include <shadowmap_pars_fragment>
+#include <normalmap_pars_fragment>
+
+void main() {
+	vec3 video = texture2D(videoTexture, vVideoUv).xyz;
+
+	vec4 diffuseColor = vec4(vColor, opacity);
+	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
+	vec3 totalEmissiveRadiance = emissive;
+
+	#include <specularmap_fragment>
+	#include <normal_fragment_begin>
+	#include <normal_fragment_maps>
+	#include <emissivemap_fragment>
+	#include <lights_phong_fragment>
+	#include <lights_fragment_begin>
+	#include <lights_fragment_maps>
+	#include <lights_fragment_end>
+
+	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular;
+	outgoingLight += vViewPosition * 0.002;
+	// outgoingLight -= vDepth * 0.01;
+
+	gl_FragColor = vec4( outgoingLight, diffuseColor.a );
+}
+`;
+const vertInstanced = `
+uniform sampler2D positions;
+uniform vec2 tileGrid;
+
+attribute vec2 fboUv;
+
+varying vec2 vVideoUv;
+varying vec3 vViewPosition;
+
+varying float vDepth;
+
+attribute vec3 color;
+varying vec3 vColor;
+
+#ifndef FLAT_SHADED
+ varying vec3 vNormal;
+#endif
+
+#include <fog_pars_vertex>
+
+mat4 rotationY( in float angle ) {
+	return mat4(	cos(angle),		0,		sin(angle),	0,
+			 				0,		1.0,			 0,	0,
+					-sin(angle),	0,		cos(angle),	0,
+							0, 		0,				0,	1);
+}
+
+mat4 scale(float x, float y, float z){
+    return mat4(
+        vec4(x,   0.0, 0.0, 0.0),
+        vec4(0.0, y,   0.0, 0.0),
+        vec4(0.0, 0.0, z,   0.0),
+        vec4(0.0, 0.0, 0.0, 1.0)
+    );
+}
+
+void main()	{
+  vColor = color;
+
+  // The UVs for an unique Tile
+  vec2 planeUv = vec2(
+    (position.x * 0.5) + 0.5,
+    (position.y * 0.5) + 0.5
+  );
+
+  // The UVs of the whole grid
+  vec2 pixellateVideoUv = vec2(
+    fboUv.x,
+    1. - fboUv.y
+  );
+
+  // The UVs to map the video on the grid
+  vVideoUv = vec2(
+    pixellateVideoUv.x + (planeUv.x / tileGrid.x),
+    pixellateVideoUv.y + (planeUv.y / tileGrid.y)
+  );
+
+
+  // Basic vertex
+  #ifndef FLAT_SHADED
+   vNormal = normalize( transformedNormal );
+  #endif
+
+  vec3 pos = texture2D(positions, fboUv).xyz;
+  float s = 1. + ((pos.z + pos.x) * 0.1);
+  vec4 worldPosition = modelMatrix * vec4(position + pos, 1.0) * rotationY(pos.y * 0.5) * scale(
+    s,
+    s,
+    s
+    );
+
+  vDepth = pos.z;
+
+  vec4 mvPosition = viewMatrix * worldPosition;
+  vViewPosition = -mvPosition.xyz;
+
+
+  gl_Position = projectionMatrix * mvPosition;
+
+  #include <fog_vertex>
+}`;
+const shaderSimulationPosition = `
+uniform sampler2D texture;
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / resolution.xy;
+  vec4 data = texture2D(texture, uv);
+
+  vec3 newPosition = data.xyz;
+
+  // Displace the initial position with the noise
+  newPosition.y += data.w;
+  newPosition.x -= data.w;
+  gl_FragColor = vec4(newPosition, data.w);
+}`;
+
+import { getRandomAttribute } from '../../../modules/utils';
 
 
 /**
@@ -77,7 +214,7 @@ document.body.appendChild(webgl.dom);
  * * *******************
  */
 
-import fontFile from 'Glence Black_Regular';
+import fontFile from '../_assets/Glence Black_Regular';
 import { getRandomFloat } from '../../../modules/utils';
 
 const fontLoader = new FontLoader();

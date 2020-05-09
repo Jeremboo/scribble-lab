@@ -1,13 +1,11 @@
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, BoxGeometry,
-  MeshToonMaterial, Mesh, Color, PlaneGeometry, MeshBasicMaterial,
-  Vector3, AmbientLight, DirectionalLight, PCFSoftShadowMap, ShadowMaterial,
+  WebGLRenderer, Scene,
+  Mesh, Color, PlaneGeometry, MeshBasicMaterial,
+  AmbientLight, DirectionalLight, PCFSoftShadowMap, ShadowMaterial,
   OrthographicCamera,
 } from 'three';
 
 import FloatingCube from 'FloatingCube';
-
-import { getRandomFloat, radians } from 'utils';
 
 
 const MAIN_COLOR = '#C9F0FF';

@@ -1,11 +1,12 @@
-import rm from 'RayMarcher';
+import { Clock } from 'three';
+import {
+  EffectComposer, RenderPass
+} from 'postprocessing';
+
+import rm from '../../../modules/RayMarcher';
 import Organism from './Organism';
 
-import { Clock } from 'three';
 
-import {
-  EffectComposer, RenderPass, BlurPass, BloomPass,
-} from 'postprocessing';
 
 // https://gitlab.com/Jeremboo/watermelon-sugar/blob/develop/src/js/webgl/index.js
 const organism = new Organism();

@@ -2,7 +2,7 @@
   "name": "nativePlaneShader",
   "path": "scribbles/surfaceShader/nativePlaneShader/",
   "link": "",
-  "visible": true,
+  "visible": false,
   "preview": "preview.gif",
   "description": "",
   "date": "2019-01-29T15:38:56.697Z",

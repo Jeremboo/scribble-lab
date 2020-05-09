@@ -1,7 +1,7 @@
 {
   "name": "scribble-lab",
-  "version": "0.0.1",
-  "description": "My own prototyping tool to scribbling some ideas with many available frameworks.",
+  "version": "2.0.0",
+  "description": "My own prototyping tool for sketching some ideas.",
   "scripts": {
     "start": "node scripts/start.js",
     "create:group": "node scripts/createGroup.js",
@@ -13,7 +13,7 @@
   "author": "Jérémie Boulay <jeremi.boulay@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "core-js": "^3.6.4",
+    "canvas-sketch": "^0.7.3",
     "dat.gui": "^0.7.7",
     "dat.gui.image": "^1.0.2",
     "gsap": "^1.20.6",
@@ -33,38 +33,9 @@
     "threejs-texture-tool": "^0.5.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.9.0",
-    "apply-loader": "^2.0.0",
-    "autoprefixer": "^7.2.6",
-    "babel-loader": "^8.1.0",
-    "babel-plugin-module-resolver": "^3.2.0",
     "camelcase": "^4.0.0",
-    "copy-dir": "^0.3.0",
-    "css-loader": "^3.5.0",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb": "^15.0.1",
-    "eslint-import-resolver-babel-module": "^3.0.0",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-jsx-a11y": "^5.0.3",
-    "eslint-plugin-react": "^7.19.0",
-    "file-loader": "^0.11.2",
-    "glslify-loader": "^2.0.0",
-    "html-webpack-plugin": "^3.2.0",
-    "ip": "^1.1.4",
-    "mini-css-extract-plugin": "^0.4.5",
-    "postcss-loader": "^2.1.6",
-    "poststylus": "^0.2.3",
-    "pug": "^2.0.4",
-    "pug-loader": "^2.4.0",
-    "raw-loader": "^0.5.1",
-    "readline-sync": "^1.4.10",
-    "style-loader": "^0.18.2",
-    "stylus": "^0.54.7",
-    "stylus-loader": "^3.0.2",
-    "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.42.1",
-    "webpack-dev-server": "^3.10.3"
+    "canvas-sketch-cli": "^1.11.7",
+    "fs-extra": "^9.0.0",
+    "readline-sync": "^1.4.10"
   }
 }

@@ -6,15 +6,14 @@ import {
   LinearFilter, RGBFormat, TextureLoader,
 } from 'three';
 
-import FloatingCube from 'FloatingCube';
-import TransitionalTextureMaterial from 'TransitionalTextureMaterial';
+import FloatingCube from '../_modules/FloatingCube';
+import TransitionalTextureMaterial from '../_modules/TransitionalTextureMaterial';
 
-import { getNormalizedPosFromScreen, getPosXBetweenTwoNumbers, loadVideo } from 'utils';
+import { getNormalizedPosFromScreen, getPosXBetweenTwoNumbers, loadVideo } from '../../../modules/utils';
 
-import videoUrl1 from 'videoTest1.mp4';
-import videoUrl2 from 'videoTest2.mp4';
-
-import distortionImage from 'flowmap.png';
+const videoUrl1 = './assets/videoTest1.mp4';
+const videoUrl2 = './assets/videoTest2.mp4';
+const distortionImage = './assets/flowmap.png';
 
 // PROPS
 const MAIN_COLOR = '#C9F0FF';
@@ -148,32 +147,32 @@ let textureTransitionMaterial = false;
  * * LOAD VIDEOS TOOLS
  */
 
-function loadVideo(url) {
-  return new Promise((resolve, reject) => {
-    const videoPlayer = document.createElement('video');
-    videoPlayer.width = 512;
-    videoPlayer.height = 512;
-    videoPlayer.loop = true;
-    videoPlayer.muted = true;
-    const source = document.createElement('source');
-    source.id = 'mp4';
-    source.type = 'video/mp4';
-    videoPlayer.appendChild(source);
+// function loadVideo(url) {
+//   return new Promise((resolve, reject) => {
+//     const videoPlayer = document.createElement('video');
+//     videoPlayer.width = 512;
+//     videoPlayer.height = 512;
+//     videoPlayer.loop = true;
+//     videoPlayer.muted = true;
+//     const source = document.createElement('source');
+//     source.id = 'mp4';
+//     source.type = 'video/mp4';
+//     videoPlayer.appendChild(source);
 
-    if (!videoPlayer.canPlayType('video/mp4')) {
-      reject();
-      return;
-    }
+//     if (!videoPlayer.canPlayType('video/mp4')) {
+//       reject();
+//       return;
+//     }
 
-    videoPlayer.addEventListener('canplaythrough', () => {
-      resolve(videoPlayer);
-    });
-    videoPlayer.src = url;
-    if (videoPlayer.readyState > 3) {
-      resolve(videoPlayer);
-    }
-  });
-}
+//     videoPlayer.addEventListener('canplaythrough', () => {
+//       resolve(videoPlayer);
+//     });
+//     videoPlayer.src = url;
+//     if (videoPlayer.readyState > 3) {
+//       resolve(videoPlayer);
+//     }
+//   });
+// }
 
 async function loadVideos() {
   try {

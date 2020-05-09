@@ -187,7 +187,7 @@ export const applyImageToCanvas = (url, w, h) => new Promise((resolve, reject) =
   xhr.onload = (e) => {
     if (e.target.status === 200) {
       const blob = e.target.response;
-      loadImage(window.URL.createObjectURL(blob)).then(() => {
+      loadImage(window.URL.createObjectURL(blob)).then((image) => {
         const width = w || image.width;
         const height = h || image.height;
         const canvasB = canvasBuilder(width, height);

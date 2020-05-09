@@ -2,17 +2,55 @@ import {
   WebGLRenderer, Scene, PerspectiveCamera, Object3D, TetrahedronBufferGeometry,
   Mesh, FlatShading, Color,
   ShaderMaterial, PointLightHelper, AmbientLight, PointLight,
-  Vector3, MeshPhongMaterial, SphereGeometry, MeshBasicMaterial, ShaderLib,
+  Vector3, MeshPhongMaterial, SphereGeometry, MeshBasicMaterial,
 } from 'three';
-import OrbitControls from 'OrbitControl';
+import OrbitControls from '../../../modules/OrbitControls';
 import { GUI } from 'dat.gui';
 
-import vertShadow from './shaders/shadow.v.glsl';
-import fragShadow from './shaders/shadow.f.glsl';
+const vertShadow = `
+  varying vec3 vNormal;
+  varying vec3 vPosition;
+
+  void main()	{
+    vNormal = normalMatrix * normal;
+    vPosition = position;
+
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+  }
+`;
+const fragShadow = `
+  varying vec3 vNormal;
+  varying vec3 vPosition;
+
+  uniform vec3 color;
+  uniform vec3 ambientLightColor;
+  uniform float ambientLightIntensity;
+
+  uniform vec3 lightsPosition[NBR_OF_LIGHTS];
+  uniform float lightsDistance[NBR_OF_LIGHTS];
+  uniform float lightsDiffuse[NBR_OF_LIGHTS];
+
+  void main()	{
+    // Based in ambient light
+    vec4 addedLights = vec4(ambientLightColor * ambientLightIntensity, 1.0);
+
+    for(int l = 0; l < NBR_OF_LIGHTS; l++) {
+      // Get the normalized directed light ray ( diff vect between light's position && && fragment position)
+      vec3 lightDirection = normalize(lightsPosition[l] - vPosition);
+
+      // Get the scalar light value
+      float diffuseLighting = max(dot(vNormal, lightDirection), 0.0) * lightsDiffuse[l];
+
+      // add to the lights's vector
+      // float celIntensity = ceil(diffuseLighting * 8.0) / 8.0;
+      addedLights.rgb += diffuseLighting;
+    }
+
+    gl_FragColor = vec4(color, 1.0) * addedLights;
+  }
+`;
 
 /**/ /* ---- CORE ---- */
-/**/ const mainColor = '#070707';
-/**/ const secondaryColor = '#C9F0FF';
 /**/ const bgColor = 0xaaaaaa;
 /**/ let windowWidth = window.innerWidth;
 /**/ let windowHeight = window.innerHeight;

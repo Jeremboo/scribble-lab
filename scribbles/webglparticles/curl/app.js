@@ -2,23 +2,18 @@ import {
 	WebGLRenderer, Scene, PerspectiveCamera, Color, Group,
 	RGBFormat, FloatType, RawShaderMaterial, DoubleSide,
 	InstancedBufferGeometry, InstancedBufferAttribute, Mesh,
-	Vector3, OctahedronBufferGeometry, ShaderChunk,
+	Vector3, OctahedronBufferGeometry
 } from 'three';
 
-console.log(ShaderChunk);
-
 import { GUI } from 'dat.gui';
-import OrbitControl from 'OrbitControl';
+import OrbitControls from '../../../modules/OrbitControls';
 
-import positionFrag from "./shaders/simulationPosition.f.glsl"
-import velocityFrag from "./shaders/simulationVelocity.f.glsl"
 
-import particleVert from './shaders/particle.v.glsl';
-import particleFrag from './shaders/particle.f.glsl';
+import { particleFrag, particleVert, positionFrag, velocityFrag } from './shaders.glsl';
 
-import GPUSimulation from 'GPUSimulation';
+import GPUSimulation from '../../../modules/GPUSimulation';
 
-import { getRandomFloat } from 'utils';
+import { getRandomFloat } from '../../../modules/utils';
 
 const COLORS = [
   // '#80D39B',
@@ -78,7 +73,7 @@ class Webgl {
     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
 		this.camera.position.set(0, 0, props.DISTANCE);
     this.dom = this.renderer.domElement;
-		this.controls = new OrbitControl(this.camera, this.dom);
+		this.controls = new OrbitControls(this.camera, this.dom);
     this.update = this.update.bind(this);
     this.resize = this.resize.bind(this);
 		this.resize(w, h); // set render size

@@ -3,14 +3,13 @@ import {
   Mesh, Color, FlatShading,
   TetrahedronBufferGeometry, InstancedBufferGeometry, InstancedBufferAttribute,
   Matrix4, Quaternion, Euler, Vector3, PointLight, ShaderMaterial, AmbientLight,
-  PointLightHelper, DoubleSide, UniformsUtils, UniformsLib,
+  DoubleSide, UniformsUtils, UniformsLib,
 } from 'three';
 
-import { getRandomAttribute } from 'utils';
-import OrbitControls from 'OrbitControl';
+import { getRandomAttribute } from '../../../modules/utils';
+import OrbitControls from '../../../modules/OrbitControls';
 
-import fragInstanced from './shaders/instanced.f.glsl';
-import vertInstanced from './shaders/instanced.v.glsl';
+import { fragInstanced, vertInstanced } from './shader.glsl';
 
 const COLORS = ['#c15455', '#6394c6', '#daf4ec'];
 
