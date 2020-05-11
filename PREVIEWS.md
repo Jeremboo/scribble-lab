@@ -5,6 +5,9 @@ Just a regroupment of some searches, tests, experiments around javascript or CSS
 - [All Projects](/README.md)
 
 <p align="center">
+  <a href="https://isolation.is/">
+    <img alt="Postcards from isolation.is" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/isolation/preview.gif?raw=true" width="200">
+  </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebulaTouchable/preview.gif">
     <img alt="Touchable Nebula" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/blob&metaballs/nebulaTouchable/preview.gif?raw=true" width="200">
   </a>

@@ -771,6 +771,18 @@
     "tags": [],
     "scribbles": [
       {
+        "name": "Postcards from isolation.is",
+        "path": "scribbles/2D/isolation/",
+        "link": "https://isolation.is/",
+        "visible": true,
+        "preview": [
+          "preview.gif"
+        ],
+        "description": "Contribution to the isolation.is website",
+        "date": "2020-05-09T23:40:38.328Z",
+        "tags": []
+      },
+      {
         "name": "circlesTransitions",
         "path": "scribbles/shapes&Masks/circlesTransitions/",
         "link": "",
