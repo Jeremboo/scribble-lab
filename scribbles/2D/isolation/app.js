@@ -1,7 +1,6 @@
 import p2 from 'p2';
 import { getRandomFloat, magnitude } from '../../../modules/utils';
 
-
 // * PROPS ****
 const RAD_360 = Math.PI * 2;
 const FIXED_TIME_STEP = 1 / 60;
@@ -17,6 +16,9 @@ const PROPS = {
   friction: 1,
   velocity: 15000,
   mass: 5,
+  securityDistance: 150,
+  mouseVelocity: 1000,
+  mouseMass: 20
 };
 
 // Utils
@@ -51,7 +53,7 @@ world.sleepMode = p2.World.BODY_SLEEPING;
 const stageBody = new p2.Body();
 world.addBody(stageBody);
 
-
+// Walls
 const wall1 = new p2.Body({
   mass: 0,
   angle: -Math.PI * PROPS.entranceAngle,
@@ -79,6 +81,13 @@ const updateWalls = (width, height) => {
   wall2.addShape(new p2.Box({ width: 50, height: wallSize }));
 }
 
+// Mouse
+const mouse = new p2.Body({
+  mass: PROPS.mouseMass,
+});
+mouse.addShape(new p2.Circle({ radius: PROPS.radius }));
+world.addBody(mouse);
+
  // * TARGET ****
  const target = [0, 0];
  const updateTarget = (width, height) => {
@@ -101,7 +110,7 @@ class Circle {
     });
 
     // Add a circle shape to the body
-    this.shape = new p2.Circle({ radius: this.radius });
+    this.shape = new p2.Circle({ radius: PROPS.radius });
     this.body.addShape(this.shape);
 
     this.update = this.update.bind(this);
@@ -118,7 +127,7 @@ class Circle {
 
   update({ width, height, state }) {
     if (state) {
-      const positionX = width + PROPS.radius - (this.idx * 150);
+      const positionX = width + PROPS.radius - (this.idx * PROPS.securityDistance);
       this.force[0] = positionX - this.position[0];
       this.force[1] = (height * 0.5) - this.position[1];
       this.force[0] *= 100;
@@ -161,6 +170,8 @@ class Circle {
  * * *******************
  */
 let lastTime;
+let mouseForce = [];
+const mousePosition = [0, 0];
 const circles = [];
 
 IS.create({
@@ -177,11 +188,16 @@ IS.create({
     }
   },
   onChangeState: (state) => {
+    mouse.removeShape(mouse.shapes[0]);
     if(!state) {
-      console.log('force')
       for (let i = 0 ; i < circles.length; i++) {
         circles[i].applyForce([getRandomFloat(10000, 1500000), getRandomFloat(-100000, 100000)]);
       }
+      mouse.addShape(new p2.Circle({ radius: PROPS.radius }));
+    } else {
+      mouse.addShape(new p2.Circle({
+        radius: PROPS.securityDistance,
+      }));
     }
   },
   onResize: ({ width, height }) => {
@@ -191,7 +207,7 @@ IS.create({
     updateTarget(width, height);
   },
   onTick: (props) => {
-    const { width, height, timestamp, state } = props;
+    const { width, height, timestamp, state, isPointerInside } = props;
     context.fillStyle = PROPS.bgColor;
     context.fillRect(0, 0, width, height);
 
@@ -209,35 +225,50 @@ IS.create({
       1,
       wall2.shapes[0].height
     );
-    // context.rect(
-    //   wall2.position[0] - wall1.shapes[0].width * 0.5,
-    //   wall1.position[1] - wall1.shapes[0].height * 0.5,
-    //   wall2.shapes[0].width,
-    //   wall1.shapes[0].height
-    // );
-    // context.rect(
-    //   wall2.position[0] - wall1.shapes[0].width * 0.5,
-    //   wall2.position[1] - wall2.shapes[0].height * 0.5,
-    //   wall2.shapes[0].width,
-    //   wall2.shapes[0].height
-    // );
+    context.lineWidth = 3;
     context.stroke();
 
-      // * UPDATE PHYSIC **
-      const deltaTime = lastTime ? (timestamp - lastTime) / 1000 : 0;
-      world.step(FIXED_TIME_STEP, deltaTime, MAX_SUB_STEPS);
-      lastTime = timestamp;
+    // Mouse
+    if (isPointerInside) {
+      mouseForce[0] = (mousePosition[0] - mouse.position[0]) * PROPS.mouseVelocity;
+      mouseForce[1] = (mousePosition[1] - mouse.position[1]) * PROPS.mouseVelocity;
+    } else {
+      mouseForce = normalize(
+        target[0] - mouse.position[0],
+        target[1] - mouse.position[1]
+      );
+      mouseForce[0] *= PROPS.velocity * 4;
+      mouseForce[1] *= PROPS.velocity * 4;
 
-      // * UPDATE **
-      const updateIncrement = state && Math.random() > 0.98;
-      for (let i = 0 ; i < circles.length; i++) {
-        if (updateIncrement) {
-          circles[i].updateIdx();
-        }
-        circles[i].update(props);
-        circles[i].render();
+      if (mouse.position[0] > width + PROPS.radius) {
+        mouse.position = getRandomPosition(width, height);
+        mouse.force = [0, 0];
       }
+    }
+    mouse.applyForce(mouseForce);
+    mouse.applyDamping(PROPS.friction);
+    context.beginPath();
+    context.arc(mouse.position[0], mouse.position[1], PROPS.radius, 0, RAD_360);
+    context.stroke();
+
+    // * UPDATE PHYSIC **
+    const deltaTime = lastTime ? (timestamp - lastTime) / 1000 : 0;
+    world.step(FIXED_TIME_STEP, deltaTime, MAX_SUB_STEPS);
+    lastTime = timestamp;
+
+    // * UPDATE **
+    const updateIncrement = state && Math.random() > 0.98;
+    for (let i = 0 ; i < circles.length; i++) {
+      if (updateIncrement) {
+        circles[i].updateIdx();
+      }
+      circles[i].update(props);
+      circles[i].render();
+    }
   },
-  onPointerMove: (data) => {},
+  onPointerMove: ({ x, y }) => {
+    mousePosition[0] = x;
+    mousePosition[1] = y;
+  },
 })
 
