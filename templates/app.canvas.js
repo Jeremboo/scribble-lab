@@ -41,14 +41,17 @@ canvasSketch(({ width, height }) => {
   const gui = new GUI();
   gui.add(PROPS, 'speed', 1, 10).step(1);
 
-  return ({ context, width, height, playhead }) => {
-    context.fillStyle = PROPS.bgColor;
-    context.fillRect(0, 0, width, height);
+  return ({
+    resize({ width, height }) {},
+    update({ context, width, height, playhead }) {
+      context.fillStyle = PROPS.bgColor;
+      context.fillRect(0, 0, width, height);
 
-    // * UPDATE **
-    circle.update(playhead);
-    circle.render(context);
-  };
+      // * UPDATE **
+      circle.update(playhead);
+      circle.render(context);
+    }
+  });
 }, {
   fps: 24,
   duration: 4,
