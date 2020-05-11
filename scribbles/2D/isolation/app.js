@@ -1,5 +1,4 @@
 import p2 from 'p2';
-import { getRandomFloat, magnitude } from '../../../modules/utils';
 
 // * PROPS ****
 const RAD_360 = Math.PI * 2;
@@ -22,10 +21,13 @@ const PROPS = {
 };
 
 // Utils
+Math.sqr = x => x * x;
+const magnitude = (x, y) => Math.sqrt(Math.sqr(x) + Math.sqr(y));
 const normalize = (x, y) => {
   const mag = magnitude(x, y);
   return [x / mag, y / mag];
 }
+const getRandomFloat = (min, max) => (Math.random() * (max - min) + min);
 const getInitialRandomPosition = (width, height) => {
   return [
     getRandomFloat(-PROPS.radius, width * 0.9),
