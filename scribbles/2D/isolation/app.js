@@ -132,14 +132,13 @@ class Circle {
       const positionX = width + PROPS.radius - (this.idx * PROPS.securityDistance);
       this.force[0] = positionX - this.position[0];
       this.force[1] = (height * 0.5) - this.position[1];
-      this.force[0] *= 100;
-      this.force[1] *= 100;
-
+      this.force[0] *= 50;
+      this.force[1] *= 50;
     } else {
       this.force = normalize(
         target[0] - this.position[0],
         target[1] - this.position[1]
-        );
+      );
       this.force[0] *= PROPS.velocity;
       this.force[1] *= PROPS.velocity;
     }
@@ -160,8 +159,16 @@ class Circle {
 
   render() {
     context.beginPath();
+    context.arc(this.position[0], this.position[1], this.radius - 1, 0, RAD_360);
+    context.stroke();
+
+    context.beginPath();
     context.fillStyle = PROPS.mainColor;
-    context.arc(this.position[0], this.position[1], this.radius, 0, RAD_360);
+    const normalizedForce = normalize(this.force[0], this.force[1]);
+    context.arc(
+      this.position[0] + normalizedForce[0] * 10,
+      this.position[1] + normalizedForce[1] * 10,
+      4, 0, RAD_360);
     context.fill();
   }
 }
@@ -249,9 +256,18 @@ IS.create({
     }
     mouse.applyForce(mouseForce);
     mouse.applyDamping(PROPS.friction);
+
     context.beginPath();
+    context.fillStyle = PROPS.mainColor;
     context.arc(mouse.position[0], mouse.position[1], PROPS.radius, 0, RAD_360);
-    context.stroke();
+    context.fill();
+
+    const normalizedMouse = normalize(mouse.force[0], mouse.force[1]);
+    context.beginPath();
+    context.fillStyle = PROPS.bgColor;
+    context.arc(mouse.position[0] + normalizedMouse[0] * 10, mouse.position[1] + normalizedMouse[1] * 10, 4, 0, RAD_360);
+    // context.arc(mouse.position[0], mouse.position[1], 4, 0, RAD_360);
+    context.fill();
 
     // * UPDATE PHYSIC **
     const deltaTime = lastTime ? (timestamp - lastTime) / 1000 : 0;
