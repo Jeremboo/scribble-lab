@@ -6,8 +6,8 @@ const FIXED_TIME_STEP = 1 / 60;
 const MAX_SUB_STEPS = 10;
 const PROPS = {
   nbrOfCircle: 30,
-  mainColor: '#000000',
-  bgColor: '#ffffff',
+  mainColor: '#ffffff',
+  bgColor: '#000000',
   radius: 20,
   entranceSize: 90,
   entranceWidth: -8,
@@ -159,17 +159,19 @@ class Circle {
 
   render() {
     context.beginPath();
+    context.strokeStyle = PROPS.mainColor;
+    context.lineWidth = 8;
     context.arc(this.position[0], this.position[1], this.radius - 1, 0, RAD_360);
     context.stroke();
 
-    context.beginPath();
-    context.fillStyle = PROPS.mainColor;
-    const normalizedForce = normalize(this.force[0], this.force[1]);
-    context.arc(
-      this.position[0] + normalizedForce[0] * 10,
-      this.position[1] + normalizedForce[1] * 10,
-      4, 0, RAD_360);
-    context.fill();
+    // context.beginPath();
+    // context.fillStyle = PROPS.mainColor;
+    // const normalizedForce = normalize(this.force[0], this.force[1]);
+    // context.arc(
+    //   this.position[0] + normalizedForce[0] * 10,
+    //   this.position[1] + normalizedForce[1] * 10,
+    //   4, 0, RAD_360);
+    // context.fill();
   }
 }
 
@@ -234,7 +236,7 @@ IS.create({
       1,
       wall2.shapes[0].height
     );
-    context.lineWidth = 3;
+    context.lineWidth = 8;
     context.stroke();
 
     // Mouse
@@ -262,12 +264,11 @@ IS.create({
     context.arc(mouse.position[0], mouse.position[1], PROPS.radius, 0, RAD_360);
     context.fill();
 
-    const normalizedMouse = normalize(mouse.force[0], mouse.force[1]);
-    context.beginPath();
-    context.fillStyle = PROPS.bgColor;
-    context.arc(mouse.position[0] + normalizedMouse[0] * 10, mouse.position[1] + normalizedMouse[1] * 10, 4, 0, RAD_360);
-    // context.arc(mouse.position[0], mouse.position[1], 4, 0, RAD_360);
-    context.fill();
+    // const normalizedMouse = normalize(mouse.force[0], mouse.force[1]);
+    // context.beginPath();
+    // context.fillStyle = PROPS.bgColor;
+    // context.arc(mouse.position[0] + normalizedMouse[0] * 10, mouse.position[1] + normalizedMouse[1] * 10, 4, 0, RAD_360);
+    // context.fill();
 
     // * UPDATE PHYSIC **
     const deltaTime = lastTime ? (timestamp - lastTime) / 1000 : 0;
