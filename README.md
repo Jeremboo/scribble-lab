@@ -266,8 +266,8 @@ Generate particles with different techniques. Other projects here: [Northern Bor
 Experimentations around interactive shapes in 2d with the native canvas API
 
 <p align="center">
-  <a href="https://isolation.is/">
-    <img alt="Postcards from isolation.is" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/isolation/preview.gif?raw=true" width="200">
+  <a href="https://isolation.is/postcards/consumption">
+    <img alt="Consumption Postcards - isolation.is" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/isolation/preview.gif?raw=true" width="200">
   </a>
   <a href="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/canvasGrid/preview2.gif">
     <img alt="canvasGrid" src="https://github.com/Jeremboo/codevember/blob/master/scribbles/2D/canvasGrid/preview2.gif?raw=true" width="200">
