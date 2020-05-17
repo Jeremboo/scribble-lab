@@ -1,5 +1,5 @@
-import { createProgramFromScript, createTexture, createTextureFromUrl } from './utils.webgl';
-import { hexToRgb } from './utils';
+import Program from './Program';
+import { createTexture, createTextureFromUrl } from './utils.webgl';
 
 /**
  * FULL SCREEN SHADER:
@@ -10,23 +10,16 @@ import { hexToRgb } from './utils';
  * https://stackoverflow.com/questions/55197347/webgl-full-screen-quad-or-triangle-for-invoking-fragment-shader-for-every-pixel
  *
  */
-export default class FullScreenShader {
-  constructor(canvas, vert, frag, { responsive = true, preserveDrawingBuffer = false } = {}) {
-    this.canvas = canvas;
-    this.gl = this.canvas.getContext('webgl', { preserveDrawingBuffer });
+export default class FullScreenShader extends Program {
+  constructor(context, vert, frag) {
+    super(context, vert, frag);
 
-    if (!this.gl) {
-      console.error('ERROR: Webgl not supported !');
+    if (!(this.gl instanceof WebGLRenderingContext)) {
+      console.error('ERROR: The context is not a webgl context !');
       return;
     }
 
-    this.resize();
-
-    // INIT PROGRAM
-    // Create the shaders and link them into a program
-    this.program = createProgramFromScript(this.gl, vert, frag);
-    // Tell to gl we want to use this program
-    this.gl.useProgram(this.program);
+    this.resize(this.canvas.width, this.canvas.height);
 
     // Rendering
     // Turn the attribute on
@@ -47,24 +40,24 @@ export default class FullScreenShader {
     // ..., size, type, normalize, stride, offset
     this.gl.vertexAttribPointer(positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
 
-    this.update = this.update.bind(this);
     this.resize = this.resize.bind(this);
+    this.render = this.render.bind(this);
 
-    // Init the canvas size to fullscreen
-    if (responsive) window.addEventListener('resize', this.resize);
+    this.resize(this.canvas.width, this.canvas.height);
+
+     // Tell to gl we want to use this program
+     this.gl.useProgram(this.program);
   }
 
   // Resize the canvas to match in fullscreen
-  resize() {
+  resize(width, height) {
     const realToCSSPixels = window.devicePixelRatio;
-
-    console.log('realToCSSPixels', realToCSSPixels);
 
     // Lookup the size the browser is displaying the canvas in CSS pixels
     // and compute a size needed to make our drawingbuffer match it in
     // device pixels.
-    const displayWidth  = Math.floor(window.innerWidth * realToCSSPixels);
-    const displayHeight = Math.floor(window.innerHeight * realToCSSPixels);
+    const displayWidth  = Math.floor(width * realToCSSPixels);
+    const displayHeight = Math.floor(height * realToCSSPixels);
 
     // Check if the canvas is not the same size.
     if (this.canvas.width  !== displayWidth ||
@@ -78,65 +71,6 @@ export default class FullScreenShader {
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     this.gl.clearColor(0, 0, 0, 0);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-  }
-
-  /**
-   * * *******************
-   * * UNIFORMS
-   * * *******************
-   */
-  getUniformLocation(name) {
-    return this.gl.getUniformLocation(this.program, name);
-  }
-
-  // float
-  uniformFloat(name, f) {
-    return this.setUniformFloat(this.getUniformLocation(name), f);
-  }
-  setUniformFloat(uniformLoc, f) {
-    this.gl.uniform1f(uniformLoc, f);
-    return uniformLoc;
-  }
-  // vec2
-  uniform2f(name, x, y) {
-    return this.setUniform2f(this.getUniformLocation(name), x, y);
-  }
-  setUniform2f(uniformLoc, x, y) {
-    this.gl.uniform2f(uniformLoc, x, y);
-    return uniformLoc;
-  }
-  // vec3
-  uniform3f(name, x, y, z) {
-    return this.setUniform3f(this.getUniformLocation(name), x, y, z);
-  }
-  setUniform3f(uniformLoc, x, y, z) {
-    this.gl.uniform3f(uniformLoc, x, y, z);
-    return uniformLoc;
-  }
-  // vec4
-  uniform4f(name, x, y, z, w) {
-    return this.setUniform4f(this.getUniformLocation(name), x, y, z, w);
-  }
-  setUniform3f(uniformLoc, x, y, z, w) {
-    this.gl.uniform3f(uniformLoc, x, y, z, w);
-    return uniformLoc;
-  }
-  // sampler2D
-  uniformTexture(name, textureId) {
-    return this.setUniformTexture(this.getUniformLocation(name), textureId);
-  }
-  setUniformTexture(uniformLoc, textureId) {
-    this.gl.uniform1i(uniformLoc, textureId);
-    return uniformLoc;
-  }
-  // Color
-  uniformColor(name, hex) {
-    const { r, g, b } = hexToRgb(hex);
-    return this.uniform3f(name, r / 255, g / 255, b / 255);
-  }
-  setUniformColor(uniformLoc, hex) {
-    const { r, g, b } = hexToRgb(hex);
-    return this.gl.uniform3f(uniformLoc, r / 255, g / 255, b / 255);
   }
 
   /**
@@ -190,30 +124,6 @@ export default class FullScreenShader {
     // Clear the attachment(s).
     this.gl.clearColor(0, 0, 1, 1);   // clear to blue
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-  }
-
-  /**
-   * * *******************
-   * * LOOP
-   * * *******************
-   */
-
-  start(callback) {
-    if (!this.isUpdated) {
-      this.isUpdated = true;
-      this.updateCallback = callback;
-      this.update();
-    }
-  }
-
-  stop() {
-    this.isUpdated = false;
-  }
-
-  update() {
-    if (this.updateCallback) this.updateCallback();
-    this.render();
-    if (this.isUpdated) requestAnimationFrame(this.update);
   }
 }
 

@@ -1,9 +1,10 @@
 import canvasSketch from 'canvas-sketch';
 import { GUI } from 'dat.gui';
 
-import { createProgramFromScript, createAttribute } from '../../../modules/utils.webgl';
-
 import { classicNoise2D } from '../../../modules/utils.glsl';
+
+// import { createProgramFromScript, createAttribute } from '../../../modules/utils.webgl';
+import Program from '../../../modules/Program';
 
 // https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
 
@@ -45,8 +46,9 @@ const FRAGMENT = `
 canvasSketch(({ width, height, context, canvas }) => {
 
   // * Program
-  const program = createProgramFromScript(context, VERTEX, FRAGMENT);
-  context.useProgram(program);
+  // const program = createProgramFromScript(context, VERTEX, FRAGMENT);
+  // context.useProgram(program);
+  const program = new Program(context, VERTEX, FRAGMENT);
 
   // * Attributes
   const vertices = [
@@ -57,23 +59,28 @@ canvasSketch(({ width, height, context, canvas }) => {
     0.5, 0.5,
     0.5, -0.5,
   ];
-  createAttribute(context, program, 'position', vertices, 2);
+  // createAttribute(context, program, 'position', vertices, 2);
+  program.createAttribute('position', vertices, 2);
 
   // * Uniforms
-  const screenSizeUniformLoc = context.getUniformLocation(program, 'screenSize');
-  context.uniform2f(screenSizeUniformLoc, width, height);
+  // const screenSizeUniformLoc = context.getUniformLocation(program, 'screenSize');
+  // context.uniform2f(screenSizeUniformLoc, width, height);
+  const screenSizeUniformLoc = program.uniform2f('screenSize', width, height);
 
-  const timeUniformLoc = context.getUniformLocation(program, 'time');
-  context.uniform1f(timeUniformLoc, Math.random() * 10);
+  // const timeUniformLoc = context.getUniformLocation(program, 'time');
+  // context.uniform1f(timeUniformLoc, Math.random() * 10);
+  const timeUniformLoc = program.uniformFloat('time', Math.random() * 10);
 
-  const strengthUniformLoc = context.getUniformLocation(program, 'strength');
-  context.uniform1f(strengthUniformLoc, PROPS.strength);
+  // const strengthUniformLoc = context.getUniformLocation(program, 'strength');
+  // context.uniform1f(strengthUniformLoc, PROPS.strength);
+  const strengthUniformLoc = program.uniformFloat('strength', PROPS.strength);
 
   // * GUI *******
   const gui = new GUI();
   gui.add(PROPS, 'speed', -0.1, 0.1);
   gui.add(PROPS, 'strength', 0.1, 1).onChange((value) => {
-    context.uniform1f(strengthUniformLoc, value);
+    // context.uniform1f(strengthUniformLoc, value);
+    program.setUniformFloat(strengthUniformLoc, value);
   });
 
   return ({
@@ -84,9 +91,10 @@ canvasSketch(({ width, height, context, canvas }) => {
     },
     render({ context, playhead }) {
       // Update uniform
-      const time = context.getUniform(program, timeUniformLoc);
-      context.uniform1f(timeUniformLoc, time + PROPS.speed);
-      // context.uniform1f(timeUniformLoc, Math.cos(playhead * Math.PI * 2));
+      // const time = context.getUniform(program, timeUniformLoc);
+      // context.uniform1f(timeUniformLoc, time + PROPS.speed);
+      const time = program.getUniform(timeUniformLoc);
+      program.setUniformFloat(timeUniformLoc, time + PROPS.speed);
 
       const count = 6; // Nbr of points to draw
       context.drawArrays(context.TRIANGLES, 0, count);
