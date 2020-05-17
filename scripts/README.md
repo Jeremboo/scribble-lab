@@ -28,6 +28,8 @@ Based on canvas-sketch tool
 
 ## Core
 
+- On save GIF, show a popup
+- On save GIF, optimize it directly and add it into data.json
 - Make a script to export a gif to mp4 (based on canvas-sketch-mp4)
 - Create unit tests to easily debug the scripts.
 - Avoid asset duplication per project (external URL from the github repo?)
