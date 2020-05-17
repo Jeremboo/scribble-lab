@@ -1,3 +1,5 @@
+import { drawRadialGradient } from '../../../modules/utils.glsl';
+
 export const bubbleVert = `
   uniform sampler2D canvasTexture;
 
@@ -17,10 +19,7 @@ export const bubbleFrag = `
 
   varying vec2 vUv;
 
-  float drawRadialGradient(vec2 center, vec2 currentPosition, float scale) {
-    float dist = distance(center, currentPosition) * (2.0 / scale);
-    return 1.0 - dist;
-  }
+  ${drawRadialGradient}
 
   void main() {
     vec2 center = vec2(0.5, 0.5);

@@ -7,7 +7,7 @@ import {
 
 import CameraMouseControl from '../../../modules/CameraMouseControl';
 
-import { vert, frag } from './shader';
+import { vert, frag } from './shader.glsl';
 
 const nineTexture = './assets/nine-texture.jpg';
 const gradientTexture = './assets/gradient.jpg';

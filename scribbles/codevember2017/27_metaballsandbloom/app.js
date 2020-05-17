@@ -10,6 +10,7 @@ import {
 import MetaballPass from '../../../modules/MetaballPass';
 
 import { getRandomFloat } from '../../../modules/utils';
+import { drawRadialGradient } from '../../../modules/utils.glsl';
 
 const clock = new Clock();
 
@@ -115,10 +116,7 @@ class Bubble extends Mesh {
 
         varying vec2 vUv;
 
-        float drawRadialGradient(vec2 center, vec2 currentPosition, float scale) {
-          float dist = distance(center, currentPosition) * (2.0 / scale);
-          return 1.0 - dist;
-        }
+        ${drawRadialGradient}
 
         void main() {
           vec2 center = vec2(0.5, 0.5);

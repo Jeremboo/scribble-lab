@@ -10,7 +10,7 @@ import {
   BlendFunction, SMAAEffect
 } from 'postprocessing';
 
-import { vert, frag } from './shader.js'
+import { vert, frag } from './shader.glsl.js'
 
 const MAIN_COLOR = '#F64062';
 const SECOND_COLOR = '#5127AB'; // '#7136ED';
