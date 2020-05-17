@@ -1,5 +1,10 @@
 import { loadImage } from './utils';
 
+/**
+ * * *******************
+ * * PROGRAM
+ * * *******************
+ */
 
 export const createShader = (gl, type, source) => {
   const shader = gl.createShader(type);
@@ -9,7 +14,13 @@ export const createShader = (gl, type, source) => {
   if (success) {
     return shader;
   }
-  console.log('ERROR: ', gl.getShaderInfoLog(shader));
+  console.error('ERROR: ', gl.getShaderInfoLog(shader));
+  let shaderRelated = ``;
+  source.split('\n').forEach((line, idx) => {
+    shaderRelated += `
+${idx + 1}: ${line}`
+  })
+  console.warn('shaderRelated', shaderRelated);
   gl.deleteShader(shader);
 }
 
@@ -22,7 +33,7 @@ export const createProgram =  (gl, vertexShader, fragmentShader) => {
   if (success) {
     return program;
   }
-  console.log('ERROR : ', gl.getProgramInfoLog(program));
+  console.error('ERROR : ', gl.getProgramInfoLog(program));
   gl.deleteProgram(program);
 }
 
@@ -34,11 +45,25 @@ export const createProgramFromScript = (gl, vert, frag) => {
 
 /**
  * * *******************
- * * TEXTURE
+ * * ATTRIBUTE
  * * *******************
  */
 
+export const createAttribute = (gl, program, name, data, size, { draw = gl.STATIC_DRAW, type = gl.FLOAT, normalize = false, stride = 0, offset = 0 } = {}) => {
+  const positionBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), draw);
+  const positionAttributeLocation = gl.getAttribLocation(program, name);
+  gl.enableVertexAttribArray(positionAttributeLocation);
+  gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+  return positionAttributeLocation;
+}
 
+/**
+ * * *******************
+ * * TEXTURE
+ * * *******************
+ */
 
  // TODO 2020-01-13 jeremboo: create a structure like in typeScript for the default props
  export const createTexture = (gl, data, {
