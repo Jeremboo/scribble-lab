@@ -43,7 +43,7 @@ canvasSketch(({ width, height }) => {
 
   return ({
     resize({ width, height }) {},
-    update({ context, width, height, playhead }) {
+    render({ context, width, height, playhead }) {
       context.fillStyle = PROPS.bgColor;
       context.fillRect(0, 0, width, height);
 
@@ -53,7 +53,7 @@ canvasSketch(({ width, height }) => {
     }
   });
 }, {
-  fps: 24,
+  fps: 15, // 24
   duration: 4,
   dimensions: [1024, 1024],
   scaleToView: true,
