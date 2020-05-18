@@ -69,18 +69,18 @@ canvasSketch(({ width, height, context, canvas }) => {
 
   // const timeUniformLoc = context.getUniformLocation(program, 'time');
   // context.uniform1f(timeUniformLoc, Math.random() * 10);
-  const timeUniformLoc = program.uniformFloat('time', Math.random() * 10);
+  const timeUniformLoc = program.uniform1f('time', Math.random() * 10);
 
   // const strengthUniformLoc = context.getUniformLocation(program, 'strength');
   // context.uniform1f(strengthUniformLoc, PROPS.strength);
-  const strengthUniformLoc = program.uniformFloat('strength', PROPS.strength);
+  const strengthUniformLoc = program.uniform1f('strength', PROPS.strength);
 
   // * GUI *******
   const gui = new GUI();
   gui.add(PROPS, 'speed', -0.1, 0.1);
   gui.add(PROPS, 'strength', 0.1, 1).onChange((value) => {
     // context.uniform1f(strengthUniformLoc, value);
-    program.setUniformFloat(strengthUniformLoc, value);
+    program.setUniform1f(strengthUniformLoc, value);
   });
 
   return ({
@@ -94,7 +94,7 @@ canvasSketch(({ width, height, context, canvas }) => {
       // const time = context.getUniform(program, timeUniformLoc);
       // context.uniform1f(timeUniformLoc, time + PROPS.speed);
       const time = program.getUniform(timeUniformLoc);
-      program.setUniformFloat(timeUniformLoc, time + PROPS.speed);
+      program.setUniform1f(timeUniformLoc, time + PROPS.speed);
 
       const count = 6; // Nbr of points to draw
       context.drawArrays(context.TRIANGLES, 0, count);

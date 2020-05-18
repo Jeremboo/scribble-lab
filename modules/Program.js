@@ -52,10 +52,10 @@ export default class Program {
     return this.gl.getUniformLocation(this.program, name);
   }
   // float
-  uniformFloat(name, f) {
-    return this.setUniformFloat(this._getUniformLocation(name), f);
+  uniform1f(name, f) {
+    return this.setUniform1f(this._getUniformLocation(name), f);
   }
-  setUniformFloat(uniformLoc, f) {
+  setUniform1f(uniformLoc, f) {
     this.gl.uniform1f(uniformLoc, f);
     return uniformLoc;
   }
