@@ -45,7 +45,7 @@ export default class Program {
    * * *******************
    */
   getUniform(uniformLocation) {
-    return this.gl.getUniform(this.program, uniformLocation);
+    return uniformLocation ? this.gl.getUniform(this.program, uniformLocation) : undefined;
   }
 
   _getUniformLocation(name) {

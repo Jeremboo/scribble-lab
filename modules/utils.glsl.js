@@ -20,6 +20,16 @@ export const rand = `
   }
 `;
 
+// https://thebookofshaders.com/09/
+export const rotate2D = `
+  vec2 rotate2D(vec2 _st, float _angle){
+    _st -= 0.5;
+    _st =  mat2(cos(_angle),-sin(_angle),
+                sin(_angle),cos(_angle)) * _st;
+    _st += 0.5;
+    return _st;
+}`
+
 // https://github.com/glslify/glsl-look-at/blob/gh-pages/index.glsl
 // https://github.com/mrdoob/three.js/blob/21ab863e90cc31b5d08e0cc0fa07e2a0551460ec/src/math/Matrix4.js#L299
 export const lookAt = `

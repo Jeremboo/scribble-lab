@@ -1,13 +1,10 @@
-import { drawRadialGradient } from '../../../modules/utils.glsl';
+import { drawRadialGradient, rotate2D } from '../../../modules/utils.glsl';
 
 export const surfaceVertSource = `
   attribute vec2 position;
-
   varying vec2 vUv;
 
   void main() {
-    // Place the triangle (in 2D)
-
     gl_Position = vec4(position, 0.0, 1.0);
     vUv = (position + 1.) * 0.5;
   }
@@ -15,18 +12,33 @@ export const surfaceVertSource = `
 export const surfaceFragSource = `
   precision mediump float;
 
-  uniform vec3 color;
   uniform float scale;
   uniform float strength;
+  uniform float brightness;
+  uniform float shift;
+  uniform float divider;
+  uniform float time;
+  uniform float rotation;
   uniform vec2 mousePosition;
+  uniform sampler2D texture;
 
   varying vec2 vUv;
 
   ${drawRadialGradient}
+  ${rotate2D}
 
   void main() {
     float circle = max(0.0, drawRadialGradient(mousePosition, vUv, scale)) * strength;
-    vec3 color = vec3(vUv, 1.0) + circle;
-    gl_FragColor = vec4(color, 1.);
+
+    vec2 st = (vUv - mousePosition * shift) * divider;
+    st = rotate2D(st, rotation);
+    st.y *= 2.0;
+    st += circle;
+    float isPair = step(1.0, mod(st.y, 2.0));
+    st.x += time * ((isPair * 2.0) - 1.0);
+
+    vec2 transformedUv = fract(st);
+    vec3 image = texture2D(texture, transformedUv).xyz + (circle * brightness);
+    gl_FragColor = vec4(image, 1.0);
   }
 `;

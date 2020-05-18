@@ -1,13 +1,26 @@
 import canvasSketch from 'canvas-sketch';
-import { GUI } from 'dat.gui';
+import dat from 'dat.gui';
+import imageController from 'dat.gui.image';
+imageController(dat);
 
 import Program from '../../../modules/Program';
+import { radians } from '../../../modules/utils';
+import { createTextureFromUrl } from '../../../modules/utils.webgl';
 
 import { surfaceVertSource, surfaceFragSource } from './shader.glsl';
 
+
 const PROPS = {
-  scale: 0.2,
-  strength: 0.2,
+  texture: './_assets/arkestar.jpg',
+  // Distortion
+  scale: 2,
+  strength: 0.1,
+  brightness: 1.4,
+  shift: 0.1,
+  // Grid
+  divider: 4.5,
+  rotation: -35,
+  speed: 0.006,
 };
 
 canvasSketch((props) => {
@@ -27,17 +40,47 @@ canvasSketch((props) => {
     const y = 1 - e.offsetY / styleHeight;
     program.setUniform2f(mousePositionLoc, x, y);
   });
+  canvas.addEventListener('mouseleave', () => {
+    program.setUniform2f(mousePositionLoc, 0.5, 0.5);
+  })
 
   const scaleLoc = program.uniform1f('scale', PROPS.scale);
   const strengthLoc = program.uniform1f('strength', PROPS.strength);
+  const brightnessLoc = program.uniform1f('brightness', PROPS.brightness);
+  const shiftLoc = program.uniform1f('shift', PROPS.shift);
+  const dividerLoc = program.uniform1f('divider', PROPS.divider);
+  const rotationLoc = program.uniform1f('rotation', PROPS.rotation);
+  const timeLoc = program.uniform1f('time', radians(PROPS.rotation));
+
+  createTextureFromUrl(context, PROPS.texture).then((texture) => {
+    program.uniformTexture('texture', texture);
+  });
 
   // * GUI
-  const gui = new GUI();
-  gui.add(PROPS, 'scale', 0, 1).onChange((value) => {
+  const gui = new dat.GUI();
+  const grid = gui.addFolder('Grid')
+  grid.open();
+  grid.add(PROPS, 'divider', 0.2, 10).onChange((value) => {
+    program.setUniform1f(dividerLoc, value);
+  }).step(0.01);
+  grid.add(PROPS, 'rotation', -45, 45).onChange((value) => {
+    program.setUniform1f(rotationLoc, radians(value));
+  }).step(0.01);
+  grid.add(PROPS, 'speed', -0.03, 0.03);
+  grid.addImage(PROPS, 'texture')
+  const distortion = gui.addFolder('Distortion')
+  distortion.open();
+  distortion.add(PROPS, 'shift', 0, 0.5).onChange((value) => {
+    program.setUniform1f(shiftLoc, value);
+  });
+  distortion.add(PROPS, 'scale', 0, 3).onChange((value) => {
     program.setUniform1f(scaleLoc, value);
   });
-  gui.add(PROPS, 'strength', 0, 1).onChange((value) => {
+  distortion.add(PROPS, 'strength', -1, 1).onChange((value) => {
     program.setUniform1f(strengthLoc, value);
+  });
+  distortion.add(PROPS, 'brightness', -2, 2).onChange((value) => {
+    program.setUniform1f(brightnessLoc, value);
   });
 
   return ({
@@ -47,6 +90,9 @@ canvasSketch((props) => {
       context.clear(context.COLOR_BUFFER_BIT);
     },
     render({ context }) {
+      const time = program.getUniform(timeLoc);
+      program.setUniform1f(timeLoc, time + PROPS.speed);
+
       const count = 3; // Nbr of points to draw
       context.drawArrays(context.TRIANGLES, 0, count);
     }

@@ -102,12 +102,9 @@ export const createAttribute = (gl, program, name, data, size, { draw = gl.STATI
   return texture;
  }
 
-// TODO 2020-01-13 jeremboo: use create texture
-export const createTextureFromUrl =  async (gl, url) => {
+export const createTextureFromUrl = async (gl, url, options) => {
   const image = await loadImage(url);
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+  const texture = createTexture(gl, image, options);
   gl.generateMipmap(gl.TEXTURE_2D);
   return texture;
 }
