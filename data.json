@@ -1,5 +1,54 @@
 [
   {
+    "name": "Native WebGL",
+    "path": "scribbles/webglnative/",
+    "link": "",
+    "visible": true,
+    "preview": "preview.gif",
+    "description": "My exps with native WebGL and shaders! (no threejs 💪)",
+    "date": "2020-04-13T19:43:00.274Z",
+    "tags": [],
+    "scribbles": [
+      {
+        "name": "Full Screen Shader",
+        "path": "scribbles/webglnative/fullScreenShader/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "2020.05.17-21.10.05.gif",
+          "2020.05.19-22.48.28.gif",
+          "2020.05.19-22.38.01.gif",
+          "2020.05.19-22.56.49.gif"
+        ],
+        "description": "",
+        "date": "2020-05-17T15:38:56.697Z",
+        "tags": []
+      },
+      {
+        "name": "Plane in native WebGL",
+        "path": "scribbles/webglnative/plane/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "2020.05.16-22.06.52.gif"
+        ],
+        "description": "",
+        "date": "2020-05-13T15:49:46.173Z",
+        "tags": []
+      },
+      {
+        "name": "regl",
+        "path": "scribbles/surfaceShader/regl/",
+        "link": "",
+        "visible": false,
+        "preview": [],
+        "description": "",
+        "date": "2019-02-08T23:04:48.814Z",
+        "tags": []
+      }
+    ]
+  },
+  {
     "name": "36DaysOfType 2019",
     "path": "scribbles/36daysoftype2019/",
     "link": "https://36days.reflektor.digital/",

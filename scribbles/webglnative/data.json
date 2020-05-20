@@ -1,10 +1,10 @@
 {
-  "name": "webglnative",
+  "name": "Native WebGL",
   "path": "scribbles/webglnative/",
   "link": "",
   "visible": true,
   "preview": "preview.gif",
-  "description": "",
+  "description": "My exps with native WebGL and shaders! (no threejs 💪)",
   "date": "2020-04-13T19:43:00.274Z",
   "tags": []
 }

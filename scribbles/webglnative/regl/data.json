@@ -2,8 +2,8 @@
   "name": "regl",
   "path": "scribbles/surfaceShader/regl/",
   "link": "",
-  "visible": true,
-  "preview": "preview.gif",
+  "visible": false,
+  "preview": [],
   "description": "",
   "date": "2019-02-08T23:04:48.814Z",
   "tags": []
