@@ -5,7 +5,7 @@ imageController(dat);
 
 import Program from '../../../modules/Program';
 import { radians } from '../../../modules/utils';
-import { createTextureFromUrl } from '../../../modules/utils.webgl';
+import { createTextureFromUrl, createTexture } from '../../../modules/utils.webgl';
 
 import { surfaceVertSource, surfaceFragSource } from './shader.glsl';
 
@@ -14,13 +14,14 @@ const PROPS = {
   texture: './_assets/arkestar.jpg',
   // Distortion
   scale: 2,
-  strength: 0.1,
-  brightness: 1.4,
-  shift: 0.1,
+  strength: 1.37,
+  brightness: 0.12,
+  shift: 0.02,
   // Grid
   divider: 4.5,
-  rotation: -35,
-  speed: 0.006,
+  rotation: 35,
+  speed: 1,
+  duration: 2,
 };
 
 canvasSketch((props) => {
@@ -66,8 +67,10 @@ canvasSketch((props) => {
   grid.add(PROPS, 'rotation', -45, 45).onChange((value) => {
     program.setUniform1f(rotationLoc, radians(value));
   }).step(0.01);
-  grid.add(PROPS, 'speed', -0.03, 0.03);
-  grid.addImage(PROPS, 'texture')
+  grid.add(PROPS, 'speed', 1, 2).step(1);
+  grid.addImage(PROPS, 'texture').onChange((image) => {
+    createTexture(context, image);
+  });
   const distortion = gui.addFolder('Distortion')
   distortion.open();
   distortion.add(PROPS, 'shift', 0, 0.5).onChange((value) => {
@@ -76,7 +79,7 @@ canvasSketch((props) => {
   distortion.add(PROPS, 'scale', 0, 3).onChange((value) => {
     program.setUniform1f(scaleLoc, value);
   });
-  distortion.add(PROPS, 'strength', -1, 1).onChange((value) => {
+  distortion.add(PROPS, 'strength', -2, 2).onChange((value) => {
     program.setUniform1f(strengthLoc, value);
   });
   distortion.add(PROPS, 'brightness', -2, 2).onChange((value) => {
@@ -89,9 +92,8 @@ canvasSketch((props) => {
       context.clearColor(1, 1, 1, 1);
       context.clear(context.COLOR_BUFFER_BIT);
     },
-    render({ context }) {
-      const time = program.getUniform(timeLoc);
-      program.setUniform1f(timeLoc, time + PROPS.speed);
+    render({ context, playhead }) {
+      program.setUniform1f(timeLoc, playhead * PROPS.speed);
 
       const count = 3; // Nbr of points to draw
       context.drawArrays(context.TRIANGLES, 0, count);
@@ -99,8 +101,8 @@ canvasSketch((props) => {
   });
 }, {
   fps: 15 ,
-  duration: 4,
-  dimensions: [1024, 1024],
+  duration: PROPS.duration,
+  dimensions: [680, 680],
   scaleToView: true,
   animate: true,
   context: 'webgl',

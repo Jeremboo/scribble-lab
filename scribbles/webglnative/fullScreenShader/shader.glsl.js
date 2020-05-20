@@ -31,9 +31,13 @@ export const surfaceFragSource = `
     float circle = max(0.0, drawRadialGradient(mousePosition, vUv, scale)) * strength;
 
     vec2 st = (vUv - mousePosition * shift) * divider;
+
+    // Distortion
+    st += (mousePosition - vUv) * circle;
+
+    st.x = 1.0 - st.x;
     st = rotate2D(st, rotation);
     st.y *= 2.0;
-    st += circle;
     float isPair = step(1.0, mod(st.y, 2.0));
     st.x += time * ((isPair * 2.0) - 1.0);
 
