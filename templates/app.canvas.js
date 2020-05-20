@@ -55,7 +55,7 @@ canvasSketch(({ width, height }) => {
 }, {
   fps: 15, // 24
   duration: 4,
-  dimensions: [1024, 1024],
+  dimensions: [480, 480],
   scaleToView: true,
   animate: true,
 });

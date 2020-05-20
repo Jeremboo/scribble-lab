@@ -77,8 +77,8 @@ canvasSketch(({ context }) => {
 }, {
   fps: 15, // 24
   duration: 4,
-  dimensions: [1024, 1024],
-  // scaleToView: true,
+  dimensions: [480, 480],
+  scaleToView: true,
   animate: true,
   context: 'webgl',
 });
