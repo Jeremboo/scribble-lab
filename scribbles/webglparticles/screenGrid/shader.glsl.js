@@ -1,4 +1,4 @@
-import { classicNoise2D } from '../../../modules/utils.glsl';
+import { classicNoise2D } from '../../../utils/glsl';
 
 export const fragInstanced = `
 uniform vec3 diffuse;

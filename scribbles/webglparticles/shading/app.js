@@ -8,7 +8,7 @@ import {
   DirectionalLight, DirectionalLightHelper, CameraHelper
 } from 'three';
 
-import { getRandomAttribute, getRandomFloat, radians } from '../../../modules/utils';
+import { getRandomAttribute, getRandomFloat, radians } from '../../../utils';
 import OrbitControls from '../../../modules/OrbitControls';
 
 import { fragInstanced,

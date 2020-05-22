@@ -6,7 +6,8 @@ import {
 
 import CameraMouseControl from '../../../modules/CameraMouseControl';
 
-import { getNormalizedPosFromScreen, getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
+import { getNormalizedPosFromScreen } from '../../../utils/three';
 
 import { bubbleVert, bubbleFrag } from '../_modules/shaders.glsl';
 

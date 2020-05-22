@@ -151,7 +151,7 @@ void main() {
   gl_FragColor = vec4(newPosition, data.w);
 }`;
 
-import { getRandomAttribute } from '../../../modules/utils';
+import { getRandomAttribute } from '../../../utils';
 
 
 /**
@@ -215,7 +215,7 @@ document.body.appendChild(webgl.dom);
  */
 
 import fontFile from '../_assets/Glence Black_Regular';
-import { getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
 
 const fontLoader = new FontLoader();
 const font = fontLoader.parse(fontFile);

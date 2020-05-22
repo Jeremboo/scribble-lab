@@ -1,5 +1,6 @@
 import { Container, Point, Graphics, mesh } from 'pixi.js';
-import { existingValueBy, getDistBetweenTwoVec2 } from '../../../../modules/utils';
+import { existingValueBy } from '../../../../utils';
+import { distance } from '../../../../utils/vec2';
 import props from '../props';
 
 import Marker from '../Marker';
@@ -25,7 +26,7 @@ export default class Rope extends Container {
 
     // Normalize and place point to the line
     // http://math.stackexchange.com/questions/175896/finding-a-point-along-a-line-a-certain-distance-away-from-another-point
-    const { dist } = getDistBetweenTwoVec2(p1.x, p1.y, p2.x, p2.y);
+    const { dist } = distance(p1.x, p1.y, p2.x, p2.y);
     const u = {
       x: (p1.x - p2.x) / dist,
       y: (p1.y - p2.y) / dist,
@@ -140,7 +141,7 @@ export default class Rope extends Container {
     let positioned = false;
 
     while (!positioned && i >= 0) {
-      const { dist } = getDistBetweenTwoVec2(
+      const { dist } = distance(
         e.data.global.x,
         e.data.global.y,
         this.points[i].x,

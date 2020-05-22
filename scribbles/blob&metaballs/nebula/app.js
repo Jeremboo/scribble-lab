@@ -18,7 +18,7 @@ import Stars from '../../../modules/Stars';
 
 import { fragGlow, vertGlow } from './shaders.glsl';
 
-import { getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
 
 const textureUrl = './assets/glow-texture.png';
 

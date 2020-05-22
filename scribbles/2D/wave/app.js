@@ -12,7 +12,8 @@
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
-import { getDistBetweenTwoVec2, getPosXBetweenTwoNumbers } from '../../../modules/utils';
+import { getPosXBetweenTwoNumbers } from '../../../utils';
+import { distance } from '../../../utils/vec2';
 
 const NBR_OF_POINTS = 50;
 const MOUSE_DIST = 8;
@@ -113,7 +114,7 @@ class Wave {
     const length = this.points.length - 1;
     for (i = 1; i < length; i++) {
       const p = this.points[i];
-      const dist = getDistBetweenTwoVec2(p.x, p.y, mouse.x, mouse.y);
+      const dist = distance(p.x, p.y, mouse.x, mouse.y);
 
       // Mouse influence for the wave
       const ratioOfInfluence = Math.max(

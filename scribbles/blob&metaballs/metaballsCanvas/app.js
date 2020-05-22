@@ -1,8 +1,5 @@
-import { drawRadialGradient, canvasBuilder, applyImageToCanvas } from '../../../modules/utils';
-
-Math.sqr = a => a * a;
-const getVec2Length = (x, y) => Math.sqrt(Math.sqr(y) + Math.sqr(x));
-const getDistBetweenTwoVec2 = (x1, y1, x2, y2) => getVec2Length(x2 - x1, y2 - y1);
+import { distance } from '../../../utils/vec2';
+import { drawRadialGradient, canvasBuilder, applyImageToCanvas } from '../../../utils/canvas';
 
 
 /* ---- CREATING ZONE ---- */
@@ -82,7 +79,7 @@ class BubbleCanvas {
     this.littleBubbleForce.y *= 0.8;
 
     // play with the scale
-    // const dist = getDistBetweenTwoVec2(this.littleBubble.x, this.littleBubble.y, this.center.x, this.center.y);
+    // const { dist } = distance(this.littleBubble.x, this.littleBubble.y, this.center.x, this.center.y);
     // const scale = Math.min(Math.max(0, (5 - ((dist / this.size) * 20))), 1)
     // this.littleBubbleSize = this.bubbleSize * scale;
   }

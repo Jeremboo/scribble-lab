@@ -1,4 +1,4 @@
-import { drawRadialGradient } from '../../../modules/utils.glsl';
+import { drawRadialGradient } from '../../../utils/glsl';
 
 export const bubbleVert = `
   uniform sampler2D canvasTexture;

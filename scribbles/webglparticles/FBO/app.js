@@ -6,7 +6,7 @@ import { GUI } from 'dat.gui';
 import GPUSimulation from '../../../modules/GPUSimulation';
 import Particles from '../_modules/Particles';
 
-import { getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
 
 import { particleVert, particleFrag, positionFrag } from './shaders.glsl';
 

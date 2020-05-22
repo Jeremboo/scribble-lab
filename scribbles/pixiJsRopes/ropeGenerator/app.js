@@ -1,5 +1,6 @@
 import { autoDetectRenderer, Graphics, Container, Texture } from 'pixi.js';
-import { getDistBetweenTwoVec2, canvasBuilder, applyImageToCanvas } from '../../../modules/utils';
+import { distance } from '../../../utils/vec2';
+import { canvasBuilder, applyImageToCanvas } from '../../../utils/canvas';
 import props, { NONE, DRAWING, MOVING } from '../_modules/props';
 import Rope from '../_modules/Rope';
 import Marker from '../_modules/Marker';
@@ -187,7 +188,7 @@ class RopeFabric {
 
   // GRAPHIC
   async createRope(p1, p2) {
-    const { dist } = getDistBetweenTwoVec2(p1.x, p1.y, p2.x, p2.y);
+    const { dist } = distance(p1.x, p1.y, p2.x, p2.y);
     if (dist > 30) {
       const rope = new Rope(p1, p2);
       const texture = await buildRopeTexture(rope.nbrOfNodes);

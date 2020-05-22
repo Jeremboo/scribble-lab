@@ -3,7 +3,7 @@ import {
   Color, PointLight, AmbientLight, Vector3,
 } from 'three';
 
-import { getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
 
 import MarchingCubes from '../../../modules/MarchingCubes';
 import OrbitControls from '../../../modules/OrbitControls';

@@ -1,7 +1,7 @@
 import { TetrahedronBufferGeometry, Mesh, ShaderMaterial, Color } from 'three';
 
 import InstancedGeom from './InstancedGeom';
-import { getRandomFloat } from './utils';
+import { getRandomFloat } from '../utils';
 
 /**
  * * *******************

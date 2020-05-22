@@ -4,8 +4,8 @@ import imageController from 'dat.gui.image';
 imageController(dat);
 
 import Program from '../../../modules/Program';
-import { radians } from '../../../modules/utils';
-import { createTextureFromUrl, createTexture } from '../../../modules/utils.webgl';
+import { radians } from '../../../utils';
+import { createTextureFromUrl, createTexture } from '../../../utils/webgl';
 
 import { surfaceVertSource, surfaceFragSource } from './shader.glsl';
 

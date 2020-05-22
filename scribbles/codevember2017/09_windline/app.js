@@ -5,7 +5,7 @@ import {
   ShaderMaterial,
 } from 'three';
 
-import { getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
 
 import OrbitControls from '../../../modules/OrbitControls';
 

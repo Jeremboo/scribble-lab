@@ -1,5 +1,5 @@
-import { hexToRgb } from './utils';
-import { createProgramFromScript, createAttribute } from "./utils.webgl";
+import { hexToRgb } from '../utils/color';
+import { createProgramFromScript, createAttribute } from "../utils/webgl";
 
 
 export const getContext = (canvas, { preserveDrawingBuffer = false }) => {
@@ -99,5 +99,13 @@ export default class Program {
   setUniformColor(uniformLoc, hex) {
     const { r, g, b } = hexToRgb(hex);
     return this.gl.uniform3f(uniformLoc, r / 255, g / 255, b / 255);
+  }
+  // Matrix4
+  uniformMat4(name, mat4) {
+    return this.setUniformMat4(this._getUniformLocation(name), mat4);
+  }
+  setUniformMat4(uniformLoc, mat4) {
+    this.gl.uniformMatrix4fv(uniformLoc, false, mat4);
+    return uniformLoc;
   }
 }

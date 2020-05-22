@@ -6,7 +6,7 @@ import {
   DoubleSide, UniformsUtils, UniformsLib,
 } from 'three';
 
-import { getRandomAttribute } from '../../../modules/utils';
+import { getRandomAttribute } from '../../../utils';
 import OrbitControls from '../../../modules/OrbitControls';
 
 import { fragInstanced, vertInstanced } from './shader.glsl';

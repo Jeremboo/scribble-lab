@@ -11,7 +11,7 @@ import {
 import OrbitControls from '../../../modules/OrbitControls';
 
 import GPUSimulation from '../../../modules/GPUSimulation';
-import { getRandomAttribute, getRandomFloat, radians } from '../../../modules/utils';
+import { getRandomAttribute, getRandomFloat, radians } from '../../../utils';
 
 import { fragInstanced, vertInstanced, vertDeth, fragDeth, shaderSimulationPosition } from './shaders.glsl';
 

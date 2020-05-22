@@ -6,7 +6,7 @@ import { MeshLine, MeshLineMaterial } from 'three.meshline';
 
 import CameraMouseControl from '../../../modules/CameraMouseControl';
 
-import { getRandomFloat, getRandomInt } from '../../../modules/utils';
+import { getRandomFloat, getRandomInt } from '../../../utils';
 
 const message = document.createElement('p');
 message.className = 'message';

@@ -1,4 +1,4 @@
-import { drawRadialGradient, rotate2D } from '../../../modules/utils.glsl';
+import { drawRadialGradient, rotate2D } from '../../../utils/glsl';
 
 export const surfaceVertSource = `
   attribute vec2 position;

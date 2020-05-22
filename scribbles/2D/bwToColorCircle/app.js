@@ -1,6 +1,6 @@
 import { autoDetectRenderer, Graphics, Container, Sprite, Texture, BLEND_MODES } from 'pixi.js';
 import RGBSplitFilter from '../../../modules/RGBSplitFilter.pixi';
-import { linearGradient } from '../../../modules/utils';
+import { linearGradient } from '../../../utils/canvas';
 
 PIXI.settings.PRECISION_FRAGMENT = PIXI.PRECISION.HIGH
 

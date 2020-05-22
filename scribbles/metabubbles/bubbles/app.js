@@ -12,7 +12,8 @@ import Bubble from '../_modules/Bubble';
 
 import AnimatedText3D from '../../../modules/AnimatedText3D';
 import IncrustationPass from '../../../modules/IncrustationPass';
-import { getNormalizedPosFromScreen, getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
+import { getNormalizedPosFromScreen } from '../../../utils/three';
 
 const mask3 = './assets/bubble_mask_1.jpg';
 

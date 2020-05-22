@@ -9,8 +9,8 @@ import {
 
 import MetaballPass from '../../../modules/MetaballPass';
 
-import { getRandomFloat } from '../../../modules/utils';
-import { drawRadialGradient } from '../../../modules/utils.glsl';
+import { getRandomFloat } from '../../../utils';
+import { drawRadialGradient } from '../../../utils/glsl';
 
 const clock = new Clock();
 

@@ -21,7 +21,8 @@ import InstancedGeom, { createPlaneBuffer } from '../../../modules/InstancedGeom
 import { fragGlow, vertGlow } from './shaders.glsl';
 const textureUrl = './assets/glow-texture.png';
 
-import { getRandomFloat, onCursorTouchMeshes } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
+import { onCursorTouchMeshes } from '../../../utils/three';
 
 /**
  * * *******************

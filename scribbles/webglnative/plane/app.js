@@ -1,9 +1,9 @@
 import canvasSketch from 'canvas-sketch';
 import { GUI } from 'dat.gui';
 
-import { classicNoise2D } from '../../../modules/utils.glsl';
+import { classicNoise2D } from '../../../utils/glsl';
 
-// import { createProgramFromScript, createAttribute } from '../../../modules/utils.webgl';
+// import { createProgramFromScript, createAttribute } from '../../../utils/webgl';
 import Program from '../../../modules/Program';
 
 // https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html

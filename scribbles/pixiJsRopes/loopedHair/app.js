@@ -1,5 +1,6 @@
 import { autoDetectRenderer, Graphics, Container, Texture } from 'pixi.js';
-import { getDistBetweenTwoVec2, getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
+import { distance } from '../../../utils/vec2';
 import props, { NONE, DRAWING, MOVING } from '../_modules/props';
 import Rope from '../_modules/Rope';
 import Marker from '../_modules/Marker';
@@ -179,7 +180,7 @@ class HairFabric {
 
   // GRAPHIC
   createRope(p1, p2, ropeProps = {}) {
-    const { dist } = getDistBetweenTwoVec2(p1.x, p1.y, p2.x, p2.y);
+    const { dist } = distance(p1.x, p1.y, p2.x, p2.y);
     if (dist > 30) {
       const rope = new Rope(p1, p2, ropeProps);
       rope.addTexture(

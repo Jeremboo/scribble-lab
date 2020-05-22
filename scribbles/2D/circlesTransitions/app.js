@@ -1,6 +1,6 @@
 import { autoDetectRenderer, Graphics, Container, Texture, Sprite } from 'pixi.js';
 import { TimelineMax } from 'gsap';
-import { linearGradient } from '../../../modules/utils';
+import { linearGradient } from '../../../utils/canvas';
 
 /**
  * * *******************

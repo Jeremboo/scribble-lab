@@ -10,7 +10,7 @@
 /**/ /* ---- CORE END ---- */
 /* ---- CREATING ZONE ---- */
 
-import { loadImage } from '../../../modules/utils';
+import { loadImage } from '../../../utils/loaders';
 
 const IMAGES = [
   'http://jeremieboulay.fr/assets/bg3.jpg',

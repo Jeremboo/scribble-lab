@@ -1,6 +1,6 @@
 import canvasSketch from 'canvas-sketch';
 
-import { getRandomFloat, getXBetweenTwoNumbersWithPercent } from '../../../modules/utils';
+import { getRandomFloat, getXBetweenTwoNumbersWithPercent } from '../../../utils';
 
 const ANGLE_MAX = Math.PI * 180;
 const AGING_SPEED = 0.03;

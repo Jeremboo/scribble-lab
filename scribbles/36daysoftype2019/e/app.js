@@ -5,7 +5,7 @@ import {
   TextBufferGeometry, PointLight, MeshStandardMaterial
 } from 'three';
 
-import { getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
 
 import fontFile from '../_assets/Glence Black_Regular';
 

@@ -4,7 +4,8 @@ import { GUI } from 'dat.gui'
 
 import blobFragmentShader from './fragment.glsl'
 
-import { getRandomFloat, getRandomInt, mixColors, getRandomColor } from '../../../modules/utils'
+import { getRandomFloat, getRandomInt } from '../../../utils'
+import { mixColors, getRandomColor } from '../../../utils/colors'
 
 const texture = './assets/texture.jpg'
 

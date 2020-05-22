@@ -1,4 +1,4 @@
-import { classicNoise2D, verticalTwist } from '../../../modules/utils.glsl';
+import { classicNoise2D, verticalTwist } from '../../../utils/glsl';
 
 export const vert = `precision highp float;
 precision highp int;

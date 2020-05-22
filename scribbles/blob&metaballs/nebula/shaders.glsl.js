@@ -1,4 +1,4 @@
-import { RGBToHSL, HSLToRGB, classicNoise2D, drawRadialGradient } from '../../../modules/utils.glsl';
+import { RGBToHSL, HSLToRGB, classicNoise2D, drawRadialGradient } from '../../../utils/glsl';
 
 export const fragGlow = `uniform vec3 color;
 uniform float alpha;

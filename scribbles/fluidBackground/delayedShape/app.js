@@ -4,7 +4,7 @@ import {
   WebGLRenderTarget, Vector2, RGBFormat
 } from 'three';
 
-import { classicNoise2D } from '../../../modules/utils.glsl';
+import { classicNoise2D } from '../../../utils/glsl';
 
 import PostFX from '../../../modules/PostFX';
 

@@ -4,7 +4,7 @@ import {
   TextureLoader, Vector2, RepeatWrapping, NearestFilter
 } from 'three';
 
-import { classicNoise2D } from '../../../modules/utils.glsl';
+import { classicNoise2D } from '../../../utils/glsl';
 
 const flatFrag = `
   precision highp float;

@@ -32,7 +32,7 @@ const COLORS = [
 
 const getRandomFloat = (min, max) => (Math.random() * (max - min) + min);
 const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-const getDistBetweenTwoVec2 = (x1, y1, x2, y2) =>
+const distance = (x1, y1, x2, y2) =>
 Math.sqrt(Math.sqr(y2 - y1) + Math.sqr(x2 - x1))
 ;
 
@@ -74,7 +74,7 @@ Particle.prototype.update = function() {
 };
 
 Particle.prototype.toDepart = function(x, y) {
-  if (getDistBetweenTwoVec2(this.targetedPos.x, this.targetedPos.y, x, y) < DIST_AMPL) {
+  if (distance(this.targetedPos.x, this.targetedPos.y, x, y) < DIST_AMPL) {
     this.updadeTargetPos();
   }
 };

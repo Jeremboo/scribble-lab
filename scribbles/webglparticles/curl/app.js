@@ -13,7 +13,7 @@ import { particleFrag, particleVert, positionFrag, velocityFrag } from './shader
 
 import GPUSimulation from '../../../modules/GPUSimulation';
 
-import { getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
 
 const COLORS = [
   // '#80D39B',

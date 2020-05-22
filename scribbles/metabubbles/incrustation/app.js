@@ -10,7 +10,7 @@ import CameraMouseControl from '../../../modules/CameraMouseControl';
 
 import IncrustationPass from '../../../modules/IncrustationPass';
 
-import { getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
 
 const clock = new Clock();
 

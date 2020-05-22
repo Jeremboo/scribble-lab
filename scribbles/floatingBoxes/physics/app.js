@@ -5,9 +5,8 @@ import {
 } from 'three';
 import p2 from 'p2';
 
-import {
-  getRandomFloat, getCameraVisionFieldSizeFromPosition, onCursorTouchMeshes, radians,
-} from '../../../modules/utils';
+import { getRandomFloat, radians } from '../../../utils';
+import { getCameraVisionFieldSizeFromPosition, onCursorTouchMeshes } from '../../../utils/three';
 
 
 // GLOBAL

@@ -1,4 +1,4 @@
-import { getDistBetweenTwoVec2 } from '../../../modules/utils';
+import { distance } from '../../../utils/vec2';
 
 /**
  * * *******************
@@ -46,7 +46,7 @@ class Dot {
 
   // Update values here
   update() {
-    const { x, y, dist } = getDistBetweenTwoVec2(this.initialX, this.initialY, mousePosition.x, mousePosition.y);
+    const { x, y, dist } = distance(this.initialX, this.initialY, mousePosition.x, mousePosition.y);
     const force = Math.max(0, ATTRACTION_RADIUS - dist);
 
     // Mouse force

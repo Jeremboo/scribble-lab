@@ -4,7 +4,8 @@ import {
   Vector3, AmbientLight, PointLight, DirectionalLight, Fog,
 } from 'three';
 
-import { getRandomFloat, getNormalizedPosFromScreen, getDistanceBetweenNormalizedMousePosAndPos, radians } from '../../../modules/utils';
+import { getRandomFloat, radians } from '../../../utils';
+import { getNormalizedPosFromScreen, getDistanceBetweenNormalizedMousePosAndPos } from '../../../utils/three';
 
 /**/ /* ---- CORE ---- */
 /**/ const secondaryColor = '#7e44a1';

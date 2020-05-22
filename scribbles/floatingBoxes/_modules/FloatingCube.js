@@ -2,7 +2,7 @@ import {
   BoxGeometry, MeshToonMaterial, Mesh, Vector3,
 } from 'three';
 
-import { getRandomFloat, radians } from '../../../modules/utils';
+import { getRandomFloat, radians } from '../../../utils';
 
 /**
  * Update current to attract him to the target using gravity and velocity

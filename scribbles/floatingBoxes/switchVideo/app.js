@@ -9,7 +9,9 @@ import {
 import FloatingCube from '../_modules/FloatingCube';
 import TransitionalTextureMaterial from '../_modules/TransitionalTextureMaterial';
 
-import { getNormalizedPosFromScreen, getPosXBetweenTwoNumbers, loadVideo } from '../../../modules/utils';
+import { getPosXBetweenTwoNumbers } from '../../../utils';
+import { getNormalizedPosFromScreen } from '../../../utils/three';
+import { loadVideo } from '../../../utils/loaders';
 
 const videoUrl1 = './assets/videoTest1.mp4';
 const videoUrl2 = './assets/videoTest2.mp4';

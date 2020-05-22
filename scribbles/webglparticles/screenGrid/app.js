@@ -16,7 +16,8 @@ import { fragInstanced,
 vertInstanced,
 shaderSimulationPosition } from './shader.glsl';
 
-import { loadVideo, onCursorTouchMeshes } from '../../../modules/utils';
+import { loadVideo } from '../../../utils/loaders';
+import { onCursorTouchMeshes } from '../../../utils/three';
 
 /**
 * * *******************

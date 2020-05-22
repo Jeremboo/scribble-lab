@@ -1,4 +1,4 @@
-import { classicNoise2D } from '../../../modules/utils.glsl';
+import { classicNoise2D } from '../../../utils/glsl';
 
 export const vert = `
 varying vec2 vUv;

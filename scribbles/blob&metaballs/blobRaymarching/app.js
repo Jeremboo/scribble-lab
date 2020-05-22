@@ -5,7 +5,7 @@ import {
 import rm from '../../../modules/RayMarcher';
 import { GUI } from 'dat.gui';
 
-import { getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
 
 import blobFrag from './fragment.glsl';
 

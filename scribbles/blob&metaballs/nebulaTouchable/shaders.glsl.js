@@ -1,4 +1,4 @@
-import { RGBToHSL, HSLToRGB, drawRadialGradient } from '../../../modules/utils.glsl';
+import { RGBToHSL, HSLToRGB, drawRadialGradient } from '../../../utils/glsl';
 
 export const fragGlow = `
 uniform vec3 color;

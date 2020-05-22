@@ -10,7 +10,7 @@ import { GUI } from 'dat.gui';
 import AnimatedText3D from '../../../modules/AnimatedText3D';
 import CameraMouseControl from '../../../modules/CameraMouseControl';
 
-import { getRandomFloat, getRandomInt } from '../../../modules/utils';
+import { getRandomFloat, getRandomInt } from '../../../utils';
 
 const gui = new GUI();
 

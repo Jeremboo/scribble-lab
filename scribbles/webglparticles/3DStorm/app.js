@@ -5,7 +5,7 @@ import {
 
 import { GUI } from 'dat.gui';
 
-import { getRandomFloat } from '../../../modules/utils';
+import { getRandomFloat } from '../../../utils';
 
 import OrbitControls from '../../../modules/OrbitControls';
 import GPUSimulation from '../../../modules/GPUSimulation';
