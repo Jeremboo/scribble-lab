@@ -5,7 +5,7 @@
     "link": "",
     "visible": true,
     "preview": "preview.gif",
-    "description": "My exps with native WebGL and shaders! (no threejs 💪)",
+    "description": "My exps in native WebGL!",
     "date": "2020-04-13T19:43:00.274Z",
     "tags": [],
     "scribbles": [
@@ -21,6 +21,18 @@
         ],
         "description": "",
         "date": "2020-05-17T15:38:56.697Z",
+        "tags": []
+      },
+      {
+        "name": "Plane 3D in native WebGL",
+        "path": "scribbles/webglnative/plane3D/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "2020.05.23-19.29.57.gif"
+        ],
+        "description": "",
+        "date": "2020-05-14T15:49:46.173Z",
         "tags": []
       },
       {

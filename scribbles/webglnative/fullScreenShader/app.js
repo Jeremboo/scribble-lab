@@ -3,7 +3,7 @@ import dat from 'dat.gui';
 import imageController from 'dat.gui.image';
 imageController(dat);
 
-import Program from '../../../modules/Program';
+import Program from '../../../modules/WebGL/Program';
 import { radians } from '../../../utils';
 import { createTextureFromUrl, createTexture } from '../../../utils/webgl';
 
