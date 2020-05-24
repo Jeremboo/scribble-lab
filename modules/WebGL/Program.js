@@ -1,5 +1,5 @@
-import { hexToRgb } from '../utils/color';
-import { createProgramFromScript, createAttribute } from "../utils/webgl";
+import { hexToRgb } from '../../utils/color';
+import { createProgramFromScript, createAttribute } from "../../utils/webgl";
 
 
 export const getContext = (canvas, { preserveDrawingBuffer = false }) => {
