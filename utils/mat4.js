@@ -108,7 +108,7 @@ export const inverse = (a) => {
 }
 
 export const translate = (m, x, y, z) => {
-  return m4Multiply(m, [
+  return multiply(m, [
     1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, 1, 0,
@@ -118,7 +118,7 @@ export const translate = (m, x, y, z) => {
 export const rotateX = (m, rad) => {
   const c = Math.cos(rad);
   const s = Math.sin(rad);
-  return m4Multiply(m, [
+  return multiply(m, [
     1, 0, 0, 0,
     0, c, s, 0,
     0, -s, c, 0,
@@ -128,7 +128,7 @@ export const rotateX = (m, rad) => {
 export const rotateY = (m, rad) => {
   const c = Math.cos(rad);
   const s = Math.sin(rad);
-  return m4Multiply(m, [
+  return multiply(m, [
     c, 0, -s, 0,
     0, 1, 0, 0,
     s, 0, c, 0,
@@ -138,14 +138,14 @@ export const rotateY = (m, rad) => {
 export const rotateZ = (m, rad) => {
   const c = Math.cos(rad);
   const s = Math.sin(rad);
-  return m4Multiply(m, [
+  return multiply(m, [
     c, s, 0, 0,
     -s, c, s, 0,
     0, 0, 1, 0,
     0, 0, 0, 1,
   ]);
 }
-export const scale = (m, x, y, z) => m4Multiply(m, [
+export const scale = (m, x, y, z) => multiply(m, [
   x, 0, 0, 0,
   0, y, 0, 0,
   0, 0, z, 0,
@@ -156,7 +156,6 @@ export const lookAt = (cameraPosition, target, up = [0, 1, 0]) => {
   const zAxis = normalize(substract(cameraPosition, target));
   const xAxis = normalize(cross(up, zAxis));
   const yAxis = normalize(cross(zAxis, xAxis));
-
   return [
     xAxis[0], xAxis[1], xAxis[2], 0,
     yAxis[0], yAxis[1], yAxis[2], 0,
