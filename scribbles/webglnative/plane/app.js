@@ -4,7 +4,7 @@ import { GUI } from 'dat.gui';
 import { classicNoise2D } from '../../../utils/glsl';
 
 // import { createProgramFromScript, createAttribute } from '../../../utils/webgl';
-import Program from '../../../modules/Program';
+import Program from '../../../modules/WebGL/Program';
 
 // https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
 
@@ -60,28 +60,28 @@ canvasSketch(({ width, height, context, canvas }) => {
     0.5, -0.5,
   ];
   // createAttribute(context, program, 'position', vertices, 2);
-  program.createAttribute('position', vertices, 2);
+  program.addAttributePosition(vertices, 2);
 
   // * Uniforms
   // const screenSizeUniformLoc = context.getUniformLocation(program, 'screenSize');
-  // context.uniform2f(screenSizeUniformLoc, width, height);
-  const screenSizeUniformLoc = program.uniform2f('screenSize', width, height);
-
   // const timeUniformLoc = context.getUniformLocation(program, 'time');
-  // context.uniform1f(timeUniformLoc, Math.random() * 10);
-  const timeUniformLoc = program.uniform1f('time', Math.random() * 10);
-
   // const strengthUniformLoc = context.getUniformLocation(program, 'strength');
-  // context.uniform1f(strengthUniformLoc, PROPS.strength);
-  const strengthUniformLoc = program.uniform1f('strength', PROPS.strength);
+  program.addUniforms({
+    screenSize: [width, height],
+    time: Math.random() * 10,
+    strength: PROPS.strength
+  });
 
   // * GUI *******
   const gui = new GUI();
   gui.add(PROPS, 'speed', -0.1, 0.1);
   gui.add(PROPS, 'strength', 0.1, 1).onChange((value) => {
-    // context.uniform1f(strengthUniformLoc, value);
-    program.setUniform1f(strengthUniformLoc, value);
+    program.forceUpdateUniform('strength', value);
   });
+
+  // Bind the program to make it visible
+  // Since we have only one program, it's not necessary to rebind it every frame
+  program.useProgram();
 
   return ({
     resize() {
@@ -92,9 +92,7 @@ canvasSketch(({ width, height, context, canvas }) => {
     render({ context, playhead }) {
       // Update uniform
       // const time = context.getUniform(program, timeUniformLoc);
-      // context.uniform1f(timeUniformLoc, time + PROPS.speed);
-      const time = program.getUniform(timeUniformLoc);
-      program.setUniform1f(timeUniformLoc, time + PROPS.speed);
+      program.forceUpdateUniform('time', program.uniforms.time.value + PROPS.speed);
 
       const count = 6; // Nbr of points to draw
       context.drawArrays(context.TRIANGLES, 0, count);

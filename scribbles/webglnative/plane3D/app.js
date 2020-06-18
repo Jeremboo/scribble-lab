@@ -5,7 +5,6 @@ import { classicNoise2D } from '../../../utils/glsl';
 
 import Program from '../../../modules/WebGL/Program';
 import MouseControl from '../../../modules/WebGL/MouseControl';
-import { perspective, inverse, multiply, lookAt } from '../../../utils/mat4';
 import { vec3 } from '../../../utils/vec3';
 import Camera from '../../../modules/WebGL/Camera';
 
@@ -63,7 +62,7 @@ canvasSketch(({ width, height, context, canvas }) => {
     0.5, 0.5, 0,
     0.5, -0.5, 0,
   ];
-  program.createAttribute('position', vertices, 3);
+  program.addAttributePosition(vertices, 3);
 
 
   // * Camera
@@ -94,17 +93,17 @@ canvasSketch(({ width, height, context, canvas }) => {
 
   // * Uniforms
   // const viewProjMatLoc = program.uniformMat4('viewProjectionMatrix', getViewProjectionMatrix(cameraMatrix));
-  const viewProjMatLoc = program.uniformMat4('viewProjectionMatrix', camera.getViewProjectionMatrix());
-
-  const timeUniformLoc = program.uniform1f('time', Math.random() * 10);
-
-  const strengthUniformLoc = program.uniform1f('strength', PROPS.strength);
+  program.addUniforms({
+    viewProjectionMatrix: camera.getViewProjectionMatrix(),
+    time: Math.random() * 10,
+    strength: PROPS.strength
+  });
 
   // * GUI *******
   const gui = new GUI();
   gui.add(PROPS, 'speed', -0.1, 0.1);
   gui.add(PROPS, 'strength', 0.1, 1).onChange((value) => {
-    program.setUniform1f(strengthUniformLoc, value);
+    program.forceUpdateUniform('strength', value);
   });
   // gui.add(PROPS, 'x', -1, 1).onChange((value) => {
   //   // cameraPosition[0] = value;
@@ -115,6 +114,10 @@ canvasSketch(({ width, height, context, canvas }) => {
   //   program.setUniformMat4(viewProjMatLoc, camera.getViewProjectionMatrix());
   // });
 
+  // Bind the program to make it visible
+  // Since we have only one program, it's not necessary to rebind it every frame
+  program.useProgram();
+
   return ({
     resize() {
       context.viewport(0, 0, canvas.width, canvas.height);
@@ -123,11 +126,10 @@ canvasSketch(({ width, height, context, canvas }) => {
     },
     render({ context, playhead }) {
       mouseControl.update();
-      program.setUniformMat4(viewProjMatLoc, camera.getViewProjectionMatrix());
 
-      // Update uniform
-      const time = program.getUniform(timeUniformLoc);
-      program.setUniform1f(timeUniformLoc, time + PROPS.speed);
+      // Update uniforms
+      program.forceUpdateUniform('viewProjectionMatrix', camera.getViewProjectionMatrix());
+      program.forceUpdateUniform('time', program.uniforms.time.value + PROPS.speed);
 
       const count = 6; // Nbr of points to draw
       context.drawArrays(context.TRIANGLES, 0, count);

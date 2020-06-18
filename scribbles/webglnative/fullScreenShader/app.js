@@ -4,8 +4,8 @@ import imageController from 'dat.gui.image';
 imageController(dat);
 
 import Program from '../../../modules/WebGL/Program';
+import Texture from '../../../modules/WebGL/Texture';
 import { radians } from '../../../utils';
-import { createTextureFromUrl, createTexture } from '../../../utils/webgl';
 
 import { surfaceVertSource, surfaceFragSource } from './shader.glsl';
 
@@ -27,34 +27,37 @@ const PROPS = {
 canvasSketch((props) => {
   const { canvas, context, styleWidth, styleHeight } = props;
 
+  // * Textures
+  const arkestarTexture = new Texture(context, PROPS.texture, {});
+
   // * Program
   const program = new Program(context, surfaceVertSource, surfaceFragSource);
 
    // * Attributes
   const fullScreenTriangleVertices = [-1, -1, -1, 3, 3, -1];
-  program.createAttribute('position', fullScreenTriangleVertices, 2);
+  program.addAttributePosition(fullScreenTriangleVertices, 2);
 
   // * Uniforms
-  const mousePositionLoc = program.uniform2f('mousePosition', 0.5, 0.5);
+  program.addUniforms({
+    mousePosition: [0.5, 0.5],
+    scale: PROPS.scale,
+    strength: PROPS.strength,
+    brightness: PROPS.brightness,
+    shift: PROPS.shift,
+    divider: PROPS.divider,
+    rotation: PROPS.rotation,
+    time: radians(PROPS.rotation),
+    texture: arkestarTexture, // This is how to add a texture as uniform
+  });
+  // const mousePositionLoc = program.uniform2f('mousePosition', 0.5, 0.5);
+
   canvas.addEventListener('mousemove', (e) => {
     const x = e.offsetX / styleWidth;
     const y = 1 - e.offsetY / styleHeight;
-    program.setUniform2f(mousePositionLoc, x, y);
+    program.forceUpdateUniform('mousePosition', [x, y]);
   });
   canvas.addEventListener('mouseleave', () => {
-    program.setUniform2f(mousePositionLoc, 0.5, 0.5);
-  })
-
-  const scaleLoc = program.uniform1f('scale', PROPS.scale);
-  const strengthLoc = program.uniform1f('strength', PROPS.strength);
-  const brightnessLoc = program.uniform1f('brightness', PROPS.brightness);
-  const shiftLoc = program.uniform1f('shift', PROPS.shift);
-  const dividerLoc = program.uniform1f('divider', PROPS.divider);
-  const rotationLoc = program.uniform1f('rotation', PROPS.rotation);
-  const timeLoc = program.uniform1f('time', radians(PROPS.rotation));
-
-  createTextureFromUrl(context, PROPS.texture).then((texture) => {
-    program.uniformTexture('texture', texture);
+    program.forceUpdateUniform('mousePosition', [0.5, 0.5]);
   });
 
   // * GUI
@@ -62,29 +65,34 @@ canvasSketch((props) => {
   const grid = gui.addFolder('Grid')
   grid.open();
   grid.add(PROPS, 'divider', 0.2, 10).onChange((value) => {
-    program.setUniform1f(dividerLoc, value);
+    program.forceUpdateUniform('divider', value);
   }).step(0.01);
   grid.add(PROPS, 'rotation', -45, 45).onChange((value) => {
-    program.setUniform1f(rotationLoc, radians(value));
+    program.forceUpdateUniform('rotation', radians(value));
   }).step(0.01);
   grid.add(PROPS, 'speed', 1, 2).step(1);
-  grid.addImage(PROPS, 'texture').onChange((image) => {
-    createTexture(context, image);
+  grid.addImage(PROPS, 'texture').onChange((imageData) => {
+    // Update the texture itself not the uniform
+    arkestarTexture.updateImageData(imageData);
   });
   const distortion = gui.addFolder('Distortion')
   distortion.open();
   distortion.add(PROPS, 'shift', 0, 0.5).onChange((value) => {
-    program.setUniform1f(shiftLoc, value);
+    program.forceUpdateUniform('shift', value);
   });
   distortion.add(PROPS, 'scale', 0, 3).onChange((value) => {
-    program.setUniform1f(scaleLoc, value);
+    program.forceUpdateUniform('scale', value);
   });
   distortion.add(PROPS, 'strength', -2, 2).onChange((value) => {
-    program.setUniform1f(strengthLoc, value);
+    program.forceUpdateUniform('strength', value);
   });
   distortion.add(PROPS, 'brightness', -2, 2).onChange((value) => {
-    program.setUniform1f(brightnessLoc, value);
+    program.forceUpdateUniform('brightness', value);
   });
+
+  // Bind the program to make it visible
+  // Since we have only one program, it's not necessary to rebind it every frame
+  program.useProgram();
 
   return ({
     resize() {
@@ -93,10 +101,10 @@ canvasSketch((props) => {
       context.clear(context.COLOR_BUFFER_BIT);
     },
     render({ context, playhead }) {
-      program.setUniform1f(timeLoc, playhead * PROPS.speed);
-
-      const count = 3; // Nbr of points to draw
-      context.drawArrays(context.TRIANGLES, 0, count);
+      // Draw the program
+      context.drawArrays(context.TRIANGLES, 0, program.count);
+      // Update the uniform time
+      program.forceUpdateUniform('time', playhead * PROPS.speed);
     }
   });
 }, {

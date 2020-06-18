@@ -49,15 +49,12 @@ export const createProgramFromScript = (gl, vert, frag) => {
  * * *******************
  */
 
-export const createAttribute = (gl, program, name, data, size, { draw = gl.STATIC_DRAW, type = gl.FLOAT, normalize = false, stride = 0, offset = 0 } = {}) => {
-  const positionBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+export const createBuffer = (gl, data, draw) => {
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), draw);
-  const positionAttributeLocation = gl.getAttribLocation(program, name);
-  gl.enableVertexAttribArray(positionAttributeLocation);
-  gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
-  return positionAttributeLocation;
-}
+  return buffer;
+};
 
 /**
  * * *******************
@@ -77,13 +74,15 @@ export const createAttribute = (gl, program, name, data, size, { draw = gl.STATI
   minFilter = gl.LINEAR,
   magFilter = gl.LINEAR,
   wrapS = gl.CLAMP_TO_EDGE,
-  wrapT = gl.CLAMP_TO_EDGE
- } = {}) => {
-  const texture = gl.createTexture();
+  wrapT = gl.CLAMP_TO_EDGE,
+ } = {}, previousTexture) => {
+  const texture = previousTexture || gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
   // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D
   if (data && data.constructor !== Float32Array) {
+    // TODO 2020-06-17 jeremboo: Check the power of 2 by following
+    // TODO 2020-06-17 jeremboo: https://stackoverflow.com/questions/19722247/webgl-wait-for-texture-to-load/19748905#19748905
     gl.texImage2D(
       gl.TEXTURE_2D, level, internalFormat, format, type, data
     );
@@ -102,9 +101,9 @@ export const createAttribute = (gl, program, name, data, size, { draw = gl.STATI
   return texture;
  }
 
-export const createTextureFromUrl = async (gl, url, options) => {
+export const createTextureFromUrl = async (gl, url, options, previousTexture) => {
   const image = await loadImage(url);
-  const texture = createTexture(gl, image, options);
+  const texture = createTexture(gl, image, options, previousTexture);
   gl.generateMipmap(gl.TEXTURE_2D);
   return texture;
 }
