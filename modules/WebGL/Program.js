@@ -33,12 +33,11 @@ export const getContext = (canvas, { preserveDrawingBuffer = false }) => {
 export default class Program {
   constructor(context, vert, frag) {
     this.id = `${Math.floor(Math.random() * 10000)}`;
-    this.isUsed = false;
     this.gl = context;
     this.canvas = this.gl.canvas;
     this.program = createProgramFromScript(this.gl, vert, frag);
 
-    this.i = 0;
+    this.i = -1;
     this.count = 0;
     this.attributes = {};
     this.uniforms = {};
@@ -52,6 +51,7 @@ export default class Program {
    * * *******************
    */
 
+  // It's specific since it also have to update the counter
   addAttributePosition(data, size = 3, options) {
     this.count = data.length / size;
     this.addAttribute('position', data, size, options);
@@ -151,11 +151,8 @@ export default class Program {
    */
   forceUpdateUniform(name, value) {
     this.uniforms[name].value = value;
-    if (!this.isUsed) {
-      console.warn('ERROR.forceUpdateUniform(): The program is not used. No need to force update.');
-      return;
-    }
-    this.uniforms[name].set(value);
+    // TODO 2020-06-20 jeremboo: no need to do the next line if the program is not used/linked
+    // this.uniforms[name].set(value);
   }
 
   /**
@@ -184,11 +181,5 @@ export default class Program {
       const { set, value } = this.uniforms[name];
       set(value);
     }
-
-    this.isUsed = true;
-  }
-
-  unuseProgram() {
-    this.isUsed = false;
   }
 }
