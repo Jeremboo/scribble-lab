@@ -8,7 +8,7 @@ export default class Camera extends Object3D {
   }
 
   getViewMatrix() {
-    return inverse(this.mat4);
+    return inverse(this._matrix);
   }
 
   getViewProjectionMatrix() {

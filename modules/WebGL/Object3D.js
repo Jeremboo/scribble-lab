@@ -1,45 +1,51 @@
-import { mat4, translate, rotateX, rotateY, rotateZ, lookAt } from '../../utils/mat4';
+import { mat4, translate, scale, rotateX, rotateY, rotateZ, lookAt } from '../../utils/mat4';
 
 export default class Object3D {
   constructor() {
-    this.mat4 = mat4();
+    this._matrix = mat4();
   }
 
-  get x()  { return this.mat4[12]; }
-  set x(x) { this.mat4[12] = x; }
+  get matrix() { return this._matrix; }
+  set matrix(mat4) { this._matrix = mat4; }
 
-  get y()  { return this.mat4[13]; }
-  set y(y) { this.mat4[13] = y; }
+  get x()  { return this._matrix[12]; }
+  set x(x) { this._matrix[12] = x; }
 
-  get z() { return this.mat4[14]; }
-  set z(z) { this.mat4[14] = z; }
+  get y()  { return this._matrix[13]; }
+  set y(y) { this._matrix[13] = y; }
+
+  get z() { return this._matrix[14]; }
+  set z(z) { this._matrix[14] = z; }
 
   setPosition(x, y, z) {
-    this.mat4[12] = x;
-    this.mat4[13] = y;
-    this.mat4[14] = z;
+    this._matrix[12] = x;
+    this._matrix[13] = y;
+    this._matrix[14] = z;
   }
   getPosition() {
     return [
-      this.mat4[12],
-      this.mat4[13],
-      this.mat4[14]
+      this._matrix[12],
+      this._matrix[13],
+      this._matrix[14]
     ]
   }
 
   translate(x, y, z) {
-    this.mat4 = translate(this.mat4, x, y, z);
+    this.matrix = translate(this._matrix, x, y, z);
+  }
+  scale(x, y, z) {
+    this.matrix = scale(this._matrix, x, y, z);
   }
   rotateX(rad) {
-    this.mat4 = rotateX(this.mat4, rad);
+    this.matrix = rotateX(this._matrix, rad);
   }
   rotateY(rad) {
-    this.mat4 = rotateY(this.mat4, rad);
+    this.matrix = rotateY(this._matrix, rad);
   }
   rotateZ(rad) {
-    this.mat4 = rotateZ(this.mat4, rad);
+    this.matrix = rotateZ(this._matrix, rad);
   }
   lookAt(target, up) {
-    this.mat4 = lookAt(this.getPosition(), target, up);
+    this.matrix = lookAt(this.getPosition(), target, up);
   }
 }
