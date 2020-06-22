@@ -24,6 +24,18 @@
         "tags": []
       },
       {
+        "name": "Planes 3D",
+        "path": "scribbles/webglnative/planes/",
+        "link": "",
+        "visible": true,
+        "preview": [
+          "2020.06.22-11.24.58.gif"
+        ],
+        "description": "",
+        "date": "2020-05-15T15:49:46.173Z",
+        "tags": []
+      },
+      {
         "name": "Plane 3D in native WebGL",
         "path": "scribbles/webglnative/plane3D/",
         "link": "",
@@ -45,6 +57,16 @@
         ],
         "description": "",
         "date": "2020-05-13T15:49:46.173Z",
+        "tags": []
+      },
+      {
+        "name": "Plane Image Perspective",
+        "path": "scribbles/webglnative/planeImagePerspective/",
+        "link": "",
+        "visible": true,
+        "preview": "preview.gif",
+        "description": "",
+        "date": "2020-04-05T02:45:02.261Z",
         "tags": []
       },
       {
@@ -190,30 +212,6 @@
         "preview": "preview.gif",
         "description": "",
         "date": "2019-04-03T21:39:26.467Z",
-        "tags": []
-      }
-    ]
-  },
-  {
-    "name": "webglimages",
-    "path": "scribbles/webglimages/",
-    "link": "",
-    "visible": false,
-    "preview": [
-      "preview.gif"
-    ],
-    "description": "A surface shader from scratch",
-    "date": "2019-01-29T15:38:21.106Z",
-    "tags": [],
-    "scribbles": [
-      {
-        "name": "imagePerspective",
-        "path": "scribbles/surfaceShader/imagePerspective/",
-        "link": "",
-        "visible": true,
-        "preview": "preview.gif",
-        "description": "",
-        "date": "2020-04-05T02:45:02.261Z",
         "tags": []
       }
     ]

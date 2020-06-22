@@ -6,12 +6,14 @@ import { classicNoise2D } from '../../../utils/glsl';
 import Renderer from '../../../modules/WebGL/Renderer';
 import Camera from '../../../modules/WebGL/Camera';
 import Mesh from '../../../modules/WebGL/Mesh';
+import { vec3 } from '../../../utils/vec3';
 
 // https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
 
 const PROPS = {
   speed: 0.02,
   strength: 0.3,
+  mouseVelocity: 0.1,
 };
 
 const FRAGMENT_1 = `
@@ -41,7 +43,7 @@ const FRAGMENT_2 = `
   }
 `;
 
-canvasSketch(({ width, height, context, canvas }) => {
+canvasSketch(({ width, height, styleWidth, styleHeight, context, canvas }) => {
   // * Camera
   const camera = new Camera(45, width / height, 1, 1000);
   camera.setPosition(0, 0, 2);
@@ -62,14 +64,15 @@ canvasSketch(({ width, height, context, canvas }) => {
       strength: PROPS.strength,
     }
   });
-  mainMesh.scale(1.2, 1.2, 1);
+  mainMesh.translate(0, -0.05, -1);
+  mainMesh.rescale(1.7, 1.7, 1);
   renderer.addProgram(mainMesh.program);
 
   const secondMesh = new Mesh(context, camera, {
     fragment: FRAGMENT_2,
   });
-  secondMesh.translate(-0.5, 0.5, 0);
-  secondMesh.scale(0.5, 0.5, 1);
+  secondMesh.translate(-0.5, 0.45, 0);
+  secondMesh.rescale(0.5, 0.5, 1);
   renderer.addProgram(secondMesh.program);
 
   // * GUI *******
@@ -77,6 +80,19 @@ canvasSketch(({ width, height, context, canvas }) => {
   gui.add(PROPS, 'speed', -0.1, 0.1);
   gui.add(PROPS, 'strength', 0.1, 1).onChange((value) => {
     mainMesh.program.uniforms.strength.value = value;
+  });
+
+  // * Mouse move
+  const targetLookAt = vec3(0, 0, 0.7);
+  const currentLookAt = vec3(0, 0, 0.7);
+  canvas.addEventListener('mousemove', (e) => {
+    targetLookAt[0] = (e.offsetX / styleWidth) - 0.5;
+    targetLookAt[1] = (1 - e.offsetY / styleHeight) - 0.5;
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    targetLookAt[0] = 0;
+    targetLookAt[1] = 0;
   });
 
   return ({
@@ -87,6 +103,12 @@ canvasSketch(({ width, height, context, canvas }) => {
     },
     render({ context, playhead }) {
       mainMesh.program.uniforms.time.value += PROPS.speed;
+
+      currentLookAt[0] += (targetLookAt[0] - currentLookAt[0]) * PROPS.mouseVelocity;
+      currentLookAt[1] += (targetLookAt[1] - currentLookAt[1]) * PROPS.mouseVelocity;
+
+      mainMesh.lookAt(currentLookAt);
+      secondMesh.lookAt(currentLookAt);
 
       renderer.render();
     }
