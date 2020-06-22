@@ -11,16 +11,12 @@ import {
 } from 'three';
 import { TweenLite } from 'gsap';
 import dat from 'dat.gui';
-import imageController from 'dat.gui.image';
-// import imageController from 'dat.gui.image.debug';
+import imageController from './dat.gui.image';
 imageController(dat);
-
-import imageUrl from 'texture.jpg';
-import imageUrl2 from 'nine-texture.jpg';
-
-import OrbitControl from 'OrbitControl';
+import OrbitControls from '../../../modules/OrbitControls';
 
 const BACKGROUND_COLOR = '#ffffff';
+const TEXTURE_URL = './texture.png';
 
 /**
  * * *******************
@@ -39,7 +35,7 @@ class Webgl {
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(50, w / h, 1, 1000);
     this.camera.position.set(0, 0, 10);
-    this.controls = new OrbitControl(this.camera, this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.dom = this.renderer.domElement;
     this.update = this.update.bind(this);
     this.resize = this.resize.bind(this);
@@ -75,7 +71,7 @@ document.body.appendChild(webgl.dom);
 
 const PROPS = {
   intensity: 2,
-  texture: imageUrl,
+  texture: TEXTURE_URL,
   color: '#aaee00'
 };
 
@@ -143,11 +139,6 @@ webgl.add(imagePlane);
  * * *******************
  */
 
-setTimeout(() => {
-  console.log('update texture');
-  PROPS.texture = imageUrl2;
-}, 2000);
-
 const gui = new dat.GUI();
 gui
   .add(PROPS, 'intensity', -10, 10)
@@ -168,7 +159,8 @@ gui
   .addImage(PROPS, 'texture')
   .name('super texture')
   .listen()
-  .onChange(image => {
+  .onChange((image, firstTime) => {
+    if (firstTime) return;
     TweenLite.to(imagePlane.material.uniforms.intensity, 0.3, {
       value: 0,
       ease: Power2.easeIn,
