@@ -1,4 +1,4 @@
-import { createProgramFromScript, createBuffer } from "../../utils/webgl";
+import { createProgramFromScript, createBuffer, createIndiceBuffer } from "../../utils/webgl";
 import Texture from "./Texture";
 
 // UNIFORM MAP
@@ -39,8 +39,9 @@ export default class Program {
 
     this.i = -1;
     this.count = 0;
-    this.attributes = {};
     this.uniforms = {};
+    this.attributes = {};
+    this.indices = false;
 
     this.textures = [];
   }
@@ -51,13 +52,17 @@ export default class Program {
    * * *******************
    */
 
-  // It's specific since it also have to update the counter
-  addAttributePosition(data, size = 3, options) {
-    this.count = data.length / size;
-    this.addAttribute('position', data, size, options);
+  // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
+  addAttributePosition(position, indices = [], size = 3, options = {}) {
+    this.count = position.length / size;
+    this.addAttribute('position', position, size, options);
+    if (indices.length) {
+      this.count = indices.length;
+      this.indices = createIndiceBuffer(this.gl, indices, options.draw);
+    }
   }
 
-  addAttribute(name, data, size, { draw = this.gl.STATIC_DRAW, type = this.gl.FLOAT, normalize = false, stride = 0, offset = 0 } = {}) {
+  addAttribute(name, data, size, { draw, type = this.gl.FLOAT, normalize = false, stride = 0, offset = 0 } = {}) {
     // TODO 2020-05-30 jeremboo: Check if the buffer already exists ?
     this.attributes[name] = {
       location: this.gl.getAttribLocation(this.program, name),
@@ -172,6 +177,9 @@ export default class Program {
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
       this.gl.enableVertexAttribArray(location);
       this.gl.vertexAttribPointer(location, size, type, normalize, stride, offset);
+    }
+    if (this.indices) {
+      this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indices);
     }
 
     // Bind the uniforms

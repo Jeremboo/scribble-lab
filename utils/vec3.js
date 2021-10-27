@@ -15,6 +15,14 @@ export const substract = (a, b) => [
 
 export const magnitude = (x, y, z) => Math.sqrt(x * x + y * y + z * z);
 
+export const distance = (x1, y1, z1, x2, y2, z2) => {
+  const x = x1 - x2;
+  const y = y1 - y2;
+  const z = z1 - z2;
+  const dist = magnitude(x, y, z);
+  return { x, y, z, dist };
+}
+
 export const normalize = (v) => {
   const mag = magnitude(v[0], v[1], v[2]);
   if (mag < 0.00001) return [0, 0, 0];

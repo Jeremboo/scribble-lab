@@ -41,7 +41,9 @@ export default class Renderer {
         this.programs[this.i].useProgram();
         this.programLastUsed = this.programs[this.i].id;
       }
-      this.gl.drawArrays(this.gl.TRIANGLES, 0, this.programs[this.i].count);
+      // TODO what is the difference between drawArrays and drawElements?
+      // this.gl.drawArrays(this.gl.TRIANGLES, 0, this.programs[this.i].count);
+      this.gl.drawElements(this.gl.TRIANGLES, this.programs[this.i].count, this.gl.UNSIGNED_SHORT, 0);
     }
   }
 }

@@ -1,5 +1,7 @@
 import { loadImage } from './loaders';
 
+// TODO 2020-06-25 jeremboo: divide by theme
+
 /**
  * * *******************
  * * PROGRAM
@@ -49,12 +51,20 @@ export const createProgramFromScript = (gl, vert, frag) => {
  * * *******************
  */
 
-export const createBuffer = (gl, data, draw) => {
+// TODO 2020-06-25 jeremboo: maybe merge createBuffer && createIndiceBuffer together
+export const createBuffer = (gl, data, draw = gl.STATIC_DRAW) => {
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), draw);
   return buffer;
 };
+
+export const createIndiceBuffer = (gl, data, draw = gl.STATIC_DRAW) => {
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), draw);
+  return buffer;
+}
 
 /**
  * * *******************
@@ -106,4 +116,55 @@ export const createTextureFromUrl = async (gl, url, options, previousTexture) =>
   const texture = createTexture(gl, image, options, previousTexture);
   gl.generateMipmap(gl.TEXTURE_2D);
   return texture;
+}
+
+/**
+ * * *******************
+ * * GEOMETRIES
+ * * *******************
+ */
+
+// https://github.com/greggman/twgl.js/blob/master/src/primitives.js
+// https://github.com/mrdoob/three.js/blob/master/src/geometries/PlaneGeometry.js
+export const createPlane = (width, height, subdivisionsWidth, subdivisionsHeight) => {
+  const numVertices = (subdivisionsWidth + 1) * (subdivisionsHeight + 1);
+  const position = [];
+  const indices = [];
+  // const normals = createAugmentedTypedArray(3, numVertices);
+  // const texcoords = createAugmentedTypedArray(2, numVertices);
+
+  let y, x;
+  for (y = 0; y <= subdivisionsHeight; y++) {
+    for (x = 0; x <= subdivisionsWidth; x++) {
+      const u = x / subdivisionsWidth;
+      const v = y / subdivisionsHeight;
+      position.push(
+          width * u - width * 0.5,
+          height * v - height * 0.5,
+          0
+        );
+      // normals.push(0, 1, 0);
+      // texcoords.push(u, v);
+    }
+  }
+
+  const numVertsAcross = subdivisionsWidth + 1;
+
+  for (y = 0; y < subdivisionsHeight; y++) {  // eslint-disable-line
+    for (x = 0; x < subdivisionsWidth; x++) {  // eslint-disable-line
+      // Make triangle 1 of quad.
+      indices.push(
+          (y + 0) * numVertsAcross + x,
+          (y + 0) * numVertsAcross + x + 1,
+          (y + 1) * numVertsAcross + x);
+
+      // Make triangle 2 of quad.
+      indices.push(
+          (y + 1) * numVertsAcross + x,
+          (y + 1) * numVertsAcross + x + 1,
+          (y + 0) * numVertsAcross + x + 1);
+    }
+  }
+
+  return { position, indices };
 }
