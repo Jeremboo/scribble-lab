@@ -114,20 +114,20 @@ export default class Nebula extends Mesh {
     const instanciedGeom = new InstancedGeom(createPlaneBuffer(), nbr);
 
     // PROPS
-    const positionAttribute = instanciedGeom.setAttribute('_position', 3);
+    const positionAttribute = instanciedGeom.createAttribute('_position', 3);
     const initialPositions = new Float32Array(nbr * 3);
 
-    const scaleAttribute = instanciedGeom.setAttribute('_scale', 2);
+    const scaleAttribute = instanciedGeom.createAttribute('_scale', 2);
 
-    const alphaAttribute = instanciedGeom.setAttribute('_alpha', 1);
+    const alphaAttribute = instanciedGeom.createAttribute('_alpha', 1);
     const initialAlpha = new Float32Array(nbr);
 
-    const timeAttribute = instanciedGeom.setAttribute('_time', 1);
+    const timeAttribute = instanciedGeom.createAttribute('_time', 1);
     const timeSpeed = new Float32Array(nbr);
 
     const translationForce = new Float32Array(nbr * 2);
 
-    const incrementedColor = instanciedGeom.setAttribute(
+    const incrementedColor = instanciedGeom.createAttribute(
       '_incrementedColor',
       1
     );
