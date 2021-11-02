@@ -1,3 +1,4 @@
+import { loadImage } from './loaders';
 
 /**
  *
@@ -27,10 +28,9 @@ export const applyImageToCanvas = (url, w, h) => new Promise((resolve, reject) =
         const width = w || image.width;
         const height = h || image.height;
         const canvasB = canvasBuilder(width, height);
-        const { canvas, context } = canvasB;
-        context.drawImage(image, 0, 0, width, height);
+        canvasB.context.drawImage(image, 0, 0, width, height);
         window.URL.revokeObjectURL(blob);
-        resolve(canvas);
+        resolve(canvasB);
       }).catch(reject);
     }
   };

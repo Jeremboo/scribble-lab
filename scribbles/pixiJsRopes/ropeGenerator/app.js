@@ -68,13 +68,13 @@ const buildRopeTexture = (nbrOfNodes) => {
     let canvasRopePattern = null;
     let canvasRopeBegin = null;
 
-    applyImageToCanvas(ropePattern, props.ROPE_WIDTH, props.ROPE_WIDTH).then((cRopePattern) => {
+    applyImageToCanvas(ropePattern, props.ROPE_WIDTH, props.ROPE_WIDTH).then(({ canvas: cRopePattern }) => {
       canvasRopePattern = cRopePattern;
       return applyImageToCanvas(ropeBegin, props.ROPE_WIDTH, props.ROPE_WIDTH);
-    }).then((cRopeBegin) => {
+    }).then(({ canvas: cRopeBegin }) => {
       canvasRopeBegin = cRopeBegin;
       return applyImageToCanvas(ropeEnd, props.ROPE_WIDTH, props.ROPE_WIDTH);
-    }).then((cRopeEnd) => {
+    }).then(({ canvas: cRopeEnd }) => {
       // build rope
       const ropeWidth = nbrOfNodes * props.SEGMENT_LENGTH;
       const { canvas, context } = canvasBuilder(ropeWidth, props.ROPE_WIDTH);

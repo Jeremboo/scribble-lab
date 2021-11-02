@@ -1,5 +1,6 @@
 import { Points, BufferGeometry, BufferAttribute } from 'three';
 
+// TODO 2021-11-01 jeremboo: Move that in GLOBAL MODULE
 export default class Particles extends Points {
   constructor(width, height, material) {
     let i;

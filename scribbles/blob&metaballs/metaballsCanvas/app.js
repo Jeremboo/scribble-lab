@@ -54,7 +54,7 @@ class BubbleCanvas {
     // https://i.imgur.com/462xXUs.png
     // https://pixabay.com/get/eb3db40a2ef2073ed95c4518b74d4095e272e1dc04b014419cf9c97fafebb4_640.jpg
     this.backgroundImg = false;
-    applyImageToCanvas('https://i.imgur.com/462xXUs.png', this.size, this.size).then((_canvas) => {
+    applyImageToCanvas('https://i.imgur.com/462xXUs.png', this.size, this.size).then(({ canvas: _canvas }) => {
       this.backgroundImg = _canvas;
     });
   }
