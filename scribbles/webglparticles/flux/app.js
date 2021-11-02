@@ -1,12 +1,12 @@
 import {
-  Mesh, ShaderMaterial, Color, Fog,ShaderLib, Vector2, Vector3, Object3D
+  Mesh, ShaderMaterial, Color, Fog,ShaderLib, Vector3, Object3D,
 } from 'three';
 import canvasSketch from 'canvas-sketch';
 import dat, { GUI } from 'dat.gui';
 import imageController from 'dat.gui.image';
 import gsap from 'gsap';
 
-import Renderer from '../../../modules/Renderer.three';
+import PostProcessingRenderer from '../../../modules/PostProcessingRenderer.three';
 import CameraMouseControl from '../../../modules/CameraMouseControl';
 import InstancedGeom, { createPlaneBuffer } from '../../../modules/InstancedGeom';
 
@@ -14,6 +14,8 @@ import { getRandomFloat } from '../../../utils';
 import { rotate2D } from '../../../utils/glsl';
 
 import { applyImageToCanvas } from '../../../utils/canvas';
+
+import Pass from './Pass';
 
 const textureUrl = './assets/flow-texture.png';
 
@@ -194,7 +196,7 @@ class Flux extends Mesh {
 }
 
 canvasSketch(async ({ context }) => {
-  const renderer = new Renderer({ canvas: context.canvas });
+  const renderer = new PostProcessingRenderer({ canvas: context.canvas });
   renderer.setClearColor(PROPS.bgColor, 1);
   renderer.scene.fog = new Fog(new Color(PROPS.bgColor), PROPS.fogNear, PROPS.fogFar);
 
@@ -202,7 +204,13 @@ canvasSketch(async ({ context }) => {
     { mouseMove : PROPS.mouseMove, velocity: PROPS.mouseVelocity}
     );
 
+  // Post processing
+  const postProcessingPass = new Pass();
+  renderer.addPass(postProcessingPass);
 
+
+
+  // FLUX
   const wrapper = new Object3D();
   wrapper.position.x = PROPS.origin.x;
   wrapper.position.y = PROPS.origin.y;
@@ -313,9 +321,8 @@ canvasSketch(async ({ context }) => {
   fluxFolder.add(flux.material.uniforms.waveStrenght, 'value', 0, 1.5).name('waveStrenght');
 
   return {
-    resize({ pixelRatio, viewportWidth, viewportHeight }) {
-      renderer.setPixelRatio(pixelRatio);
-      renderer.resize(viewportWidth, viewportHeight);
+    resize(props) {
+      renderer.resize(props);
     },
     render(props) {
       cameraControl.update();

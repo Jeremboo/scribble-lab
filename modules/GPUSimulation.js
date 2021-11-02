@@ -46,34 +46,13 @@ import {
 
 import FBOHelper from 'three.fbo-helper';
 
+import { defaultFragmentShader, defaultVertexShader } from '../utils/glsl';
+
 /**
  * *********
  * CONST
  * *********
  */
-
-/* Default fragment shader for the begining */
-const DEFAULT_SIMULATION_FRAGMENT_SHADER = `
-precision highp float;
-
-uniform sampler2D texture;
-
-void main() {
-  vec2 uv = gl_FragCoord.xy / resolution.xy;
-  gl_FragColor = texture2D( texture, uv );
-}
-`;
-
-/* Default vertex shader for each Simulation Shader Material */
-const DEFAULT_SIMULATION_VERTEX_SHADER = `
-precision highp float;
-
-attribute vec3 position;
-
-void main() {
-  gl_Position = vec4( position, 1.0 );
-}
-`;
 
 /* Default uniform to each FBO texture */
 const DEFAULT_UNIFORM = { texture : { value : null } };
@@ -132,7 +111,7 @@ export default class GPUSimulation {
     geom.addAttribute('position', new BufferAttribute(new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0]), 3));
 
     // Create a default material
-    const material = this.createSimulationShaderMaterial(DEFAULT_SIMULATION_FRAGMENT_SHADER);
+    const material = this.createSimulationShaderMaterial(defaultFragmentShader);
     this.mesh = new Mesh(geom, material);
     this.scene.add(this.mesh);
   }
@@ -288,7 +267,7 @@ export default class GPUSimulation {
     width = this.width,
     height = this.height,
     uniforms = {},
-    vertexShader = DEFAULT_SIMULATION_VERTEX_SHADER
+    vertexShader = defaultVertexShader
   } = {}) {
     if (uniforms.texture) {
       console.error('ERROR.createSimulationShaderMaterial : the uniform named texture is protected');

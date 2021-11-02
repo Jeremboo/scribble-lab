@@ -1,16 +1,21 @@
 import { WebGLRenderer, Scene, PerspectiveCamera } from 'three';
 
+// NOTE 2021-11-02 jeremboo: Put to 2 if you want to have the best quality
+const PIXEL_RATIO_MAX = 1.6; // 1.6 is normaly enought
+
 export default class Renderer extends WebGLRenderer {
   constructor(rendererProps) {
     super(rendererProps);
 
+    console.log('renderProps', rendererProps);
+
     this.width = 0;
     this.height = 0;
 
-    this.meshCount = 0;
-    this.meshListeners = [];
+    this.count = 0;
+    this.listeners = [];
 
-    this.setPixelRatio(Math.min(1.6, window.devicePixelRatio) || 1);
+    this.changePixelRatio();
 
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(50, this.aspectRatio, 1, 1000);
@@ -20,17 +25,25 @@ export default class Renderer extends WebGLRenderer {
     this.update = this.update.bind(this);
   }
 
+  changePixelRatio(pixelRatio = window.devicePixelRatio) {
+    this.pixelRatio = Math.min(PIXEL_RATIO_MAX, pixelRatio) || 1
+    this.setPixelRatio(this.pixelRatio);
+  }
+
   /**
    * * *******************
    * * RESIZE
    * * *******************
    */
-  resize(width, height) {
-    this.width = width;
-    this.height = height;
+  resize({ pixelRatio, viewportWidth, viewportHeight }) {
+    this.width = viewportWidth;
+    this.height = viewportHeight;
 
     this.camera.aspect = this.width / this.height;
     this.camera.updateProjectionMatrix();
+
+    // Set the pixelRatio
+    this.changePixelRatio(pixelRatio);
 
     // Set the sizes
     this.setSize(this.width, this.height, false);
@@ -44,9 +57,13 @@ export default class Renderer extends WebGLRenderer {
 
   add(mesh) {
     this.scene.add(mesh);
-    if (!mesh.update) return;
-    this.meshListeners.push(mesh.update);
-    this.meshCount++;
+    this.addUpdate(mesh);
+  }
+
+  addUpdate(object) {
+    if (!object.update) return;
+    this.listeners.push(object.update);
+    this.count++;
   }
 
   remove(mesh) {
@@ -59,9 +76,9 @@ export default class Renderer extends WebGLRenderer {
    * * *******************
    */
   update(props) {
-   let i = this.meshCount;
+   let i = this.count;
    while (--i >= 0) {
-      this.meshListeners[i](props)
+      this.listeners[i](props)
     }
     this.render(this.scene, this.camera);
   }

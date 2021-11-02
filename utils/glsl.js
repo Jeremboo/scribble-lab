@@ -1,6 +1,32 @@
 
 /**
  * * *******************
+ * * DEFAULT SHADERS
+ * * *******************
+ */
+
+export const defaultFragmentShader = `
+precision highp float;
+
+uniform sampler2D texture;
+uniform vec2 resolution;
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / resolution.xy;
+  gl_FragColor = texture2D( texture, uv );
+}`;
+
+export const defaultVertexShader = `
+precision highp float;
+
+attribute vec3 position;
+
+void main() {
+  gl_Position = vec4(position, 1.0 );
+}`;
+
+/**
+ * * *******************
  * * MATH
  * * *******************
  */
