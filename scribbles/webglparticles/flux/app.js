@@ -35,9 +35,9 @@ const PROPS = {
   nbr: 50000,
   speed: 0.00005,
   speedVariation: 3,
-  radius: 1.5,
-  origin: new Vector3(3.9, 1.5, -1),
-  direction: new Vector3(-13, -6, 20),
+  origin: new Vector3(3.9, 1.5, 1.5),
+  direction: new Vector3(-14, -7.8, 16),
+  radius: 2.5,
   variationTexture: textureUrl,
   centralTorsion: 10,
   rotationSpeed: 12,
@@ -75,7 +75,7 @@ class Flux extends Mesh {
 
     for (let i = 0; i < nbr; i++) {
       const { x, y } = getPositionFromTexture();
-      variationAttribute.setXY(i, (x) * radius, (y) * radius);
+      variationAttribute.setXY(i, x, y);
 
       // progress
       // TODO 2021-11-01 jeremboo: En mettre un peu plus au début qu'a la fin
@@ -94,6 +94,7 @@ class Flux extends Mesh {
         fogColor, fogDensity, fogFar, fogNear,
         color: { value: new Color(color) },
         scale: { value: PROPS.scale },
+        radius: { value: radius },
         direction: { value: PROPS.direction },
         centralTorsion: { value: PROPS.centralTorsion },
         rotationSpeed: { value: rotationSpeed },
@@ -133,6 +134,7 @@ class Flux extends Mesh {
         uniform float waveShift;
         uniform float waveLength;
         uniform float waveStrenght;
+        uniform float radius;
 
         uniform float particleSpeed;
 
@@ -162,7 +164,7 @@ class Flux extends Mesh {
           transformed += direction * progress;
 
           // Rotate around the central axis
-          vec2 var = rotate2D(_variation, progress * centralTorsion + (time * rotationSpeed));
+          vec2 var = rotate2D(_variation, progress * centralTorsion + (time * rotationSpeed)) * radius;
 
           // Wavy flux
           var.xy += cos((waveShift + progress) * waveLength) * waveStrenght;
@@ -241,7 +243,7 @@ canvasSketch(async ({ context }) => {
   const flux2 = new Flux({
     color: '#E35E55',
     nbr: PROPS.nbr * 0.5,
-    radius: PROPS.radius * 0.4,
+    radius: PROPS.radius * 0.8,
     speed: PROPS.speed * 2,
     rotationSpeed: PROPS.rotationSpeed / 2,
     ...globalProps
@@ -251,7 +253,7 @@ canvasSketch(async ({ context }) => {
   const flux3 = new Flux({
     color: '#27E0FD',
     nbr: PROPS.nbr * 0.5,
-    radius: PROPS.radius * 0.4,
+    radius: PROPS.radius * 0.8,
     speed: PROPS.speed * 2,
     rotationSpeed: PROPS.rotationSpeed / 2,
     ...globalProps
@@ -314,6 +316,7 @@ canvasSketch(async ({ context }) => {
     // TODO 2021-11-02 jeremboo: Use the image as transition
     if (firstTime) return;
   });
+  fluxFolder.add(flux.material.uniforms.radius, 'value', 1, 3).name('radius');
   fluxFolder.add(flux.material.uniforms.centralTorsion, 'value', 0, 20).name('centralTorsion');
   fluxFolder.add(flux.material.uniforms.rotationSpeed, 'value', 0, 100).name('rotationSpeed');
   fluxFolder.add(flux.material.uniforms.waveShift, 'value', 0, 1).name('waveShift');
