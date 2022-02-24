@@ -32,7 +32,7 @@ export default class PostProcessingRenderer extends Renderer {
     });
 
     this.material = new RawShaderMaterial({
-      fragmentShader: defaultFragmentShader,
+      fragmentShader: this.writeFragmentShader(),
       vertexShader: defaultVertexShader,
       uniforms: {
         texture: { value: this.target.texture },
@@ -47,35 +47,44 @@ export default class PostProcessingRenderer extends Renderer {
     this.passes = [];
   }
 
+  writeFragmentShader(fragUniforms = '', fragBefore= '', fragAfter = '') {
+    return `
+    precision highp float;
+
+    uniform sampler2D texture;
+    uniform vec2 resolution;
+
+    ${fragUniforms}
+
+    void main() {
+      vec2 uv = gl_FragCoord.xy / resolution.xy;
+
+      ${fragBefore}
+
+      vec4 transformed = texture2D(texture, uv);
+
+      ${fragAfter}
+
+      gl_FragColor = transformed;
+    }`;
+  }
+
   updateMaterial() {
     let fragmentUniforms = ``;
-    let fragmentMain = ``;
+    let fragmentBefore = ``;
+    let fragmentAfter = ``;
     const uniforms = {};
     this.passes.forEach(pass => {
       fragmentUniforms += `${pass.fragmentUniforms}
 `;
-      fragmentMain += `${pass.fragmentMain}
+      fragmentBefore += `${pass.fragmentBefore}
+`;
+      fragmentAfter += `${pass.fragmentAfter}
 `;
       Object.assign(uniforms, pass.uniforms);
     });
 
-    this.material.fragmentShader = `
-  precision highp float;
-
-  uniform sampler2D texture;
-  uniform vec2 resolution;
-
-  ${fragmentUniforms}
-
-  void main() {
-    vec2 uv = gl_FragCoord.xy / resolution.xy;
-    vec4 transformed = texture2D(texture, uv);
-
-    ${fragmentMain}
-
-    gl_FragColor = transformed;
-  }
-`;
+    this.material.fragmentShader = this.writeFragmentShader(fragmentUniforms, fragmentBefore, fragmentAfter);
     Object.assign(this.material.uniforms, uniforms);
     this.material.needsUpdate = true;
   }

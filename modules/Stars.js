@@ -49,11 +49,11 @@ export default class Starts extends Mesh {
         void main() {
           #include <begin_vertex>
 
-            mat4 rotationMatrix = mat4(
-              vec4(cos(_rotation), -sin(_rotation), 0.0, 0.0),
-              vec4(sin(_rotation), cos(_rotation), 0.0, 0.0),
-              vec4(0.0, 0.0, 1.0, 0.0),
-              vec4(0.0, 0.0, 0.0, 1.0)
+          mat4 rotationMatrix = mat4(
+            vec4(cos(_rotation), -sin(_rotation), 0.0, 0.0),
+            vec4(sin(_rotation), cos(_rotation), 0.0, 0.0),
+            vec4(0.0, 0.0, 1.0, 0.0),
+            vec4(0.0, 0.0, 0.0, 1.0)
           );
 
           float scale = _scale * sin(_scale * 100. + time);
@@ -65,7 +65,7 @@ export default class Starts extends Mesh {
             vec4(0.0, 0.0, 0.0, 1.0)
           );
 
-          transformed = (rotationMatrix * scaleMatrix * vec4((position), 1.0)).xyz;
+          transformed = (rotationMatrix * scaleMatrix * vec4(position, 1.0)).xyz;
           transformed += _position;
 
           #include <project_vertex>

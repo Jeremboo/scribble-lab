@@ -23,7 +23,9 @@ copyFileSync(stylePath, `${outputPath}style.css`);
 let assetsPath = `${scribblePath}assets`;
 if (existsSync(assetsPath)) {
   const outputAssetPath = `${outputPath}assets`;
-  mkdirSync(outputAssetPath);
+  if (!existsSync(outputAssetPath)) {
+    mkdirSync(outputAssetPath);
+  }
   copySync(assetsPath, outputAssetPath);
 }
 

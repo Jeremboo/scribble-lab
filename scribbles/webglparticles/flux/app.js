@@ -1,5 +1,5 @@
 import {
-  Mesh, ShaderMaterial, Color, Fog,ShaderLib, Vector3, Object3D,
+  Mesh, ShaderMaterial, Color, Fog,ShaderLib, RepeatWrapping, Vector3, Object3D, TextureLoader,
 } from 'three';
 import canvasSketch from 'canvas-sketch';
 import dat, { GUI } from 'dat.gui';
@@ -17,7 +17,9 @@ import { applyImageToCanvas } from '../../../utils/canvas';
 
 import Pass from './Pass';
 
-const textureUrl = './assets/flow-texture.png';
+const flowTextureUrl = './assets/flow-texture.png';
+const gridTextureUrl = './assets/grid-texture.png';
+const gridTextureUrl2 = './assets/grid-texture-2.png';
 
 imageController(dat);
 
@@ -26,7 +28,7 @@ const PROPS = {
   bgColor: '#030706',
   // mouseMove: [0, 0],
   mouseMove: [-0.2, -0.2],
-  mouseVelocity: [0.1, 0.2],
+  mouseVelocity: [0.05, 0.05],
   fogNear: 2,
   fogFar: 20,
   // particle
@@ -38,7 +40,8 @@ const PROPS = {
   origin: new Vector3(3.9, 1.5, 1.5),
   direction: new Vector3(-14, -7.8, 16),
   radius: 2.5,
-  variationTexture: textureUrl,
+  variationTexture: flowTextureUrl,
+  gridTexture: gridTextureUrl,
   centralTorsion: 10,
   rotationSpeed: 12,
   waveShift: 1.8,
@@ -198,18 +201,30 @@ class Flux extends Mesh {
 }
 
 canvasSketch(async ({ context }) => {
+  const textureLoader = new TextureLoader();
   const renderer = new PostProcessingRenderer({ canvas: context.canvas });
   renderer.setClearColor(PROPS.bgColor, 1);
   renderer.scene.fog = new Fog(new Color(PROPS.bgColor), PROPS.fogNear, PROPS.fogFar);
 
   const cameraControl = new CameraMouseControl(renderer.camera,
     { mouseMove : PROPS.mouseMove, velocity: PROPS.mouseVelocity}
-    );
+  );
 
   // Post processing
   const postProcessingPass = new Pass();
   renderer.addPass(postProcessingPass);
 
+  // TODO 2021-11-03 jeremboo: Load images
+  textureLoader.load(gridTextureUrl, texture => {
+    texture.wrapT = RepeatWrapping;
+    texture.wrapS = RepeatWrapping;
+    postProcessingPass.uniforms.shiftTexture.value = texture;
+  });
+  textureLoader.load(gridTextureUrl2, texture => {
+    texture.wrapT = RepeatWrapping;
+    texture.wrapS = RepeatWrapping;
+    postProcessingPass.uniforms.gridTexture.value = texture;
+  });
 
 
   // FLUX
@@ -224,7 +239,7 @@ canvasSketch(async ({ context }) => {
   };
   renderer.add(wrapper);
 
-  const { getImageData, canvas } = await applyImageToCanvas(textureUrl);
+  const { getImageData, canvas } = await applyImageToCanvas(flowTextureUrl);
 
   const imageData = getImageData();
 
@@ -322,6 +337,7 @@ canvasSketch(async ({ context }) => {
   fluxFolder.add(flux.material.uniforms.waveShift, 'value', 0, 1).name('waveShift');
   fluxFolder.add(flux.material.uniforms.waveLength, 'value', 0, 30).name('waveLength');
   fluxFolder.add(flux.material.uniforms.waveStrenght, 'value', 0, 1.5).name('waveStrenght');
+  postProcessingPass.gui(gui.addFolder('postProcessing'));
 
   return {
     resize(props) {

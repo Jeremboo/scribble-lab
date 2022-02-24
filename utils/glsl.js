@@ -102,7 +102,7 @@ export const verticalTwist = `
 export const drawRadialGradient = `
   float drawRadialGradient(vec2 center, vec2 currentPosition, float scale) {
     float dist = distance(center, currentPosition) * (2.0 / scale);
-    return 1.0 - dist;
+    return 1.0 - min(1., dist);
   }
 `;
 
