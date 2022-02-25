@@ -62,9 +62,8 @@ canvasSketch(({ context }) => {
   gui.add(PROPS, 'speed', 1, 10);
 
   return {
-    resize({ pixelRatio, viewportWidth, viewportHeight }) {
-      renderer.setPixelRatio(pixelRatio);
-      renderer.resize(viewportWidth, viewportHeight);
+    resize(props) {
+      renderer.resize(props);
     },
     render(props) {
       renderer.update(props);
