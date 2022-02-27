@@ -3,6 +3,7 @@ import {
 } from 'three';
 import canvasSketch from 'canvas-sketch';
 import { GUI } from 'dat.gui';
+import gsap from 'gsap';
 
 import Renderer from '../../../modules/Renderer.three';
 import OrbitControls from '../../../modules/OrbitControls';
@@ -39,17 +40,22 @@ import { distance } from '../../../utils/vec2';
 
 
 const PROPS = {
-  bgColor: '#ffffff',
+  bgColor: ['#F55A5A', '#598CF5', '#30EB64','#598CF5', '#2F64D7', '#B48CFC', '#30EB64'],
   blockNbr: 5,
   blockLenghts: [1, 1, 1, 2.5],
   blockColors1: ['#F55A5A', '#598CF5', '#30EB64'],
-  blockColors2: ['#598CF5', '#2F64D7', '#B48CFC',],
+  blockColors2: ['#598CF5', '#2F64D7', '#B48CFC'],
+  // blockColors1: ['#F55A5A'],
+  // blockColors2: ['#B48CFC',],
   // shadows: [0.05, 0.05],
-  shadows: [0.06],
+  shadows: [0.06,0.06],
   planeScale: 0.4,
   distanceMin: 0.9,
   distanceTitleMinX: 2,
   distanceTitleMinY: 1,
+  // animation
+  rotationScale: 0.5,
+  rotationSpeed: 2,
 };
 
 const blocks = [];
@@ -98,6 +104,19 @@ class Light extends Group {
     this.update = this.update.bind(this);
   }
 
+  changePosition() {
+    if (this.animating) return;
+    this.animating = true;
+    const newPosition = new Vector3(
+      getRandomFloat(-2.5, 2.5),
+      getRandomFloat(-4, 3.9),
+      getRandomFloat(0, 5)
+    )
+    gsap.to(this.light.position, { x: newPosition.x, y: newPosition.y, z: newPosition.z, duration: 1.5, ease: 'power4.inOut', onComplete: () => {
+      this.animating = false
+    } })
+  }
+
   update() {
     this.sphere.position.x = this.light.position.x;
     this.sphere.position.y = this.light.position.y;
@@ -118,11 +137,13 @@ class Shadow extends Mesh {
 canvasSketch(({ context }) => {
   // * GUI *******
   const gui = new GUI();
+  gui.add(PROPS, 'rotationSpeed', 0, 5);
+  gui.add(PROPS, 'rotationScale', 0, 0.8);
 
   // * Init ******
   const renderer = new Renderer({ canvas: context.canvas });
-  const controls = new OrbitControls(renderer.camera, context.canvas);
-  renderer.setClearColor(PROPS.bgColor, 1);
+  // const controls = new OrbitControls(renderer.camera, context.canvas);
+  renderer.setClearColor(getRandomItem(PROPS.bgColor), 1);
   renderer.shadowMap.enabled = true;
   // renderer.shadowMap.type = PCFSoftShadowMap; // default PCFShadowMap
 
@@ -130,22 +151,12 @@ canvasSketch(({ context }) => {
   const title = new Mesh(new PlaneGeometry(4, 2, 1), new MeshBasicMaterial())
   title.position.x = getRandomFloat(-1, 1.5);
   title.position.y = getRandomFloat(-3.8, 3.8);
-
+  title.position.z = -0.01;
+  renderer.add(title);
 
   const titleFolder = gui.addFolder('title');
   titleFolder.add(title.position, 'x', -5, 5);
   titleFolder.add(title.position, 'y', -5, 5);
-
-  const data = {
-    x: 4
-  };
-  titleFolder.add(data, 'x', 2, 7).onChange(() => {
-    console.log(data.x);
-  })
-
-
-  title.position.z = -0.01;
-  renderer.add(title);
 
   const loader = new TextureLoader();
   loader.load('./assets/title.png', (texture) => {
@@ -153,14 +164,42 @@ canvasSketch(({ context }) => {
     title.material.needsUpdate = true;
   })
 
+  // * Logo ******
+  const addLogo = (logo) => {
+    logo.position.x = 2.2;
+    logo.position.y = -3.8;
+    logo.position.z = -0.009;
+    // logo.position.x = getRandomFloat(-1, 1.5);
+    // logo.position.y = getRandomFloat(-3.8, 3.8);
+
+    const { dist } = distance(logo.position.x, logo.position.y, title.position.x, title.position.y);
+    if (dist > 1) {
+      renderer.add(logo);
+    } else {
+      addLogo(logo)
+    }
+  }
+  const logo = new Mesh(new PlaneGeometry(1.5, 0.75, 1), new MeshBasicMaterial())
+  logo.position.z = -0.01;
+  addLogo(logo);
+
+  const logoFolder = gui.addFolder('logo');
+  logoFolder.add(logo.position, 'x', -5, 5);
+  logoFolder.add(logo.position, 'y', -5, 5);
+
+  loader.load('./assets/logo.png', (texture) => {
+    logo.material.map = texture;
+    logo.material.needsUpdate = true;
+  })
+
   // * Blocks ******
   const addBlock = (block) => {
     block.updatePosition();
     // TODO 2022-02-25 jeremboo: Test with physic instead
     let isFarEnought = true;
-    const { x, y, dist } = distance(title.position.x, title.position.y, block.position.x, block.position.y);
-    // isFarEnought = Math.abs(x) > PROPS.distanceTitleMinX && Math.abs(y) > PROPS.distanceTitleMinY;
-    isFarEnought = dist > 1.5;
+    const { dist } = distance(title.position.x, title.position.y, block.position.x, block.position.y);
+    const { dist: distLogo } = distance(logo.position.x, logo.position.y, block.position.x, block.position.y);
+    isFarEnought = distLogo > 1 && dist > 2;
     blocks.forEach((b) => {
       const { dist } = distance(b.position.x, b.position.y, block.position.x, block.position.y);
       if (isFarEnought && dist < PROPS.distanceMin) {
@@ -193,10 +232,12 @@ canvasSketch(({ context }) => {
   for (i = 0; i < length; i++) {
     const block = new Block(color2);
     addBlock(block);
+    block.position.z += 0.00001;
   }
 
   // * Lights ******
   //Create a DirectionalLight and turn on shadows for the light
+  const lights = [];
   for (i = 0; i < PROPS.shadows.length; i++) {
     // Shadow
     const shadow = new Shadow(PROPS.shadows[0]);
@@ -213,6 +254,8 @@ canvasSketch(({ context }) => {
     lightGui.add(light.position, 'x', -5, 5).step(0.1);
     lightGui.add(light.position, 'y', -5, 5).step(0.1);
     lightGui.add(light.light.position, 'z', 0, 10).name('z').step(0.01);
+
+    lights.push(light);
   }
 
   // TODO 2022-02-25 jeremboo: jouer avec les layers
@@ -220,6 +263,7 @@ canvasSketch(({ context }) => {
 
   // * Camera ******
   const lookAt = () => {
+    renderer.camera.savedPosition = renderer.camera.position.clone();
     renderer.camera.lookAt(new Vector3());
   }
   renderer.camera.position.x = getRandomFloat(-3, 0);
@@ -231,12 +275,29 @@ canvasSketch(({ context }) => {
   cameraGui.add(renderer.camera.position, 'y', -5, 5).onChange(lookAt)
 
 
+
+  // * Animation ****
+  const changeLightsPosition = () => {
+    lights.forEach((light) => {
+      light.changePosition();
+    })
+  }
+  document.body.addEventListener('click', changeLightsPosition);
+
   return {
     resize(props) {
       renderer.resize(props);
     },
     render(props) {
       renderer.update(props);
+
+      if (Math.random() > 0.99) {
+        changeLightsPosition();
+      }
+
+      renderer.camera.position.x = renderer.camera.savedPosition.x - Math.sin(props.time * PROPS.rotationSpeed) * PROPS.rotationScale;
+      renderer.camera.position.y = renderer.camera.savedPosition.y + Math.cos(props.time * PROPS.rotationSpeed) * PROPS.rotationScale;
+      renderer.camera.lookAt(new Vector3());
     },
     unload() {
       controls.dispose();

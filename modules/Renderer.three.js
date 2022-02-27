@@ -7,8 +7,6 @@ export default class Renderer extends WebGLRenderer {
   constructor(rendererProps) {
     super(rendererProps);
 
-    console.log('renderProps', rendererProps);
-
     this.width = 0;
     this.height = 0;
 
