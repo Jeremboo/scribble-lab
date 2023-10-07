@@ -1,3 +1,5 @@
+import { verticalTwist } from "../../../utils/glsl";
+
 export const vert = `#define PHYSICAL
 varying vec3 vViewPosition;
 #ifndef FLAT_SHADED
@@ -85,23 +87,7 @@ float linearToRelativeLuminance( const in vec3 color ) {
 
 uniform float torsionForce;
 
-
-vec4 DoTwist( vec4 pos, float t )
-{
-	float st = sin(t);
-	float ct = cos(t);
-
-	vec4 new_pos;
-
-	new_pos.x = pos.x * ct - pos.z * st;
-	new_pos.z = pos.x * st + pos.z * ct;
-
-	new_pos.y = pos.y;
-	new_pos.w = pos.w;
-
-	return( new_pos );
-}
-
+${verticalTwist}
 
 void main() {
 	#include <uv_vertex>
@@ -146,7 +132,7 @@ void main() {
 
 	float y = transformed.y; // - (torsionForce * 0.01);
 	transformed.x += 0.1;
-  vec4 torced = DoTwist(vec4( transformed, 1.0 ), y * torsionForce);
+  vec4 torced = verticalTwist(vec4( transformed, 1.0 ), y * torsionForce);
   vec4 mvPosition = modelViewMatrix * torced;
 
 	vUv = vec2(

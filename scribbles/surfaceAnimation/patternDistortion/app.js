@@ -1,6 +1,6 @@
 import {
   Mesh, ShaderMaterial, Color, PlaneBufferGeometry, TextureLoader, NearestFilter, LinearFilter,
-  RepeatWrapping, Vector2,
+  RepeatWrapping, Vector2, DoubleSide,
   Vector3
 } from 'three';
 import gsap from 'gsap';
@@ -10,6 +10,7 @@ import { GUI } from 'dat.gui';
 import Renderer from '../../../modules/Renderer.three';
 import OrbitControls from '../../../modules/OrbitControls';
 import CameraMouseControl from '../../../modules/CameraMouseControl';
+import { horizontalTwist } from '../../../utils/glsl';
 
 const PROPS = {
   mainColor: '#EF8E17',
@@ -21,11 +22,14 @@ const PROPS = {
   infiniteSlice: 0,
   infiniteWave: 0.005,
   tSkew: 0,
-  tWave: 0,
-  waveSin: 4,
-  scaleY: 12,
-  scaleYPow: 10,
-  scaleYShift: 0,
+  waveStrengh: 0,
+  waveLenght: 4,
+  curve: 0,
+  curvePow: 10,
+  curveShift: 1,
+  // Twist
+  twistStrenght: 0,
+  infiniteTwistShift: 0,
   // PHYSICS
   velocity: 0.02,
   friction: 0.9,
@@ -36,9 +40,11 @@ const PROPS = {
 // TODO 2023-10-05 jeremboo: ADD OTHER ANIMATIONS / DISTORTIONS / ...
 class CustomMesh extends Mesh {
   constructor() {
-    const geometry = new PlaneBufferGeometry(20, 8);
+    const geometry = new PlaneBufferGeometry(20, 8, 50, 50);
     const material = new ShaderMaterial({
       transparent: true,
+      side: DoubleSide,
+      // wireframe: true,
       uniforms: {
         tTexture: { value: null },
         tVertDivider: { value: PROPS.vertDivider },
@@ -47,11 +53,13 @@ class CustomMesh extends Mesh {
         tInfiniteShift: { value: 0 },
         tShift: { value: 0 },
         tSkew: { value: PROPS.tSkew },
-        tWave: { value: PROPS.tWave },
-        tWaveSin: { value: PROPS.waveSin },
-        tscaleY: { value: PROPS.scaleY },
-        tscaleYPow: { value: PROPS.scaleYPow },
-        tscaleYShift: { value: PROPS.scaleYShift },
+        tWave: { value: PROPS.waveStrengh },
+        tWaveSin: { value: PROPS.waveLenght },
+        tcurve: { value: PROPS.curve },
+        tcurvePow: { value: PROPS.curvePow },
+        tcurveShift: { value: PROPS.curveShift },
+        twistStrenght: { value: PROPS.twistStrenght },
+        tInfiniteTwistShift: { value: PROPS.infiniteTwistShift },
       },
       fragmentShader: `
         uniform sampler2D tTexture;
@@ -66,13 +74,16 @@ class CustomMesh extends Mesh {
         uniform float tWave;
         uniform float tWaveSin;
 
-        uniform float tscaleY;
-        uniform float tscaleYPow;
-        uniform float tscaleYShift;
+        uniform float tcurve;
+        uniform float tcurvePow;
+        uniform float tcurveShift;
 
         varying vec2 vUv;
 
         void main() {
+          // gl_FragColor = vec4(1.0);
+          // return;
+
           vec2 transformedUv = vUv;
 
           //Skew
@@ -86,8 +97,8 @@ class CustomMesh extends Mesh {
           transformedUv.y += sin((transformedUv.x * tWaveSin) + tInfiniteWave) * tWave;
 
           // ScaleY / Curve
-          float mult = sin(vUv.x * 3.14 * tscaleYShift);
-          transformedUv.y = transformedUv.y + (transformedUv.y * pow(mult, tscaleYPow) * tscaleY) - pow(mult, tscaleYPow) * 2. * tscaleY;
+          float mult = sin(vUv.x * 3.14 * tcurveShift);
+          transformedUv.y = transformedUv.y + (transformedUv.y * pow(mult, tcurvePow) * tcurve) - pow(mult, tcurvePow) * 2. * tcurve;
 
           if (transformedUv.y > 3.) {
             discard;
@@ -112,11 +123,20 @@ class CustomMesh extends Mesh {
         }
       `,
       vertexShader: `
+        uniform float twistStrenght;
+        uniform float tInfiniteTwistShift;
+
         varying vec2 vUv;
+
+        ${horizontalTwist}
+
         void main () {
           vUv = uv;
           vec3 transformed = position.xyz;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+
+          vec4 torced = horizontalTwist(vec4(transformed, 1.0), transformed.x * twistStrenght + tInfiniteTwistShift);
+
+          gl_Position = projectionMatrix * modelViewMatrix * torced;
         }
       `,
     });
@@ -132,6 +152,7 @@ class CustomMesh extends Mesh {
     this.material.uniforms.tInfiniteShift.value += PROPS.infiniteShift;
     this.material.uniforms.tInfiniteSlice.value += PROPS.infiniteSlice;
     this.material.uniforms.tInfiniteWave.value += PROPS.infiniteWave;
+    this.material.uniforms.tInfiniteTwistShift.value += PROPS.infiniteTwistShift;
 
     // this.rotation.x += 0.01;
 
@@ -195,7 +216,7 @@ canvasSketch(({ context }) => {
     slice: () => {
       gsap.fromTo(PROPS, { infiniteSlice: 0 }, { duration: 0.8, repeat: 1, yoyo: true, infiniteSlice: 0.01 })
     },
-    animateDivider: (ease = "ease.out", duration = 0.8) => {
+    divide: (ease = "ease.out", duration = 0.8) => {
       const newValue = Math.max(1, Math.floor(Math.random() * 6));
       gsap.to(mesh.material.uniforms.tVertDivider, {
         duration, value: Math.max(1, Math.floor(Math.random() * 6)),
@@ -204,15 +225,15 @@ canvasSketch(({ context }) => {
       const diff = mesh.material.uniforms.tVertDivider.value - newValue;
       // gsap.to(mesh.material.uniforms.tShift, { duration: 0.8, value: (mesh.material.uniforms.tShift.value + diff) * 0.5 })
     },
-    animateDividerWithBounce: () => {
-      FUNCTIONS.animateDivider("elastic.out(1, 0.3)", 1.5);
+    divideBounce: () => {
+      FUNCTIONS.divide("elastic.out(1, 0.3)", 1.5);
     },
     moveAndSkew: () => {
-      const duration = 2;
-      const ease = 'back.inOut(1.1)';
+      const duration = 3;
+      const ease = 'back.inOut(1.2)';
       gsap.to(mesh.material.uniforms.tShift, {
         duration,
-        value: mesh.material.uniforms.tShift.value - 1,
+        value: mesh.material.uniforms.tShift.value - 2,
         ease
       });
       gsap.to(mesh.material.uniforms.tSkew, {
@@ -223,31 +244,28 @@ canvasSketch(({ context }) => {
         ease
       });
     },
+    move: () => {
+      gsap.to(mesh.material.uniforms.tShift, {
+        duration: 3,
+        ease: "power4.inOut",
+        value: mesh.material.uniforms.tShift.value - 2,
+      });
+    },
     moveBounce: () => {
-      let prev = mesh.material.uniforms.tShift.value;
       const targetedValue = mesh.material.uniforms.tShift.value - 2;
       gsap.to(mesh.material.uniforms.tShift, {
         duration: 4,
         value: targetedValue,
-        ease: "elastic.out(0.9, 0.4)",
+        ease: "elastic.out(1, 0.5)",
         onUpdate: () => {
-          // const diff = 1 + (mesh.material.uniforms.tShift.value - prev) * 10;
-          // prev = mesh.material.uniforms.tShift.value;
-          // mesh.material.uniforms.tVertDivider.value = 4 * diff;
-          mesh.material.uniforms.tVertDivider.value = 4 - (targetedValue - mesh.material.uniforms.tShift.value) * 1;
+          mesh.material.uniforms.tVertDivider.value = 4 - (targetedValue - mesh.material.uniforms.tShift.value) * 2;
+          // mesh.material.uniforms.tVertDivider.value = 4 - (mesh.material.uniforms.tShift.value - targetedValue) * 2;
         }
       });
-      // gsap.to(mesh.material.uniforms.tVertDivider, {
-      //   duration: 4 * 0.25,
-      //   yoyo: true,
-      //   repeat: 1,
-      //   value: 1,
-      //   // ease: "elastic.out(0.9, 0.4)",
-      // });
     },
     animateWave: () => {
       mesh.material.uniforms.tWave.value = PROPS.tWave;
-      mesh.material.uniforms.tWaveSin.value = PROPS.waveSin;
+      mesh.material.uniforms.tWaveSin.value = PROPS.waveLenght;
       gsap.to(mesh.material.uniforms.tWave, {
         duration: 1,
         // yoyo: true,
@@ -257,33 +275,62 @@ canvasSketch(({ context }) => {
       });
       gsap.to(mesh.material.uniforms.tWaveSin, { value: 0.01, delay: 1 });
       gsap.to(mesh.material.uniforms.tWave, { duration: 0.5, value: 0, delay: 1 });
+    },
+    twist: (ease, durationBounce = 1, durationTwist = 0.5, force = 0.1) => {
+      gsap.to(mesh.material.uniforms.tInfiniteTwistShift, {
+        duration: durationBounce,
+        value: mesh.material.uniforms.tInfiniteTwistShift.value + Math.PI,
+        ease,
+      });
+      gsap.to(mesh.material.uniforms.twistStrenght, {
+        duration: durationTwist,
+        value: force,
+      });
+      gsap.to(mesh.material.uniforms.twistStrenght, {
+        duration: durationBounce - durationTwist,
+        delay: durationTwist,
+        value: 0,
+        ease
+      });
+    },
+    twistBounce: () => {
+      FUNCTIONS.twist("elastic.out(1, 0.4)", 4, 0.6, 0.1)
+    },
+    curve: () => {
+      gsap.to(mesh.material.uniforms.tcurve, { duration : 1, value: mesh.material.uniforms.tcurve.value < 0.5 ? 20 : 0, ease: "power3.inOut" })
     }
   }
 
   // * GUI *******
   const gui = new GUI();
-  gui.add(PROPS, 'scaleYShift', 0, 1).onChange((newValue) => {
-    mesh.material.uniforms.tscaleYShift.value = newValue;
+  // CURVE
+  gui.add(PROPS, 'curve', 0, 20).onChange((newValue) => {
+    mesh.material.uniforms.tcurve.value = newValue;
+  });
+  gui.add(PROPS, 'curvePow', 0, 20).onChange((newValue) => {
+    mesh.material.uniforms.tcurvePow.value = newValue;
+  });
+  gui.add(PROPS, 'curveShift', 1, 2).onChange((newValue) => {
+    mesh.material.uniforms.tcurveShift.value = newValue;
   }).step(0.1);
-  gui.add(PROPS, 'scaleYPow', 0, 20).onChange((newValue) => {
-    mesh.material.uniforms.tscaleYPow.value = newValue;
-  });
-  gui.add(PROPS, 'scaleY', 0, 20).onChange((newValue) => {
-    mesh.material.uniforms.tscaleY.value = newValue;
-  });
+  // SKEW
   gui.add(PROPS, 'tSkew', 0, 0.1).onChange((newValue) => {
     mesh.material.uniforms.tSkew.value = newValue;
     mesh.rotation.x = -newValue;
   });
-  gui.add(PROPS, 'waveSin', 0, 10).onChange((newValue) => {
-    mesh.material.uniforms.tWaveSin.value = newValue;
-  });
-  gui.add(PROPS, 'tWave', 0, 1).onChange((newValue) => {
+  gui.add(PROPS, 'waveStrengh', 0, 1).onChange((newValue) => {
     mesh.material.uniforms.tWave.value = newValue;
   }).step(0.01);
+  gui.add(PROPS, 'waveLenght', 0, 10).onChange((newValue) => {
+    mesh.material.uniforms.tWaveSin.value = newValue;
+  });
   gui.add(PROPS, 'vertDivider', 1, 10).step(1).onChange((newvalue) => {
     mesh.material.uniforms.tVertDivider.value = newvalue;
   });
+  gui.add(PROPS, 'twistStrenght', 0, 1).onChange((newValue) => {
+    mesh.material.uniforms.twistStrenght.value = newValue;
+  }).step(0.001);
+
 
   const physicFolder = gui.addFolder('physic');
   physicFolder.add(PROPS, 'velocity', 0.001, 0.2);
@@ -294,15 +341,20 @@ canvasSketch(({ context }) => {
   animationFolder.add(PROPS, 'infiniteSlice', -0.01, 0.01).step(0.001);
   animationFolder.add(PROPS, 'infiniteShift', -0.005, 0.005).step(0.0001);
   animationFolder.add(PROPS, 'infiniteWave', -0.01, 0.01).step(0.001);
+  animationFolder.add(PROPS, 'infiniteTwistShift', 0, 0.01);
   animationFolder.add(FUNCTIONS, 'slice');
-  animationFolder.add(FUNCTIONS, 'animateDivider');
   animationFolder.add(FUNCTIONS, 'bounce');
-  animationFolder.add(FUNCTIONS, 'move').name('move to');
-  animationFolder.add(mesh.targetedPosition, 'z', -10, 5);
-  animationFolder.add(FUNCTIONS, 'animateDividerWithBounce');
+  animationFolder.add(FUNCTIONS, 'move').name('moveBounce');
+  animationFolder.add(mesh.targetedPosition, 'z', -10, 5).name('moveZBounce')
+  animationFolder.add(FUNCTIONS, 'divide');
+  animationFolder.add(FUNCTIONS, 'divideBounce');
+  animationFolder.add(FUNCTIONS, 'move');
   animationFolder.add(FUNCTIONS, 'moveAndSkew');
-  animationFolder.add(FUNCTIONS, 'animateWave');
   animationFolder.add(FUNCTIONS, 'moveBounce');
+  animationFolder.add(FUNCTIONS, 'animateWave');
+  animationFolder.add(FUNCTIONS, 'twist');
+  animationFolder.add(FUNCTIONS, 'twistBounce');
+  animationFolder.add(FUNCTIONS, 'curve');
 
   return {
     resize(props) {

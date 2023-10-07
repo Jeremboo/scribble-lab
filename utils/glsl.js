@@ -86,16 +86,28 @@ export const scale = `
 `;
 
 export const verticalTwist = `
-  vec4 verticalTwist( vec4 pos, float t ) {
+  vec4 verticalTwist(vec4 pos, float t) {
     float st = sin(t);
     float ct = cos(t);
-    vec4 new_pos;
+
+    vec4 new_pos = pos;
     new_pos.x = pos.x * ct - pos.z * st;
     new_pos.z = pos.x * st + pos.z * ct;
-    new_pos.y = pos.y;
-    new_pos.w = pos.w;
 
-    return( new_pos );
+    return(new_pos);
+  }
+`;
+
+export const horizontalTwist = `
+  vec4 horizontalTwist(vec4 pos, float t) {
+    float st = sin(t);
+    float ct = cos(t);
+
+    vec4 new_pos = pos;
+    new_pos.z = pos.z * ct - pos.y * st;
+    new_pos.y = pos.z * st + pos.y * ct;
+
+    return(new_pos);
   }
 `;
 
