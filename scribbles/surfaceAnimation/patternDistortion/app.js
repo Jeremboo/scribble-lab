@@ -10,6 +10,7 @@ import { GUI } from 'dat.gui';
 import Renderer from '../../../modules/Renderer.three';
 import OrbitControls from '../../../modules/OrbitControls';
 import CameraMouseControl from '../../../modules/CameraMouseControl';
+import Stars from '../../../modules/Stars';
 import { horizontalTwist } from '../../../utils/glsl';
 
 // TODO 2023-10-05 jeremboo: AJOUTER DES PARTICULES POUR DE LA PROFONDEUR
@@ -18,13 +19,15 @@ import { horizontalTwist } from '../../../utils/glsl';
 // TODO 2023-10-05 jeremboo: ADD OTHER ANIMATIONS / DISTORTIONS / ...
 
 const PROPS = {
-  withUI: false,
+  ui: false,
+  vignette: true,
+  orbitControl: false,
   mainColor: '#EF8E17',
   bgColor: '#D61D1D',
   colorPattern: ["#EF8E17", "#1D40F3", "#90FF38", "#F96BFC"],
   // Shader props
   vertDivider: 4,
-  infiniteShift: 0,
+  infiniteShift: -0.0007,
   infiniteSlice: 0,
   infiniteWave: 0.005,
   tSkew: 0,
@@ -166,8 +169,8 @@ class CustomMesh extends Mesh {
     this.material.uniforms.tInfiniteWave.value += PROPS.infiniteWave;
     this.material.uniforms.tInfiniteTwistShift.value += PROPS.infiniteTwistShift;
 
-    // this.rotation.x += 0.01;
-
+    // this.targetedPosition.x += Math.sin(t) * 0.001;
+    // this.targetedPosition.y += Math.cos(t * 2) * 0.001;
 
     // Get the gravity
     this.force.x += (this.position.x - this.targetedPosition.x) * PROPS.velocity;
@@ -180,22 +183,39 @@ class CustomMesh extends Mesh {
   }
 }
 
+function toggleClass(classname) {
+  document.body.classList.toggle(classname);
+}
 function toggleUI() {
-  document.body.classList.toggle('ui');
+  toggleClass('ui');
 }
 
-if (PROPS.withUI) {
+function toggleVignette() {
+  toggleClass('vignette');
+}
+
+if (PROPS.ui) {
   toggleUI();
 }
+
+if (PROPS.vignette) {
+  toggleVignette();
+}
+
+let t = 0;
 
 canvasSketch(({ context }) => {
   const renderer = new Renderer({ canvas: context.canvas, transparent: true });
 
   const controls = new OrbitControls(renderer.camera, context.canvas);
-  // const cameraControl = new CameraMouseControl(renderer.camera, { mouseMove : [-5, -5], velocity: [0.1, 0.1]});
+  controls.enableRotate = PROPS.orbitControl;
+  const cameraControl = new CameraMouseControl(renderer.camera, { mouseMove : [-1, -5], velocity: [0.02, 0.04]});
 
 
   // * START *****
+  const stars = new Stars(100, { scalarMin: 8, scalarMax: 10, rotation: 0.001, opacity: 1, speed: 0.02 });
+  renderer.add(stars);
+
   const mesh = new CustomMesh(new Color(PROPS.colorPattern[0]), new Color(PROPS.colorPattern[1]));
   renderer.add(mesh);
 
@@ -339,7 +359,13 @@ canvasSketch(({ context }) => {
   // * GUI *******
   const gui = new GUI();
   // CURVE
-  gui.add(PROPS, 'withUI').onChange(toggleUI);
+  const uiFolder = gui.addFolder('ui');
+  uiFolder.add(PROPS, 'ui').onChange(toggleUI);
+  uiFolder.add(PROPS, 'vignette').onChange(toggleVignette);
+  uiFolder.add(PROPS, 'orbitControl').onChange(() => {
+    controls.enableRotate = PROPS.orbitControl;
+
+  });
   gui.add(PROPS, 'curve', 0, 20).onChange((newValue) => {
     mesh.material.uniforms.tcurve.value = newValue;
   });
@@ -397,7 +423,10 @@ canvasSketch(({ context }) => {
       renderer.resize(props);
     },
     render(props) {
-      // cameraControl.update();
+      t += 0.01;
+      if (!PROPS.orbitControl) {
+        cameraControl.update();
+      }
       renderer.update(props);
     },
     unload() {
