@@ -12,10 +12,16 @@ import OrbitControls from '../../../modules/OrbitControls';
 import CameraMouseControl from '../../../modules/CameraMouseControl';
 import { horizontalTwist } from '../../../utils/glsl';
 
+// TODO 2023-10-05 jeremboo: AJOUTER DES PARTICULES POUR DE LA PROFONDEUR
+// TODO 2023-10-06 jeremboo: AJOUTER GRATIENT AND SHADOWS
+// TODO 2023-10-05 jeremboo: ADD MOUSE CONTROL
+// TODO 2023-10-05 jeremboo: ADD OTHER ANIMATIONS / DISTORTIONS / ...
+
 const PROPS = {
+  withUI: false,
   mainColor: '#EF8E17',
   bgColor: '#D61D1D',
-  patterns: ["#EF8E17", "#D61D1D", "#1D40F3"],
+  colorPattern: ["#EF8E17", "#1D40F3", "#90FF38", "#F96BFC"],
   // Shader props
   vertDivider: 4,
   infiniteShift: 0,
@@ -35,17 +41,16 @@ const PROPS = {
   friction: 0.9,
 };
 
-
-// TODO 2023-10-05 jeremboo: ADD MOUSE CONTROL
-// TODO 2023-10-05 jeremboo: ADD OTHER ANIMATIONS / DISTORTIONS / ...
 class CustomMesh extends Mesh {
-  constructor() {
+  constructor(color1, color2) {
     const geometry = new PlaneBufferGeometry(20, 8, 50, 50);
     const material = new ShaderMaterial({
       transparent: true,
-      side: DoubleSide,
+      // side: DoubleSide,
       // wireframe: true,
       uniforms: {
+        tColor1: { value: color1 },
+        tColor2: { value: color2 },
         tTexture: { value: null },
         tVertDivider: { value: PROPS.vertDivider },
         tInfiniteSlice: { value: 0 },
@@ -63,6 +68,10 @@ class CustomMesh extends Mesh {
       },
       fragmentShader: `
         uniform sampler2D tTexture;
+
+        uniform vec3 tColor1;
+        uniform vec3 tColor2;
+
         uniform float tVertDivider;
         uniform float tShift;
         uniform float tSkew;
@@ -119,7 +128,10 @@ class CustomMesh extends Mesh {
 
           vec4 tex = texture2D(tTexture, transformedUv);
 
-          gl_FragColor = tex;
+          gl_FragColor = vec4(
+            mix(tColor1.xyz, tColor2.xyz, tex.r),
+            tex.a
+          );
         }
       `,
       vertexShader: `
@@ -168,22 +180,29 @@ class CustomMesh extends Mesh {
   }
 }
 
-// TODO 2023-10-05 jeremboo: FAIRE UN PLACE AVEC PLEINS DE VERTICES POUR DEFORMER TOUT CA
-// TODO 2023-10-05 jeremboo: AJOUTER DES PARTICULES POUR DE LA PROFONDEUR
-// TODO 2023-10-06 jeremboo: TWIST TO CHANGE COLOR
-// TODO 2023-10-06 jeremboo: Color change
-// TODO 2023-10-06 jeremboo: Background color
+function toggleUI() {
+  document.body.classList.toggle('ui');
+}
+
+if (PROPS.withUI) {
+  toggleUI();
+}
 
 canvasSketch(({ context }) => {
-  const renderer = new Renderer({ canvas: context.canvas });
-  renderer.setClearColor(PROPS.bgColor, 1);
+  const renderer = new Renderer({ canvas: context.canvas, transparent: true });
+
   const controls = new OrbitControls(renderer.camera, context.canvas);
   // const cameraControl = new CameraMouseControl(renderer.camera, { mouseMove : [-5, -5], velocity: [0.1, 0.1]});
 
 
   // * START *****
-  const mesh = new CustomMesh();
+  const mesh = new CustomMesh(new Color(PROPS.colorPattern[0]), new Color(PROPS.colorPattern[1]));
   renderer.add(mesh);
+
+  const mesh2 = new CustomMesh(new Color(PROPS.colorPattern[2]), new Color(PROPS.colorPattern[3]));
+  mesh2.rotation.x += Math.PI;
+  mesh2.position.z -= 0.1;
+  renderer.add(mesh2);
 
   const loader = new TextureLoader();
   loader.load('./assets/texture.png', (texture) => {
@@ -194,6 +213,8 @@ canvasSketch(({ context }) => {
 
     mesh.material.uniforms.tTexture.value = texture;
     mesh.material.needsUpdate = true;
+    mesh2.material.uniforms.tTexture.value = texture;
+    mesh2.material.needsUpdate = true;
   });
 
   // * Functions *
@@ -222,8 +243,6 @@ canvasSketch(({ context }) => {
         duration, value: Math.max(1, Math.floor(Math.random() * 6)),
         ease
       });
-      const diff = mesh.material.uniforms.tVertDivider.value - newValue;
-      // gsap.to(mesh.material.uniforms.tShift, { duration: 0.8, value: (mesh.material.uniforms.tShift.value + diff) * 0.5 })
     },
     divideBounce: () => {
       FUNCTIONS.divide("elastic.out(1, 0.3)", 1.5);
@@ -292,6 +311,22 @@ canvasSketch(({ context }) => {
         value: 0,
         ease
       });
+      gsap.to(mesh2.material.uniforms.tInfiniteTwistShift, {
+        duration: durationBounce,
+        value: mesh2.material.uniforms.tInfiniteTwistShift.value + Math.PI,
+        ease,
+      });
+      gsap.to(mesh2.material.uniforms.twistStrenght, {
+        duration: durationTwist,
+        value: force,
+      });
+      gsap.to(mesh2.material.uniforms.twistStrenght, {
+        duration: durationBounce - durationTwist,
+        delay: durationTwist,
+        value: 0,
+        ease
+      });
+      document.body.classList.toggle('twisted');
     },
     twistBounce: () => {
       FUNCTIONS.twist("elastic.out(1, 0.4)", 4, 0.6, 0.1)
@@ -304,6 +339,7 @@ canvasSketch(({ context }) => {
   // * GUI *******
   const gui = new GUI();
   // CURVE
+  gui.add(PROPS, 'withUI').onChange(toggleUI);
   gui.add(PROPS, 'curve', 0, 20).onChange((newValue) => {
     mesh.material.uniforms.tcurve.value = newValue;
   });

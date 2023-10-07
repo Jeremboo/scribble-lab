@@ -1,11 +1,31 @@
 :root {
-  --bg-color: #fff;
+  --bg-color: #D61D1D;
+  --bg-color-2: #1D51D6;
   --main-color: #1D40F3;
   --second-color: #EF8E17;
 }
 
 body {
   background-color: var(--bg-color);
+  transition: background-color 0.8s 0.25s;
+}
+
+body.twisted {
+  background-color: var(--bg-color-2);
+}
+
+body.ui::after {
+  content: '';
+  width: 800px;
+  max-width: 100%;
+  height: 95%;
+  position: absolute;
+  background-image: url('assets/content.png');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-blend-mode: multiply;
+  pointer-events: none;
 }
 
 .f {
