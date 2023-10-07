@@ -1,6 +1,6 @@
 import {
   Mesh, ShaderMaterial, Color, PlaneBufferGeometry, TextureLoader, NearestFilter, LinearFilter,
-  RepeatWrapping, Vector2, DoubleSide,
+  RepeatWrapping, DoubleSide, Texture,
   Vector3
 } from 'three';
 import gsap from 'gsap';
@@ -8,6 +8,7 @@ import canvasSketch from 'canvas-sketch';
 import { GUI } from 'dat.gui';
 
 import Renderer from '../../../modules/Renderer.three';
+import AudioCanvas from './audioCanvas';
 import OrbitControls from '../../../modules/OrbitControls';
 import CameraMouseControl from '../../../modules/CameraMouseControl';
 import Stars from '../../../modules/Stars';
@@ -22,6 +23,7 @@ const PROPS = {
   ui: false,
   vignette: true,
   orbitControl: false,
+  canvas: true,
   mainColor: '#EF8E17',
   bgColor: '#D61D1D',
   colorPattern: ["#EF8E17", "#1D40F3", "#90FF38", "#F96BFC"],
@@ -44,7 +46,7 @@ const PROPS = {
   friction: 0.9,
 };
 
-class CustomMesh extends Mesh {
+class AudioLine extends Mesh {
   constructor(color1, color2) {
     const geometry = new PlaneBufferGeometry(20, 8, 50, 50);
     const material = new ShaderMaterial({
@@ -169,9 +171,6 @@ class CustomMesh extends Mesh {
     this.material.uniforms.tInfiniteWave.value += PROPS.infiniteWave;
     this.material.uniforms.tInfiniteTwistShift.value += PROPS.infiniteTwistShift;
 
-    // this.targetedPosition.x += Math.sin(t) * 0.001;
-    // this.targetedPosition.y += Math.cos(t * 2) * 0.001;
-
     // Get the gravity
     this.force.x += (this.position.x - this.targetedPosition.x) * PROPS.velocity;
     this.force.y += (this.position.y - this.targetedPosition.y) * PROPS.velocity;
@@ -183,24 +182,14 @@ class CustomMesh extends Mesh {
   }
 }
 
-function toggleClass(classname) {
-  document.body.classList.toggle(classname);
-}
-function toggleUI() {
-  toggleClass('ui');
-}
+function toggleClass(classname) { document.body.classList.toggle(classname); }
+function toggleUI() { toggleClass('ui'); }
+function toggleVignette() { toggleClass('vignette'); }
+function toggleCanvas() { toggleClass('canvas'); }
 
-function toggleVignette() {
-  toggleClass('vignette');
-}
-
-if (PROPS.ui) {
-  toggleUI();
-}
-
-if (PROPS.vignette) {
-  toggleVignette();
-}
+if (PROPS.ui) { toggleUI(); }
+if (PROPS.vignette) { toggleVignette(); }
+if (PROPS.canvas) { toggleCanvas(); }
 
 let t = 0;
 
@@ -216,26 +205,35 @@ canvasSketch(({ context }) => {
   const stars = new Stars(100, { scalarMin: 8, scalarMax: 10, rotation: 0.001, opacity: 1, speed: 0.02 });
   renderer.add(stars);
 
-  const mesh = new CustomMesh(new Color(PROPS.colorPattern[0]), new Color(PROPS.colorPattern[1]));
+  const mesh = new AudioLine(new Color(PROPS.colorPattern[0]), new Color(PROPS.colorPattern[1]));
   renderer.add(mesh);
 
-  const mesh2 = new CustomMesh(new Color(PROPS.colorPattern[2]), new Color(PROPS.colorPattern[3]));
+  const mesh2 = new AudioLine(new Color(PROPS.colorPattern[2]), new Color(PROPS.colorPattern[3]));
   mesh2.rotation.x += Math.PI;
   mesh2.position.z -= 0.1;
   renderer.add(mesh2);
 
-  const loader = new TextureLoader();
-  loader.load('./assets/texture.png', (texture) => {
+  // * Texture
+  const setTexture = (texture) => {
     texture.wrapS = RepeatWrapping;
     texture.wrapT = RepeatWrapping;
     texture.magFilter = NearestFilter;
     texture.minFilter = LinearFilter;
-
     mesh.material.uniforms.tTexture.value = texture;
     mesh.material.needsUpdate = true;
     mesh2.material.uniforms.tTexture.value = texture;
     mesh2.material.needsUpdate = true;
-  });
+    texture.needsUpdate = true;
+  }
+  // const loader = new TextureLoader();
+  // loader.load('./assets/texture.png', (texture) => {
+  //   setTexture(texture);
+  // });
+
+  const audioCanvas = new AudioCanvas();
+  const audioTexture = new Texture(audioCanvas.canvas);
+  setTexture(audioTexture);
+
 
   // * Functions *
 
@@ -364,8 +362,8 @@ canvasSketch(({ context }) => {
   uiFolder.add(PROPS, 'vignette').onChange(toggleVignette);
   uiFolder.add(PROPS, 'orbitControl').onChange(() => {
     controls.enableRotate = PROPS.orbitControl;
-
   });
+  uiFolder.add(PROPS, 'canvas').onChange(toggleCanvas);
   gui.add(PROPS, 'curve', 0, 20).onChange((newValue) => {
     mesh.material.uniforms.tcurve.value = newValue;
   });
@@ -423,6 +421,9 @@ canvasSketch(({ context }) => {
       renderer.resize(props);
     },
     render(props) {
+      audioCanvas.update();
+      audioCanvas.render();
+      audioTexture.needsUpdate = true;
       t += 0.01;
       if (!PROPS.orbitControl) {
         cameraControl.update();

@@ -54,3 +54,24 @@ body.ui::after {
 .f a {
   color: var(--second-color);
 }
+
+
+.texture {
+  position: absolute;
+  z-index: 1;
+  top: 10px;
+  left: 10px;
+  border: 2px solid black;
+  width: 256px;
+  opacity: 0.2;
+  transition: opacity 0.2s;
+  display: none;
+}
+
+.texture:hover {
+  opacity: 1;
+}
+
+body.canvas .texture {
+  display: block;
+}
