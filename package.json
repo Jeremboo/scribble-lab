@@ -26,7 +26,7 @@
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "regl": "^1.4.2",
-    "three": "^0.116.1",
+    "three": "^0.137.0",
     "three-orbit-controls": "^72.0.0",
     "three.fbo-helper": "^1.1.1",
     "three.meshline": "https://github.com/Jeremboo/THREE.MeshLine/tarball/master",
