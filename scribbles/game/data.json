@@ -1,0 +1,12 @@
+{
+  "name": "game",
+  "path": "scribbles/game/",
+  "link": "",
+  "visible": true,
+  "preview": [
+    "preview.gif"
+  ],
+  "description": "prototype of game",
+  "date": "2024-05-21T13:13:51.901Z",
+  "tags": []
+}

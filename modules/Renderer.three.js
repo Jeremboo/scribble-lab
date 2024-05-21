@@ -16,7 +16,7 @@ export default class Renderer extends WebGLRenderer {
     this.changePixelRatio();
 
     this.scene = new Scene();
-    this.camera = new PerspectiveCamera(50, this.aspectRatio, 1, 1000);
+    this.camera = rendererProps.camera || new PerspectiveCamera(50, this.aspectRatio, 1, 1000);
     this.camera.position.set(0, 0, 10);
 
     this.resize = this.resize.bind(this);
