@@ -1,8 +1,5 @@
-import { Scene, OrthographicCamera } from 'three';
+import { OrthographicCamera } from 'three';
 import Renderer from './Renderer.three';
-
-// NOTE 2021-11-02 jeremboo: Put to 2 if you want to have the best quality
-const PIXEL_RATIO_MAX = 1.6; // 1.6 is normaly enought
 
 export default class OrthographicRenderer extends Renderer {
   constructor(rendererProps) {

@@ -1,6 +1,9 @@
 export default {
+  // colors
   mainColor: '#F8D6C4',
   bgColor: '#2D1A14',
+  outlineColor: '#70584A',
+  pathColor: '#B44351',
   // board noise
   noiseX: 0,
   noiseY: 4.5,
@@ -14,5 +17,8 @@ export default {
   // camera position
   cameraOffsetY: 5.2,
   cameraY: 7.4,
-  rotationSpeed: 0, //0.001,
+  rotationSpeed: 0, // 0.001,
+  // animation
+  velocity: 0.1,
+
 };

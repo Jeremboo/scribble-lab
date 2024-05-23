@@ -1,21 +1,60 @@
 import {
   MeshBasicMaterial,
-  PlaneGeometry,
  Vector3,
- Mesh,
  AmbientLight,
- DirectionalLight
+ DirectionalLight,
+ PlaneBufferGeometry,
+ Color
 } from 'three';
 import canvasSketch from 'canvas-sketch';
 import { GUI } from 'dat.gui';
 
-import OrthographicRenderer from '../../../modules/OrthographicRenderer.three';
-import Board from './Board';
-import props from './props';
+import {
+  EffectComposer
+} from 'postprocessing';
 
+import OrthographicRenderer from '../../../modules/OrthographicRenderer.three';
+import OutlinePass from '../../../modules/Three/OutlinePass';
+import Board from './Board';
+import BoardPawn from './BoardPawn';
+import props from './props';
+import OutlinableMesh from '../../../modules/Three/OutlinePass/OutlinableMesh';
+
+//  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
-  const renderer = new OrthographicRenderer({ canvas: context.canvas, zoom: props.boardHeight });
+  const renderer = new OrthographicRenderer({
+    canvas: context.canvas,
+    zoom: props.boardHeight,
+    antialias: false,
+    stencil: false,
+    depth: false
+  });
   renderer.setClearColor(props.bgColor, 1);
+
+  const composer = new EffectComposer(renderer);
+  const outlinePass = new OutlinePass(renderer.scene, renderer.camera, {
+    color: new Color(props.outlineColor),
+    thickness: 2,
+  });
+  // outlinePass.setDebugMode(true);
+  composer.addPass(outlinePass);
+
+
+  // TODO 2024-05-21 jeremboo: Add antilaliasing
+  // https://github.com/pmndrs/postprocessing/blob/main/demo/src/demos/OutlineDemo.js
+  // if (DPR.antialiasing) {
+    // const AApass = new SMAAPass(
+    //   window.innerWidth * window.devicePixelRatio,
+    //   window.innerHeight * window.devicePixelRatio
+    // );
+    // const effect = new SMAAEffect();
+    // console.log('effect', effect);
+    // const SMAAPass = new EffectPass(_camera, effect);
+    // console.log('SMAAPass', SMAAPass);
+    // SMAAPass.renderToScreen = true;
+    // composer.addPass(SMAAPass);
+  // }
+
 
   let angle = -Math.PI * 0.75;
 
@@ -30,7 +69,7 @@ canvasSketch(({ context }) => {
   const ambientLight = new AmbientLight(0xffffff, 0.5);
   renderer.add(ambientLight);
   const directionalLight = new DirectionalLight(0xffffff, 0.5);
-  directionalLight.position.set(10, 10, -4);
+  directionalLight.position.set(-10, 23, -7);
   directionalLight.castShadow = true;
   directionalLight.shadow.camera.top = 2;
   directionalLight.shadow.camera.bottom = - 2;
@@ -42,7 +81,7 @@ canvasSketch(({ context }) => {
 
 
   // * START *****
-  const plane = new Mesh(new PlaneGeometry(props.boardHeight * 2, props.boardHeight * 2), new MeshBasicMaterial({
+  const plane = new OutlinableMesh(new PlaneBufferGeometry(props.boardHeight * 3, props.boardHeight * 3), new MeshBasicMaterial({
     // color: 0x00ffff
     color: props.bgColor
   }));
@@ -53,8 +92,32 @@ canvasSketch(({ context }) => {
 
   const board = new Board(props.boardWidth, props.boardHeight);
   renderer.add(board.group);
-  updateCameraPosition();
 
+  const pawnBoard = new BoardPawn({ x: board.pathX, y: board.pathY });
+  renderer.add(pawnBoard.mesh);
+
+  board.addPawn(pawnBoard);
+  updateCameraPosition();
+  board.moveTo();
+
+  document.addEventListener('click', () => {
+      board.removePawn(pawnBoard);
+      pawnBoard.moveTo(1);
+
+      if (pawnBoard.y >= props.boardHeight) {
+        const moveBack = Math.floor(props.boardHeight * 0.75);
+        pawnBoard.moveTo(-moveBack);
+
+        // HACK 2024-05-22 jeremboo: Move back the board elevation with delay
+        for (let i = 0; i < moveBack; i++) {
+          setTimeout(() => {
+            board.moveTo(1);
+          }, 20 * i);
+        }
+      }
+
+      board.addPawn(pawnBoard);
+  });
 
   // * GUI *******
 
@@ -80,9 +143,16 @@ canvasSketch(({ context }) => {
   return {
     resize(props) {
       renderer.resize(props);
+      // composer.resize(props.viewportWidth, props.viewportHeight);
     },
-    render(props) {
-      renderer.update(props);
+    render(_props) {
+
+      // renderer.update(props);
+      composer.render();
+
+      board.update();
+      pawnBoard.update();
+
       if (props.rotationSpeed > 0) {
         angle += props.rotationSpeed;
         updateCameraPosition();
@@ -96,8 +166,8 @@ canvasSketch(({ context }) => {
 }, {
   fps: 15, // 24
   duration: 4,
-  dimensions: [1024, 1024],
-  scaleToView: true,
+  dimensions: [2048, 2048],
+  // scaleToView: true,
   animate: true,
   context: 'webgl',
 });

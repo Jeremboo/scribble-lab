@@ -1,4 +1,4 @@
-import { TYPE, DIRECTION, COLOR } from '../../../data/keys';
+import { TYPE, DIRECTION, COLOR } from './keys';
 
 class Pawn {
   constructor({ x, y, direction, type = TYPE.CELL, delay = 1, color = COLOR.BLUE } = {}) {
@@ -12,8 +12,8 @@ class Pawn {
     this.directionY = 0;
 
     this.delay = delay;
-    this.increment = 0;
-    this.willUpdate = false;
+    this.count = 0;
+    this.willIncrement = false;
     this.isAlive = true;
 
     this.direction = null;
@@ -46,22 +46,26 @@ class Pawn {
     }
   }
 
+  kill() {
+    this.isAlive = false;
+  }
+
   /**
    * * *******************
    * * INCREMENTATION UPDATE
    * * *******************
    */
 
-  update() {
-    this.increment = (this.increment + 1) % this.delay;
-    this.willUpdate = this.increment === this.delay - 1;
-    if (this.willUpdate) {
-      this._update();
+  increment() {
+    this.count = (this.count + 1) % this.delay;
+    this.willIncrement = this.count === this.delay - 1;
+    if (this.willIncrement) {
+      this._increment();
     }
-    return this.willUpdate;
+    return this.willIncrement;
   }
 
-  _update() {}
+  _increment() {}
 
   /**
    * * *******************
@@ -69,13 +73,20 @@ class Pawn {
    * * *******************
    */
 
+  applyRulesFromCellLanded(cell) {
+    if (cell.Type == TYPE.WALL || cell.Type == TYPE.WATER || cell.Type == TYPE.VOID) {
+      this.kill();
+      return;
+    }
+  }
+
   /**
    * Called when a pawn from the same cell is added.
    * By default, kill all new pawns coming
    * @param {Pawn} pawn
    */
   applyRulesOnPawnAdded(pawn) {
-    pawn.isAlive = false;
+    this.kill();
   }
 
   /**
@@ -84,6 +95,10 @@ class Pawn {
    * @param {Pawn} pawn
    */
   applyRulesOnPawnRemoved(pawn) {}
+
+  applyRulesFromCellLeaved(cell) {
+
+  }
 }
 
 export default Pawn;

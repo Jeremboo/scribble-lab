@@ -12,7 +12,15 @@ class PawnList {
   }
 
   remove(pawn) {
-    this.pawns = this.pawns.filter((_pawn) => _pawn.id !== pawn.id);
+    let isRemoved = false;
+    this.pawns = this.pawns.filter((_pawn) => {
+      const isFound = _pawn.id === pawn.id;
+      if (isFound) {
+        isRemoved = true;
+      }
+      return !isFound;
+    });
+    return isRemoved;
   }
 
   parse(callback) {
