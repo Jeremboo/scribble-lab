@@ -1,7 +1,11 @@
 import {
   Mesh, ShaderMaterial, Color, PlaneBufferGeometry, TextureLoader, NearestFilter, LinearFilter,
   RepeatWrapping, DoubleSide, Texture,
-  Vector3
+  Vector3,
+  MeshStandardMaterial,
+  Vector2,
+  PointLight,
+  AmbientLight
 } from 'three';
 import gsap from 'gsap';
 import canvasSketch from 'canvas-sketch';
@@ -14,16 +18,19 @@ import CameraMouseControl from '../../../modules/CameraMouseControl';
 import Stars from '../../../modules/Stars';
 import { horizontalTwist } from '../../../utils/glsl';
 
-// TODO 2023-10-05 jeremboo: AJOUTER DES PARTICULES POUR DE LA PROFONDEUR
 // TODO 2023-10-06 jeremboo: AJOUTER GRATIENT AND SHADOWS
-// TODO 2023-10-05 jeremboo: ADD MOUSE CONTROL
 // TODO 2023-10-05 jeremboo: ADD OTHER ANIMATIONS / DISTORTIONS / ...
+// TODO 2023-10-07 jeremboo: Améliorer les particules pour qu'elles soient plus subtiles
+// TODO 2023-10-07 jeremboo: Rendre la ligne moins rectiligne
+// TODO 2023-10-07 jeremboo: Ajouter la vignette partout en postprocessing
+// TODO 2023-10-07 jeremboo: PARALLAX entre les 2 lignes
+// TODO 2023-10-07 jeremboo: Avoir les deux lignes un tout petit peut dissocié
 
 const PROPS = {
-  ui: false,
+  ui: true,
   vignette: true,
   orbitControl: false,
-  canvas: true,
+  canvas: false,
   mainColor: '#EF8E17',
   bgColor: '#D61D1D',
   colorPattern: ["#EF8E17", "#1D40F3", "#90FF38", "#F96BFC"],
@@ -31,12 +38,12 @@ const PROPS = {
   vertDivider: 4,
   infiniteShift: -0.0007,
   infiniteSlice: 0,
-  infiniteWave: 0.005,
+  infiniteWave: 0.025,
   tSkew: 0,
-  waveStrengh: 0,
-  waveLenght: 4,
-  curve: 0,
-  curvePow: 10,
+  waveStrengh: 0.05,
+  waveLenght: 1.1,
+  curve: 5,
+  curvePow: 1,
   curveShift: 1,
   // Twist
   twistStrenght: 0,
@@ -44,7 +51,51 @@ const PROPS = {
   // PHYSICS
   velocity: 0.02,
   friction: 0.9,
+  scaleY: 1.2,
 };
+
+class Album extends Mesh {
+
+  constructor() {
+    const geometry = new PlaneBufferGeometry(4, 4, 1, 1);
+    const material = new MeshStandardMaterial({
+    });
+    super(geometry, material);
+
+    this.position.z = -3;
+    this.rotation.y = Math.PI;
+
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+
+    document.body.addEventListener('mousemove', this.handleMouseMove);
+
+    this.isVisible = false;
+  }
+
+  handleMouseMove (e) {
+    if (!this.isVisible) return;
+
+    const mousePosition = new Vector2(
+      e.clientX / window.innerWidth - 0.5,
+      e.clientY / window.innerHeight - 0.5
+      );
+
+    this.lookAt(new Vector3(mousePosition.x * 2, -mousePosition.y * 2, 2));
+  }
+
+  animateIn() {
+    this.isVisible = false;
+    gsap.to(this.rotation, { duration: 3, y: 0, ease: "elastic.out(1, 0.5)" });
+    gsap.to(this.position, { duration: 2, z: 1, ease: "elastic.out(1, 0.5)", onComplete: () => {
+      this.isVisible = true;
+    } });
+
+  }
+
+  update() {
+
+  }
+}
 
 class AudioLine extends Mesh {
   constructor(color1, color2) {
@@ -114,18 +165,16 @@ class AudioLine extends Mesh {
           float mult = sin(vUv.x * 3.14 * tcurveShift);
           transformedUv.y = transformedUv.y + (transformedUv.y * pow(mult, tcurvePow) * tcurve) - pow(mult, tcurvePow) * 2. * tcurve;
 
-          if (transformedUv.y > 3.) {
-            discard;
-          }
-          if (transformedUv.y < 1.) {
-            discard;
-          }
+          // Hide the top and the bottom repetition
+          if (transformedUv.y > 2.98) discard;
+          if (transformedUv.y < 1.02) discard;
 
           // Upside down
-          if (transformedUv.y <= 2.0) {
-            transformedUv.y = 1.0 - transformedUv.y;
+          if (transformedUv.y < 2.0) {
+            transformedUv.y = 1.01 - transformedUv.y;
             transformedUv.x += tInfiniteSlice;
           } else {
+            transformedUv.y += 0.01;
             transformedUv.x -= tInfiniteSlice;
           }
 
@@ -159,10 +208,21 @@ class AudioLine extends Mesh {
     });
     super(geometry, material);
 
-    this.targetedPosition = new Vector3();
+
     this.force = new Vector3();
+    this.position.set(0, 20, 20);
+    this.targetedPosition = new Vector3(0, 20, 20);
 
     this.update = this.update.bind(this);
+    this.animateIn = this.animateIn.bind(this);
+
+    this.scale.y = PROPS.scaleY;
+  }
+
+  animateIn() {
+    this.position.y = 0;
+    this.position.z = 3;
+    this.targetedPosition.set(0, 0.5, 0.2);
   }
 
   update({ playhead }) {
@@ -198,7 +258,7 @@ canvasSketch(({ context }) => {
 
   const controls = new OrbitControls(renderer.camera, context.canvas);
   controls.enableRotate = PROPS.orbitControl;
-  const cameraControl = new CameraMouseControl(renderer.camera, { mouseMove : [-1, -5], velocity: [0.02, 0.04]});
+  const cameraControl = new CameraMouseControl(renderer.camera, { mouseMove : [-2.5, -5], velocity: [0.02, 0.04]});
 
 
   // * START *****
@@ -225,15 +285,16 @@ canvasSketch(({ context }) => {
     mesh2.material.needsUpdate = true;
     texture.needsUpdate = true;
   }
-  // const loader = new TextureLoader();
-  // loader.load('./assets/texture.png', (texture) => {
-  //   setTexture(texture);
-  // });
 
   const audioCanvas = new AudioCanvas();
   const audioTexture = new Texture(audioCanvas.canvas);
   setTexture(audioTexture);
 
+  setTimeout(() => {
+    mesh.animateIn();
+    mesh2.animateIn();
+    gsap.fromTo(mesh.material.uniforms.tcurve, { value: 100 }, { duration : 0.5, value: 5, ease: "elastic.out(0.01, 0.4)", delay: 0 });
+  }, 1000);
 
   // * Functions *
 
@@ -349,22 +410,32 @@ canvasSketch(({ context }) => {
     twistBounce: () => {
       FUNCTIONS.twist("elastic.out(1, 0.4)", 4, 0.6, 0.1)
     },
-    curve: () => {
+    toggleScale: () => {
       gsap.to(mesh.material.uniforms.tcurve, { duration : 1, value: mesh.material.uniforms.tcurve.value < 0.5 ? 20 : 0, ease: "power3.inOut" })
+    },
+    showAlbum: () => {
+      album.animateIn();
+      mesh.visible = false;
+      mesh2.visible = false;
     }
   }
 
   // * GUI *******
   const gui = new GUI();
-  // CURVE
+  gui.close();
   const uiFolder = gui.addFolder('ui');
   uiFolder.add(PROPS, 'ui').onChange(toggleUI);
-  uiFolder.add(PROPS, 'vignette').onChange(toggleVignette);
+  // uiFolder.add(PROPS, 'vignette').onChange(toggleVignette);
   uiFolder.add(PROPS, 'orbitControl').onChange(() => {
     controls.enableRotate = PROPS.orbitControl;
   });
   uiFolder.add(PROPS, 'canvas').onChange(toggleCanvas);
-  gui.add(PROPS, 'curve', 0, 20).onChange((newValue) => {
+  gui.add(PROPS, 'scaleY', 0, 2).onChange((newValue) => {
+    mesh.scale.y = newValue;
+    mesh2.scale.y = newValue;
+  });
+  // CURVE
+  gui.add(PROPS, 'curve', 0, 100).onChange((newValue) => {
     mesh.material.uniforms.tcurve.value = newValue;
   });
   gui.add(PROPS, 'curvePow', 0, 20).onChange((newValue) => {
@@ -400,21 +471,48 @@ canvasSketch(({ context }) => {
   animationFolder.open();
   animationFolder.add(PROPS, 'infiniteSlice', -0.01, 0.01).step(0.001);
   animationFolder.add(PROPS, 'infiniteShift', -0.005, 0.005).step(0.0001);
-  animationFolder.add(PROPS, 'infiniteWave', -0.01, 0.01).step(0.001);
+  animationFolder.add(PROPS, 'infiniteWave', -0.05, 0.05).step(0.001);
   animationFolder.add(PROPS, 'infiniteTwistShift', 0, 0.01);
   animationFolder.add(FUNCTIONS, 'slice');
   animationFolder.add(FUNCTIONS, 'bounce');
-  animationFolder.add(FUNCTIONS, 'move').name('moveBounce');
-  animationFolder.add(mesh.targetedPosition, 'z', -10, 5).name('moveZBounce')
-  animationFolder.add(FUNCTIONS, 'divide');
-  animationFolder.add(FUNCTIONS, 'divideBounce');
-  animationFolder.add(FUNCTIONS, 'move');
-  animationFolder.add(FUNCTIONS, 'moveAndSkew');
   animationFolder.add(FUNCTIONS, 'moveBounce');
-  animationFolder.add(FUNCTIONS, 'animateWave');
-  animationFolder.add(FUNCTIONS, 'twist');
+  animationFolder.add(FUNCTIONS, 'divideBounce');
   animationFolder.add(FUNCTIONS, 'twistBounce');
-  animationFolder.add(FUNCTIONS, 'curve');
+  // animationFolder.add(mesh.targetedPosition, 'z', -10, 5).name('moveZBounce')
+  animationFolder.add(FUNCTIONS, 'move');
+  animationFolder.add(FUNCTIONS, 'divide');
+  animationFolder.add(FUNCTIONS, 'moveAndSkew');
+  // animationFolder.add(FUNCTIONS, 'animateWave');
+  animationFolder.add(FUNCTIONS, 'twist');
+  // animationFolder.add(FUNCTIONS, 'toggleScale');
+  animationFolder.add(FUNCTIONS, 'showAlbum');
+
+
+  // ALBUM
+
+  const ambient = new AmbientLight(0xffffff, 0.8, 100);
+  renderer.add(ambient);
+  const light = new PointLight(0xffffff, 0.3, 100);
+  light.position.set(1, 1, 4);
+  renderer.add(light);
+
+  const album = new Album();
+  renderer.add(album);
+  const loader = new TextureLoader();
+  loader.load('./assets/album.png', (texture) => {
+    album.material.map = texture;
+    album.material.needsUpdate = true;
+  });
+
+  loader.load('./assets/5814-normal.jpeg', (texture) => {
+    console.log('loaded');
+    album.material.normalMap = texture;
+    album.material.normalScale.x = 0.5;
+    album.material.normalScale.y = 0.5;
+    album.material.needsUpdate = true;
+  });
+
+
 
   return {
     resize(props) {
@@ -428,7 +526,11 @@ canvasSketch(({ context }) => {
       if (!PROPS.orbitControl) {
         cameraControl.update();
       }
+
+      album.update();
+
       renderer.update(props);
+
     },
     unload() {
       controls.dispose();

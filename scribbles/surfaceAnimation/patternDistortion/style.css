@@ -7,15 +7,21 @@
   --second-color: #EF8E17;
 }
 
+.dg.ac {
+  opacity: 0.1;
+  transition: opacity 0.2s;
+}
+.dg.ac:hover {
+  opacity: 0.8;
+}
+
 body {
   background-color: var(--bg-color);
-  /* background: radial-gradient(ellipse at 100% 0,var(--bg-color) 0,var(--bg-color) 50%,var(--bg-color-darken) 115%); */
   background-color: var(--bg-color);
   transition: background-color 0.8s 0.25s;
 }
 
 body.twisted {
-  /* background: radial-gradient(ellipse at 100% 0,var(--bg-color-2) 0,var(--bg-color-2) 50%,var(--bg-color-2-darken) 115%); */
   background-color: var(--bg-color-2);
 }
 

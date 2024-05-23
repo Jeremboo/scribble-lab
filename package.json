@@ -13,7 +13,7 @@
   "author": "Jérémie Boulay <jeremi.boulay@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "canvas-sketch": "^0.7.3",
+    "canvas-sketch": "^0.7.7",
     "dat.gui": "^0.7.7",
     "dat.gui.image": "^1.0.2",
     "gsap": "^3.5.1",
