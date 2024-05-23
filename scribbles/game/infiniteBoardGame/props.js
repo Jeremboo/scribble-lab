@@ -9,16 +9,21 @@ export default {
   noiseY: 4.5,
   noiseScaleX: 0.1,
   noiseScaleY: 0.1,
-  noiseAmpl: 1.6,
+  noiseAmpl: 5.5,
   noisePathElevation: 0.43,
   // board size
   boardWidth: 5,
   boardHeight: 15,
+  // initial camera position
+  initialCameraOffsetY: 4.5,
+  initialCameraY: 10,
   // camera position
-  cameraOffsetY: 5.2,
-  cameraY: 7.4,
+  cameraOffsetY: 5.727,
+  cameraY: 14.454,
+  cameraZoomOut: 22,
   rotationSpeed: 0, // 0.001,
   // animation
   velocity: 0.1,
+  maxCount: 14 + 11 * 8,
 
 };

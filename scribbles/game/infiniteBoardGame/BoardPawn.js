@@ -18,13 +18,16 @@ export default class BoardPawn extends Pawn {
     this.currentPosition = new Vector3();
     this.ampl = 0;
     this.velocity = PROPS.velocity;
-    this.dynamicAmpl = true;
     this.direction = 1;
+
+    this.isVisible = false;
+    this.targetedScale = this.isVisible ? 1 : 0;
+    this.currentScale = this.targetedScale;
   }
 
   moveTo(move = 1) {
-    this.direction = move > 0 ? 1 : -1;
     this.y += move;
+    this.direction = move > 0 ? 1 : -1;
   }
 
   computeY(y) {
@@ -44,26 +47,45 @@ export default class BoardPawn extends Pawn {
     this.targetedPosition.y = this.computeY(y)
   }
 
-  jump(to = 0.7) {
-    const id = setInterval(() => {
-      this.ampl += 0.07;
-      this.velocity = PROPS.jumpVelocity;
-      if (this.ampl > to) {
-        clearInterval(id);
-        this.velocity = PROPS.velocity
-      }
-    }, 10)
+  // jump(to = 0.7) {
+  //   const id = setInterval(() => {
+  //     this.ampl += 0.07;
+  //     this.velocity = PROPS.jumpVelocity;
+  //     if (this.ampl > to) {
+  //       clearInterval(id);
+  //       this.velocity = PROPS.velocity
+  //     }
+  //   }, 10)
+  // }
+
+  show() {
+    this.isVisible = true;
+    this.currentPosition.y += 2;
+    this.targetedScale = 1;
+    this.direction = 1;
+
   }
 
+  hide() {
+    this.isVisible = false;
+    this.targetedScale = 0;
+    this.direction = -1;
+  }
 
   update() {
+    // Position
     const force = this.targetedPosition.clone().sub(this.currentPosition);
     this.currentPosition.add(force.multiplyScalar(props.velocity));
     this.mesh.position.copy(this.currentPosition);
+    this.ampl += force.length();
 
-    if (this.dynamicAmpl) {
-      this.ampl += force.length();
-    }
+    // Scale
+    const scaleForce = (this.targetedScale - this.currentScale) * props.velocity;
+    this.currentScale += scaleForce;
+    this.mesh.scale.setScalar(this.currentScale);
+    this.ampl += scaleForce ;
+
+    // Effect
     this.mesh.position.y += Math.max(0, this.ampl);
     this.mesh.rotation.x = Math.max(-Math.PI * 0.15, Math.min(Math.PI * 0.25, this.ampl * 0.4 * this.direction));
     this.ampl *= this.velocity;

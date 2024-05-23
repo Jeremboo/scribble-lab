@@ -15,6 +15,10 @@ export default class OrthographicRenderer extends Renderer {
   }
 
   setZoom(zoom) {
-    // TODO 2024-05-21 jeremboo:
+    this.camera.left = 1 / -2 * zoom;
+    this.camera.right = 1 / 2 * zoom;
+    this.camera.top = 1 / 2 * zoom;
+    this.camera.bottom = 1 / -2 * zoom;
+    this.camera.updateProjectionMatrix();
   }
 }

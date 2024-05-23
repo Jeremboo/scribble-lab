@@ -22,9 +22,11 @@ import OutlinableMesh from '../../../modules/Three/OutlinePass/OutlinableMesh';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
+  let targetedZoom = props.cameraZoomOut;
+  let currentZoom = targetedZoom;
   const renderer = new OrthographicRenderer({
     canvas: context.canvas,
-    zoom: props.boardHeight,
+    zoom: currentZoom,
     antialias: false,
     stencil: false,
     depth: false
@@ -59,9 +61,13 @@ canvasSketch(({ context }) => {
   let angle = -Math.PI * 0.75;
 
   // Camera position
-  const updateCameraPosition =  () => {
-    const offsetY = props.cameraOffsetY - (props.boardWidth * 0.5);
-    renderer.camera.position.set(Math.cos(angle) * 10, offsetY + props.cameraY, -Math.sin(angle) * -10);
+  let targetedCameraY = props.initialCameraY;
+  let currentCameraY = targetedCameraY;
+  let targetedCameraOffsetY = props.initialCameraOffsetY;
+  let currentCameraOffsetY = targetedCameraOffsetY;
+  const updateCameraPosition =  (camY = currentCameraY, camOffsetY = currentCameraOffsetY) => {
+    const offsetY = camOffsetY - (props.boardWidth * 0.5);
+    renderer.camera.position.set(Math.cos(angle) * 20, offsetY + camY, -Math.sin(angle) * -20);
     renderer.camera.lookAt(new Vector3(0, offsetY, 0));
   }
 
@@ -81,7 +87,7 @@ canvasSketch(({ context }) => {
 
 
   // * START *****
-  const plane = new OutlinableMesh(new PlaneBufferGeometry(props.boardHeight * 3, props.boardHeight * 3), new MeshBasicMaterial({
+  const plane = new OutlinableMesh(new PlaneBufferGeometry(props.boardHeight * 5, props.boardHeight * 5), new MeshBasicMaterial({
     // color: 0x00ffff
     color: props.bgColor
   }));
@@ -97,26 +103,66 @@ canvasSketch(({ context }) => {
   renderer.add(pawnBoard.mesh);
 
   board.addPawn(pawnBoard);
-  updateCameraPosition();
-  board.moveTo();
+  updateCameraPosition(props.initialCameraY, props.initialCameraOffsetY);
 
-  document.addEventListener('click', () => {
-      board.removePawn(pawnBoard);
-      pawnBoard.moveTo(1);
+  const animateIn  = () => {
+    board.moveTo();
+    targetedCameraOffsetY = props.cameraOffsetY;
+    targetedCameraY = props.cameraY;
 
-      if (pawnBoard.y >= props.boardHeight) {
-        const moveBack = Math.floor(props.boardHeight * 0.75);
-        pawnBoard.moveTo(-moveBack);
+    targetedZoom = props.boardHeight + 0.5;
 
-        // HACK 2024-05-22 jeremboo: Move back the board elevation with delay
-        for (let i = 0; i < moveBack; i++) {
-          setTimeout(() => {
-            board.moveTo(1);
-          }, 20 * i);
-        }
+    setTimeout(() => {
+      pawnBoard.show();
+    }, 450);
+  }
+
+  const animateOut = () => {
+    props.velocity *= 0.2;
+    props.rotationSpeed = 0.002;
+    targetedZoom = props.cameraZoomOut;
+  }
+
+  const animateMoveBack = (moveBack) => {
+    pawnBoard.moveTo(-moveBack);
+
+      // HACK 2024-05-22 jeremboo: Move back the board elevation with delay
+      for (let i = 0; i < moveBack; i++) {
+        setTimeout(() => {
+          board.moveTo(1);
+        }, 20 * i);
       }
+  }
 
-      board.addPawn(pawnBoard);
+  let count = 0;
+  let isAnimatedOut = false;
+  context.canvas.addEventListener('click', () => {
+    if (board.pathY === 0) {
+      animateIn();
+      return;
+    }
+
+    count ++;
+    if (count > props.maxCount) {
+      if (!isAnimatedOut) {
+        isAnimatedOut = true;
+        animateOut();
+        // TODO 2024-05-23 jeremboo: OR move the pawn somewhere else
+        board.removePawn(pawnBoard);
+        animateMoveBack(Math.floor(props.boardHeight * 0.5))
+        board.addPawn(pawnBoard);
+      }
+      return;
+    }
+
+    board.removePawn(pawnBoard);
+    pawnBoard.moveTo(1);
+
+    if (pawnBoard.y >= props.boardHeight) {
+      animateMoveBack(Math.floor(props.boardHeight * 0.75))
+    }
+
+    board.addPawn(pawnBoard);
   });
 
   // * GUI *******
@@ -133,8 +179,12 @@ canvasSketch(({ context }) => {
   gui.add(props, 'noiseScaleY', 0.01, 1).onChange(board.regenerateNoise);
   gui.add(props, 'noiseAmpl', 1, 10).onChange(board.regenerateNoise);
   gui.add(props, 'noisePathElevation', 0.01, 1).onChange(regenerateCamera);
-  gui.add(props, 'cameraOffsetY', 0.01, 10).onChange(updateCameraPosition).step(0.001);
-  gui.add(props, 'cameraY', 1, 10).onChange(updateCameraPosition).step(0.001);
+  gui.add(props, 'cameraOffsetY', 0.01, 10).onChange(() => {
+    targetedCameraOffsetY = props.cameraOffsetY;
+  }).step(0.001);
+  gui.add(props, 'cameraY', 1, 30).onChange(() => {
+    targetedCameraY = props.cameraY;
+  }).step(0.001);
   const lightGui = gui.addFolder('light');
   lightGui.add(directionalLight.position, 'x', -10, 10);
   lightGui.add(directionalLight.position, 'y', -10, 100);
@@ -146,6 +196,30 @@ canvasSketch(({ context }) => {
       // composer.resize(props.viewportWidth, props.viewportHeight);
     },
     render(_props) {
+
+      // camera update
+      const fCamera = (targetedCameraY - currentCameraY);
+      let updateCam = false;
+      if (Math.abs(fCamera) > 0.01) {
+        currentCameraY += fCamera * props.velocity * 0.5;
+        updateCam = true;
+      }
+
+      const fCOffset = targetedCameraOffsetY - currentCameraOffsetY;
+      if (Math.abs(fCOffset) > 0.01) {
+        updateCam = true;
+        currentCameraOffsetY += fCOffset * props.velocity * 0.5;
+      }
+
+      if (updateCam) {
+        updateCameraPosition();
+      }
+
+      const fZoom = targetedZoom - currentZoom;
+      if (Math.abs(fZoom) > 0.01) {
+        currentZoom += (fZoom) * props.velocity * 0.5;
+        renderer.setZoom(currentZoom);
+      }
 
       // renderer.update(props);
       composer.render();

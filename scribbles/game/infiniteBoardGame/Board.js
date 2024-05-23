@@ -21,10 +21,6 @@ export default class Board extends Stage {
     this.init(row, column, this.initCell);
   }
 
-  // getCurrentCell() {
-  //   return this.getCell(this.pathX, this.pathY)
-  // }
-
   getElevation(x, y) {
     const noiseElevation = Math.abs(noise.perlin2((props.noiseX + x) * props.noiseScaleX, (props.noiseY + y + this.pathY) * props.noiseScaleY)) * props.noiseAmpl;
     const pathElevation = props.noisePathElevation - Math.abs(x - this.pathX) * props.noisePathElevation;
