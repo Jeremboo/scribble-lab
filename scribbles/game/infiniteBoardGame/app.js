@@ -194,7 +194,7 @@ canvasSketch(({ context }) => {
     } else if (unlock > 3 && !isBtn2Unlocked) {
       isBtn2Unlocked = true;
       document.getElementById('button-2').classList.remove('disabled');
-      document.getElementById('button-2').addEventListener('click', () => {
+      document.getElementById('button-2').addEventListener('click', (e) => {
         colorPawnIdx = (colorPawnIdx + 1) % 4;
         pawnBoard.changeColor(props.pawnColors[colorPawnIdx]);
         e.stopPropagation();
@@ -202,7 +202,7 @@ canvasSketch(({ context }) => {
     } else if (unlock > 5 && !isBtn3Unlocked) {
       isBtn3Unlocked = true;
       document.getElementById('button-3').classList.remove('disabled');
-      document.getElementById('button-3').addEventListener('click', () => {
+      document.getElementById('button-3').addEventListener('click', (e) => {
         props.noisePathElevation = Math.random();
         props.noiseAmpl = Math.random() * 10;
         board.regenerateNoise();

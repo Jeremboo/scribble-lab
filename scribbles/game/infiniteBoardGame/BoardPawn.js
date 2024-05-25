@@ -1,4 +1,5 @@
 import { CylinderBufferGeometry, MeshToonMaterial, Vector3 } from "three";
+import gsap from 'gsap';
 import Pawn from '../_modules/Pawn';
 import OutlinableMesh from '../../../modules/Three/OutlinePass/OutlinableMesh';
 import props from './props';
