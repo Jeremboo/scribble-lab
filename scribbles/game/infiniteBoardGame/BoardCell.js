@@ -2,9 +2,10 @@ import {BoxBufferGeometry, MeshToonMaterial, Vector3 } from "three";
 import Cell from "../_modules/Cell";
 import props from './props';
 import OutlinableMesh from "../../../modules/Three/OutlinePass/OutlinableMesh";
+import gsap from "gsap";
 
-const PATH_MATERIAL = new MeshToonMaterial({ color: props.pathColor})
-const NEUTRAL_MATERIAL = new MeshToonMaterial({ color: props.mainColor})
+const PATH_MATERIAL = new MeshToonMaterial({ color: props.pathColors[0] })
+const NEUTRAL_MATERIAL = new MeshToonMaterial({ color: props.neutralColor })
 
 const HEIGHT = 5;
 const ELEVATION = 0.25;
@@ -34,6 +35,13 @@ export default class BoardCell extends Cell {
     this.pawns.forEach((pawn) => {
       pawn.setElevation(this.targetedPosition.y);
     });
+  }
+
+  changeColorPath(color, duration = 0.75) {
+    const _props = { color: '#' + PATH_MATERIAL.color.getHexString() }
+    gsap.to(_props, { color, duration, onUpdate: () => {
+      PATH_MATERIAL.color.set(_props.color)
+    } })
   }
 
   update() {

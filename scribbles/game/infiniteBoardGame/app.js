@@ -6,6 +6,7 @@ import {
  PlaneBufferGeometry,
  Color
 } from 'three';
+
 import canvasSketch from 'canvas-sketch';
 import { GUI } from 'dat.gui';
 
@@ -19,6 +20,7 @@ import Board from './Board';
 import BoardPawn from './BoardPawn';
 import props from './props';
 import OutlinableMesh from '../../../modules/Three/OutlinePass/OutlinableMesh';
+import DOMRenderer from '../../../modules/Three/DOMRenderer.three';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
@@ -31,7 +33,12 @@ canvasSketch(({ context }) => {
     stencil: false,
     depth: false
   });
-  renderer.setClearColor(props.bgColor, 1);
+  // renderer.setClearColor(props.bgColor, 1);
+
+  // DOM RENDERER
+  const wrapper3d = document.getElementById('wrapper-3d');
+  const domRenderer = new DOMRenderer(wrapper3d, renderer.camera);
+  domRenderer.group.position.set(-props.boardWidth * 0.5 - 6, 0, -0.5);
 
   const composer = new EffectComposer(renderer);
   const outlinePass = new OutlinePass(renderer.scene, renderer.camera, {
@@ -88,7 +95,6 @@ canvasSketch(({ context }) => {
 
   // * START *****
   const plane = new OutlinableMesh(new PlaneBufferGeometry(props.boardHeight * 5, props.boardHeight * 5), new MeshBasicMaterial({
-    // color: 0x00ffff
     color: props.bgColor
   }));
   plane.rotation.x = -Math.PI * 0.5;
@@ -112,7 +118,11 @@ canvasSketch(({ context }) => {
 
     targetedZoom = props.boardHeight + 0.5;
 
+    document.getElementById('home-page').classList.add('hidden');
+    document.getElementById('game-page').classList.remove('hidden');
+
     setTimeout(() => {
+      isAnimatedIn = true;
       pawnBoard.show();
     }, 450);
   }
@@ -121,6 +131,9 @@ canvasSketch(({ context }) => {
     props.velocity *= 0.2;
     props.rotationSpeed = 0.002;
     targetedZoom = props.cameraZoomOut;
+
+    document.getElementById('game-page').classList.add('hidden');
+    document.getElementById('end-page').classList.remove('hidden');
   }
 
   const animateMoveBack = (moveBack) => {
@@ -134,20 +147,25 @@ canvasSketch(({ context }) => {
       }
   }
 
-  let count = 0;
-  let isAnimatedOut = false;
-  context.canvas.addEventListener('click', () => {
-    if (board.pathY === 0) {
+  setTimeout(() => {
+    document.getElementById('start-button').addEventListener('click', () => {
       animateIn();
-      return;
-    }
+    });
+  }, 200);
 
+  let count = 0;
+  let isAnimatedIn = false, isAnimatedOut = false;
+  let colorPathIdx = 0, colorPawnIdx = 0;
+  let isBtn1Unlocked = false, isBtn2Unlocked = false, isBtn3Unlocked = false;
+  document.body.addEventListener('click', () => {
+    if (!isAnimatedIn) return;
     count ++;
+
+    // End
     if (count > props.maxCount) {
       if (!isAnimatedOut) {
         isAnimatedOut = true;
         animateOut();
-        // TODO 2024-05-23 jeremboo: OR move the pawn somewhere else
         board.removePawn(pawnBoard);
         animateMoveBack(Math.floor(props.boardHeight * 0.5))
         board.addPawn(pawnBoard);
@@ -155,44 +173,79 @@ canvasSketch(({ context }) => {
       return;
     }
 
+    // Move the pawn
     board.removePawn(pawnBoard);
     pawnBoard.moveTo(1);
-
     if (pawnBoard.y >= props.boardHeight) {
       animateMoveBack(Math.floor(props.boardHeight * 0.75))
     }
-
     board.addPawn(pawnBoard);
+
+    const progress = count / props.maxCount;
+    const unlock = progress * 6;
+    if (unlock > 1 && !isBtn1Unlocked) {
+      isBtn1Unlocked = true;
+      document.getElementById('button-1').classList.remove('disabled');
+      document.getElementById('button-1').addEventListener('click', (e) => {
+        colorPathIdx = (colorPathIdx + 1) % 4;
+        board.changeColorPath(props.pathColors[colorPathIdx]);
+        e.stopPropagation();
+      });
+    } else if (unlock > 3 && !isBtn2Unlocked) {
+      isBtn2Unlocked = true;
+      document.getElementById('button-2').classList.remove('disabled');
+      document.getElementById('button-2').addEventListener('click', () => {
+        colorPawnIdx = (colorPawnIdx + 1) % 4;
+        pawnBoard.changeColor(props.pawnColors[colorPawnIdx]);
+        e.stopPropagation();
+      });
+    } else if (unlock > 5 && !isBtn3Unlocked) {
+      isBtn3Unlocked = true;
+      document.getElementById('button-3').classList.remove('disabled');
+      document.getElementById('button-3').addEventListener('click', () => {
+        props.noisePathElevation = Math.random();
+        props.noiseAmpl = Math.random() * 10;
+        board.regenerateNoise();
+        e.stopPropagation();
+      });
+    }
+    document.getElementById('bar').style.transform = `scaleX(${progress})`;
   });
 
   // * GUI *******
 
-  const regenerateCamera = () => {
-    updateCameraPosition();
-    board.regenerateNoise();
-  };
+  if (props.debug) {
+    const regenerateCamera = () => {
+      updateCameraPosition();
+      board.regenerateNoise();
+    };
 
-  const gui = new GUI();
-  gui.add(props, 'noiseX', -5, 5).onChange(board.regenerateNoise);
-  gui.add(props, 'noiseY', -5, 5).onChange(board.regenerateNoise);
-  gui.add(props, 'noiseScaleX', 0.01, 1).onChange(board.regenerateNoise);
-  gui.add(props, 'noiseScaleY', 0.01, 1).onChange(board.regenerateNoise);
-  gui.add(props, 'noiseAmpl', 1, 10).onChange(board.regenerateNoise);
-  gui.add(props, 'noisePathElevation', 0.01, 1).onChange(regenerateCamera);
-  gui.add(props, 'cameraOffsetY', 0.01, 10).onChange(() => {
-    targetedCameraOffsetY = props.cameraOffsetY;
-  }).step(0.001);
-  gui.add(props, 'cameraY', 1, 30).onChange(() => {
-    targetedCameraY = props.cameraY;
-  }).step(0.001);
-  const lightGui = gui.addFolder('light');
-  lightGui.add(directionalLight.position, 'x', -10, 10);
-  lightGui.add(directionalLight.position, 'y', -10, 100);
-  lightGui.add(directionalLight.position, 'z', -10, 10);
+    const gui = new GUI();
+    gui.add(props, 'noiseX', -5, 5).onChange(board.regenerateNoise);
+    gui.add(props, 'noiseY', -5, 5).onChange(board.regenerateNoise);
+    gui.add(props, 'noiseScaleX', 0.01, 1).onChange(board.regenerateNoise);
+    gui.add(props, 'noiseScaleY', 0.01, 1).onChange(board.regenerateNoise);
+    gui.add(props, 'noiseAmpl', 1, 10).onChange(board.regenerateNoise);
+    gui.add(props, 'noisePathElevation', 0.01, 1).onChange(regenerateCamera);
+    gui.add(props, 'cameraOffsetY', 0.01, 10).onChange(() => {
+      targetedCameraOffsetY = props.cameraOffsetY;
+    }).step(0.001);
+    gui.add(props, 'cameraY', 1, 30).onChange(() => {
+      targetedCameraY = props.cameraY;
+    }).step(0.001);
+    const lightGui = gui.addFolder('light');
+    lightGui.add(directionalLight.position, 'x', -10, 10);
+    lightGui.add(directionalLight.position, 'y', -10, 100);
+    lightGui.add(directionalLight.position, 'z', -10, 10);
+  }
 
   return {
     resize(props) {
+      wrapper3d.style.width = `${props.styleWidth}px`;
+      wrapper3d.style.height = `${props.styleHeight}px`;
+      domRenderer.resize(props);
       renderer.resize(props);
+
       // composer.resize(props.viewportWidth, props.viewportHeight);
     },
     render(_props) {
@@ -223,6 +276,8 @@ canvasSketch(({ context }) => {
 
       // renderer.update(props);
       composer.render();
+
+      domRenderer._render();
 
       board.update();
       pawnBoard.update();

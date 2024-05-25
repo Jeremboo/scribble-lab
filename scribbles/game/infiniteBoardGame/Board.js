@@ -18,6 +18,7 @@ export default class Board extends Stage {
     this.regenerateNoise = this.regenerateNoise.bind(this);
     this.initCell = this.initCell.bind(this);
 
+    this.pathCells = [];
     this.init(row, column, this.initCell);
   }
 
@@ -29,15 +30,23 @@ export default class Board extends Stage {
   }
 
   initCell(x, y) {
-    const elevation = 0;
-    // const elevation = this.getElevation(x, y);
+    // const elevation = 0;
+    const elevation = this.getElevation(x, y) * 0.5;
     const position = new Vector3(x, elevation, y);
     const isPath = this.pathX === x;
     const cell = new BoardCell(position, isPath);
+    if (isPath) {
+      this.pathCells.push(cell);
+    }
     this.group.add(cell.mesh);
     return cell;
   }
 
+  changeColorPath(newColor) {
+    this.pathCells.forEach((cell) => {
+      cell.changeColorPath(newColor);
+    });
+  }
 
   regenerateNoise() {
     this.parse((cell) => {

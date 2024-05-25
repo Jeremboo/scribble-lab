@@ -13,7 +13,7 @@ const PROPS = {
 export default class BoardPawn extends Pawn {
   constructor(pawnProps) {
     super(pawnProps);
-    this.mesh = new OutlinableMesh(new CylinderBufferGeometry(PROPS.radius, PROPS.radius, PROPS.height), new MeshToonMaterial({ color: "#7DB8AB" }));
+    this.mesh = new OutlinableMesh(new CylinderBufferGeometry(PROPS.radius, PROPS.radius, PROPS.height), new MeshToonMaterial({ color: props.pawnColors[0] }));
     this.targetedPosition = new Vector3();
     this.currentPosition = new Vector3();
     this.ampl = 0;
@@ -45,6 +45,13 @@ export default class BoardPawn extends Pawn {
 
   setElevation(y) {
     this.targetedPosition.y = this.computeY(y)
+  }
+
+  changeColor(color, duration = 0.75) {
+    const _props = { color: '#' + this.mesh.material.color.getHexString() }
+    gsap.to(_props, { color, duration, onUpdate: () => {
+      this.mesh.material.color.set(_props.color)
+    } })
   }
 
   // jump(to = 0.7) {

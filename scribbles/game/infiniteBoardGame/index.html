@@ -43,7 +43,7 @@
       box-shadow: 0px 2px 12px -2px rgba(0, 0, 0, 0.15);
     }
     .f {
-      position: fixed;
+      position: absolute;
       bottom: 5px;
       right: 15px;
       font-family: 'Arial';
@@ -54,14 +54,205 @@
       color: #C9F0FF;
       font-size: 0.8rem;
     }
+
+    a {
+      text-decoration: none;
+      color: white;
+      display: block;
+      cursor: pointer;
+      transition: color 250ms;
+    }
+
+    a:hover {
+      color: #B44351
+    }
+
+    #wrapper-3d {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      margin: auto;
+      font-size: 1px;
+      pointer-events: none;
+    }
+
+    #wrapper-3d .content {
+      width: 1500px;
+      height: 1000px;
+      transform: scale(0.01);
+    }
+
+    #wrapper-3d h1 {
+      font-size: 150px;
+      line-height: 150px;
+      margin:0;
+      padding: 0;
+      color: white;
+    }
+
+    #wrapper-3d a {
+      font-size: 70px;
+      line-height: 70px;
+    }
+
+    #home-page button {
+      font-size: 100px;
+      transform: translate(0, 80px);
+      transform-origin: 0 0;
+      border: 0;
+      cursor: pointer;
+      background-color: white;
+      transition: background-color 0.25s, transform 0.25s;
+      border-radius: 11px;
+      margin-left: 10px;
+      padding: 10px 50px;
+    }
+
+    #home-page button:hover {
+      background-color: #B44351;
+      transform: translate(10px, 80px);
+    }
+
+    button::-moz-focus-inner {
+      border: 0;
+      padding: 0;
+    }
+
+    .page {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 1;
+      transition: opacity 0.5s;
+    }
+
+    .hidden, .hidden button, .hidden a {
+      pointer-events: none !important;
+      opacity: 0 !important;
+    }
+
+    #end-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.2);
+      font-size: 1.5em;
+    }
+
+    p {
+      margin: 5px;
+      color: white;
+    }
+
+    .page .wrapper {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    #game-page .buttons, #game-page .gauge {
+      width: 60%;
+    }
+
+    #game-page .gauge {
+      position: relative;
+      height: 10px;
+      margin-top: 10px;
+      margin-bottom: 25px;
+    }
+
+    #game-page .gauge::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    #game-page .gauge::after, #game-page button.disabled {
+      opacity: 0.5;
+      background-color: #70584A;
+    }
+
+    #game-page .gauge #bar {
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      transform: scaleX(0);
+      transform-origin: 0;
+      transition: transform 250ms;
+      position: absolute;
+      left: -1px;
+    }
+
+    #game-page .buttons {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    #game-page button.disabled {
+      pointer-events: none;
+    }
+
+    #game-page button {
+      width: 30px;
+      height: 30px;
+      border: 0;
+      border-radius: 2px;
+      background-color: white;
+      transition: background-color 250ms;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    #game-page button:hover {
+      background-color: #B44351;
+    }
+
   </style>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <p class="f">
-    <a target="_blank" href="http://www.jeremieboulay.fr">@Jeremboo</a>
-    <br /> ┗|｀O´|┛
-  </p>
+
+  <div id="wrapper-3d">
+    <div class="content">
+      <header id="home-page" class="page">
+        <h1>Infinite board game</h1>
+        <a href="https://www.jeremieboulay.fr" target="_blank">@jeremboo</a>
+        <button id="start-button">Start</button>
+      </header>
+      <div id="game-page" class="page hidden">
+        <div class="wrapper">
+          <div class="gauge"><div id="bar"></div></div>
+          <div class="buttons">
+            <button id="button-1" class="disabled"></button>
+            <button id="button-2" class="disabled"></button>
+            <button id="button-3" class="disabled"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="end-page" class="page hidden">
+    <p>✨ You finished the infinite board game ✨</p>
+    <p>✨ Thank you ✨</p>
+    <p class="f">
+      <a target="_blank" href="http://www.jeremieboulay.fr">@Jeremboo</a>
+      ┗|｀O´|┛
+    </p>
+  </div>
+
   {{entry}}
+
+
 </body>
 </html>

@@ -1,9 +1,11 @@
 export default {
+  debug: false,
   // colors
-  mainColor: '#F8D6C4',
   bgColor: '#2D1A14',
   outlineColor: '#70584A',
-  pathColor: '#B44351',
+  neutralColor: '#F8D6C4',
+  pathColors: ['#B44351', '#63928A', '#DDC66B', '#7A8852'],
+  pawnColors: ['#7DB8AB', '#F7DD76', '#A2B870', '#CD5974'],
   // board noise
   noiseX: 0,
   noiseY: 4.5,
@@ -15,8 +17,8 @@ export default {
   boardWidth: 5,
   boardHeight: 15,
   // initial camera position
-  initialCameraOffsetY: 4.5,
-  initialCameraY: 10,
+  initialCameraOffsetY: 0,
+  initialCameraY: 30,
   // camera position
   cameraOffsetY: 5.727,
   cameraY: 14.454,
@@ -24,6 +26,6 @@ export default {
   rotationSpeed: 0, // 0.001,
   // animation
   velocity: 0.1,
-  maxCount: 14 + 11 * 8,
+  maxCount: 14 + 11 * 10,
 
 };
