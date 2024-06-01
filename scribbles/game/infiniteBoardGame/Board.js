@@ -42,9 +42,9 @@ export default class Board extends Stage {
     return cell;
   }
 
-  changeColorPath(newColor) {
+  changeColorPath(newColor, duration) {
     this.pathCells.forEach((cell) => {
-      cell.changeColorPath(newColor);
+      cell.changeColorPath(newColor, duration);
     });
   }
 

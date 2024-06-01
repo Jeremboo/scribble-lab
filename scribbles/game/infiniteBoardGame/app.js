@@ -21,11 +21,12 @@ import BoardPawn from './BoardPawn';
 import props from './props';
 import OutlinableMesh from '../../../modules/Three/OutlinePass/OutlinableMesh';
 import DOMRenderer from '../../../modules/Three/DOMRenderer.three';
+import gsap from 'gsap';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
   let targetedZoom = props.cameraZoomOut;
-  let currentZoom = targetedZoom;
+  let currentZoom = props.cameraZoomOut * 2;
   const renderer = new OrthographicRenderer({
     canvas: context.canvas,
     zoom: currentZoom,
@@ -148,6 +149,9 @@ canvasSketch(({ context }) => {
   }
 
   setTimeout(() => {
+    // INTRO
+    gsap.to(document.body.querySelectorAll('#home-page > *'), { autoAlpha: 1, duration: 0.5, y: 0, delay: 0.5, stagger: 0.15 });
+
     document.getElementById('start-button').addEventListener('click', () => {
       animateIn();
     });
@@ -188,7 +192,7 @@ canvasSketch(({ context }) => {
       document.getElementById('button-1').classList.remove('disabled');
       document.getElementById('button-1').addEventListener('click', (e) => {
         colorPathIdx = (colorPathIdx + 1) % 4;
-        board.changeColorPath(props.pathColors[colorPathIdx]);
+        board.changeColorPath(props.pathColors[colorPathIdx], 0.333);
         e.stopPropagation();
       });
     } else if (unlock > 3 && !isBtn2Unlocked) {
@@ -196,7 +200,7 @@ canvasSketch(({ context }) => {
       document.getElementById('button-2').classList.remove('disabled');
       document.getElementById('button-2').addEventListener('click', (e) => {
         colorPawnIdx = (colorPawnIdx + 1) % 4;
-        pawnBoard.changeColor(props.pawnColors[colorPawnIdx]);
+        pawnBoard.changeColor(props.pawnColors[colorPawnIdx], 0.333);
         e.stopPropagation();
       });
     } else if (unlock > 5 && !isBtn3Unlocked) {
@@ -293,10 +297,10 @@ canvasSketch(({ context }) => {
     }
   };
 }, {
-  fps: 15, // 24
-  duration: 4,
-  dimensions: [2048, 2048],
-  // scaleToView: true,
+  // fps: 15,
+  // duration: 4,
+  // dimensions: [2048, 2048],
+  scaleToView: true,
   animate: true,
   context: 'webgl',
 });
