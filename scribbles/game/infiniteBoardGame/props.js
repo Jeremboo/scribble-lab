@@ -34,14 +34,14 @@ export default {
   initialCameraOffsetY: 0,
   initialCameraY: 30,
   // camera position
-  cameraOffsetY: 3,
+  cameraOffsetY: 2,
   cameraY: 14.454,
   cameraZoomOut: 22,
   cameraZoom: 15.5, // gameplay / debug ortho zoom (higher = further)
   rotationSpeed: 0, // 0.001,
   // animation
   velocity: 0.1,
-  maxCount: 14 + 11 * 10,
   advanceDuration: 50,
+  lootChance: 0.15,
 
 };

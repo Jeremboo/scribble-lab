@@ -1,6 +1,7 @@
 import { Group, Vector3 } from "three";
 import Stage from "../_modules/Stage";
 import BoardCell from "./BoardCell";
+import BoardLoot from "./BoardLoot";
 import { boardNoise, getHillElevation } from "./boardNoise";
 import props from "./props";
 
@@ -21,6 +22,11 @@ export default class Board extends Stage {
     this.initCell = this.initCell.bind(this);
 
     this.pathCells = [];
+    this.loots = [];
+    this.currentPathColor = props.pathColors[0];
+    this.currentPawnColor = props.pawnColors[0];
+    this.lastPathLootColor = null;
+    this.lastPawnLootColor = null;
     this.init(row, column, this.initCell);
   }
 
@@ -42,6 +48,58 @@ export default class Board extends Stage {
     return this.getElevation(this.pathX, y) * 0.5 - CELL_HEIGHT / 2 + CELL_ELEVATION;
   }
 
+  pickLootColor(effect) {
+    const palette = effect === 'path' ? props.pathColors : props.pawnColors;
+    const current = effect === 'path' ? this.currentPathColor : this.currentPawnColor;
+    const previous = effect === 'path' ? this.lastPathLootColor : this.lastPawnLootColor;
+
+    let pool = palette.filter((color) => color !== current && color !== previous);
+    if (!pool.length) {
+      pool = palette.filter((color) => color !== current);
+    }
+    if (!pool.length) {
+      pool = palette;
+    }
+
+    const color = pool[Math.floor(Math.random() * pool.length)];
+    if (effect === 'path') {
+      this.lastPathLootColor = color;
+    } else {
+      this.lastPawnLootColor = color;
+    }
+    return color;
+  }
+
+  setAppliedColor(effect, color) {
+    if (effect === 'path') {
+      this.currentPathColor = color;
+    } else if (effect === 'pawn') {
+      this.currentPawnColor = color;
+    }
+  }
+
+  maybeSpawnLoot(cell) {
+    // Skip the first few path cells so the start stays clear
+    if (!cell.isPath || cell.y < 3) return;
+    if (Math.random() > props.lootChance) return;
+
+    const effect = Math.random() < 0.5 ? 'path' : 'pawn';
+    const color = this.pickLootColor(effect);
+    const loot = new BoardLoot(cell, { effect, color });
+    cell.loot = loot;
+    this.loots.push(loot);
+    this.group.add(loot.mesh);
+  }
+
+  collectLootAt(x, y) {
+    const cell = this.grid.getCell(x, y);
+    if (!cell || !cell.loot || cell.loot.collected) return null;
+    const loot = cell.loot;
+    if (!loot.collect()) return null;
+    this.loots = this.loots.filter((item) => item !== loot);
+    return loot;
+  }
+
   initCell(x, y) {
     const elevation = this.getElevation(x, y) * 0.5;
     const position = new Vector3(x, elevation, y);
@@ -49,6 +107,7 @@ export default class Board extends Stage {
     const cell = new BoardCell(position, isPath);
     if (isPath) {
       this.pathCells.push(cell);
+      this.maybeSpawnLoot(cell);
     }
     this.group.add(cell.mesh);
     return cell;
@@ -68,11 +127,12 @@ export default class Board extends Stage {
     });
   }
 
-  update() {
+  update(time = 0) {
     this.parse((cell) => {
       if (!cell || !cell.update) return;
       cell.update();
-    })
+    });
+    this.loots.forEach((loot) => loot.update(time));
   }
 
   moveTo(move = 1) {
@@ -98,6 +158,9 @@ export default class Board extends Stage {
       row.forEach((cell) => {
         if (!cell || !cell.mesh) return;
         this.pathCells = this.pathCells.filter((pathCell) => pathCell !== cell);
+        if (cell.loot) {
+          this.loots = this.loots.filter((loot) => loot !== cell.loot);
+        }
         this.group.remove(cell.mesh);
         cell.dispose();
       });

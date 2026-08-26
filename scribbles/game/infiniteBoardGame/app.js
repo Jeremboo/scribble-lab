@@ -150,16 +150,6 @@ canvasSketch(({ context }) => {
     }, 450);
   }
 
-  const animateOut = () => {
-    props.velocity *= 0.2;
-    props.rotationSpeed = 0.002;
-    targetedZoom = props.cameraZoomOut;
-
-    document.getElementById('game-page').classList.add('hidden');
-    document.getElementById('end-page').classList.remove('hidden');
-  }
-
-
   const animateAdvance = (steps) => {
     // Pawn needs its landing cell immediately
     board.ensureRow(pawnBoard.y);
@@ -187,25 +177,10 @@ canvasSketch(({ context }) => {
     });
   }, 200);
 
-  let count = 0;
-  let isAnimatedIn = false, isAnimatedOut = false;
-  let colorPathIdx = 0, colorPawnIdx = 0;
-  let isBtn1Unlocked = false, isBtn2Unlocked = false, isBtn3Unlocked = false;
+  let isAnimatedIn = false;
+
   document.body.addEventListener('click', () => {
     if (!isAnimatedIn) return;
-    count ++;
-
-    // End
-    if (count > props.maxCount) {
-      if (!isAnimatedOut) {
-        isAnimatedOut = true;
-        animateOut();
-        board.removePawn(pawnBoard);
-        animateAdvance(Math.floor(props.boardHeight * 0.5))
-        board.addPawn(pawnBoard);
-      }
-      return;
-    }
 
     // Move the pawn
     board.removePawn(pawnBoard);
@@ -217,36 +192,16 @@ canvasSketch(({ context }) => {
     board.ensureRow(pawnBoard.y);
     board.addPawn(pawnBoard);
 
-    const progress = count / props.maxCount;
-    const unlock = progress * 6;
-    if (unlock > 1 && !isBtn1Unlocked) {
-      isBtn1Unlocked = true;
-      document.getElementById('button-1').classList.remove('disabled');
-      document.getElementById('button-1').addEventListener('click', (e) => {
-        colorPathIdx = (colorPathIdx + 1) % 4;
-        board.changeColorPath(props.pathColors[colorPathIdx], 0.333);
-        e.stopPropagation();
-      });
-    } else if (unlock > 3 && !isBtn2Unlocked) {
-      isBtn2Unlocked = true;
-      document.getElementById('button-2').classList.remove('disabled');
-      document.getElementById('button-2').addEventListener('click', (e) => {
-        colorPawnIdx = (colorPawnIdx + 1) % 4;
-        pawnBoard.changeColor(props.pawnColors[colorPawnIdx], 0.333);
-        e.stopPropagation();
-      });
-    } else if (unlock > 5 && !isBtn3Unlocked) {
-      isBtn3Unlocked = true;
-      document.getElementById('button-3').classList.remove('disabled');
-      document.getElementById('button-3').addEventListener('click', (e) => {
-        props.noisePathElevation = Math.random();
-        props.noiseAmpl = Math.random() * 10;
-        board.regenerateNoise();
-        ground.syncFromProps();
-        e.stopPropagation();
-      });
+    const loot = board.collectLootAt(pawnBoard.x, pawnBoard.y);
+    if (!loot) return;
+
+    if (loot.effect === 'path') {
+      board.changeColorPath(loot.color, 0.333);
+      board.setAppliedColor('path', loot.color);
+    } else if (loot.effect === 'pawn') {
+      pawnBoard.changeColor(loot.color, 0.333);
+      board.setAppliedColor('pawn', loot.color);
     }
-    document.getElementById('bar').style.transform = `scaleX(${progress})`;
   });
 
   // * GUI *******
@@ -350,7 +305,7 @@ canvasSketch(({ context }) => {
 
       domRenderer._render();
 
-      board.update();
+      board.update(_props.time);
       pawnBoard.update();
 
       if (props.rotationSpeed > 0) {

@@ -43,6 +43,7 @@ export default class BoardCell extends Cell {
     super(position.x, position.z);
 
     this.isPath = isPath;
+    this.loot = null;
     this.mesh = new OutlinableMesh(new BoxBufferGeometry(1, HEIGHT, 1), isPath ? PATH_MATERIAL : NEUTRAL_MATERIAL)
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
@@ -65,6 +66,9 @@ export default class BoardCell extends Cell {
     this.pawns.forEach((pawn) => {
       pawn.setElevation(this.targetedPosition.y);
     });
+    if (this.loot) {
+      this.loot.setElevation();
+    }
   }
 
   changeColorPath(color, duration = 0.25) {
@@ -79,6 +83,10 @@ export default class BoardCell extends Cell {
   }
 
   dispose() {
+    if (this.loot) {
+      this.loot.dispose();
+      this.loot = null;
+    }
     this.mesh.geometry.dispose();
   }
 }

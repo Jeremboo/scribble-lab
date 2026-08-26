@@ -10,7 +10,7 @@ import surfaceFinder, {
 export default class OutlinableMesh extends Mesh {
   constructor(geometry, material, forcedSurfaceId) {
     super(geometry, material);
-    const surfaceIdArray = surfaceFinder.getSurfaceIdAttribute(this)
+    const surfaceIdArray = surfaceFinder.getSurfaceIdAttribute(this, forcedSurfaceId)
     geometry.setAttribute('surfaceId', new BufferAttribute(surfaceIdArray, 1))
   }
 }

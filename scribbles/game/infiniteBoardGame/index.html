@@ -140,86 +140,9 @@
       opacity: 0 !important;
     }
 
-    #end-page {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background-color: rgba(0, 0, 0, 0.2);
-      font-size: 1.5em;
-    }
-
     p {
       margin: 5px;
       color: white;
-    }
-
-    .page .wrapper {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-    #game-page .buttons, #game-page .gauge {
-      width: 60%;
-    }
-
-    #game-page .gauge {
-      position: relative;
-      height: 10px;
-      margin-top: 10px;
-      margin-bottom: 25px;
-    }
-
-    #game-page .gauge::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
-
-    #game-page .gauge::after, #game-page button.disabled {
-      opacity: 0.5;
-      background-color: #70584A;
-    }
-
-    #game-page .gauge #bar {
-      width: 100%;
-      height: 100%;
-      background-color: white;
-      transform: scaleX(0);
-      transform-origin: 0;
-      transition: transform 250ms;
-      position: absolute;
-      left: -1px;
-    }
-
-    #game-page .buttons {
-      display: flex;
-      justify-content: space-around;
-    }
-
-    #game-page button.disabled {
-      pointer-events: none;
-    }
-
-    #game-page button {
-      width: 30px;
-      height: 30px;
-      border: 0;
-      border-radius: 2px;
-      background-color: white;
-      transition: background-color 250ms;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    #game-page button:hover {
-      background-color: #B44351;
     }
 
   </style>
@@ -236,27 +159,8 @@
           <button id="start-button">Start</button>
         </div>
       </header>
-      <div id="game-page" class="page hidden">
-        <div class="wrapper">
-          <div class="gauge"><div id="bar"></div></div>
-          <div class="buttons">
-            <button id="button-1" class="disabled"></button>
-            <button id="button-2" class="disabled"></button>
-            <button id="button-3" class="disabled"></button>
-          </div>
-        </div>
-      </div>
+      <div id="game-page" class="page hidden"></div>
     </div>
-  </div>
-
-
-  <div id="end-page" class="page hidden">
-    <p>✨ You finished the infinite board game ✨</p>
-    <p>✨ Thank you ✨</p>
-    <p class="f">
-      <a target="_blank" href="http://www.jeremieboulay.fr">@Jeremboo</a>
-      ┗|｀O´|┛
-    </p>
   </div>
 
   {{entry}}
