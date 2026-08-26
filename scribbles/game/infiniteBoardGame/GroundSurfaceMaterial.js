@@ -1,5 +1,5 @@
 import { ShaderMaterial } from 'three';
-import { noisejsPerlin2 } from './boardNoise';
+import { groundElevationGlsl } from './boardNoise';
 import surfaceFrag from '../../../modules/Three/OutlinePass/SurfaceMaterial/frag.glsl';
 
 const vertexShader = `
@@ -12,31 +12,27 @@ uniform float uPathX;
 uniform vec2 uBoardOffset;
 uniform float uScrollZ;
 uniform float uPathY;
+uniform float uBoardHalfWidth;
+uniform float uCurveHeightLeft;
+uniform float uCurveHeightRight;
+uniform float uCurveRadiusLeft;
+uniform float uCurveRadiusRight;
+uniform float uNoiseAmplSideLeft;
+uniform float uNoiseAmplSideRight;
+uniform vec2 uHillNoiseOffset;
+uniform vec2 uHillNoiseScale;
+uniform float uHillNoiseAmpl;
 
 attribute float surfaceId;
 varying float vSurfaceId;
 
-${noisejsPerlin2}
-
-float getElevation(vec2 grid) {
-  float noiseElevation = abs(noisejsPerlin2(
-    vec2(
-      (uNoiseOffset.x + grid.x) * uNoiseScale.x,
-      (uNoiseOffset.y + grid.y + uPathY) * uNoiseScale.y
-    )
-  )) * uNoiseAmpl;
-
-  float pathElevation = uNoisePathElevation - abs(grid.x - uPathX) * uNoisePathElevation;
-  float starterElevation = 0.25 + min(1.0, max(0.0, grid.y) / 3.0);
-
-  return max(0.0, (noiseElevation + pathElevation) * starterElevation);
-}
+${groundElevationGlsl}
 
 void main() {
   vec3 pos = position;
   vec2 worldXZ = vec2(pos.x, -pos.y);
   vec2 grid = worldXZ + uBoardOffset - vec2(0.0, uScrollZ);
-  pos.z += getElevation(grid) * 0.5;
+  pos.z += getGroundElevation(grid) * 0.5;
 
   vSurfaceId = surfaceId;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
@@ -63,6 +59,16 @@ export default class GroundSurfaceMaterial extends ShaderMaterial {
         uBoardOffset: groundUniforms.uBoardOffset,
         uScrollZ: groundUniforms.uScrollZ,
         uPathY: groundUniforms.uPathY,
+        uBoardHalfWidth: groundUniforms.uBoardHalfWidth,
+        uCurveHeightLeft: groundUniforms.uCurveHeightLeft,
+        uCurveHeightRight: groundUniforms.uCurveHeightRight,
+        uCurveRadiusLeft: groundUniforms.uCurveRadiusLeft,
+        uCurveRadiusRight: groundUniforms.uCurveRadiusRight,
+        uNoiseAmplSideLeft: groundUniforms.uNoiseAmplSideLeft,
+        uNoiseAmplSideRight: groundUniforms.uNoiseAmplSideRight,
+        uHillNoiseOffset: groundUniforms.uHillNoiseOffset,
+        uHillNoiseScale: groundUniforms.uHillNoiseScale,
+        uHillNoiseAmpl: groundUniforms.uHillNoiseAmpl,
         maxSurfaceId: { value: 1 },
       },
       vertexShader,

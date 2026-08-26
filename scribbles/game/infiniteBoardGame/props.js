@@ -13,6 +13,19 @@ export default {
   noiseScaleY: 0.1,
   noiseAmpl: 5.5,
   noisePathElevation: 0.43,
+  // hill noise (large rolling hills along the path — keeps detail noise above)
+  hillNoiseX: 0,
+  hillNoiseY: 0,
+  hillNoiseScaleX: 0.006,
+  hillNoiseScaleY: 0.007,
+  hillNoiseAmpl: 60,
+  // ground curve — left / right of the path (sides rise + stronger noise)
+  groundCurveHeightLeft: 12,
+  groundCurveRadiusLeft: 8.8,
+  groundCurveHeightRight: 10,
+  groundCurveRadiusRight: 2,
+  groundNoiseAmplSideLeft: 3.5,
+  groundNoiseAmplSideRight: 3.5,
   // board size
   boardWidth: 5,
   boardHeight: 15,
@@ -24,9 +37,11 @@ export default {
   cameraOffsetY: 3,
   cameraY: 14.454,
   cameraZoomOut: 22,
+  cameraZoom: 15.5, // gameplay / debug ortho zoom (higher = further)
   rotationSpeed: 0, // 0.001,
   // animation
   velocity: 0.1,
   maxCount: 14 + 11 * 10,
+  advanceDuration: 50,
 
 };

@@ -1,8 +1,11 @@
 import { Group, Vector3 } from "three";
 import Stage from "../_modules/Stage";
 import BoardCell from "./BoardCell";
-import { boardNoise } from "./boardNoise";
+import { boardNoise, getHillElevation } from "./boardNoise";
 import props from "./props";
+
+const CELL_HEIGHT = 5;
+const CELL_ELEVATION = 0.25;
 
 export default class Board extends Stage {
   constructor(row, column) {
@@ -25,7 +28,18 @@ export default class Board extends Stage {
     const noiseElevation = Math.abs(boardNoise.perlin2((props.noiseX + x) * props.noiseScaleX, (props.noiseY + y + this.pathY) * props.noiseScaleY)) * props.noiseAmpl;
     const pathElevation = props.noisePathElevation - Math.abs(x - this.pathX) * props.noisePathElevation;
     const starterElevation = 0.25 + Math.min(1, y / 3);
-    return Math.max(0,(noiseElevation + pathElevation) * starterElevation);
+    const hillElevation = getHillElevation(x, y, this.pathY);
+    return (noiseElevation + pathElevation) * starterElevation + hillElevation;
+  }
+
+  /** Hill elevation contribution at path column (matches mesh * 0.5 scale). */
+  getPathHillY(y) {
+    return getHillElevation(this.pathX, y, this.pathY) * 0.5;
+  }
+
+  /** World-space Y of the path cell surface at absolute row y. */
+  getPathWorldY(y) {
+    return this.getElevation(this.pathX, y) * 0.5 - CELL_HEIGHT / 2 + CELL_ELEVATION;
   }
 
   initCell(x, y) {
@@ -49,7 +63,7 @@ export default class Board extends Stage {
   regenerateNoise() {
     this.parse((cell) => {
       if (!cell || !cell.setElevation) return;
-      const newElevation = this.getElevation(cell.x, cell.y);
+      const newElevation = this.getElevation(cell.x, cell.y) * 0.5;
       cell.setElevation(newElevation);
     });
   }

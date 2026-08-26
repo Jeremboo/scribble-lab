@@ -5,7 +5,7 @@ import {
   UniformsUtils,
   UniformsLib,
 } from 'three';
-import { createPermTexture, noisejsPerlin2 } from '../boardNoise';
+import { createPermTexture, groundElevationGlsl } from '../boardNoise';
 import props from '../props';
 
 const vertexShader = `
@@ -18,6 +18,16 @@ uniform float uPathX;
 uniform vec2 uBoardOffset;
 uniform float uScrollZ;
 uniform float uPathY;
+uniform float uBoardHalfWidth;
+uniform float uCurveHeightLeft;
+uniform float uCurveHeightRight;
+uniform float uCurveRadiusLeft;
+uniform float uCurveRadiusRight;
+uniform float uNoiseAmplSideLeft;
+uniform float uNoiseAmplSideRight;
+uniform vec2 uHillNoiseOffset;
+uniform vec2 uHillNoiseScale;
+uniform float uHillNoiseAmpl;
 
 varying vec3 vNormal;
 varying vec3 vViewPosition;
@@ -26,27 +36,13 @@ varying float vElevation;
 #include <common>
 #include <shadowmap_pars_vertex>
 
-${noisejsPerlin2}
-
-float getElevation(vec2 grid) {
-  float noiseElevation = abs(noisejsPerlin2(
-    vec2(
-      (uNoiseOffset.x + grid.x) * uNoiseScale.x,
-      (uNoiseOffset.y + grid.y + uPathY) * uNoiseScale.y
-    )
-  )) * uNoiseAmpl;
-
-  float pathElevation = uNoisePathElevation - abs(grid.x - uPathX) * uNoisePathElevation;
-  float starterElevation = 0.25 + min(1.0, max(0.0, grid.y) / 3.0);
-
-  return max(0.0, (noiseElevation + pathElevation) * starterElevation);
-}
+${groundElevationGlsl}
 
 vec3 getDisplacedLocalPosition(vec2 localXY) {
   vec3 pos = vec3(localXY.x, localXY.y, 0.0);
   vec2 worldXZ = vec2(pos.x, -pos.y);
   vec2 grid = worldXZ + uBoardOffset - vec2(0.0, uScrollZ);
-  float elevation = getElevation(grid) * 0.5;
+  float elevation = getGroundElevation(grid) * 0.5;
   pos.z += elevation;
   return pos;
 }
@@ -139,6 +135,16 @@ export default class GroundPlaneMaterial extends ShaderMaterial {
           },
           uScrollZ: { value: 0 },
           uPathY: { value: 0 },
+          uBoardHalfWidth: { value: props.boardWidth * 0.5 },
+          uCurveHeightLeft: { value: props.groundCurveHeightLeft },
+          uCurveHeightRight: { value: props.groundCurveHeightRight },
+          uCurveRadiusLeft: { value: props.groundCurveRadiusLeft },
+          uCurveRadiusRight: { value: props.groundCurveRadiusRight },
+          uNoiseAmplSideLeft: { value: props.groundNoiseAmplSideLeft },
+          uNoiseAmplSideRight: { value: props.groundNoiseAmplSideRight },
+          uHillNoiseOffset: { value: new Vector2(props.hillNoiseX, props.hillNoiseY) },
+          uHillNoiseScale: { value: new Vector2(props.hillNoiseScaleX, props.hillNoiseScaleY) },
+          uHillNoiseAmpl: { value: props.hillNoiseAmpl },
         },
       ]),
       vertexShader,
@@ -152,6 +158,15 @@ export default class GroundPlaneMaterial extends ShaderMaterial {
     this.uniforms.uNoiseScale.value.set(props.noiseScaleX, props.noiseScaleY);
     this.uniforms.uNoiseAmpl.value = props.noiseAmpl;
     this.uniforms.uNoisePathElevation.value = props.noisePathElevation;
+    this.uniforms.uCurveHeightLeft.value = props.groundCurveHeightLeft;
+    this.uniforms.uCurveHeightRight.value = props.groundCurveHeightRight;
+    this.uniforms.uCurveRadiusLeft.value = props.groundCurveRadiusLeft;
+    this.uniforms.uCurveRadiusRight.value = props.groundCurveRadiusRight;
+    this.uniforms.uNoiseAmplSideLeft.value = props.groundNoiseAmplSideLeft;
+    this.uniforms.uNoiseAmplSideRight.value = props.groundNoiseAmplSideRight;
+    this.uniforms.uHillNoiseOffset.value.set(props.hillNoiseX, props.hillNoiseY);
+    this.uniforms.uHillNoiseScale.value.set(props.hillNoiseScaleX, props.hillNoiseScaleY);
+    this.uniforms.uHillNoiseAmpl.value = props.hillNoiseAmpl;
   }
 
   setScrollZ(z) {

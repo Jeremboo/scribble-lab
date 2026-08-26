@@ -6,9 +6,18 @@ import {
   UnsignedByteType,
   ClampToEdgeWrapping,
 } from 'three';
+import props from './props';
 
 // Fixed seed so JS + GLSL share the same permutation table
 export const boardNoise = new Noise(0);
+
+/** Large-scale hill elevation along the path (second noise pass). */
+export function getHillElevation(x, y, pathY = 0) {
+  return boardNoise.perlin2(
+    (props.hillNoiseX + x) * props.hillNoiseScaleX,
+    (props.hillNoiseY + y + pathY) * props.hillNoiseScaleY
+  ) * props.hillNoiseAmpl;
+}
 
 export function createPermTexture() {
   const data = new Uint8Array(512);
@@ -72,5 +81,54 @@ float noisejsPerlin2(vec2 p) {
   float u = noisejsFade(x);
   float v = noisejsFade(y);
   return mix(mix(n00, n10, u), mix(n01, n11, u), v);
+}
+`;
+
+/**
+ * Ground elevation: detail noise + large hills + side curve.
+ * Left / right use separate curve uniforms.
+ * Also requires hill uniforms: uHillNoiseOffset, uHillNoiseScale, uHillNoiseAmpl.
+ */
+export const groundElevationGlsl = `
+${noisejsPerlin2}
+
+float getHillElevation(vec2 grid) {
+  return noisejsPerlin2(
+    vec2(
+      (uHillNoiseOffset.x + grid.x) * uHillNoiseScale.x,
+      (uHillNoiseOffset.y + grid.y + uPathY) * uHillNoiseScale.y
+    )
+  ) * uHillNoiseAmpl;
+}
+
+float getGroundElevation(vec2 grid) {
+  float distFromPath = abs(grid.x - uPathX);
+  bool isLeft = grid.x < uPathX;
+
+  float curveRadius = isLeft ? uCurveRadiusLeft : uCurveRadiusRight;
+  float curveHeight = isLeft ? uCurveHeightLeft : uCurveHeightRight;
+  float noiseAmplSide = isLeft ? uNoiseAmplSideLeft : uNoiseAmplSideRight;
+
+  // 0 under the board footprint, 1 far on the sides
+  float sideFactor = smoothstep(uBoardHalfWidth, uBoardHalfWidth + curveRadius, distFromPath);
+
+  float ampl = uNoiseAmpl * mix(1.0, noiseAmplSide, sideFactor);
+  float noiseElevation = abs(noisejsPerlin2(
+    vec2(
+      (uNoiseOffset.x + grid.x) * uNoiseScale.x,
+      (uNoiseOffset.y + grid.y + uPathY) * uNoiseScale.y
+    )
+  )) * ampl;
+
+  float pathElevation = uNoisePathElevation - abs(grid.x - uPathX) * uNoisePathElevation;
+  float starterElevation = 0.25 + min(1.0, max(0.0, grid.y) / 3.0);
+
+  // Parabolic lift on the sides
+  float curveLift = sideFactor * sideFactor * curveHeight;
+
+  // Large rolling hills (second noise pass)
+  float hillElevation = getHillElevation(grid);
+
+  return (noiseElevation + pathElevation) * starterElevation + curveLift + hillElevation;
 }
 `;
