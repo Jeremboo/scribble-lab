@@ -1,4 +1,4 @@
-import { CylinderBufferGeometry, MeshToonMaterial, Vector3 } from "three";
+import { CylinderBufferGeometry, MeshToonMaterial, Vector3, DataTexture, RGBFormat, NearestFilter } from "three";
 import gsap from 'gsap';
 import Pawn from '../_modules/Pawn';
 import OutlinableMesh from '../../../modules/Three/OutlinePass/OutlinableMesh';
@@ -11,10 +11,28 @@ const PROPS = {
   jumpVelocity: 0.999
 }
 
+function createToonGradient() {
+  const data = new Uint8Array([
+    70, 70, 70,
+    140, 140, 140,
+    255, 255, 255,
+  ]);
+  const texture = new DataTexture(data, 3, 1, RGBFormat);
+  texture.minFilter = NearestFilter;
+  texture.magFilter = NearestFilter;
+  texture.needsUpdate = true;
+  return texture;
+}
+
 export default class BoardPawn extends Pawn {
   constructor(pawnProps) {
     super(pawnProps);
-    this.mesh = new OutlinableMesh(new CylinderBufferGeometry(PROPS.radius, PROPS.radius, PROPS.height), new MeshToonMaterial({ color: props.pawnColors[0] }));
+    this.mesh = new OutlinableMesh(
+      new CylinderBufferGeometry(PROPS.radius, PROPS.radius, PROPS.height),
+      new MeshToonMaterial({ color: props.pawnColors[0], gradientMap: createToonGradient() })
+    );
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = false;
     this.targetedPosition = new Vector3();
     this.currentPosition = new Vector3();
     this.ampl = 0;
@@ -38,8 +56,11 @@ export default class BoardPawn extends Pawn {
   applyRulesOnPawnAdded() {}
 
   applyRulesFromCellLanded(cell) {
-    this.targetedPosition.copy(cell.mesh.position);
-    this.targetedPosition.y = this.computeY(this.targetedPosition.y);
+    this.targetedPosition.set(
+      cell.targetedPosition.x,
+      this.computeY(cell.targetedPosition.y),
+      cell.targetedPosition.z,
+    );
   }
 
   applyRulesFromCellLeaved(cell) {}

@@ -134,6 +134,11 @@ export default class OutlinePass extends Pass {
   setDebugMode(isEnabled) {
     this.passMaterial.setDebugMode(isEnabled);
     this.surfaceOverrideMaterial.setDebugMode(isEnabled);
+    this.renderScene.traverse((object) => {
+      if (object.customSurfaceMaterial && object.customSurfaceMaterial.setDebugMode) {
+        object.customSurfaceMaterial.setDebugMode(isEnabled);
+      }
+    });
   }
 
   setThickness(thickness) {
@@ -148,7 +153,13 @@ export default class OutlinePass extends Pass {
 
   setMaxSurfaceId(maxSurfaceId) {
     // TODO 2024-01-04 jeremboo: why +1 ?
-    this.surfaceOverrideMaterial.uniforms.maxSurfaceId.value = maxSurfaceId + 1;
+    const value = maxSurfaceId + 1;
+    this.surfaceOverrideMaterial.uniforms.maxSurfaceId.value = value;
+    this.renderScene.traverse((object) => {
+      if (object.customSurfaceMaterial && object.customSurfaceMaterial.uniforms.maxSurfaceId) {
+        object.customSurfaceMaterial.uniforms.maxSurfaceId.value = value;
+      }
+    });
   }
 
   getProps() {
@@ -179,18 +190,22 @@ export default class OutlinePass extends Pass {
     // TODO 2024-01-04 jeremboo: Use the store for this
     this.setMaxSurfaceId(findSurfaces.surfaceId);
 
-    // Turn off writing to the depth buffer
-    // because we need to read from it in the subsequent passes.
-    // const cachedDepthBufferValue = writeBuffer.depthBuffer;
-    // writeBuffer.depthBuffer = false;
-
     // 1. Re-render the scene to capture all surface IDs in a texture.
+    // Meshes with customSurfaceMaterial (e.g. displaced ground) keep their
+    // own surface shader so outlines match the visible geometry.
     renderer.setRenderTarget(this.surfaceBuffer);
     renderer.clear();
-    // const cachedOverrideMat = this.renderScene.overrideMaterial;
-    this.renderScene.overrideMaterial = this.surfaceOverrideMaterial;
+
+    const materialCache = [];
+    this.renderScene.traverse((object) => {
+      if (!object.isMesh) return;
+      materialCache.push([object, object.material]);
+      object.material = object.customSurfaceMaterial || this.surfaceOverrideMaterial;
+    });
     renderer.render(this.renderScene, this.renderCamera);
-    this.renderScene.overrideMaterial = null;
+    materialCache.forEach(([object, material]) => {
+      object.material = material;
+    });
 
     // Update the uniforms
     (this.fsQuad.material).uniforms.surfaceBuffer.value =
@@ -209,8 +224,5 @@ export default class OutlinePass extends Pass {
       renderer.setRenderTarget(writeBuffer);
     }
     this.fsQuad.render(renderer, this.renderCamera);
-
-    // Reset the depthBuffer value so we continue writing to it in the next render.
-    // writeBuffer.depthBuffer = cachedDepthBufferValue;
   }
 }

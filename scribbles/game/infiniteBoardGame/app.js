@@ -1,10 +1,10 @@
 import {
-  MeshBasicMaterial,
- Vector3,
- AmbientLight,
- DirectionalLight,
- PlaneBufferGeometry,
- Color
+  Vector3,
+  AmbientLight,
+  DirectionalLight,
+  Color,
+  Group,
+  PCFSoftShadowMap
 } from 'three';
 
 import canvasSketch from 'canvas-sketch';
@@ -18,8 +18,8 @@ import OrthographicRenderer from '../../../modules/OrthographicRenderer.three';
 import OutlinePass from '../../../modules/Three/OutlinePass';
 import Board from './Board';
 import BoardPawn from './BoardPawn';
+import Ground from './Ground';
 import props from './props';
-import OutlinableMesh from '../../../modules/Three/OutlinePass/OutlinableMesh';
 import DOMRenderer from '../../../modules/Three/DOMRenderer.three';
 import gsap from 'gsap';
 
@@ -32,8 +32,10 @@ canvasSketch(({ context }) => {
     zoom: currentZoom,
     antialias: false,
     stencil: false,
-    depth: false
+    depth: true
   });
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = PCFSoftShadowMap;
   // renderer.setClearColor(props.bgColor, 1);
 
   // DOM RENDERER
@@ -44,7 +46,7 @@ canvasSketch(({ context }) => {
   const composer = new EffectComposer(renderer);
   const outlinePass = new OutlinePass(renderer.scene, renderer.camera, {
     color: new Color(props.outlineColor),
-    thickness: 2,
+    thickness: 1,
   });
   // outlinePass.setDebugMode(true);
   composer.addPass(outlinePass);
@@ -68,7 +70,7 @@ canvasSketch(({ context }) => {
 
   let angle = -Math.PI * 0.75;
 
-  // Camera position
+  // Camera position (fixed look target — scroll the board instead so DOM UI stays put)
   let targetedCameraY = props.initialCameraY;
   let currentCameraY = targetedCameraY;
   let targetedCameraOffsetY = props.initialCameraOffsetY;
@@ -79,41 +81,51 @@ canvasSketch(({ context }) => {
     renderer.camera.lookAt(new Vector3(0, offsetY, 0));
   }
 
+  // Board scroll (moves world under the fixed camera)
+  let targetedScrollZ = 0;
+  let currentScrollZ = 0;
+  const scrollGroup = new Group();
+  renderer.add(scrollGroup);
+
   // light
   const ambientLight = new AmbientLight(0xffffff, 0.5);
   renderer.add(ambientLight);
   const directionalLight = new DirectionalLight(0xffffff, 0.5);
   directionalLight.position.set(-10, 23, -7);
   directionalLight.castShadow = true;
-  directionalLight.shadow.camera.top = 2;
-  directionalLight.shadow.camera.bottom = - 2;
-  directionalLight.shadow.camera.left = - 2;
-  directionalLight.shadow.camera.right = 2;
-  directionalLight.shadow.camera.near = 0.1;
-  directionalLight.shadow.camera.far = 40;
+  const shadowExtent = Math.max(props.boardWidth, props.boardHeight) * 1.5;
+  directionalLight.shadow.camera.top = shadowExtent;
+  directionalLight.shadow.camera.bottom = -shadowExtent;
+  directionalLight.shadow.camera.left = -shadowExtent;
+  directionalLight.shadow.camera.right = shadowExtent;
+  directionalLight.shadow.camera.near = 0.5;
+  directionalLight.shadow.camera.far = 80;
+  directionalLight.shadow.mapSize.set(2048, 2048);
+  directionalLight.shadow.bias = -0.002;
+  directionalLight.target.position.set(0, 0, 0);
   renderer.add(directionalLight);
+  renderer.add(directionalLight.target);
 
 
   // * START *****
-  const plane = new OutlinableMesh(new PlaneBufferGeometry(props.boardHeight * 5, props.boardHeight * 5), new MeshBasicMaterial({
-    color: props.bgColor
-  }));
-  plane.rotation.x = -Math.PI * 0.5;
-  plane.position.y = 0;
-
-  renderer.add(plane);
+  // Ground stays fixed in world space; noise scrolls via uScrollZ
+  const ground = new Ground();
+  ground.mesh.position.y = -0.25;
+  renderer.add(ground.mesh);
 
   const board = new Board(props.boardWidth, props.boardHeight);
-  renderer.add(board.group);
+  scrollGroup.add(board.group);
 
   const pawnBoard = new BoardPawn({ x: board.pathX, y: board.pathY });
-  renderer.add(pawnBoard.mesh);
+  scrollGroup.add(pawnBoard.mesh);
 
   board.addPawn(pawnBoard);
   updateCameraPosition(props.initialCameraY, props.initialCameraOffsetY);
 
   const animateIn  = () => {
     board.moveTo();
+    ground.setPathY(board.pathY);
+    ground.syncFromProps();
     targetedCameraOffsetY = props.cameraOffsetY;
     targetedCameraY = props.cameraY;
 
@@ -137,15 +149,24 @@ canvasSketch(({ context }) => {
     document.getElementById('end-page').classList.remove('hidden');
   }
 
-  const animateMoveBack = (moveBack) => {
-    pawnBoard.moveTo(-moveBack);
+  const ADVANCE_DELAY = 20;
+  let pendingAdvance = 0;
 
-      // HACK 2024-05-22 jeremboo: Move back the board elevation with delay
-      for (let i = 0; i < moveBack; i++) {
-        setTimeout(() => {
-          board.moveTo(1);
-        }, 20 * i);
-      }
+  const animateAdvance = (steps) => {
+    // Pawn needs its landing cell immediately
+    board.ensureRow(pawnBoard.y);
+    pendingAdvance += steps;
+
+    for (let i = 0; i < steps; i++) {
+      setTimeout(() => {
+        board.addRowAhead();
+        if (pawnBoard.y > board.startY) {
+          board.removeRowBehind();
+        }
+        targetedScrollZ -= 1;
+        pendingAdvance -= 1;
+      }, ADVANCE_DELAY * i);
+    }
   }
 
   setTimeout(() => {
@@ -171,7 +192,7 @@ canvasSketch(({ context }) => {
         isAnimatedOut = true;
         animateOut();
         board.removePawn(pawnBoard);
-        animateMoveBack(Math.floor(props.boardHeight * 0.5))
+        animateAdvance(Math.floor(props.boardHeight * 0.5))
         board.addPawn(pawnBoard);
       }
       return;
@@ -180,9 +201,11 @@ canvasSketch(({ context }) => {
     // Move the pawn
     board.removePawn(pawnBoard);
     pawnBoard.moveTo(1);
-    if (pawnBoard.y >= props.boardHeight) {
-      animateMoveBack(Math.floor(props.boardHeight * 0.75))
+    // Advance before the pawn reaches the last cells
+    if (pawnBoard.y >= board.startY + pendingAdvance + props.boardHeight - props.boardPadding) {
+      animateAdvance(Math.floor(props.boardHeight - props.boardPadding - 1));
     }
+    board.ensureRow(pawnBoard.y);
     board.addPawn(pawnBoard);
 
     const progress = count / props.maxCount;
@@ -210,6 +233,7 @@ canvasSketch(({ context }) => {
         props.noisePathElevation = Math.random();
         props.noiseAmpl = Math.random() * 10;
         board.regenerateNoise();
+        ground.syncFromProps();
         e.stopPropagation();
       });
     }
@@ -219,17 +243,22 @@ canvasSketch(({ context }) => {
   // * GUI *******
 
   if (props.debug) {
+    const regenerateNoise = () => {
+      board.regenerateNoise();
+      ground.syncFromProps();
+    };
+
     const regenerateCamera = () => {
       updateCameraPosition();
-      board.regenerateNoise();
+      regenerateNoise();
     };
 
     const gui = new GUI();
-    gui.add(props, 'noiseX', -5, 5).onChange(board.regenerateNoise);
-    gui.add(props, 'noiseY', -5, 5).onChange(board.regenerateNoise);
-    gui.add(props, 'noiseScaleX', 0.01, 1).onChange(board.regenerateNoise);
-    gui.add(props, 'noiseScaleY', 0.01, 1).onChange(board.regenerateNoise);
-    gui.add(props, 'noiseAmpl', 1, 10).onChange(board.regenerateNoise);
+    gui.add(props, 'noiseX', -5, 5).onChange(regenerateNoise);
+    gui.add(props, 'noiseY', -5, 5).onChange(regenerateNoise);
+    gui.add(props, 'noiseScaleX', 0.01, 1).onChange(regenerateNoise);
+    gui.add(props, 'noiseScaleY', 0.01, 1).onChange(regenerateNoise);
+    gui.add(props, 'noiseAmpl', 1, 10).onChange(regenerateNoise);
     gui.add(props, 'noisePathElevation', 0.01, 1).onChange(regenerateCamera);
     gui.add(props, 'cameraOffsetY', 0.01, 10).onChange(() => {
       targetedCameraOffsetY = props.cameraOffsetY;
@@ -272,6 +301,13 @@ canvasSketch(({ context }) => {
         updateCameraPosition();
       }
 
+      const fScrollZ = targetedScrollZ - currentScrollZ;
+      if (Math.abs(fScrollZ) > 0.01) {
+        currentScrollZ += fScrollZ * props.velocity * 0.5;
+        scrollGroup.position.z = currentScrollZ;
+        ground.setScrollZ(currentScrollZ);
+      }
+
       const fZoom = targetedZoom - currentZoom;
       if (Math.abs(fZoom) > 0.01) {
         currentZoom += (fZoom) * props.velocity * 0.5;
@@ -299,7 +335,7 @@ canvasSketch(({ context }) => {
 }, {
   // fps: 15,
   // duration: 4,
-  // dimensions: [2048, 2048],
+  dimensions: [2048, 2048],
   scaleToView: true,
   animate: true,
   context: 'webgl',

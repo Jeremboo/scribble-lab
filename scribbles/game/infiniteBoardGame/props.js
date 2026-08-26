@@ -1,5 +1,5 @@
 export default {
-  debug: false,
+  debug: true,
   // colors
   bgColor: '#2D1A14',
   outlineColor: '#70584A',
@@ -16,11 +16,12 @@ export default {
   // board size
   boardWidth: 5,
   boardHeight: 15,
+  boardPadding: 1,
   // initial camera position
   initialCameraOffsetY: 0,
   initialCameraY: 30,
   // camera position
-  cameraOffsetY: 5.727,
+  cameraOffsetY: 3,
   cameraY: 14.454,
   cameraZoomOut: 22,
   rotationSpeed: 0, // 0.001,
