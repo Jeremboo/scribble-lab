@@ -79,7 +79,10 @@ canvasSketch(({ context }) => {
   let currentHillY = 0;
   const updateCameraPosition = (camY = currentCameraY, camOffsetY = currentCameraOffsetY, hillY = currentHillY) => {
     const offsetY = camOffsetY - (props.boardWidth * 0.01) + hillY;
-    renderer.camera.position.set(Math.cos(angle) * 20, offsetY + camY, -Math.sin(angle) * -20);
+    const dist = 40; // orbit camera distance
+    // Scale height with distance so the viewing angle stays the same as when dist was 20
+    const elev = camY * (dist / 20);
+    renderer.camera.position.set(Math.cos(angle) * dist, offsetY + elev, Math.sin(angle) * dist);
     renderer.camera.lookAt(new Vector3(0, offsetY, 0));
   }
 

@@ -8,7 +8,7 @@ const SEGMENTS = 128 * 2;
 
 export default class Ground {
   constructor() {
-    const size = props.boardHeight * 10;
+    const size = props.boardHeight * 5;
     this.material = new GroundPlaneMaterial();
     this.mesh = new OutlinableMesh(
       new PlaneBufferGeometry(size, size, SEGMENTS, SEGMENTS),
