@@ -1,5 +1,4 @@
 import {
-  Vector3,
   AmbientLight,
   DirectionalLight,
   Color,
@@ -19,17 +18,16 @@ import OutlinePass from '../../../modules/Three/OutlinePass';
 import Board from './Board';
 import BoardPawn from './BoardPawn';
 import Grounds from './Grounds';
+import MainCamera from './MainCamera';
 import props from './props';
 import DOMRenderer from '../../../modules/Three/DOMRenderer.three';
 import gsap from 'gsap';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
-  let targetedZoom = props.cameraZoomOut;
-  let currentZoom = props.cameraZoomOut * 2;
   const renderer = new OrthographicRenderer({
     canvas: context.canvas,
-    zoom: currentZoom,
+    zoom: props.cameraZoomOut * 2,
     antialias: false,
     stencil: false,
     depth: true
@@ -37,6 +35,10 @@ canvasSketch(({ context }) => {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFSoftShadowMap;
   // renderer.setClearColor(props.bgColor, 1);
+
+  const mainCamera = new MainCamera(renderer.camera, {
+    setZoom: (zoom) => renderer.setZoom(zoom),
+  });
 
   // DOM RENDERER
   const wrapper3d = document.getElementById('wrapper-3d');
@@ -66,25 +68,6 @@ canvasSketch(({ context }) => {
     // SMAAPass.renderToScreen = true;
     // composer.addPass(SMAAPass);
   // }
-
-
-  let angle = -Math.PI * 0.75;
-
-  // Camera position (fixed look target — scroll the board instead so DOM UI stays put)
-  let targetedCameraY = props.initialCameraY;
-  let currentCameraY = targetedCameraY;
-  let targetedCameraOffsetY = props.initialCameraOffsetY;
-  let currentCameraOffsetY = targetedCameraOffsetY;
-  let targetedHillY = 0;
-  let currentHillY = 0;
-  const updateCameraPosition = (camY = currentCameraY, camOffsetY = currentCameraOffsetY, hillY = currentHillY) => {
-    const offsetY = camOffsetY - (props.boardWidth * 0.01) + hillY;
-    const dist = 40; // orbit camera distance
-    // Scale height with distance so the viewing angle stays the same as when dist was 20
-    const elev = camY * (dist / 20);
-    renderer.camera.position.set(Math.cos(angle) * dist, offsetY + elev, Math.sin(angle) * dist);
-    renderer.camera.lookAt(new Vector3(0, offsetY, 0));
-  }
 
   // Board scroll (moves world under the fixed camera)
   let targetedScrollZ = 0;
@@ -128,21 +111,16 @@ canvasSketch(({ context }) => {
   const grounds = new Grounds(scrollGroup);
   grounds.setPathY(board.pathY);
 
-  updateCameraPosition(props.initialCameraY, props.initialCameraOffsetY);
-
   let pendingAdvance = 0;
 
   const updateCameraHillFromBoard = (extraSteps = 0) => {
     const midY = board.startY + pendingAdvance + extraSteps + Math.floor(props.boardHeight * 0.5);
-    targetedHillY = board.getPathHillY(midY);
+    mainCamera.setTargetedHillY(board.getPathHillY(midY));
   };
 
   const animateIn  = () => {
-    targetedCameraOffsetY = props.cameraOffsetY;
-    targetedCameraY = props.cameraY;
+    mainCamera.animateIn();
     updateCameraHillFromBoard();
-
-    targetedZoom = props.cameraZoom;
 
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
@@ -224,7 +202,7 @@ canvasSketch(({ context }) => {
     };
 
     const regenerateCamera = () => {
-      updateCameraPosition();
+      mainCamera.updatePosition();
       regenerateNoise();
     };
 
@@ -248,13 +226,13 @@ canvasSketch(({ context }) => {
     gui.add(props, 'groundNoiseAmplSideLeft', 1, 8).onChange(regenerateNoise);
     gui.add(props, 'groundNoiseAmplSideRight', 1, 8).onChange(regenerateNoise);
     gui.add(props, 'cameraOffsetY', 0.01, 10).onChange(() => {
-      targetedCameraOffsetY = props.cameraOffsetY;
+      mainCamera.targetedCameraOffsetY = props.cameraOffsetY;
     }).step(0.001);
     gui.add(props, 'cameraY', 1, 30).onChange(() => {
-      targetedCameraY = props.cameraY;
+      mainCamera.targetedCameraY = props.cameraY;
     }).step(0.001);
     gui.add(props, 'cameraZoom', 5, 60).onChange(() => {
-      targetedZoom = props.cameraZoom;
+      mainCamera.targetedZoom = props.cameraZoom;
     }).step(0.1);
     const lightGui = gui.addFolder('light');
     lightGui.add(directionalLight.position, 'x', -10, 10);
@@ -272,42 +250,13 @@ canvasSketch(({ context }) => {
       // composer.resize(props.viewportWidth, props.viewportHeight);
     },
     render(_props) {
-
-      // camera update
-      const fCamera = (targetedCameraY - currentCameraY);
-      let updateCam = false;
-      if (Math.abs(fCamera) > 0.01) {
-        currentCameraY += fCamera * props.velocity * 0.5;
-        updateCam = true;
-      }
-
-      const fCOffset = targetedCameraOffsetY - currentCameraOffsetY;
-      if (Math.abs(fCOffset) > 0.01) {
-        updateCam = true;
-        currentCameraOffsetY += fCOffset * props.velocity * 0.5;
-      }
-
-      const fHillY = targetedHillY - currentHillY;
-      if (Math.abs(fHillY) > 0.01) {
-        updateCam = true;
-        currentHillY += fHillY * props.velocity * 0.15;
-      }
-
-      if (updateCam) {
-        updateCameraPosition();
-      }
+      mainCamera.update();
 
       const fScrollZ = targetedScrollZ - currentScrollZ;
       if (Math.abs(fScrollZ) > 0.01) {
         currentScrollZ += fScrollZ * props.velocity * 0.25;
         scrollGroup.position.z = currentScrollZ;
         grounds.update(currentScrollZ);
-      }
-
-      const fZoom = targetedZoom - currentZoom;
-      if (Math.abs(fZoom) > 0.01) {
-        currentZoom += (fZoom) * props.velocity * 0.5;
-        renderer.setZoom(currentZoom);
       }
 
       // renderer.update(props);
@@ -317,11 +266,6 @@ canvasSketch(({ context }) => {
 
       board.update(_props.time);
       pawnBoard.update();
-
-      if (props.rotationSpeed > 0) {
-        angle += props.rotationSpeed;
-        updateCameraPosition();
-      }
     },
     unload() {
       controls.dispose();
