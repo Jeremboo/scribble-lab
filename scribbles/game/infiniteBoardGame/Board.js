@@ -128,10 +128,6 @@ export default class Board extends Stage {
   }
 
   update(time = 0) {
-    this.parse((cell) => {
-      if (!cell || !cell.update) return;
-      cell.update();
-    });
     this.loots.forEach((loot) => loot.update(time));
   }
 
@@ -145,8 +141,7 @@ export default class Board extends Stage {
     this.grid.grid[y] = [];
     for (let x = 0; x < props.boardWidth; x++) {
       const cell = this.initCell(x, y);
-      // Rise into place
-      cell.mesh.position.y -= 2;
+      cell.animateIn();
       this.grid.grid[y][x] = cell;
     }
     this.grid.column = y + 1;
@@ -158,11 +153,13 @@ export default class Board extends Stage {
       row.forEach((cell) => {
         if (!cell || !cell.mesh) return;
         this.pathCells = this.pathCells.filter((pathCell) => pathCell !== cell);
-        if (cell.loot) {
-          this.loots = this.loots.filter((loot) => loot !== cell.loot);
-        }
-        this.group.remove(cell.mesh);
-        cell.dispose();
+        cell.animateOut(() => {
+          if (cell.loot) {
+            this.loots = this.loots.filter((loot) => loot !== cell.loot);
+          }
+          this.group.remove(cell.mesh);
+          cell.dispose();
+        });
       });
       delete this.grid.grid[this.startY];
     }

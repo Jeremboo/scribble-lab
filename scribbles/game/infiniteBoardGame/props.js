@@ -41,7 +41,8 @@ export default {
   rotationSpeed: 0, // 0.001,
   // animation
   velocity: 0.1,
-  advanceDuration: 50,
+  nextBoardDuration: 50,
+
   lootChance: 0.15,
 
 };

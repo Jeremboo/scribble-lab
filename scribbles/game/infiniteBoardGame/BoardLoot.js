@@ -58,7 +58,7 @@ export default class BoardLoot {
   }
 
   syncPosition() {
-    const { x, y, z } = this.cell.targetedPosition;
+    const { x, y, z } = this.cell.mesh.position;
     this.mesh.position.set(x, y + 3.1, z);
   }
 

@@ -113,8 +113,6 @@ canvasSketch(({ context }) => {
 
 
   // * START *****
-  const grounds = new Grounds(scrollGroup);
-
   const board = new Board(props.boardWidth, props.boardHeight);
   scrollGroup.add(board.group);
 
@@ -122,6 +120,14 @@ canvasSketch(({ context }) => {
   scrollGroup.add(pawnBoard.mesh);
 
   board.addPawn(pawnBoard);
+
+  // Bake noise pathY once at init (pawn already placed on row 0).
+  // Doing this in animateIn used to snap the heightfield; with the diagonal
+  // camera that read as a lateral jump on the ground.
+  board.moveTo();
+  const grounds = new Grounds(scrollGroup);
+  grounds.setPathY(board.pathY);
+
   updateCameraPosition(props.initialCameraY, props.initialCameraOffsetY);
 
   let pendingAdvance = 0;
@@ -132,9 +138,6 @@ canvasSketch(({ context }) => {
   };
 
   const animateIn  = () => {
-    board.moveTo();
-    grounds.setPathY(board.pathY);
-    grounds.syncFromProps();
     targetedCameraOffsetY = props.cameraOffsetY;
     targetedCameraY = props.cameraY;
     updateCameraHillFromBoard();
@@ -151,20 +154,27 @@ canvasSketch(({ context }) => {
   }
 
   const animateAdvance = (steps) => {
-    // Pawn needs its landing cell immediately
     board.ensureRow(pawnBoard.y);
     updateCameraHillFromBoard(steps);
     pendingAdvance += steps;
 
+    const inOutDelay = 100;
     for (let i = 0; i < steps; i++) {
+      const stepDelay = props.nextBoardDuration * i;
+
+      // Remove row
+      if (pawnBoard.y > board.startY + i) {
+        setTimeout(() => {
+          board.removeRowBehind();
+        }, stepDelay);
+      }
+
+      // Add Row
       setTimeout(() => {
         board.addRowAhead();
-        if (pawnBoard.y > board.startY) {
-          board.removeRowBehind();
-        }
         targetedScrollZ -= 1;
         pendingAdvance -= 1;
-      }, props.advanceDuration * i);
+      }, stepDelay + inOutDelay);
     }
   }
 

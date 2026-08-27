@@ -11,6 +11,9 @@ import props from './props';
 import OutlinableMesh from "../../../modules/Three/OutlinePass/OutlinableMesh";
 import gsap from "gsap";
 
+const ENTER_DURATION = 0.45;
+const EXIT_DURATION = 0.4;
+
 function createToonGradient() {
   const data = new Uint8Array([
     70, 70, 70,
@@ -37,15 +40,17 @@ const NEUTRAL_MATERIAL = new MeshToonMaterial({
 
 const HEIGHT = 5;
 const ELEVATION = 0.25;
+const RISE_OFFSET = 2;
 
 export default class BoardCell extends Cell {
   constructor(position, isPath) {
     super(position.x, position.z);
 
     this.isPath = isPath;
+    this.isExiting = false;
     this.loot = null;
     this.mesh = new OutlinableMesh(new BoxBufferGeometry(1, HEIGHT, 1), isPath ? PATH_MATERIAL : NEUTRAL_MATERIAL)
-    this.mesh.castShadow = true;
+    // this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
     this.targetedPosition = new Vector3(
       -props.boardWidth * 0.5 + position.x,
@@ -62,7 +67,9 @@ export default class BoardCell extends Cell {
   }
 
   setElevation(newElevation) {
+    if (this.isExiting) return;
     this.targetedPosition.y = this.computeY(newElevation);
+    this.tweenY(this.targetedPosition.y);
     this.pawns.forEach((pawn) => {
       pawn.setElevation(this.targetedPosition.y);
     });
@@ -79,10 +86,44 @@ export default class BoardCell extends Cell {
   }
 
   update() {
-    this.mesh.position.add(this.targetedPosition.clone().sub(this.mesh.position).multiplyScalar(props.velocity));
+
+  }
+
+  tweenY(y, { duration = props.cellEnterDuration, ease = 'power2.out', onComplete } = {}) {
+    gsap.killTweensOf(this.mesh.position, 'y');
+    return gsap.to(this.mesh.position, {
+      y,
+      duration,
+      ease,
+      onComplete,
+    });
+  }
+
+  /** Rise into place from below the board. */
+  animateIn() {
+    if (this.isExiting) return;
+    this.mesh.position.y = this.targetedPosition.y - RISE_OFFSET;
+    this.tweenY(this.targetedPosition.y, {
+      duration: ENTER_DURATION,
+      ease: 'power2.out',
+    });
+  }
+
+  /** Sink below the board, then call onComplete once the mesh can be unmounted. */
+  animateOut(onComplete) {
+    if (this.isExiting) return;
+    this.isExiting = true;
+    const sinkY = this.targetedPosition.y - RISE_OFFSET;
+    this.targetedPosition.y = sinkY;
+    this.tweenY(sinkY, {
+      duration: EXIT_DURATION,
+      ease: 'power2.in',
+      onComplete,
+    });
   }
 
   dispose() {
+    gsap.killTweensOf(this.mesh.position);
     if (this.loot) {
       this.loot.dispose();
       this.loot = null;
