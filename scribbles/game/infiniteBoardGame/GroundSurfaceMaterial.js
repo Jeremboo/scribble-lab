@@ -10,7 +10,7 @@ uniform float uNoiseAmpl;
 uniform float uNoisePathElevation;
 uniform float uPathX;
 uniform vec2 uBoardOffset;
-uniform float uScrollZ;
+uniform float uTileZ;
 uniform float uPathY;
 uniform float uBoardHalfWidth;
 uniform float uCurveHeightLeft;
@@ -31,7 +31,7 @@ ${groundElevationGlsl}
 void main() {
   vec3 pos = position;
   vec2 worldXZ = vec2(pos.x, -pos.y);
-  vec2 grid = worldXZ + uBoardOffset - vec2(0.0, uScrollZ);
+  vec2 grid = worldXZ + uBoardOffset + vec2(0.0, uTileZ);
   pos.z += getGroundElevation(grid) * 0.5;
 
   vSurfaceId = surfaceId;
@@ -57,7 +57,7 @@ export default class GroundSurfaceMaterial extends ShaderMaterial {
         uNoisePathElevation: groundUniforms.uNoisePathElevation,
         uPathX: groundUniforms.uPathX,
         uBoardOffset: groundUniforms.uBoardOffset,
-        uScrollZ: groundUniforms.uScrollZ,
+        uTileZ: groundUniforms.uTileZ,
         uPathY: groundUniforms.uPathY,
         uBoardHalfWidth: groundUniforms.uBoardHalfWidth,
         uCurveHeightLeft: groundUniforms.uCurveHeightLeft,

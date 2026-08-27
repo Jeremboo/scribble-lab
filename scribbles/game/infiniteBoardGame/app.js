@@ -18,7 +18,7 @@ import OrthographicRenderer from '../../../modules/OrthographicRenderer.three';
 import OutlinePass from '../../../modules/Three/OutlinePass';
 import Board from './Board';
 import BoardPawn from './BoardPawn';
-import Ground from './Ground';
+import Grounds from './Grounds';
 import props from './props';
 import DOMRenderer from '../../../modules/Three/DOMRenderer.three';
 import gsap from 'gsap';
@@ -113,10 +113,7 @@ canvasSketch(({ context }) => {
 
 
   // * START *****
-  // Ground stays fixed in world space; noise scrolls via uScrollZ
-  const ground = new Ground();
-  ground.mesh.position.y = -0.25;
-  renderer.add(ground.mesh);
+  const grounds = new Grounds(scrollGroup);
 
   const board = new Board(props.boardWidth, props.boardHeight);
   scrollGroup.add(board.group);
@@ -136,8 +133,8 @@ canvasSketch(({ context }) => {
 
   const animateIn  = () => {
     board.moveTo();
-    ground.setPathY(board.pathY);
-    ground.syncFromProps();
+    grounds.setPathY(board.pathY);
+    grounds.syncFromProps();
     targetedCameraOffsetY = props.cameraOffsetY;
     targetedCameraY = props.cameraY;
     updateCameraHillFromBoard();
@@ -212,7 +209,7 @@ canvasSketch(({ context }) => {
   if (props.debug) {
     const regenerateNoise = () => {
       board.regenerateNoise();
-      ground.syncFromProps();
+      grounds.syncFromProps();
       updateCameraHillFromBoard();
     };
 
@@ -294,7 +291,7 @@ canvasSketch(({ context }) => {
       if (Math.abs(fScrollZ) > 0.01) {
         currentScrollZ += fScrollZ * props.velocity * 0.25;
         scrollGroup.position.z = currentScrollZ;
-        ground.setScrollZ(currentScrollZ);
+        grounds.update(currentScrollZ);
       }
 
       const fZoom = targetedZoom - currentZoom;

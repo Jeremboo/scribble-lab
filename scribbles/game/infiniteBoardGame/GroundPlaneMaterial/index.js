@@ -16,7 +16,7 @@ uniform float uNoiseAmpl;
 uniform float uNoisePathElevation;
 uniform float uPathX;
 uniform vec2 uBoardOffset;
-uniform float uScrollZ;
+uniform float uTileZ;
 uniform float uPathY;
 uniform float uBoardHalfWidth;
 uniform float uCurveHeightLeft;
@@ -41,7 +41,8 @@ ${groundElevationGlsl}
 vec3 getDisplacedLocalPosition(vec2 localXY) {
   vec3 pos = vec3(localXY.x, localXY.y, 0.0);
   vec2 worldXZ = vec2(pos.x, -pos.y);
-  vec2 grid = worldXZ + uBoardOffset - vec2(0.0, uScrollZ);
+  // Tile center is baked into noise so adjacent tiles share seamless coordinates
+  vec2 grid = worldXZ + uBoardOffset + vec2(0.0, uTileZ);
   float elevation = getGroundElevation(grid) * 0.5;
   pos.z += elevation;
   return pos;
@@ -117,7 +118,7 @@ void main() {
 `;
 
 export default class GroundPlaneMaterial extends ShaderMaterial {
-  constructor() {
+  constructor(tileZ = 0) {
     super({
       lights: true,
       uniforms: UniformsUtils.merge([
@@ -133,7 +134,7 @@ export default class GroundPlaneMaterial extends ShaderMaterial {
           uBoardOffset: {
             value: new Vector2(props.boardWidth * 0.5, props.boardHeight * 0.5),
           },
-          uScrollZ: { value: 0 },
+          uTileZ: { value: tileZ },
           uPathY: { value: 0 },
           uBoardHalfWidth: { value: props.boardWidth * 0.5 },
           uCurveHeightLeft: { value: props.groundCurveHeightLeft },
@@ -167,10 +168,6 @@ export default class GroundPlaneMaterial extends ShaderMaterial {
     this.uniforms.uHillNoiseOffset.value.set(props.hillNoiseX, props.hillNoiseY);
     this.uniforms.uHillNoiseScale.value.set(props.hillNoiseScaleX, props.hillNoiseScaleY);
     this.uniforms.uHillNoiseAmpl.value = props.hillNoiseAmpl;
-  }
-
-  setScrollZ(z) {
-    this.uniforms.uScrollZ.value = z;
   }
 
   setPathY(y) {
