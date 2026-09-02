@@ -1,96 +1,72 @@
 import { Vector3 } from 'three';
+import gsap from 'gsap';
 import props from './props';
 
-const ORBIT_DIST = 40;
-const ELEV_REF_DIST = 20;
-
-/**
- * Owns orthographic camera orbit, height, hill follow, and zoom.
- * Look target stays fixed — the board scrolls underneath so DOM UI stays put.
- */
 export default class MainCamera {
-  constructor(camera, { setZoom }) {
+  constructor(camera) {
     this.camera = camera;
-    this._setZoom = setZoom;
-    this._lookAt = new Vector3();
 
-    this.angle = -Math.PI * 0.75;
+    this.target = new Vector3(); // The camera will look at this position
+    this.props = {
+      y: props.initialCameraProps.y * 0.75,
+      rotation: props.initialCameraProps.rotation,
+      zoom: props.initialCameraProps.zoom * 0.5,
+      distance: props.initialCameraProps.distance,
+      offset: props.initialCameraProps.offset.clone(),
+    }
 
-    this.targetedZoom = props.cameraZoomOut;
-    this.currentZoom = props.cameraZoomOut * 2;
-
-    this.targetedCameraY = props.initialCameraY;
-    this.currentCameraY = this.targetedCameraY;
-    this.targetedCameraOffsetY = props.initialCameraOffsetY;
-    this.currentCameraOffsetY = this.targetedCameraOffsetY;
-    this.targetedHillY = 0;
-    this.currentHillY = 0;
-
-    this.updatePosition(props.initialCameraY, props.initialCameraOffsetY);
+    this.update = this.update.bind(this);
+    this.update();
   }
 
-  updatePosition(
-    camY = this.currentCameraY,
-    camOffsetY = this.currentCameraOffsetY,
-    hillY = this.currentHillY
-  ) {
-    const offsetY = camOffsetY - (props.boardWidth * 0.01) + hillY;
-    const elev = camY * (ORBIT_DIST / ELEV_REF_DIST);
-    this.camera.position.set(
-      Math.cos(this.angle) * ORBIT_DIST,
-      offsetY + elev,
-      Math.sin(this.angle) * ORBIT_DIST
-    );
-    this._lookAt.set(0, offsetY, 0);
-    this.camera.lookAt(this._lookAt);
+  animateCameraProps(newProps, duration = 1) {
+    const offset = newProps.offset || this.props.offset;
+    const tweenProps = {
+      duration,
+      ease: 'power2.out',
+    };
+
+    gsap.to(this.props, {
+      ...tweenProps,
+      y: newProps.y || this.props.y,
+      rotation: newProps.rotation || this.props.rotation,
+      zoom: newProps.zoom || this.props.zoom,
+      distance: newProps.distance || this.props.distance,
+      onUpdate: () => {
+        this.update();
+      },
+    });
+
+    gsap.to(this.props.offset, {
+      ...tweenProps,
+      x: offset.x,
+      y: offset.y,
+      z: offset.z,
+    });
   }
 
-  /** Tween into gameplay framing (from intro / zoomed-out home). */
-  animateIn() {
-    this.targetedCameraOffsetY = props.cameraOffsetY;
-    this.targetedCameraY = props.cameraY;
-    this.targetedZoom = props.cameraZoom;
+  animateCameraTarget(newPos, duration = 1, delay = 0) {
+    gsap.to(this.target, {
+      x: newPos.x,
+      y: newPos.y,
+      z: newPos.z,
+      duration,
+      ease: 'power2.inout',
+      onUpdate: () => {
+        this.update();
+      },
+      delay,
+    });
   }
 
-  setTargetedHillY(hillY) {
-    this.targetedHillY = hillY;
-  }
-
-  /** Per-frame lerp of position, hill follow, zoom, and optional spin. */
   update() {
-    let updateCam = false;
-
-    const fCamera = this.targetedCameraY - this.currentCameraY;
-    if (Math.abs(fCamera) > 0.01) {
-      this.currentCameraY += fCamera * props.velocity * 0.5;
-      updateCam = true;
-    }
-
-    const fCOffset = this.targetedCameraOffsetY - this.currentCameraOffsetY;
-    if (Math.abs(fCOffset) > 0.01) {
-      this.currentCameraOffsetY += fCOffset * props.velocity * 0.5;
-      updateCam = true;
-    }
-
-    const fHillY = this.targetedHillY - this.currentHillY;
-    if (Math.abs(fHillY) > 0.01) {
-      this.currentHillY += fHillY * props.velocity * 0.15;
-      updateCam = true;
-    }
-
-    if (updateCam) {
-      this.updatePosition();
-    }
-
-    const fZoom = this.targetedZoom - this.currentZoom;
-    if (Math.abs(fZoom) > 0.01) {
-      this.currentZoom += fZoom * props.velocity * 0.5;
-      this._setZoom(this.currentZoom);
-    }
-
-    if (props.rotationSpeed > 0) {
-      this.angle += props.rotationSpeed;
-      this.updatePosition();
-    }
+    this.camera.position.set(
+      this.target.x + Math.cos(this.props.rotation) * this.props.distance + this.props.offset.x,
+      this.target.y + Math.tan(this.props.y) * this.props.distance + this.props.offset.y,
+      this.target.z + Math.sin(this.props.rotation) * this.props.distance + this.props.offset.z
+    );
+    this.camera.lookAt(this.target.clone().add(this.props.offset));
+    this.camera.zoom = this.props.zoom;
+    this.camera.updateProjectionMatrix();
   }
 }

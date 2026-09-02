@@ -1,3 +1,4 @@
+import { Vector3 } from 'three';
 export default {
   debug: true,
   // colors
@@ -31,14 +32,20 @@ export default {
   boardHeight: 15,
   boardPadding: 1,
   // initial camera position
-  initialCameraOffsetY: 0,
-  initialCameraY: 30,
-  // camera position
-  cameraOffsetY: 2,
-  cameraY: 14.454,
-  cameraZoomOut: 22,
-  cameraZoom: 15.5, // gameplay / debug ortho zoom (higher = further)
-  rotationSpeed: 0, // 0.001,
+  initialCameraProps: {
+    y: 0.95,
+    offset: new Vector3(0, -2.4, 0),
+    rotation: -Math.PI * 0.75,
+    zoom: 0.048,
+    distance: 40,
+  },
+  inGameCameraProps: {
+    y: 0.63,
+    offset: new Vector3(0, 0.15, 0),
+    rotation: -Math.PI * 0.75,
+    zoom: 0.06,
+    distance: 40,
+  },
   // animation
   velocity: 0.1,
   nextBoardDuration: 50,

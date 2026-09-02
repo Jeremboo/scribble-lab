@@ -1,31 +1,48 @@
 import Ground, {
   GROUND_TILE_SIZE,
-  GROUND_SPAWN_PADDING,
-  GROUND_CULL_MARGIN,
+  GROUND_TILE_BOARD_HEIGHTS,
 } from './Ground';
-import props from './props';
+
+const MAX_TILES = 2;
 
 /**
  * Tiled grounds with fixed noise coordinates.
- * Spawns the next tile early (board + spawn padding);
- * removes tiles only after they are well behind the camera.
  */
 export default class Grounds {
   constructor(parent) {
     this.parent = parent;
     this.tiles = new Map();
+    this.nextIndex = 0;
     this.pathY = 0;
-    this.ensureTile(0);
+    this.rounds = GROUND_TILE_BOARD_HEIGHTS / 2; // start at the middle
+    this.addTile(); // add the first tile
   }
 
-  ensureTile(index) {
-    if (this.tiles.has(index)) return this.tiles.get(index);
+  /** Call once each time the board advances a round. */
+  onBoardAdvance() {
+    this.rounds += 1;
+    while (this.rounds >= GROUND_TILE_BOARD_HEIGHTS) {
+      this.rounds -= GROUND_TILE_BOARD_HEIGHTS;
+      this.addTile();
+    }
+  }
 
+  addTile() {
+    const index = this.nextIndex++;
     const tileZ = index * GROUND_TILE_SIZE;
     const ground = new Ground(tileZ);
     ground.setPathY(this.pathY);
     this.parent.add(ground.mesh);
     this.tiles.set(index, ground);
+
+    if (this.tiles.size > MAX_TILES) {
+      const oldest = Math.min(...this.tiles.keys());
+      const removed = this.tiles.get(oldest);
+      this.parent.remove(removed.mesh);
+      removed.dispose();
+      this.tiles.delete(oldest);
+    }
+
     return ground;
   }
 
@@ -36,30 +53,5 @@ export default class Grounds {
 
   syncFromProps() {
     this.tiles.forEach((ground) => ground.syncFromProps());
-  }
-
-  /**
-   * @param {number} scrollZ - scrollGroup.position.z (negative as the board advances)
-   */
-  update(scrollZ) {
-    const focusZ = -scrollZ;
-    const frontZ = focusZ + props.boardHeight + GROUND_SPAWN_PADDING;
-    const backZ = focusZ - GROUND_CULL_MARGIN;
-
-    const minIndex = Math.floor((backZ + GROUND_TILE_SIZE * 0.5) / GROUND_TILE_SIZE);
-    const maxIndex = Math.floor((frontZ + GROUND_TILE_SIZE * 0.5) / GROUND_TILE_SIZE);
-
-    for (let i = Math.max(0, minIndex); i <= maxIndex; i++) {
-      this.ensureTile(i);
-    }
-
-    for (const [index, ground] of [...this.tiles]) {
-      const tileFront = index * GROUND_TILE_SIZE + GROUND_TILE_SIZE * 0.5;
-      if (tileFront < backZ) {
-        this.parent.remove(ground.mesh);
-        ground.dispose();
-        this.tiles.delete(index);
-      }
-    }
   }
 }

@@ -3,7 +3,11 @@ import {
   DirectionalLight,
   Color,
   Group,
-  PCFSoftShadowMap
+  PCFSoftShadowMap,
+  Vector3,
+  Mesh,
+  MeshBasicMaterial,
+  SphereGeometry
 } from 'three';
 
 import canvasSketch from 'canvas-sketch';
@@ -36,9 +40,7 @@ canvasSketch(({ context }) => {
   renderer.shadowMap.type = PCFSoftShadowMap;
   // renderer.setClearColor(props.bgColor, 1);
 
-  const mainCamera = new MainCamera(renderer.camera, {
-    setZoom: (zoom) => renderer.setZoom(zoom),
-  });
+  const mainCamera = new MainCamera(renderer.camera);
 
   // DOM RENDERER
   const wrapper3d = document.getElementById('wrapper-3d');
@@ -52,7 +54,6 @@ canvasSketch(({ context }) => {
   });
   // outlinePass.setDebugMode(true);
   composer.addPass(outlinePass);
-
 
   // TODO 2024-05-21 jeremboo: Add antilaliasing
   // https://github.com/pmndrs/postprocessing/blob/main/demo/src/demos/OutlineDemo.js
@@ -68,12 +69,6 @@ canvasSketch(({ context }) => {
     // SMAAPass.renderToScreen = true;
     // composer.addPass(SMAAPass);
   // }
-
-  // Board scroll (moves world under the fixed camera)
-  let targetedScrollZ = 0;
-  let currentScrollZ = 0;
-  const scrollGroup = new Group();
-  renderer.add(scrollGroup);
 
   // light
   const ambientLight = new AmbientLight(0xffffff, 0.5);
@@ -97,10 +92,10 @@ canvasSketch(({ context }) => {
 
   // * START *****
   const board = new Board(props.boardWidth, props.boardHeight);
-  scrollGroup.add(board.group);
+  renderer.add(board.group);
 
   const pawnBoard = new BoardPawn({ x: board.pathX, y: board.pathY });
-  scrollGroup.add(pawnBoard.mesh);
+  renderer.add(pawnBoard.mesh);
 
   board.addPawn(pawnBoard);
 
@@ -108,19 +103,27 @@ canvasSketch(({ context }) => {
   // Doing this in animateIn used to snap the heightfield; with the diagonal
   // camera that read as a lateral jump on the ground.
   board.moveTo();
-  const grounds = new Grounds(scrollGroup);
+  const grounds = new Grounds(renderer.scene);
   grounds.setPathY(board.pathY);
 
   let pendingAdvance = 0;
 
-  const updateCameraHillFromBoard = (extraSteps = 0) => {
-    const midY = board.startY + pendingAdvance + extraSteps + Math.floor(props.boardHeight * 0.5);
-    mainCamera.setTargetedHillY(board.getPathHillY(midY));
+  const updateCameraHillFromBoard = (extraSteps = 0, duration = 1.25) => {
+    const midY = board.startY + pendingAdvance + extraSteps;
+    const pos = new Vector3(
+      -0.5,
+      board.getPathWorldY(midY),
+      midY
+    );
+    mainCamera.animateCameraTarget(
+      pos,
+      1.5,
+      0.25,
+    );
   };
 
   const animateIn  = () => {
-    mainCamera.animateIn();
-    updateCameraHillFromBoard();
+    mainCamera.animateCameraProps(props.inGameCameraProps);
 
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
@@ -133,6 +136,7 @@ canvasSketch(({ context }) => {
 
   const animateAdvance = (steps) => {
     board.ensureRow(pawnBoard.y);
+    grounds.onBoardAdvance();
     updateCameraHillFromBoard(steps);
     pendingAdvance += steps;
 
@@ -150,14 +154,17 @@ canvasSketch(({ context }) => {
       // Add Row
       setTimeout(() => {
         board.addRowAhead();
-        targetedScrollZ -= 1;
         pendingAdvance -= 1;
       }, stepDelay + inOutDelay);
     }
   }
 
+  // INTRO ANIMATION
   setTimeout(() => {
-    // INTRO
+    mainCamera.animateCameraProps({
+      y: props.initialCameraProps.y,
+      zoom: props.initialCameraProps.zoom
+    }, 1.5);
     gsap.to(document.body.querySelectorAll('#home-page > *'), { autoAlpha: 1, duration: 0.5, y: 0, delay: 0.5, stagger: 0.15 });
 
     document.getElementById('start-button').addEventListener('click', () => {
@@ -201,18 +208,12 @@ canvasSketch(({ context }) => {
       updateCameraHillFromBoard();
     };
 
-    const regenerateCamera = () => {
-      mainCamera.updatePosition();
-      regenerateNoise();
-    };
-
     const gui = new GUI();
     gui.add(props, 'noiseX', -50, 50).onChange(regenerateNoise);
     gui.add(props, 'noiseY', -50, 50).onChange(regenerateNoise);
     gui.add(props, 'noiseScaleX', 0.01, 1).onChange(regenerateNoise);
     gui.add(props, 'noiseScaleY', 0.01, 1).onChange(regenerateNoise);
     gui.add(props, 'noiseAmpl', 1, 10).onChange(regenerateNoise);
-    gui.add(props, 'noisePathElevation', 0.01, 1).onChange(regenerateCamera);
     const hillGui = gui.addFolder('hills');
     hillGui.add(props, 'hillNoiseX', -500, 500).onChange(regenerateNoise);
     hillGui.add(props, 'hillNoiseY', -500, 500).onChange(regenerateNoise);
@@ -225,15 +226,15 @@ canvasSketch(({ context }) => {
     gui.add(props, 'groundCurveRadiusRight', 1, 40).onChange(regenerateNoise);
     gui.add(props, 'groundNoiseAmplSideLeft', 1, 8).onChange(regenerateNoise);
     gui.add(props, 'groundNoiseAmplSideRight', 1, 8).onChange(regenerateNoise);
-    gui.add(props, 'cameraOffsetY', 0.01, 10).onChange(() => {
-      mainCamera.targetedCameraOffsetY = props.cameraOffsetY;
-    }).step(0.001);
-    gui.add(props, 'cameraY', 1, 30).onChange(() => {
-      mainCamera.targetedCameraY = props.cameraY;
-    }).step(0.001);
-    gui.add(props, 'cameraZoom', 5, 60).onChange(() => {
-      mainCamera.targetedZoom = props.cameraZoom;
-    }).step(0.1);
+    const cameraGui = gui.addFolder('camera');
+    cameraGui.open();
+    cameraGui.add(mainCamera.props, 'y', 0, 1.5).onChange(mainCamera.update).step(0.001);
+    cameraGui.add(mainCamera.props, 'rotation', -Math.PI, Math.PI).onChange(mainCamera.update).step(0.001);
+    cameraGui.add(mainCamera.props, 'zoom', 0.001, 0.1).onChange(mainCamera.update).step(0.001);
+    cameraGui.add(mainCamera.props, 'distance', 0, 100).onChange(mainCamera.update).step(0.1);
+    cameraGui.add(mainCamera.props.offset, 'x', -10, 10).name('offsetX').onChange(mainCamera.update).step(0.01);
+    cameraGui.add(mainCamera.props.offset, 'y', -10, 10).name('offsetY').onChange(mainCamera.update).step(0.01);
+    cameraGui.add(mainCamera.props.offset, 'z', -10, 10).name('offsetZ').onChange(mainCamera.update).step(0.01);
     const lightGui = gui.addFolder('light');
     lightGui.add(directionalLight.position, 'x', -10, 10);
     lightGui.add(directionalLight.position, 'y', -10, 100);
@@ -250,15 +251,6 @@ canvasSketch(({ context }) => {
       // composer.resize(props.viewportWidth, props.viewportHeight);
     },
     render(_props) {
-      mainCamera.update();
-
-      const fScrollZ = targetedScrollZ - currentScrollZ;
-      if (Math.abs(fScrollZ) > 0.01) {
-        currentScrollZ += fScrollZ * props.velocity * 0.25;
-        scrollGroup.position.z = currentScrollZ;
-        grounds.update(currentScrollZ);
-      }
-
       // renderer.update(props);
       composer.render();
 

@@ -6,11 +6,8 @@ import props from './props';
 
 const SEGMENTS = 128 * 2;
 
-export const GROUND_TILE_SIZE = props.boardHeight * 5;
-/** How far ahead of the board to keep a tile ready. */
-export const GROUND_SPAWN_PADDING = GROUND_TILE_SIZE * 0.5;
-/** Cull tiles once their front edge is this far behind the camera focus. */
-export const GROUND_CULL_MARGIN = GROUND_TILE_SIZE * 0.5;
+export const GROUND_TILE_BOARD_HEIGHTS = 8;
+export const GROUND_TILE_SIZE = props.boardHeight * GROUND_TILE_BOARD_HEIGHTS;
 
 let sharedGeometry = null;
 
