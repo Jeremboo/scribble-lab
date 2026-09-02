@@ -45,7 +45,7 @@ export default class Board extends Stage {
 
   /** World-space Y of the path cell surface at absolute row y. */
   getPathWorldY(y) {
-    return this.getElevation(this.pathX, y) * 0.5 - CELL_HEIGHT / 2 + CELL_ELEVATION;
+    return this.getElevation(this.pathX, Math.floor(y)) * 0.5 - CELL_HEIGHT / 2 + CELL_ELEVATION;
   }
 
   pickLootColor(effect) {

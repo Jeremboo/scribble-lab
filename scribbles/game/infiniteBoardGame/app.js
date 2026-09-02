@@ -99,28 +99,29 @@ canvasSketch(({ context }) => {
 
   board.addPawn(pawnBoard);
 
+  const animateCameraTarget = (cellNbr, duration = 1.5, delay = 0.25) => {
+    const pos = new Vector3(
+      0,
+      board.getPathWorldY(cellNbr + props.boardHeight / 2),
+      cellNbr
+    );
+    mainCamera.animateCameraTarget(
+      pos,
+      duration,
+      delay,
+    );
+  };
+
   // Bake noise pathY once at init (pawn already placed on row 0).
   // Doing this in animateIn used to snap the heightfield; with the diagonal
   // camera that read as a lateral jump on the ground.
   board.moveTo();
   const grounds = new Grounds(renderer.scene);
   grounds.setPathY(board.pathY);
+  animateCameraTarget(0, 0, 0);
 
   let pendingAdvance = 0;
 
-  const updateCameraHillFromBoard = (extraSteps = 0, duration = 1.25) => {
-    const midY = board.startY + pendingAdvance + extraSteps;
-    const pos = new Vector3(
-      -0.5,
-      board.getPathWorldY(midY),
-      midY
-    );
-    mainCamera.animateCameraTarget(
-      pos,
-      1.5,
-      0.25,
-    );
-  };
 
   const animateIn  = () => {
     mainCamera.animateCameraProps(props.inGameCameraProps);
@@ -137,8 +138,8 @@ canvasSketch(({ context }) => {
   const animateAdvance = (steps) => {
     board.ensureRow(pawnBoard.y);
     grounds.onBoardAdvance();
-    updateCameraHillFromBoard(steps);
     pendingAdvance += steps;
+    animateCameraTarget(board.startY + pendingAdvance);
 
     const inOutDelay = 100;
     for (let i = 0; i < steps; i++) {
@@ -205,7 +206,7 @@ canvasSketch(({ context }) => {
     const regenerateNoise = () => {
       board.regenerateNoise();
       grounds.syncFromProps();
-      updateCameraHillFromBoard();
+      animateCameraTarget(board.startY);
     };
 
     const gui = new GUI();
