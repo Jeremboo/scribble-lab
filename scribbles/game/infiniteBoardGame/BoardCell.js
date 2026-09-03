@@ -128,6 +128,7 @@ export default class BoardCell extends Cell {
       this.loot.dispose();
       this.loot = null;
     }
+    this.mesh.disposeSurfaceIds();
     this.mesh.geometry.dispose();
   }
 }

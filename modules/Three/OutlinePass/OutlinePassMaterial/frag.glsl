@@ -44,7 +44,7 @@ vec3 getSurfaceValue(vec2 offsetTexels) {
 }
 
 float isDifferentId(vec3 a, vec3 b) {
-  return step(1e-4, distance(a, b));
+  return step(0.5, distance(a, b));
 }
 
 // Same reach on axes and diagonals; any ID mismatch counts the same.

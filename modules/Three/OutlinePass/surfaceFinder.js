@@ -15,10 +15,34 @@ export const DEDICATED_SURFACE_IDS = {
 // TODO 2024-01-04 jeremboo: Improve this
 class SurfaceFinder {
   constructor() {
-    // This identifier, must be globally unique for each surface
-    // across all geometry rendered on screen
-    // NOTE 2024-01-08 jeremboo: It starts add ids after the dedicated ids numbers
+    // Unique among *live* surfaces currently on screen. Reused when meshes dispose.
     this.surfaceId = Object.keys(DEDICATED_SURFACE_IDS).length;
+    this.freeIds = [];
+  }
+
+  allocate() {
+    if (this.freeIds.length > 0) {
+      return this.freeIds.pop();
+    }
+    const id = this.surfaceId;
+    this.surfaceId += 1;
+    return id;
+  }
+
+  retain(geometry) {
+    geometry.userData.surfaceIdRefs = (geometry.userData.surfaceIdRefs || 0) + 1;
+  }
+
+  release(geometry) {
+    if (!geometry) return;
+    const refs = (geometry.userData.surfaceIdRefs || 0) - 1;
+    geometry.userData.surfaceIdRefs = refs;
+    if (refs > 0) return;
+    const ids = geometry.userData.surfaceIds;
+    if (ids && ids.length) {
+      this.freeIds.push(...ids);
+    }
+    geometry.userData.surfaceIds = undefined;
   }
 
   /*
@@ -29,16 +53,24 @@ class SurfaceFinder {
     const numVertices = bufferGeometry.attributes.position.count;
     const bufferArray = new Float32Array(numVertices);
 
+    const allocated = [];
     if (forcedSurfaceId !== undefined) {
       for (let i = 0; i < numVertices; i++) {
         bufferArray[i] = forcedSurfaceId;
       }
     } else {
       const vertexIdToSurfaceId = this._generateSurfaceIds(mesh);
+      const seen = {};
       for (let i = 0; i < numVertices; i++) {
-        bufferArray[i] = vertexIdToSurfaceId[i];
+        const id = vertexIdToSurfaceId[i];
+        bufferArray[i] = id;
+        if (id !== undefined && !seen[id]) {
+          seen[id] = true;
+          allocated.push(id);
+        }
       }
     }
+    bufferGeometry.userData.surfaceIds = allocated;
 
     return bufferArray;
   }
@@ -84,12 +116,11 @@ class SurfaceFinder {
       // Get all neighbors recursively
       const surfaceVertices = getNeighborsNonRecursive(node);
       // Mark them as explored
+      const surfaceId = this.allocate();
       for (let v of surfaceVertices) {
         exploredNodes[v] = true;
-        vertexIdToSurfaceId[v] = this.surfaceId;
+        vertexIdToSurfaceId[v] = surfaceId;
       }
-
-      this.surfaceId += 1;
     }
     function getNeighbors(node, explored) {
       const neighbors = vertexMap[node];

@@ -47,6 +47,7 @@ export default class Ground {
 
   dispose() {
     this.material.dispose();
+    this.mesh.disposeSurfaceIds();
     if (this.mesh.customSurfaceMaterial) {
       this.mesh.customSurfaceMaterial.dispose();
     }

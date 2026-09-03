@@ -7,10 +7,9 @@ void main() {
   if(vSurfaceId == 0.0)
     discard;
 
-    // Normalize the surfaceId when writing to texture
-    // Surface ID needs rounding as precision can be lost in perspective correct interpolation
-    // - see https://github.com/OmarShehata/webgl-outlines/issues/9 for other solutions eg. flat interpolation.
-  float surfaceId = floor(vSurfaceId) / maxSurfaceId;
+    // Write integer IDs (not id/maxSurfaceId). Packing into 0-1 made
+    // adjacent IDs indistinguishable once many surfaces had been created.
+  float surfaceId = floor(vSurfaceId + 0.5);
   gl_FragColor = vec4(surfaceId, 0.0, 0.0, 1.0);
 
     // For debug rendering, assign a random color to each surfaceId

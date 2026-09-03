@@ -106,6 +106,7 @@ export default class BoardLoot {
     if (this.mesh.parent) {
       this.mesh.parent.remove(this.mesh);
     }
+    this.mesh.disposeSurfaceIds();
     this.mesh.geometry.dispose();
     this.mesh.material.dispose();
     this.mesh = null;
