@@ -6,7 +6,7 @@ uniform sampler2D sceneColorBuffer;
 uniform sampler2D surfaceBuffer;
 uniform vec2 screenSize;
 uniform vec3 outlineColor;
-uniform int thickness;
+uniform float thickness;
 
 // uniform sampler2D depthBuffer;
 // uniform vec4 multiplierParameters;
@@ -39,38 +39,35 @@ varying vec2 vUv;
 //   return clamp(num, 0.0, 1.0);
 // }
 
-// "surface value" is either the normal or the "surfaceID"
-vec3 getSurfaceValue(int x, int y) {
-  vec3 val = texture2D(surfaceBuffer, vUv + screenSize * vec2(x, y)).rgb;
-  return val;
+vec3 getSurfaceValue(vec2 offsetTexels) {
+  return texture2D(surfaceBuffer, vUv + screenSize * offsetTexels).rgb;
 }
 
-// TODO 2024-01-04 jeremboo: This can be optimized with less passes if needed
-float getSurfaceIdDiff(vec3 surfaceValue) {
-  float surfaceIdDiff = 0.0;
-  surfaceIdDiff += distance(surfaceValue, getSurfaceValue(thickness, 0));
-  surfaceIdDiff += distance(surfaceValue, getSurfaceValue(0, thickness));
-  surfaceIdDiff += distance(surfaceValue, getSurfaceValue(0, thickness));
-  surfaceIdDiff += distance(surfaceValue, getSurfaceValue(0, -thickness));
+float isDifferentId(vec3 a, vec3 b) {
+  return step(1e-4, distance(a, b));
+}
 
-  surfaceIdDiff += distance(surfaceValue, getSurfaceValue(thickness, thickness));
-  surfaceIdDiff += distance(surfaceValue, getSurfaceValue(thickness, -thickness));
-  surfaceIdDiff += distance(surfaceValue, getSurfaceValue(-thickness, thickness));
-  surfaceIdDiff += distance(surfaceValue, getSurfaceValue(-thickness, -thickness));
-  return surfaceIdDiff;
+// Same reach on axes and diagonals; any ID mismatch counts the same.
+float getSurfaceIdDiff(vec3 surfaceValue) {
+  float r = max(thickness, 1.0);
+  float d = r * 0.70710678;
+  float edge = 0.0;
+  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2( r, 0.0))));
+  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2(-r, 0.0))));
+  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2(0.0,  r))));
+  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2(0.0, -r))));
+  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2( d,  d))));
+  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2( d, -d))));
+  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2(-d,  d))));
+  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2(-d, -d))));
+  return edge;
 }
 
 void main() {
   vec4 sceneColor = texture2D(sceneColorBuffer, vUv);
 
-  vec3 surfaceValue = getSurfaceValue(0, 0);
-  float surfaceValueDiff = getSurfaceIdDiff(surfaceValue);
-
-  // If the diff as some changes, set it to 1
-  if(surfaceValueDiff != 0.0)
-    surfaceValueDiff = 1.0;
-
-  float outline = surfaceValueDiff;
+  vec3 surfaceValue = getSurfaceValue(vec2(0.0));
+  float outline = getSurfaceIdDiff(surfaceValue);
 
   // Combine outline with scene color.
   vec4 outlineColor = vec4(outlineColor, 1.0);

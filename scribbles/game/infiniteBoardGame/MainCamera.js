@@ -8,10 +8,9 @@ export default class MainCamera {
 
     this.target = new Vector3(); // The camera will look at this position
     this.props = {
-      y: props.initialCameraProps.y * 0.75,
+      y: props.initialCameraProps.y * 1.25,
       rotation: props.initialCameraProps.rotation,
-      zoom: props.initialCameraProps.zoom * 0.5,
-      distance: props.initialCameraProps.distance,
+      distance: props.initialCameraProps.distance * 1.2,
       offset: props.initialCameraProps.offset.clone(),
     }
 
@@ -30,7 +29,6 @@ export default class MainCamera {
       ...tweenProps,
       y: newProps.y || this.props.y,
       rotation: newProps.rotation || this.props.rotation,
-      zoom: newProps.zoom || this.props.zoom,
       distance: newProps.distance || this.props.distance,
       onUpdate: () => {
         this.update();
@@ -66,7 +64,5 @@ export default class MainCamera {
       this.target.z + Math.sin(this.props.rotation) * this.props.distance + this.props.offset.z
     );
     this.camera.lookAt(this.target.clone().add(this.props.offset));
-    this.camera.zoom = this.props.zoom;
-    this.camera.updateProjectionMatrix();
   }
 }

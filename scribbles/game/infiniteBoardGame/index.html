@@ -68,10 +68,9 @@
     }
 
     #wrapper-3d {
+      /* Center without CSS transform — parent transforms break CSS3D perspective. */
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      inset: 0;
       margin: auto;
       font-size: 1px;
       pointer-events: none;
@@ -80,7 +79,6 @@
     #wrapper-3d .content {
       width: 1500px;
       height: 1000px;
-      transform: scale(0.01);
     }
 
     #wrapper-3d h1 {

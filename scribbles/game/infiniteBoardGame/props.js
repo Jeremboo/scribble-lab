@@ -34,17 +34,15 @@ export default {
   // initial camera position
   initialCameraProps: {
     y: 0.95,
-    offset: new Vector3(0, 0, 0),
+    offset: new Vector3(0, -2, 0),
     rotation: -Math.PI * 0.75,
-    zoom: 0.048,
-    distance: 40,
+    distance: 45,
   },
   inGameCameraProps: {
-    y: 0.63,
-    offset: new Vector3(0, 1.7, 0),
+    y: 0.62,
+    offset: new Vector3(0, 3, 0),
     rotation: -Math.PI * 0.75,
-    zoom: 0.06,
-    distance: 40,
+    distance: 55,
   },
   // animation
   velocity: 0.1,

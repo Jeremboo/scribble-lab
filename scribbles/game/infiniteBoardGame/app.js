@@ -14,11 +14,13 @@ import canvasSketch from 'canvas-sketch';
 import { GUI } from 'dat.gui';
 
 import {
-  EffectComposer
+  EffectComposer,
+  EffectPass,
+  SMAAEffect,
 } from 'postprocessing';
 
-import OrthographicRenderer from '../../../modules/OrthographicRenderer.three';
-import OutlinePass from '../../../modules/Three/OutlinePass';
+import PerspectiveRenderer from '../../../modules/PerspectiveRenderer.three';
+import OutlinePass, { DPR } from '../../../modules/Three/OutlinePass';
 import Board from './Board';
 import BoardPawn from './BoardPawn';
 import Grounds from './Grounds';
@@ -29,13 +31,12 @@ import gsap from 'gsap';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
-  const renderer = new OrthographicRenderer({
+  const renderer = new PerspectiveRenderer({
     canvas: context.canvas,
-    zoom: props.cameraZoomOut * 2,
     antialias: false,
     stencil: false,
     depth: true
-  });
+  }, 15, window.innerWidth / window.innerHeight, 1, 1000);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFSoftShadowMap;
   // renderer.setClearColor(props.bgColor, 1);
@@ -55,20 +56,21 @@ canvasSketch(({ context }) => {
   // outlinePass.setDebugMode(true);
   composer.addPass(outlinePass);
 
-  // TODO 2024-05-21 jeremboo: Add antilaliasing
-  // https://github.com/pmndrs/postprocessing/blob/main/demo/src/demos/OutlineDemo.js
-  // if (DPR.antialiasing) {
-    // const AApass = new SMAAPass(
-    //   window.innerWidth * window.devicePixelRatio,
-    //   window.innerHeight * window.devicePixelRatio
-    // );
-    // const effect = new SMAAEffect();
-    // console.log('effect', effect);
-    // const SMAAPass = new EffectPass(_camera, effect);
-    // console.log('SMAAPass', SMAAPass);
-    // SMAAPass.renderToScreen = true;
-    // composer.addPass(SMAAPass);
-  // }
+  if (DPR.antialiasing) {
+    const areaImage = new Image();
+    const searchImage = new Image();
+    areaImage.addEventListener('load', () => {
+      searchImage.addEventListener('load', () => {
+        const smaaEffect = new SMAAEffect(searchImage, areaImage);
+        smaaEffect.setEdgeDetectionThreshold(0.05);
+        const smaaPass = new EffectPass(renderer.camera, smaaEffect);
+        smaaPass.renderToScreen = true;
+        composer.addPass(smaaPass);
+      });
+      searchImage.src = SMAAEffect.searchImageDataURL;
+    });
+    areaImage.src = SMAAEffect.areaImageDataURL;
+  }
 
   // light
   const ambientLight = new AmbientLight(0xffffff, 0.5);
@@ -164,7 +166,7 @@ canvasSketch(({ context }) => {
   setTimeout(() => {
     mainCamera.animateCameraProps({
       y: props.initialCameraProps.y,
-      zoom: props.initialCameraProps.zoom
+      distance: props.initialCameraProps.distance,
     }, 1.5);
     gsap.to(document.body.querySelectorAll('#home-page > *'), { autoAlpha: 1, duration: 0.5, y: 0, delay: 0.5, stagger: 0.15 });
 
@@ -229,9 +231,11 @@ canvasSketch(({ context }) => {
     gui.add(props, 'groundNoiseAmplSideRight', 1, 8).onChange(regenerateNoise);
     const cameraGui = gui.addFolder('camera');
     cameraGui.open();
+    cameraGui.add(mainCamera.camera, 'fov', 1, 120).onChange((fov) => {
+      renderer.setFov(fov);
+    }).step(0.001);
     cameraGui.add(mainCamera.props, 'y', 0, 1.5).onChange(mainCamera.update).step(0.001);
     cameraGui.add(mainCamera.props, 'rotation', -Math.PI, Math.PI).onChange(mainCamera.update).step(0.001);
-    cameraGui.add(mainCamera.props, 'zoom', 0.001, 0.1).onChange(mainCamera.update).step(0.001);
     cameraGui.add(mainCamera.props, 'distance', 0, 100).onChange(mainCamera.update).step(0.1);
     cameraGui.add(mainCamera.props.offset, 'x', -10, 10).name('offsetX').onChange(mainCamera.update).step(0.01);
     cameraGui.add(mainCamera.props.offset, 'y', -10, 10).name('offsetY').onChange(mainCamera.update).step(0.01);
@@ -248,8 +252,9 @@ canvasSketch(({ context }) => {
       wrapper3d.style.height = `${props.styleHeight}px`;
       domRenderer.resize(props);
       renderer.resize(props);
-
-      // composer.resize(props.viewportWidth, props.viewportHeight);
+      // Pass drawing-buffer size into OutlinePass (CSS size × pixelRatio).
+      // updateStyle=false: canvas-sketch owns the canvas CSS size.
+      composer.setSize(props.viewportWidth, props.viewportHeight, false);
     },
     render(_props) {
       // renderer.update(props);

@@ -5,7 +5,10 @@ import {
   BufferGeometry,
   Mesh,
   Float32BufferAttribute,
-  OrthographicCamera
+  OrthographicCamera,
+  NearestFilter,
+  LinearFilter,
+  ShaderMaterial,
 } from 'three';
 import {Pass} from 'postprocessing';
 import findSurfaces from './surfaceFinder';
@@ -13,6 +16,8 @@ import OutlinePassMaterial, {
 } from './OutlinePassMaterial';
 import SurfaceMaterial from './SurfaceMaterial';
 
+// Multipliers relative to the composer's drawing-buffer size (already includes
+// device pixel ratio). >1 supersamples surface-ID / outline, then downsamples.
 export const DPR = {
   canvas: 3,
   passRender: 3,
@@ -20,6 +25,22 @@ export const DPR = {
   outlineResolution: 3,
   antialiasing: true,
 };
+
+const blitVertexShader = /* glsl */ `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+
+const blitFragmentShader = /* glsl */ `
+uniform sampler2D tDiffuse;
+varying vec2 vUv;
+void main() {
+  gl_FragColor = texture2D(tDiffuse, vUv);
+}
+`;
 
 
 // TODO 2024-05-21 jeremboo: SHOULD BE ACCESSIBLE VIA POSTPROCESSING !!!!
@@ -49,9 +70,7 @@ class FullScreenQuad {
 	}
 
 	dispose() {
-
-		this._mesh.geometry.dispose();
-
+		// Geometry is shared across quads — do not dispose it here.
 	}
 
 	render( renderer) {
@@ -80,9 +99,14 @@ export default class OutlinePass extends Pass {
   constructor(scene, camera, props) {
     super();
 
+    this.width = 1;
+    this.height = 1;
+
      // A buffer to render the surface we want to outline thanks to the surface material
     this.passRender = new WebGLRenderTarget();
     this.surfaceBuffer = new WebGLRenderTarget();
+    // High-res outline composite; blitted down to the composer target when DPR > 1
+    this.compositeBuffer = new WebGLRenderTarget();
     this.surfaceOverrideMaterial = new SurfaceMaterial();
 
   // NOTE 2024-01-04 jeremboo: If we need more outline, it maybe worth it to use this
@@ -91,44 +115,75 @@ export default class OutlinePass extends Pass {
     this.renderScene = scene;
     this.renderCamera = camera;
 
-    this.passMaterial = new OutlinePassMaterial(props);
+    this.thickness = props.thickness != null ? props.thickness : 1;
+    this.passMaterial = new OutlinePassMaterial({ ...props, thickness: this.thickness });
     this.fsQuad = new FullScreenQuad(this.passMaterial);
+    this.blitMaterial = new ShaderMaterial({
+      uniforms: {
+        tDiffuse: { value: null },
+      },
+      vertexShader: blitVertexShader,
+      fragmentShader: blitFragmentShader,
+      depthTest: false,
+      depthWrite: false,
+    });
+    this.blitQuad = new FullScreenQuad(this.blitMaterial);
 
     // this.passRender.texture.format = RGBAFormat;
     // this.passRender.texture.type = HalfFloatType;
-    // this.passRender.texture.minFilter = NearestFilter;
-    // this.passRender.texture.magFilter = NearestFilter;
-    this.passRender.texture.generateMipmaps = false;
-    this.passRender.stencilBuffer = false;
+    this.passRender.texture.minFilter = LinearFilter;
+    this.passRender.texture.magFilter = LinearFilter;
+    // this.passRender.texture.generateMipmaps = false;
+    // this.passRender.stencilBuffer = false;
 
-    // this.surfaceBuffer.texture.format = RGBAFormat;
+    // Discrete surface IDs must not be linearly filtered
     this.surfaceBuffer.texture.type = HalfFloatType;
-    // this.surfaceBuffer.texture.minFilter = NearestFilter;
-    // this.surfaceBuffer.texture.magFilter = NearestFilter;
-    this.surfaceBuffer.texture.generateMipmaps = false;
-    this.surfaceBuffer.stencilBuffer = false;
+    this.surfaceBuffer.texture.minFilter = NearestFilter;
+    this.surfaceBuffer.texture.magFilter = NearestFilter;
+    // this.surfaceBuffer.texture.generateMipmaps = false;
+    // this.surfaceBuffer.stencilBuffer = false;
+
+    // Linear filter so the downsample blit softens supersampled edges
+    this.compositeBuffer.texture.minFilter = LinearFilter;
+    this.compositeBuffer.texture.magFilter = LinearFilter;
+    // this.compositeBuffer.texture.generateMipmaps = false;
+    // this.compositeBuffer.stencilBuffer = false;
   }
 
   dispose() {
+    this.passRender.dispose();
     this.surfaceBuffer.dispose();
+    this.compositeBuffer.dispose();
     this.fsQuad.dispose();
+    this.blitQuad.dispose();
+    this.blitMaterial.dispose();
     this.surfaceOverrideMaterial.dispose();
     this.passMaterial.dispose();
   }
 
   setSize(width, height) {
-    this.passRender.setSize(
-      window.innerWidth * DPR.passRender,
-      window.innerHeight * DPR.passRender
-    );
-    this.surfaceBuffer.setSize(
-      window.innerWidth * DPR.surfaceRender,
-      window.innerHeight * DPR.surfaceRender
-    );
-    this.passMaterial.resize(
-      window.innerWidth * DPR.outlineResolution,
-      window.innerHeight * DPR.outlineResolution
-    );
+    // `width`/`height` are the composer's drawing-buffer size (CSS × pixelRatio).
+    this.width = width;
+    this.height = height;
+
+    const passW = Math.max(1, Math.round(width * DPR.passRender));
+    const passH = Math.max(1, Math.round(height * DPR.passRender));
+    const surfaceW = Math.max(1, Math.round(width * DPR.surfaceRender));
+    const surfaceH = Math.max(1, Math.round(height * DPR.surfaceRender));
+    const outlineW = Math.max(1, Math.round(width * DPR.outlineResolution));
+    const outlineH = Math.max(1, Math.round(height * DPR.outlineResolution));
+
+    this.passRender.setSize(passW, passH);
+    this.surfaceBuffer.setSize(surfaceW, surfaceH);
+    this.compositeBuffer.setSize(outlineW, outlineH);
+    // Neighbor offsets in the outline shader must match the surface-ID texel size
+    this.passMaterial.resize(surfaceW, surfaceH);
+    this.syncThickness();
+  }
+
+  syncThickness() {
+    const scale = this.surfaceBuffer.width / Math.max(this.width, 1);
+    this.passMaterial.uniforms.thickness.value = this.thickness * scale;
   }
 
   setDebugMode(isEnabled) {
@@ -142,7 +197,8 @@ export default class OutlinePass extends Pass {
   }
 
   setThickness(thickness) {
-    this.passMaterial.uniforms.thickness.value = thickness;
+    this.thickness = thickness;
+    this.syncThickness();
   }
 
   setColor(color) {
@@ -167,7 +223,7 @@ export default class OutlinePass extends Pass {
       color: `#${(
         this.passMaterial.uniforms.outlineColor.value
       ).getHexString()}`,
-      thickness: this.passMaterial.uniforms.thickness.value,
+      thickness: this.thickness,
     };
   }
 
@@ -179,8 +235,8 @@ export default class OutlinePass extends Pass {
 
   render(
     renderer,
-    writeBuffer
-    // readBuffer: WebGLRenderTarget
+    inputBuffer,
+    outputBuffer
   ) {
     // RenderPass
     renderer.setRenderTarget(this.passRender);
@@ -213,16 +269,32 @@ export default class OutlinePass extends Pass {
     (this.fsQuad.material).uniforms.sceneColorBuffer.value =
       this.passRender.texture;
 
-    // 2. Draw the outlines using the depth texture and normal texture
-    // and combine it with the scene color
+    // 2. Draw the outlines at outline/surface resolution, then composite down
+    // to the composer target so supersampled silhouettes get a linear resolve.
+    const supersampled =
+      this.compositeBuffer.width !== this.width ||
+      this.compositeBuffer.height !== this.height;
+
+    if (supersampled) {
+      renderer.setRenderTarget(this.compositeBuffer);
+      renderer.clear();
+      this.fsQuad.render(renderer);
+
+      this.blitMaterial.uniforms.tDiffuse.value = this.compositeBuffer.texture;
+      if (this.renderToScreen) {
+        renderer.setRenderTarget(null);
+      } else {
+        renderer.setRenderTarget(outputBuffer);
+      }
+      this.blitQuad.render(renderer);
+      return;
+    }
+
     if (this.renderToScreen) {
-      // If this is the last effect, then renderToScreen is true.
-      // So we should render to the screen by setting target null
-      // Otherwise, just render into the writeBuffer that the next effect will use as its read buffer.
       renderer.setRenderTarget(null);
     } else {
-      renderer.setRenderTarget(writeBuffer);
+      renderer.setRenderTarget(outputBuffer);
     }
-    this.fsQuad.render(renderer, this.renderCamera);
+    this.fsQuad.render(renderer);
   }
 }

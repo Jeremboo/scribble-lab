@@ -21,7 +21,7 @@ export default class OutlinePassMaterial extends ShaderMaterial {
         sceneColorBuffer: {value: null},
         surfaceBuffer: {value: null},
         outlineColor: {value: new Color(color)},
-        thickness: {value: Math.floor(thickness)},
+        thickness: {value: thickness},
         screenSize: {value: new Vector2()},
         // depthBuffer: {value: null},
         //4 scalar values packed in one uniform: depth multiplier, depth bias, and same for normals.
