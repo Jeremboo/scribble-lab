@@ -2,11 +2,11 @@ import { Vector3 } from 'three';
 export default {
   debug: true,
   // colors
-  bgColor: '#2D1A14',
-  outlineColor: '#70584A',
-  neutralColor: '#F8D6C4',
-  pathColors: ['#B44351', '#63928A', '#DDC66B', '#7A8852'],
-  pawnColors: ['#7DB8AB', '#F7DD76', '#A2B870', '#CD5974'],
+  bgColors:      ['#2D1A14', '#142420', '#2A1E10', '#1A2014'],
+  outlineColors: ['#7A5A52', '#4A6B63', '#7A6B48', '#5A6648'],
+  neutralColors: ['#F8D6C4', '#D4E6E0', '#F5E8C0', '#E4E8C8'],
+  pathColors:    ['#C94B5A', '#4F9A8E', '#E0B84A', '#6F8F4E'],
+  pawnColors:    ['#7DB8AB', '#F0D56A', '#8FB87A', '#D4687A'],
   // board noise
   noiseX: 0,
   noiseY: 4.5,

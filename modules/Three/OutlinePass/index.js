@@ -11,6 +11,7 @@ import {
   ShaderMaterial,
 } from 'three';
 import {Pass} from 'postprocessing';
+import gsap from 'gsap';
 import findSurfaces from './surfaceFinder';
 import OutlinePassMaterial, {
 } from './OutlinePassMaterial';
@@ -201,10 +202,20 @@ export default class OutlinePass extends Pass {
     this.syncThickness();
   }
 
-  setColor(color) {
-    this.passMaterial.uniforms.outlineColor.value = new Color(
-      color
-    ).convertLinearToSRGB();
+  setColor(color, duration = 0.333) {
+    const target = new Color(color).convertLinearToSRGB();
+    const current = this.passMaterial.uniforms.outlineColor.value;
+    gsap.killTweensOf(current);
+    if (duration <= 0) {
+      current.copy(target);
+      return;
+    }
+    gsap.to(current, {
+      r: target.r,
+      g: target.g,
+      b: target.b,
+      duration,
+    });
   }
 
   setMaxSurfaceId(maxSurfaceId) {

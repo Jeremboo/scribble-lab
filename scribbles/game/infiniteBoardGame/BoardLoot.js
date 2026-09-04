@@ -1,6 +1,5 @@
 import {
   BoxBufferGeometry,
-  CylinderBufferGeometry,
   MeshToonMaterial,
   DataTexture,
   RGBFormat,
@@ -24,15 +23,6 @@ function createToonGradient() {
 
 const toonGradient = createToonGradient();
 
-function createGeometry(effect) {
-  if (effect === 'pawn') {
-    // Matches the pawn silhouette
-    return new CylinderBufferGeometry(0.15, 0.15, 0.35, 12);
-  }
-  // Matches a path cell — small cube
-  return new BoxBufferGeometry(0.3, 0.3, 0.3);
-}
-
 export default class BoardLoot {
   constructor(cell, { effect, color } = {}) {
     this.cell = cell;
@@ -41,8 +31,8 @@ export default class BoardLoot {
     this.color = color;
 
     this.mesh = new OutlinableMesh(
-      createGeometry(this.effect),
-      new MeshToonMaterial({ color: this.color, gradientMap: toonGradient }),
+      new BoxBufferGeometry(0.3, 0.3, 0.3),
+      new MeshToonMaterial({ color: this.color }),
       1,
     );
     this.mesh.castShadow = true;
@@ -90,13 +80,8 @@ export default class BoardLoot {
     this.syncPosition();
     this.mesh.position.y += Math.sin(time * 3 + this.bobPhase) * 0.12;
     this.mesh.rotation.y += 0.03;
-    if (this.effect === 'path') {
-      this.mesh.rotation.x = Math.PI * 0.2;
-      this.mesh.rotation.z = Math.PI * 0.15;
-    } else {
-      this.mesh.rotation.x = 0;
-      this.mesh.rotation.z = 0;
-    }
+    this.mesh.rotation.x = Math.PI * 0.2;
+    this.mesh.rotation.z = Math.PI * 0.15;
 
     this.mesh.scale.setScalar(this.currentScale);
   }

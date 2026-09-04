@@ -39,7 +39,7 @@ canvasSketch(({ context }) => {
   }, 15, window.innerWidth / window.innerHeight, 1, 1000);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFSoftShadowMap;
-  // renderer.setClearColor(props.bgColor, 1);
+  // renderer.setClearColor(props.bgColors[0], 1);
 
   const mainCamera = new MainCamera(renderer.camera);
 
@@ -50,7 +50,7 @@ canvasSketch(({ context }) => {
 
   const composer = new EffectComposer(renderer);
   const outlinePass = new OutlinePass(renderer.scene, renderer.camera, {
-    color: new Color(props.outlineColor),
+    color: new Color(props.outlineColors[0]),
     thickness: 1,
   });
   // outlinePass.setDebugMode(true);
@@ -193,12 +193,18 @@ canvasSketch(({ context }) => {
     const loot = board.collectLootAt(pawnBoard.x, pawnBoard.y);
     if (!loot) return;
 
+    board.setAppliedColor(loot.effect, loot.color);
+
     if (loot.effect === 'path') {
       board.changeColorPath(loot.color, 0.333);
-      board.setAppliedColor('path', loot.color);
     } else if (loot.effect === 'pawn') {
       pawnBoard.changeColor(loot.color, 0.333);
-      board.setAppliedColor('pawn', loot.color);
+    } else if (loot.effect === 'neutral') {
+      board.changeColorNeutral(loot.color, 0.333);
+    } else if (loot.effect === 'bg') {
+      grounds.setBgColor(loot.color, 0.333);
+    } else if (loot.effect === 'outline') {
+      outlinePass.setColor(loot.color, 0.333);
     }
   });
 

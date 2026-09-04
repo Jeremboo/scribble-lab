@@ -7,6 +7,7 @@ import props from "./props";
 
 const CELL_HEIGHT = 5;
 const CELL_ELEVATION = 0.25;
+const LOOT_EFFECTS = ['bg', 'outline', 'neutral', 'path', 'pawn'];
 
 export default class Board extends Stage {
   constructor(row, column) {
@@ -23,10 +24,20 @@ export default class Board extends Stage {
 
     this.pathCells = [];
     this.loots = [];
-    this.currentPathColor = props.pathColors[0];
-    this.currentPawnColor = props.pawnColors[0];
-    this.lastPathLootColor = null;
-    this.lastPawnLootColor = null;
+    this.currentColors = {
+      bg: props.bgColors[0],
+      outline: props.outlineColors[0],
+      neutral: props.neutralColors[0],
+      path: props.pathColors[0],
+      pawn: props.pawnColors[0],
+    };
+    this.lastLootColors = {
+      bg: null,
+      outline: null,
+      neutral: null,
+      path: null,
+      pawn: null,
+    };
     this.init(row, column, this.initCell);
   }
 
@@ -48,10 +59,21 @@ export default class Board extends Stage {
     return this.getElevation(this.pathX, Math.floor(y)) * 0.5 - CELL_HEIGHT / 2 + CELL_ELEVATION;
   }
 
+  pickLootEffect() {
+    return LOOT_EFFECTS[Math.floor(Math.random() * LOOT_EFFECTS.length)];
+  }
+
   pickLootColor(effect) {
-    const palette = effect === 'path' ? props.pathColors : props.pawnColors;
-    const current = effect === 'path' ? this.currentPathColor : this.currentPawnColor;
-    const previous = effect === 'path' ? this.lastPathLootColor : this.lastPawnLootColor;
+    const paletteMap = {
+      bg: props.bgColors,
+      outline: props.outlineColors,
+      neutral: props.neutralColors,
+      path: props.pathColors,
+      pawn: props.pawnColors,
+    };
+    const palette = paletteMap[effect];
+    const current = this.currentColors[effect];
+    const previous = this.lastLootColors[effect];
 
     let pool = palette.filter((color) => color !== current && color !== previous);
     if (!pool.length) {
@@ -62,20 +84,12 @@ export default class Board extends Stage {
     }
 
     const color = pool[Math.floor(Math.random() * pool.length)];
-    if (effect === 'path') {
-      this.lastPathLootColor = color;
-    } else {
-      this.lastPawnLootColor = color;
-    }
+    this.lastLootColors[effect] = color;
     return color;
   }
 
   setAppliedColor(effect, color) {
-    if (effect === 'path') {
-      this.currentPathColor = color;
-    } else if (effect === 'pawn') {
-      this.currentPawnColor = color;
-    }
+    this.currentColors[effect] = color;
   }
 
   maybeSpawnLoot(cell) {
@@ -83,7 +97,7 @@ export default class Board extends Stage {
     if (!cell.isPath || cell.y < 3) return;
     if (Math.random() > props.lootChance) return;
 
-    const effect = Math.random() < 0.5 ? 'path' : 'pawn';
+    const effect = this.pickLootEffect();
     const color = this.pickLootColor(effect);
     const loot = new BoardLoot(cell, { effect, color });
     cell.loot = loot;
@@ -116,6 +130,15 @@ export default class Board extends Stage {
   changeColorPath(newColor, duration) {
     this.pathCells.forEach((cell) => {
       cell.changeColorPath(newColor, duration);
+    });
+  }
+
+  changeColorNeutral(newColor, duration) {
+    let applied = false;
+    this.parse((cell) => {
+      if (applied || !cell || cell.isPath) return;
+      cell.changeColorNeutral(newColor, duration);
+      applied = true;
     });
   }
 

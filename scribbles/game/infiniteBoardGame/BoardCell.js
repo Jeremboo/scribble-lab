@@ -34,7 +34,7 @@ const PATH_MATERIAL = new MeshToonMaterial({
   gradientMap: toonGradient,
 })
 const NEUTRAL_MATERIAL = new MeshToonMaterial({
-  color: props.neutralColor,
+  color: props.neutralColors[0],
   gradientMap: toonGradient,
 })
 
@@ -82,6 +82,13 @@ export default class BoardCell extends Cell {
     const _props = { color: '#' + PATH_MATERIAL.color.getHexString() }
     gsap.to(_props, { color, duration, onUpdate: () => {
       PATH_MATERIAL.color.set(_props.color)
+    } })
+  }
+
+  changeColorNeutral(color, duration = 0.25) {
+    const _props = { color: '#' + NEUTRAL_MATERIAL.color.getHexString() }
+    gsap.to(_props, { color, duration, onUpdate: () => {
+      NEUTRAL_MATERIAL.color.set(_props.color)
     } })
   }
 

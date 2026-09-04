@@ -4,9 +4,9 @@ import GroundPlaneMaterial from './GroundPlaneMaterial';
 import GroundSurfaceMaterial from './GroundSurfaceMaterial';
 import props from './props';
 
-const SEGMENTS = 128 * 2;
+const SEGMENTS = 128;
 
-export const GROUND_TILE_BOARD_HEIGHTS = 8;
+export const GROUND_TILE_BOARD_HEIGHTS = 6;
 export const GROUND_TILE_SIZE = props.boardHeight * GROUND_TILE_BOARD_HEIGHTS;
 
 let sharedGeometry = null;
@@ -43,6 +43,10 @@ export default class Ground {
 
   setPathY(y) {
     this.material.setPathY(y);
+  }
+
+  setBgColor(color, duration) {
+    this.material.setBgColor(color, duration);
   }
 
   dispose() {

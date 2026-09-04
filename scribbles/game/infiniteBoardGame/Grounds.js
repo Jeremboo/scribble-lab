@@ -14,6 +14,7 @@ export default class Grounds {
     this.tiles = new Map();
     this.nextIndex = 0;
     this.pathY = 0;
+    this.currentBgColor = null;
     this.rounds = GROUND_TILE_BOARD_HEIGHTS / 2; // start at the middle
     this.addTile(); // add the first tile
   }
@@ -32,6 +33,9 @@ export default class Grounds {
     const tileZ = index * GROUND_TILE_SIZE;
     const ground = new Ground(tileZ);
     ground.setPathY(this.pathY);
+    if (this.currentBgColor) {
+      ground.setBgColor(this.currentBgColor, 0);
+    }
     this.parent.add(ground.mesh);
     this.tiles.set(index, ground);
 
@@ -53,5 +57,10 @@ export default class Grounds {
 
   syncFromProps() {
     this.tiles.forEach((ground) => ground.syncFromProps());
+  }
+
+  setBgColor(color, duration = 1) {
+    this.currentBgColor = color;
+    this.tiles.forEach((ground) => ground.setBgColor(color, duration));
   }
 }

@@ -5,6 +5,7 @@ import {
   UniformsUtils,
   UniformsLib,
 } from 'three';
+import gsap from 'gsap';
 import { createPermTexture, groundElevationGlsl } from '../boardNoise';
 import props from '../props';
 
@@ -125,7 +126,7 @@ export default class GroundPlaneMaterial extends ShaderMaterial {
         UniformsLib.lights,
         {
           uPerm: { value: createPermTexture() },
-          uColor: { value: new Color(props.bgColor) },
+          uColor: { value: new Color(props.bgColors[0]) },
           uNoiseOffset: { value: new Vector2(props.noiseX, props.noiseY) },
           uNoiseScale: { value: new Vector2(props.noiseScaleX, props.noiseScaleY) },
           uNoiseAmpl: { value: props.noiseAmpl },
@@ -154,7 +155,8 @@ export default class GroundPlaneMaterial extends ShaderMaterial {
   }
 
   syncFromProps() {
-    this.uniforms.uColor.value.set(props.bgColor);
+    gsap.killTweensOf(this._bgColorTween);
+    this.uniforms.uColor.value.set(props.bgColors[0]);
     this.uniforms.uNoiseOffset.value.set(props.noiseX, props.noiseY);
     this.uniforms.uNoiseScale.value.set(props.noiseScaleX, props.noiseScaleY);
     this.uniforms.uNoiseAmpl.value = props.noiseAmpl;
@@ -172,5 +174,21 @@ export default class GroundPlaneMaterial extends ShaderMaterial {
 
   setPathY(y) {
     this.uniforms.uPathY.value = y;
+  }
+
+  setBgColor(color, duration = 1) {
+    gsap.killTweensOf(this._bgColorTween);
+    if (duration <= 0) {
+      this.uniforms.uColor.value.set(color);
+      return;
+    }
+    this._bgColorTween = { color: '#' + this.uniforms.uColor.value.getHexString() };
+    gsap.to(this._bgColorTween, {
+      color,
+      duration,
+      onUpdate: () => {
+        this.uniforms.uColor.value.set(this._bgColorTween.color);
+      },
+    });
   }
 }
