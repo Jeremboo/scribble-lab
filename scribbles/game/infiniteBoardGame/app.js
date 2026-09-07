@@ -2,12 +2,8 @@ import {
   AmbientLight,
   DirectionalLight,
   Color,
-  Group,
   PCFSoftShadowMap,
   Vector3,
-  Mesh,
-  MeshBasicMaterial,
-  SphereGeometry
 } from 'three';
 
 import canvasSketch from 'canvas-sketch';
@@ -21,6 +17,8 @@ import {
 
 import PerspectiveRenderer from '../../../modules/PerspectiveRenderer.three';
 import OutlinePass, { DPR } from '../../../modules/Three/OutlinePass';
+import DepthPass from '../../../modules/Three/DepthPass';
+import AtmosphereFogPass from '../../../modules/Three/AtmosphereFogPass';
 import Board from './Board';
 import BoardPawn from './BoardPawn';
 import Grounds from './Grounds';
@@ -39,7 +37,10 @@ canvasSketch(({ context }) => {
   }, 15, window.innerWidth / window.innerHeight, 1, 1000);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFSoftShadowMap;
-  // renderer.setClearColor(props.bgColors[0], 1);
+
+  const atmosphereNear = new Color(props.fogNearColor);
+  const atmosphereFar = new Color(props.fogFarColor);
+  renderer.setClearColor(atmosphereFar, 1);
 
   const mainCamera = new MainCamera(renderer.camera);
 
@@ -55,6 +56,63 @@ canvasSketch(({ context }) => {
   });
   // outlinePass.setDebugMode(true);
   composer.addPass(outlinePass);
+
+  // Shared scene depth — own pass so fog / DOF / etc. can all call setDepthTexture.
+  const depthPass = new DepthPass(renderer.scene, renderer.camera);
+  composer.addPass(depthPass);
+
+  const fogPass = new AtmosphereFogPass(renderer.camera, props);
+  fogPass.setDepthTexture(depthPass.getDepthTexture());
+  composer.addPass(fogPass);
+  if (!DPR.antialiasing) {
+    fogPass.renderToScreen = true;
+  }
+
+  const setAtmosphereColor = (nearColor, farColor, duration = 0) => {
+    const targetNear = nearColor != null ? new Color(nearColor) : null;
+    const targetFar = farColor != null ? new Color(farColor) : null;
+    gsap.killTweensOf(atmosphereNear);
+    gsap.killTweensOf(atmosphereFar);
+
+    const applyClear = () => {
+      renderer.setClearColor(atmosphereFar, 1);
+    };
+
+    if (duration <= 0) {
+      if (targetNear) atmosphereNear.copy(targetNear);
+      if (targetFar) atmosphereFar.copy(targetFar);
+      applyClear();
+      fogPass.setAtmosphere(
+        targetNear ? '#' + atmosphereNear.getHexString() : null,
+        targetFar ? '#' + atmosphereFar.getHexString() : null,
+        0,
+      );
+      return;
+    }
+
+    if (targetNear) {
+      gsap.to(atmosphereNear, {
+        r: targetNear.r,
+        g: targetNear.g,
+        b: targetNear.b,
+        duration,
+      });
+    }
+    if (targetFar) {
+      gsap.to(atmosphereFar, {
+        r: targetFar.r,
+        g: targetFar.g,
+        b: targetFar.b,
+        duration,
+        onUpdate: applyClear,
+      });
+    }
+    fogPass.setAtmosphere(
+      targetNear ? '#' + targetNear.getHexString() : null,
+      targetFar ? '#' + targetFar.getHexString() : null,
+      duration,
+    );
+  };
 
   if (DPR.antialiasing) {
     const areaImage = new Image();
@@ -121,6 +179,7 @@ canvasSketch(({ context }) => {
   const grounds = new Grounds(renderer.scene);
   grounds.setPathY(board.pathY);
   animateCameraTarget(0, 0, 0);
+  setAtmosphereColor(props.fogNearColor, props.fogFarColor);
 
   let pendingAdvance = 0;
 
@@ -250,6 +309,26 @@ canvasSketch(({ context }) => {
     lightGui.add(directionalLight.position, 'x', -10, 10);
     lightGui.add(directionalLight.position, 'y', -10, 100);
     lightGui.add(directionalLight.position, 'z', -10, 10);
+    const fogGui = gui.addFolder('atmosphere');
+    fogGui.open();
+    const atmosphereGui = {
+      colorNear: '#' + atmosphereNear.getHexString(),
+      colorFar: '#' + atmosphereFar.getHexString(),
+    };
+    fogGui.addColor(atmosphereGui, 'colorNear').name('color near').onChange((v) => {
+      props.fogNearColor = v;
+      setAtmosphereColor(v, null, 0);
+    });
+    fogGui.addColor(atmosphereGui, 'colorFar').name('color far').onChange((v) => {
+      props.fogFarColor = v;
+      setAtmosphereColor(null, v, 0);
+    });
+    fogGui.add(props, 'fogNear', 0, 100).onChange((v) => {
+      fogPass.setFogRange(v, props.fogFar);
+    });
+    fogGui.add(props, 'fogFar', 0, 100).onChange((v) => {
+      fogPass.setFogRange(props.fogNear, v);
+    });
   }
 
   return {

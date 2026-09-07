@@ -2,11 +2,13 @@ import { Vector3 } from 'three';
 export default {
   debug: true,
   // colors
-  bgColors:      ['#2D1A14', '#142420', '#2A1E10', '#1A2014'],
-  outlineColors: ['#7A5A52', '#4A6B63', '#7A6B48', '#5A6648'],
-  neutralColors: ['#F8D6C4', '#D4E6E0', '#F5E8C0', '#E4E8C8'],
-  pathColors:    ['#C94B5A', '#4F9A8E', '#E0B84A', '#6F8F4E'],
-  pawnColors:    ['#7DB8AB', '#F0D56A', '#8FB87A', '#D4687A'],
+  bgColors:       ['#1A1210', '#0F1816', '#18140E', '#101610'],
+  outlineColors:  ['#B08A78', '#6E9488', '#B09A5C', '#7A9070'],
+  neutralColors:  ['#F6EFE6', '#E8F0EC', '#F4F0DC', '#ECF0E6'],
+  pathColors:     ['#E04E3A', '#2A8F7E', '#E0A820', '#6B8F3E'],
+  pawnColors:     ['#6ED4C4', '#F0D060', '#9ED46E', '#8EB4E8'],
+  fogNearColor: '#1A1210',
+  fogFarColor: '#000000',
   // board noise
   noiseX: 0,
   noiseY: 4.5,
@@ -44,6 +46,9 @@ export default {
     rotation: -Math.PI * 0.75,
     distance: 55,
   },
+  // atmosphere
+  fogNear: 65,
+  fogFar: 85,
   // animation
   velocity: 0.1,
   nextBoardDuration: 50,

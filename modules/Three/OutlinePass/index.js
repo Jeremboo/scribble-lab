@@ -103,7 +103,7 @@ export default class OutlinePass extends Pass {
     this.width = 1;
     this.height = 1;
 
-     // A buffer to render the surface we want to outline thanks to the surface material
+    // A buffer to render the lit scene (beauty)
     this.passRender = new WebGLRenderTarget();
     this.surfaceBuffer = new WebGLRenderTarget();
     // High-res outline composite; blitted down to the composer target when DPR > 1
@@ -202,6 +202,10 @@ export default class OutlinePass extends Pass {
     this.syncThickness();
   }
 
+  setIntensity(intensity) {
+    this.passMaterial.uniforms.outlineIntensity.value = intensity;
+  }
+
   setColor(color, duration = 0.333) {
     const target = new Color(color).convertLinearToSRGB();
     const current = this.passMaterial.uniforms.outlineColor.value;
@@ -249,7 +253,7 @@ export default class OutlinePass extends Pass {
     inputBuffer,
     outputBuffer
   ) {
-    // RenderPass
+    // Beauty pass
     renderer.setRenderTarget(this.passRender);
     renderer.clear();
     renderer.render(this.renderScene, this.renderCamera);
