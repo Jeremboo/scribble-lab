@@ -2,13 +2,13 @@ import { Vector3 } from 'three';
 export default {
   debug: true,
   // colors
-  bgColors:       ['#1A1210', '#0F1816', '#18140E', '#101610'],
+  bgColors:       ['#34241F', '#1A322E', '#342C14', '#203226'],
   outlineColors:  ['#B08A78', '#6E9488', '#B09A5C', '#7A9070'],
   neutralColors:  ['#F6EFE6', '#E8F0EC', '#F4F0DC', '#ECF0E6'],
   pathColors:     ['#E04E3A', '#2A8F7E', '#E0A820', '#6B8F3E'],
   pawnColors:     ['#6ED4C4', '#F0D060', '#9ED46E', '#8EB4E8'],
-  fogNearColor: '#1A1210',
-  fogFarColor: '#000000',
+  fogNearColor: '#34241F',
+  fogFarColor: '#200700',
   // board noise
   noiseX: 0,
   noiseY: 4.5,
@@ -47,8 +47,8 @@ export default {
     distance: 55,
   },
   // atmosphere
-  fogNear: 65,
-  fogFar: 85,
+  fogNear: 60,
+  fogFar: 90,
   // animation
   velocity: 0.1,
   nextBoardDuration: 50,

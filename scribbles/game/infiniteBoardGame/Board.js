@@ -7,7 +7,13 @@ import props from "./props";
 
 const CELL_HEIGHT = 5;
 const CELL_ELEVATION = 0.25;
-const LOOT_EFFECTS = ['bg', 'outline', 'neutral', 'path', 'pawn'];
+const LOOT_EFFECTS = [
+  'bg',
+  // 'outline',
+  // 'neutral',
+  'path',
+  'pawn'
+];
 
 export default class Board extends Stage {
   constructor(row, column) {
@@ -24,6 +30,7 @@ export default class Board extends Stage {
 
     this.pathCells = [];
     this.loots = [];
+    this.nextLootEffectIndex = 0;
     this.currentColors = {
       bg: props.bgColors[0],
       outline: props.outlineColors[0],
@@ -60,7 +67,9 @@ export default class Board extends Stage {
   }
 
   pickLootEffect() {
-    return LOOT_EFFECTS[Math.floor(Math.random() * LOOT_EFFECTS.length)];
+    const effect = LOOT_EFFECTS[this.nextLootEffectIndex % LOOT_EFFECTS.length];
+    this.nextLootEffectIndex += 1;
+    return effect;
   }
 
   pickLootColor(effect) {
