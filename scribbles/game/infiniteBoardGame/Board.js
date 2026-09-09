@@ -8,11 +8,11 @@ import props from "./props";
 const CELL_HEIGHT = 5;
 const CELL_ELEVATION = 0.25;
 const LOOT_EFFECTS = [
-  'bg',
   // 'outline',
   // 'neutral',
+  'pawn',
   'path',
-  'pawn'
+  'bg',
 ];
 
 export default class Board extends Stage {

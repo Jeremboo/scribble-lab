@@ -7,8 +7,8 @@ export default {
   neutralColors:  ['#F6EFE6', '#E8F0EC', '#F4F0DC', '#ECF0E6'],
   pathColors:     ['#E04E3A', '#2A8F7E', '#E0A820', '#6B8F3E'],
   pawnColors:     ['#6ED4C4', '#F0D060', '#9ED46E', '#8EB4E8'],
-  fogNearColor: '#34241F',
-  fogFarColor: '#200700',
+  fogNearColor: '#4d3207',
+  fogFarColor: '#181200',
   // board noise
   noiseX: 0,
   noiseY: 4.5,
@@ -47,7 +47,7 @@ export default {
     distance: 55,
   },
   // atmosphere
-  fogNear: 60,
+  fogNear: 70,
   fogFar: 90,
   // animation
   velocity: 0.1,
