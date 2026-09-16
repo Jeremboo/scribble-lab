@@ -206,6 +206,23 @@ export default class Board extends Stage {
   }
 
   /**
+   * Path landing for move previews when the row is not built yet.
+   * Returns a lightweight stand-in (no mesh / no grid mutation).
+   */
+  getPathPreviewTarget(x, y) {
+    const existing = this.getCell(x, y);
+    if (existing) return existing;
+    const elevation = this.getElevation(x, y) * 0.5;
+    return {
+      targetedPosition: new Vector3(
+        -props.boardWidth * 0.5 + x,
+        elevation - CELL_HEIGHT / 2 + CELL_ELEVATION,
+        -props.boardHeight * 0.5 + y,
+      ),
+    };
+  }
+
+  /**
    * Create rows ahead and optionally drop rows behind.
    * @param {number} steps - rows to create ahead
    * @param {number} removeCount - rows to remove behind (defaults to steps)

@@ -327,9 +327,10 @@ canvasSketch(({ context }) => {
     }
     const steps = Math.max(1, card.value | 0);
     const targetY = pawnBoard.y + steps;
-    board.ensureRow(targetY);
+    // Do not ensureRow here — off-board landings only create rows / next
+    // section when the card is actually played (advancePawn / animateAdvance).
     const fromCell = board.getCell(pawnBoard.x, pawnBoard.y);
-    const toCell = board.getCell(pawnBoard.x, targetY);
+    const toCell = board.getPathPreviewTarget(pawnBoard.x, targetY);
     if (!fromCell || !toCell) {
       hideMovePreview();
       return;
