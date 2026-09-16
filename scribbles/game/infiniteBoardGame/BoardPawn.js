@@ -42,6 +42,45 @@ export default class BoardPawn extends Pawn {
     this.isVisible = false;
     this.targetedScale = this.isVisible ? 1 : 0;
     this.currentScale = this.targetedScale;
+
+    /** When true, ampl eases toward previewAmpl and holds (mid-air jump preview). */
+    this.jumpPreview = false;
+    this.previewAmpl = 0;
+  }
+
+  /**
+   * Hold the pawn mid-jump for move previews (drop-target hover).
+   * Optionally eases partway toward the destination cell along the path.
+   * @param {boolean} enabled
+   * @param {object} [opts]
+   * @param {number} [opts.ampl=0.85]
+   * @param {import('./BoardCell').default} [opts.fromCell]
+   * @param {import('./BoardCell').default} [opts.toCell]
+   * @param {number} [opts.progress=1/5] fraction of the path to advance
+   */
+  setJumpPreview(enabled, opts = {}) {
+    const ampl = opts.ampl != null ? opts.ampl : 0.85;
+    this.jumpPreview = !!enabled;
+    if (this.jumpPreview) {
+      this.previewAmpl = ampl;
+      this.direction = 1;
+      // Nudge immediately so the hop reads on the first frames
+      this.ampl = Math.max(this.ampl, ampl * 0.35);
+
+      const { fromCell, toCell } = opts;
+      const progress = opts.progress != null ? opts.progress : 1 / 5;
+      if (fromCell && toCell) {
+        const from = fromCell.targetedPosition;
+        const to = toCell.targetedPosition;
+        this.targetedPosition.set(
+          from.x + (to.x - from.x) * progress,
+          this.computeY(from.y + (to.y - from.y) * progress),
+          from.z + (to.z - from.z) * progress,
+        );
+      }
+    } else {
+      this.previewAmpl = 0;
+    }
   }
 
   moveTo(move = 1) {
@@ -117,6 +156,10 @@ export default class BoardPawn extends Pawn {
     // Effect
     this.mesh.position.y += Math.max(0, this.ampl);
     this.mesh.rotation.x = Math.max(-Math.PI * 0.15, Math.min(Math.PI * 0.25, this.ampl * 0.4 * this.direction));
-    this.ampl *= this.velocity;
+    if (this.jumpPreview) {
+      this.ampl += (this.previewAmpl - this.ampl) * 0.18;
+    } else {
+      this.ampl *= this.velocity;
+    }
   }
 }

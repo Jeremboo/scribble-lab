@@ -199,7 +199,7 @@ export default class DomCardRenderer {
   }
 
   /**
-   * @param {Array<{ id: string, label?: string, armed?: boolean, bounds: { x: number, y: number, width: number, height: number } | null }>} targets
+   * @param {Array<{ id: string, bounds: { handSize: number, debug?: boolean } | null }>} targets
    */
   updateDropTargets(targets) {
     const seen = new Set();
@@ -213,24 +213,19 @@ export default class DomCardRenderer {
         el = document.createElement('div');
         el.className = 'card-drop-target';
         el.dataset.targetId = target.id;
-        const label = document.createElement('span');
-        label.className = 'card-drop-target__label';
-        el.appendChild(label);
         this.targetsLayer.appendChild(el);
         this.targetElements.set(target.id, el);
       }
 
-      const labelEl = el.querySelector('.card-drop-target__label');
-      if (labelEl) labelEl.textContent = target.label || '';
-
-      el.classList.toggle('is-armed', !!target.armed);
-
-      const { x, y, width, height } = target.bounds;
-      const css = this.logicalRectToCss(x, y, width, height);
-      el.style.left = `${css.left}px`;
-      el.style.top = `${css.top}px`;
-      el.style.width = `${css.width}px`;
-      el.style.height = `${css.height}px`;
+      const handSize = Math.max(0, Math.min(1, target.bounds.handSize ?? 0));
+      const handSizePct = `${handSize * 100}%`;
+      el.style.top = '0';
+      el.style.left = '0';
+      el.style.right = '0';
+      el.style.bottom = handSizePct;
+      el.style.width = '100%';
+      el.style.height = `calc(100% - ${handSizePct})`;
+      el.classList.toggle('is-debug', !!target.bounds.debug);
     }
 
     for (const [id, el] of this.targetElements) {
@@ -242,15 +237,11 @@ export default class DomCardRenderer {
   }
 
   /**
-   * @param {{ activeTargetId: string | null, canDrop: boolean }} info
+   * Drop targets stay invisible; highlight state is engine-only.
+   * @param {{ activeTargetId: string | null, canDrop: boolean }} _info
    */
-  updateDropHighlight({ activeTargetId, canDrop }) {
-    for (const [id, el] of this.targetElements) {
-      const active = id === activeTargetId;
-      el.classList.toggle('is-active', active);
-      el.classList.toggle('is-valid', active && canDrop);
-      el.classList.toggle('is-invalid', active && !canDrop);
-    }
+  updateDropHighlight(_info) {
+    // Intentionally no visual feedback — zone is invisible except in debug mode.
   }
 
   // ── Coordinate conversion ──────────────────────────────
@@ -266,26 +257,6 @@ export default class DomCardRenderer {
     return {
       x: (lx / aspect + 0.5) * w,
       y: (-ly + 0.5) * h,
-    };
-  }
-
-  /**
-   * @param {number} x
-   * @param {number} y
-   * @param {number} width
-   * @param {number} height
-   */
-  logicalRectToCss(x, y, width, height) {
-    const topLeft = this.logicalToCss(x - width * 0.5, y + height * 0.5);
-    const size = {
-      width: width * this.viewportHeight,
-      height: height * this.viewportHeight,
-    };
-    return {
-      left: topLeft.x,
-      top: topLeft.y,
-      width: size.width,
-      height: size.height,
     };
   }
 

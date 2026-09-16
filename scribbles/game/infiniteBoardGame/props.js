@@ -44,7 +44,7 @@ export default {
   },
   inGameCameraProps: {
     y: 0.62,
-    offset: new Vector3(0, 3, 0),
+    offset: new Vector3(0, 0.5, 0),
     rotation: -Math.PI * 0.75,
     distance: 55,
   },

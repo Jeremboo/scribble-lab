@@ -26,8 +26,9 @@ import MainCamera from './MainCamera';
 import props from './props';
 import DOMRenderer from '../../../modules/Three/DOMRenderer.three';
 import gsap from 'gsap';
-import { CardHand, RectDropTarget } from '../_modules/cardEngine';
+import { CardHand, DropTarget, getHandSize } from '../_modules/cardEngine';
 import DomCardRenderer from './DomCardRenderer';
+import MovePreview from './MovePreview';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
@@ -194,14 +195,41 @@ canvasSketch(({ context }) => {
       const steps = card.type === 'move' ? Math.max(1, card.value | 0) : 1;
       advancePawn(steps);
     },
+    onCardDragStart: (card) => showMovePreview(card),
+    onCardReturned: () => hideMovePreview(),
   });
 
-  const playZone = new RectDropTarget({
+  const movePreview = new MovePreview(board.group);
+
+  const hideMovePreview = () => {
+    movePreview.hide();
+    pawnBoard.setJumpPreview(false);
+    const cell = board.getCell(pawnBoard.x, pawnBoard.y);
+    if (cell) pawnBoard.applyRulesFromCellLanded(cell);
+  };
+
+  const showMovePreview = (card) => {
+    if (!isAnimatedIn || !card || card.type !== 'move') {
+      hideMovePreview();
+      return;
+    }
+    const steps = Math.max(1, card.value | 0);
+    const targetY = pawnBoard.y + steps;
+    board.ensureRow(targetY);
+    const fromCell = board.getCell(pawnBoard.x, pawnBoard.y);
+    const toCell = board.getCell(pawnBoard.x, targetY);
+    if (!fromCell || !toCell) {
+      hideMovePreview();
+      return;
+    }
+    movePreview.show(fromCell, toCell);
+    pawnBoard.setJumpPreview(true, { fromCell, toCell, progress: 1 / 5 });
+  };
+
+  const playZone = new DropTarget({
     id: 'play-zone',
-    x: 0,
-    y: 0.08,
-    width: 1,
-    height: 0.8,
+    handSize: getHandSize(props.handLayout),
+    // debug: props.debug,
     label: (card) => (
       card.type === 'move'
         ? `Move +${card.value}`
@@ -265,6 +293,7 @@ canvasSketch(({ context }) => {
 
   const advancePawn = (steps = 1) => {
     if (!isAnimatedIn || steps < 1) return;
+    hideMovePreview();
 
     for (let i = 0; i < steps; i++) {
       board.removePawn(pawnBoard);

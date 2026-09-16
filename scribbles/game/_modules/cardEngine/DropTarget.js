@@ -7,22 +7,27 @@
  * onEnter?(card: Card): void
  * onLeave?(card: Card): void
  * onDrop?(card: Card): void
+ * getBounds?(): { handSize: number, debug?: boolean }
  *
- * Coordinates are always in CardHand logical space.
+ * Coordinates are always in CardHand logical space
+ * (origin at viewport center, +y up, height === 1).
  */
 
 /**
- * Simple axis-aligned rectangular drop zone in logical space.
+ * Full-viewport play zone minus the hand strip at the bottom.
+ *
+ * CSS layout equivalent:
+ *   top: 0; left: 0; bottom: handSize; width: 100%; height: calc(100% - handSize)
+ *
+ * Invisible in gameplay; optional red border when `debug` is true.
  * Gameplay rules stay outside via canAccept / onDrop callbacks.
  */
-export class RectDropTarget {
+export class DropTarget {
   /**
    * @param {object} options
    * @param {string} [options.id]
-   * @param {number} options.x center x
-   * @param {number} options.y center y
-   * @param {number} options.width
-   * @param {number} options.height
+   * @param {number} [options.handSize] Fraction of viewport height reserved for the hand (bottom inset)
+   * @param {boolean} [options.debug] Show a red outline for layout debugging
    * @param {string | ((card: import('./Card').default) => string)} [options.label]
    * @param {(card: import('./Card').default) => boolean} [options.canAccept]
    * @param {(card: import('./Card').default) => void} [options.onEnter]
@@ -31,10 +36,8 @@ export class RectDropTarget {
    */
   constructor({
     id = 'drop-target',
-    x,
-    y,
-    width,
-    height,
+    handSize = 0.28,
+    debug = false,
     label = 'Play',
     canAccept = () => true,
     onEnter,
@@ -42,10 +45,8 @@ export class RectDropTarget {
     onDrop,
   }) {
     this.id = id;
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
+    this.handSize = handSize;
+    this.debug = debug;
     this._label = label;
     this._canAccept = canAccept;
     this.onEnter = onEnter;
@@ -57,10 +58,8 @@ export class RectDropTarget {
    * @param {{ x: number, y: number }} point
    */
   containsPoint(point) {
-    return (
-      Math.abs(point.x - this.x) <= this.width * 0.5 &&
-      Math.abs(point.y - this.y) <= this.height * 0.5
-    );
+    const minY = -0.5 + this.handSize;
+    return point.y >= minY && point.y <= 0.5;
   }
 
   /**
@@ -81,12 +80,16 @@ export class RectDropTarget {
     return this._label;
   }
 
+  /**
+   * Layout hint for renderers (CSS inset above the hand).
+   */
   getBounds() {
     return {
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height,
+      handSize: this.handSize,
+      debug: this.debug,
     };
   }
 }
+
+/** @deprecated Use DropTarget */
+export const RectDropTarget = DropTarget;

@@ -31,6 +31,7 @@ import {
  * @property {(card: Card) => void} [onEnter]
  * @property {(card: Card) => void} [onLeave]
  * @property {(card: Card) => void} [onDrop]
+ * @property {() => { handSize: number, debug?: boolean }} [getBounds]
  * @property {string} [id]
  */
 
@@ -48,6 +49,7 @@ export default class CardHand {
    * @param {number} [options.lerpSpeed] visual follow speed (higher = snappier)
    * @param {(card: Card, target: DropTargetLike) => void} [options.onCardPlayed]
    * @param {(card: Card) => void} [options.onCardReturned]
+   * @param {(card: Card) => void} [options.onCardDragStart]
    */
   constructor({
     renderer = null,
@@ -55,6 +57,7 @@ export default class CardHand {
     lerpSpeed = 18,
     onCardPlayed,
     onCardReturned,
+    onCardDragStart,
   } = {}) {
     /** @type {Card[]} */
     this.cards = [];
@@ -74,6 +77,7 @@ export default class CardHand {
 
     this.onCardPlayed = onCardPlayed || null;
     this.onCardReturned = onCardReturned || null;
+    this.onCardDragStart = onCardDragStart || null;
 
     // Viewport aspect (width / height) in logical units where height === 1
     this.aspect = 1;
@@ -260,6 +264,7 @@ export default class CardHand {
     card.visual.zIndex = 1000;
     this._relayout();
     this._syncDropTargetsToRenderer();
+    if (this.onCardDragStart) this.onCardDragStart(card);
     return true;
   }
 
@@ -519,14 +524,9 @@ export default class CardHand {
 
   _syncDropTargetsToRenderer() {
     if (!this.renderer || typeof this.renderer.updateDropTargets !== 'function') return;
-    const dragging = this.draggingCardId ? this.getCard(this.draggingCardId) : null;
     this.renderer.updateDropTargets(
       this.dropTargets.map((t) => ({
         id: t.id || 'target',
-        label: typeof t.getLabel === 'function'
-          ? t.getLabel(dragging)
-          : (t.label || 'Play'),
-        armed: !!dragging,
         bounds: typeof t.getBounds === 'function' ? t.getBounds() : null,
       })),
     );

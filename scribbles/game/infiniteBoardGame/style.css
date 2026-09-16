@@ -5,9 +5,6 @@
   --card-face: #f4efe6;
   --card-ink: #1c1814;
   --card-accent: #b44351;
-  --drop-valid: rgba(110, 212, 196, 0.35);
-  --drop-invalid: rgba(180, 67, 81, 0.35);
-  --drop-idle: rgba(255, 255, 255, 0.08);
 }
 
 body {
@@ -119,53 +116,12 @@ body {
 
 .card-drop-target {
   position: absolute;
-  border: 2px dashed transparent;
-  border-radius: 16px;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    opacity 0.15s ease,
-    transform 0.15s ease;
   box-sizing: border-box;
-  pointer-events: none;
-}
-
-.card-drop-target.is-armed {
-  opacity: 0.1;
-  visibility: visible;
-  border-color: rgba(255, 255, 255, 0.35);
+  border: 2px solid transparent;
   background: transparent;
-}
-
-.card-drop-target__label {
-  color: rgba(255, 255, 255, 0.75);
-  font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
-  font-size: clamp(0.85rem, 2vh, 1.25rem);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
   pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.15s ease;
 }
 
-.card-drop-target.is-active {
-  opacity: 1;
-  background: var(--drop-idle);
-}
-.card-drop-target.is-active .card-drop-target__label {
-  opacity: 1;
-  visibility: visible;
-}
-
-.card-drop-target.is-active.is-invalid {
-  background: var(--drop-invalid);
-  border-color: var(--card-accent);
-  border-style: solid;
+.card-drop-target.is-debug {
+  border-color: red;
 }

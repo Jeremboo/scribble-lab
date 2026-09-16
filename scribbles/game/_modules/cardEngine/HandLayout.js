@@ -100,6 +100,16 @@ export function getDefaultLayoutConfig() {
 }
 
 /**
+ * Viewport-height fraction reserved for the hand (bottom inset for drop targets).
+ * Covers idle cards plus hover raise so the play zone sits cleanly above the fan.
+ * @param {Partial<HandLayoutConfig>} [config]
+ */
+export function getHandSize(config = {}) {
+  const cfg = { ...DEFAULTS, ...config };
+  return Math.max(0, 0.5 + cfg.handY + cfg.cardHeight * 0.5 * cfg.hoverScale);
+}
+
+/**
  * Axis-aligned hit test in logical space against a card pose.
  * @param {number} px
  * @param {number} py
