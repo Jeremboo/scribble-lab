@@ -1,4 +1,6 @@
 import { Vector3 } from 'three';
+import { getDefaultLayoutConfig } from '../_modules/cardEngine';
+
 export default {
   debug: true,
   // colors
@@ -55,4 +57,16 @@ export default {
 
   lootChance: 0.15,
 
+  // cards deck and hand
+  startingHandSize: 4,
+  handLayout: getDefaultLayoutConfig(),
+  deckCards: [
+    { id: 'c1', value: 1, type: 'move' },
+    { id: 'c2', value: 2, type: 'move' },
+    { id: 'c3', value: 3, type: 'move' },
+    { id: 'c4', value: 4, type: 'move' },
+    { id: 'c5', value: 5, type: 'move' },
+    { id: 'c6', value: 6, type: 'move' },
+    { id: 'c7', value: 7, type: 'move' },
+  ],
 };

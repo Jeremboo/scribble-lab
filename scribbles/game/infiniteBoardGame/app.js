@@ -26,6 +26,8 @@ import MainCamera from './MainCamera';
 import props from './props';
 import DOMRenderer from '../../../modules/Three/DOMRenderer.three';
 import gsap from 'gsap';
+import { CardHand, RectDropTarget } from '../_modules/cardEngine';
+import DomCardRenderer from './DomCardRenderer';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
@@ -182,13 +184,128 @@ canvasSketch(({ context }) => {
   setAtmosphereColor(props.fogNearColor, props.fogFarColor);
 
   let pendingAdvance = 0;
+  let isAnimatedIn = false;
 
+  // ── Card hand prototype (renderer-agnostic engine + DOM renderer) ──
+  const cardUiRoot = document.getElementById('card-ui');
+  const cardHand = new CardHand({
+    layout: props.handLayout,
+    onCardPlayed: (card) => {
+      const steps = card.type === 'move' ? Math.max(1, card.value | 0) : 1;
+      advancePawn(steps);
+    },
+  });
+
+  const playZone = new RectDropTarget({
+    id: 'play-zone',
+    x: 0,
+    y: 0.08,
+    width: 1,
+    height: 0.8,
+    label: (card) => (
+      card.type === 'move'
+        ? `Move +${card.value}`
+        : `Play ${card.type}`
+    ),
+  });
+  cardHand.addDropTarget(playZone);
+
+  let domCardRenderer = null;
+  /** Remaining draw pile after the opening hand is dealt. */
+  let deck = [];
+  let nextCardId = 1;
+
+  const shuffle = (cards) => {
+    const next = cards.slice();
+    for (let i = next.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = next[i];
+      next[i] = next[j];
+      next[j] = tmp;
+    }
+    return next;
+  };
+
+  const makeMoveCard = (value = 1 + Math.floor(Math.random() * 6)) => ({
+    id: `c${nextCardId++}`,
+    value,
+    type: 'move',
+  });
+
+  const drawCards = (count) => {
+    if (!count || count < 1) return;
+    for (let i = 0; i < count; i++) {
+      const data = deck.length ? deck.shift() : makeMoveCard();
+      setTimeout(() => {
+        cardHand.addCard(data);
+      }, 150 * i);
+    }
+  };
+
+  const applyLoot = (loot) => {
+    if (!loot) return;
+    board.setAppliedColor(loot.effect, loot.color);
+
+    if (loot.effect === 'path') {
+      board.changeColorPath(loot.color, 0.333);
+    } else if (loot.effect === 'pawn') {
+      pawnBoard.changeColor(loot.color, 0.333);
+    } else if (loot.effect === 'neutral') {
+      board.changeColorNeutral(loot.color, 0.333);
+    } else if (loot.effect === 'bg') {
+      grounds.setBgColor(loot.color, 0.333);
+    } else if (loot.effect === 'outline') {
+      outlinePass.setColor(loot.color, 0.333);
+    }
+
+    setTimeout(() => {
+      drawCards(1);
+    }, 500);
+  };
+
+  const advancePawn = (steps = 1) => {
+    if (!isAnimatedIn || steps < 1) return;
+
+    for (let i = 0; i < steps; i++) {
+      board.removePawn(pawnBoard);
+      pawnBoard.moveTo(1);
+
+      if (pawnBoard.y >= board.startY + pendingAdvance + props.boardHeight - props.boardPadding) {
+        animateAdvance(Math.floor(props.boardHeight - props.boardPadding - 1));
+      }
+      board.ensureRow(pawnBoard.y);
+      board.addPawn(pawnBoard);
+    }
+
+    // Loot only on the card's final landing cell (not cells jumped over)
+    applyLoot(board.collectLootAt(pawnBoard.x, pawnBoard.y));
+  };
+
+  const initCardHandUi = () => {
+    if (domCardRenderer) return;
+    cardUiRoot.classList.remove('hidden');
+    cardUiRoot.setAttribute('aria-hidden', 'false');
+    domCardRenderer = new DomCardRenderer({
+      root: cardUiRoot,
+      hand: cardHand,
+      renderLabel: (card) => (card.value > 0 ? `+${card.value}` : String(card.value)),
+    });
+
+    deck = shuffle(props.deckCards.map((card) => ({ ...card })));
+    nextCardId = deck.reduce((max, card) => {
+      const n = parseInt(String(card.id).replace(/\D/g, ''), 10);
+      return Number.isFinite(n) ? Math.max(max, n + 1) : max;
+    }, 1);
+    const openingHand = deck.splice(0, props.startingHandSize);
+    cardHand.setCards(openingHand);
+  };
 
   const animateIn  = () => {
     mainCamera.animateCameraProps(props.inGameCameraProps);
 
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
+    initCardHandUi();
 
     setTimeout(() => {
       isAnimatedIn = true;
@@ -199,6 +316,11 @@ canvasSketch(({ context }) => {
   const animateAdvance = (steps) => {
     board.ensureRow(pawnBoard.y);
     grounds.onBoardAdvance();
+
+    setTimeout(() => {
+      drawCards(3);
+    }, 500);
+
     pendingAdvance += steps;
     animateCameraTarget(board.startY + pendingAdvance);
 
@@ -233,39 +355,6 @@ canvasSketch(({ context }) => {
       animateIn();
     });
   }, 200);
-
-  let isAnimatedIn = false;
-
-  document.body.addEventListener('click', () => {
-    if (!isAnimatedIn) return;
-
-    // Move the pawn
-    board.removePawn(pawnBoard);
-    pawnBoard.moveTo(1);
-    // Advance before the pawn reaches the last cells
-    if (pawnBoard.y >= board.startY + pendingAdvance + props.boardHeight - props.boardPadding) {
-      animateAdvance(Math.floor(props.boardHeight - props.boardPadding - 1));
-    }
-    board.ensureRow(pawnBoard.y);
-    board.addPawn(pawnBoard);
-
-    const loot = board.collectLootAt(pawnBoard.x, pawnBoard.y);
-    if (!loot) return;
-
-    board.setAppliedColor(loot.effect, loot.color);
-
-    if (loot.effect === 'path') {
-      board.changeColorPath(loot.color, 0.333);
-    } else if (loot.effect === 'pawn') {
-      pawnBoard.changeColor(loot.color, 0.333);
-    } else if (loot.effect === 'neutral') {
-      board.changeColorNeutral(loot.color, 0.333);
-    } else if (loot.effect === 'bg') {
-      grounds.setBgColor(loot.color, 0.333);
-    } else if (loot.effect === 'outline') {
-      outlinePass.setColor(loot.color, 0.333);
-    }
-  });
 
   // * GUI *******
 
@@ -329,6 +418,28 @@ canvasSketch(({ context }) => {
     fogGui.add(props, 'fogFar', 0, 100).onChange((v) => {
       fogPass.setFogRange(props.fogNear, v);
     });
+
+    const handGui = gui.addFolder('hand layout');
+    handGui.open();
+    const syncHandLayout = () => {
+      cardHand.setLayout(props.handLayout);
+      if (domCardRenderer) {
+        domCardRenderer.refreshCardSizes();
+      }
+    };
+    handGui.add(props.handLayout, 'handY', -1, 0).step(0.01).onChange(syncHandLayout);
+    handGui.add(props.handLayout, 'handWidth', 0.2, 1.5).step(0.01).onChange(syncHandLayout);
+    handGui.add(props.handLayout, 'cardWidth', 0.05, 0.4).step(0.005).onChange(syncHandLayout);
+    handGui.add(props.handLayout, 'cardHeight', 0.05, 0.5).step(0.005).onChange(syncHandLayout);
+    handGui.add(props.handLayout, 'maxFanAngle', 0, 1).step(0.01).onChange(syncHandLayout);
+    handGui.add(props.handLayout, 'curveAmount', 0, 0.2).step(0.001).onChange(syncHandLayout);
+    handGui.add(props.handLayout, 'maxOverlap', 0, 0.9).step(0.01).onChange(syncHandLayout);
+    handGui.add(props.handLayout, 'minGap', 0.1, 1).step(0.01).onChange(syncHandLayout);
+    handGui.add(props.handLayout, 'hoverRaise', 0, 0.2).step(0.005).onChange(syncHandLayout);
+    handGui.add(props.handLayout, 'hoverScale', 1, 2).step(0.01).onChange(syncHandLayout);
+    handGui.add(props.handLayout, 'neighborPush', 0, 0.3).step(0.005).onChange(syncHandLayout);
+
+    gui.close();
   }
 
   return {
@@ -349,6 +460,8 @@ canvasSketch(({ context }) => {
 
       board.update(_props.time);
       pawnBoard.update();
+
+      cardHand.update(_props.deltaTime);
     },
     unload() {
       controls.dispose();
@@ -358,7 +471,7 @@ canvasSketch(({ context }) => {
 }, {
   // fps: 15,
   // duration: 4,
-  dimensions: [2048, 2048],
+  // dimensions: [2048, 2048],
   scaleToView: true,
   animate: true,
   context: 'webgl',

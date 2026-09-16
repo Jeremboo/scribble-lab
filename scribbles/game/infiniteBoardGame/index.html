@@ -143,6 +143,153 @@
       color: white;
     }
 
+    /* ── Card hand overlay (inline: canvas-sketch middleware can stub style.css) ── */
+    :root {
+      --card-face: #f4efe6;
+      --card-ink: #1c1814;
+      --card-accent: #b44351;
+      --drop-valid: rgba(110, 212, 196, 0.35);
+      --drop-invalid: rgba(180, 67, 81, 0.35);
+      --drop-idle: rgba(255, 255, 255, 0.08);
+    }
+
+    .card-ui {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .card-ui.hidden {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    .card-hand-root {
+      position: absolute;
+      inset: 0;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .card-hand-targets,
+    .card-hand-cards {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .game-card {
+      position: absolute;
+      left: 0;
+      top: 0;
+      margin: 0;
+      padding: 0;
+      border: 2px solid rgba(28, 24, 20, 0.85);
+      border-radius: 10px;
+      background: linear-gradient(160deg, #fff8ee 0%, var(--card-face) 55%, #e8dfd2 100%);
+      color: var(--card-ink);
+      box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      cursor: grab;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35em;
+      font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
+      will-change: transform;
+      transform-origin: center center;
+      pointer-events: auto;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .game-card:focus {
+      outline: none;
+    }
+
+    .game-card:focus-visible {
+      box-shadow:
+        0 0 0 3px rgba(110, 212, 196, 0.7),
+        0 10px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .game-card.is-dragging {
+      cursor: grabbing;
+      box-shadow:
+        0 18px 36px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    }
+
+    .game-card__value {
+      font-size: clamp(1.4rem, 4.5vh, 2.6rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .game-card__type {
+      font-size: clamp(0.55rem, 1.4vh, 0.85rem);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      opacity: 0.65;
+    }
+
+    .card-drop-target {
+      position: absolute;
+      border: 2px dashed transparent;
+      border-radius: 16px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        opacity 0.15s ease;
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+
+    .card-drop-target.is-armed {
+      opacity: 0.3;
+      visibility: visible;
+      border-color: rgba(255, 255, 255, 0.35);
+      background: var(--drop-idle);
+    }
+
+    .card-drop-target__label {
+      color: rgba(255, 255, 255, 0.75);
+      font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
+      font-size: clamp(0.85rem, 2vh, 1.25rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.15s ease;
+    }
+
+    .card-drop-target.is-active {
+      opacity: 1;
+    }
+
+    .card-drop-target.is-active .card-drop-target__label {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .card-drop-target.is-active.is-invalid {
+      background: var(--drop-invalid);
+      border-color: var(--card-accent);
+      border-style: solid;
+    }
+
   </style>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -160,6 +307,9 @@
       <div id="game-page" class="page hidden"></div>
     </div>
   </div>
+
+  <!-- Card UI overlay (DOM renderer). Pointer events enabled; engine stays renderer-agnostic. -->
+  <div id="card-ui" class="card-ui hidden" aria-hidden="true"></div>
 
   {{entry}}
 
