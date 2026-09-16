@@ -125,3 +125,184 @@ body {
 .card-drop-target.is-debug {
   border-color: red;
 }
+
+/* ── Run stats (debug HUD) ─────────────────────────────── */
+
+#run-stats-debug {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 40;
+  min-width: 180px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(12, 10, 8, 0.72);
+  color: #f4efe6;
+  font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
+  font-size: 12px;
+  line-height: 1.45;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+#run-stats-debug.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#run-stats-debug h3 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  font-weight: 600;
+}
+
+#run-stats-debug dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+}
+
+#run-stats-debug dt {
+  opacity: 0.55;
+}
+
+#run-stats-debug dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#run-stats-debug .cards-line {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  opacity: 0.8;
+  word-break: break-word;
+  text-align: left;
+}
+
+/* ── Game over ─────────────────────────────────────────── */
+
+#game-over {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(8, 6, 4, 0.72);
+  color: #f4efe6;
+  font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
+  transition: opacity 0.45s;
+  box-sizing: border-box;
+}
+
+#game-over.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.game-over__panel {
+  width: min(420px, 100%);
+  padding: 28px 28px 24px;
+  border-radius: 14px;
+  background: linear-gradient(165deg, rgba(40, 32, 24, 0.95), rgba(18, 14, 10, 0.96));
+  border: 1px solid rgba(244, 239, 230, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.game-over__panel h2 {
+  margin: 0 0 4px;
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  letter-spacing: -0.02em;
+}
+
+.game-over__panel .subtitle {
+  margin: 0 0 18px;
+  opacity: 0.55;
+  font-size: 0.85rem;
+}
+
+.game-over__stats {
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.game-over__stats li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(244, 239, 230, 0.08);
+  font-size: 0.95rem;
+}
+
+.game-over__stats li span:first-child {
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+
+.game-over__stats li span:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.game-over__stats .cards-detail {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.game-over__stats .cards-detail span:last-child {
+  text-align: left;
+  opacity: 0.85;
+  font-size: 0.85rem;
+  word-break: break-word;
+}
+
+.game-over__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.game-over__actions button {
+  flex: 1 1 140px;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s, color 0.2s;
+}
+
+#restart-button {
+  background: #f4efe6;
+  color: #1c1814;
+}
+
+#restart-button:hover {
+  background: #b44351;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+#share-button {
+  background: transparent;
+  color: #f4efe6;
+  box-shadow: inset 0 0 0 1.5px rgba(244, 239, 230, 0.45);
+}
+
+#share-button:hover {
+  background: rgba(244, 239, 230, 0.1);
+  transform: translateY(-1px);
+}

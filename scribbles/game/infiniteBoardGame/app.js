@@ -29,6 +29,7 @@ import gsap from 'gsap';
 import { CardHand, DropTarget, getHandSize } from '../_modules/cardEngine';
 import DomCardRenderer from './DomCardRenderer';
 import MovePreview from './MovePreview';
+import RunStats from './RunStats';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
@@ -186,16 +187,127 @@ canvasSketch(({ context }) => {
 
   let pendingAdvance = 0;
   let isAnimatedIn = false;
+  let isGameOver = false;
+  let endOfTurnTimer = null;
+  let debugStatsRaf = 0;
+
+  const runStats = new RunStats();
+  const debugStatsEl = document.getElementById('run-stats-debug');
+  const gameOverEl = document.getElementById('game-over');
+
+  const updateStatsUi = (final = false) => {
+    const snap = runStats.snapshot();
+    const duration = final ? snap.durationMs : runStats.durationMs;
+    const sectionsLabel = `${snap.sections}`;
+    const cardsLabel = snap.cardsUsed
+      ? `${snap.cardsUsed} · ${snap.cardsSummary}`
+      : '0';
+    const timeLabel = runStats.formatDuration(duration);
+    const thinkLabel = runStats.formatThink(snap.averageThinkMs);
+    const lootsLabel = `${snap.loots}`;
+
+    if (props.debug && debugStatsEl) {
+      document.getElementById('debug-sections').textContent = sectionsLabel;
+      document.getElementById('debug-cards-used').textContent = String(snap.cardsUsed);
+      document.getElementById('debug-time').textContent = timeLabel;
+      document.getElementById('debug-think').textContent = thinkLabel;
+      document.getElementById('debug-loots').textContent = lootsLabel;
+      document.getElementById('debug-cards-list').textContent = snap.cardsSummary
+        ? snap.cardsSummary
+        : '';
+    }
+
+    if (final) {
+      document.getElementById('go-sections').textContent =
+        `${snap.sections} section${snap.sections === 1 ? '' : 's'}`;
+      document.getElementById('go-cards').textContent = cardsLabel;
+      document.getElementById('go-time').textContent = timeLabel;
+      document.getElementById('go-think').textContent = thinkLabel;
+      document.getElementById('go-loots').textContent = lootsLabel;
+    }
+  };
+
+  const startDebugStatsLoop = () => {
+    if (!props.debug || !debugStatsEl) return;
+    debugStatsEl.classList.remove('hidden');
+    debugStatsEl.setAttribute('aria-hidden', 'false');
+    const tick = () => {
+      if (!runStats.isRunning && isGameOver) {
+        updateStatsUi(true);
+        return;
+      }
+      updateStatsUi(false);
+      debugStatsRaf = requestAnimationFrame(tick);
+    };
+    cancelAnimationFrame(debugStatsRaf);
+    debugStatsRaf = requestAnimationFrame(tick);
+  };
+
+  const triggerGameOver = () => {
+    if (isGameOver) return;
+    isGameOver = true;
+    runStats.stop();
+    clearTimeout(endOfTurnTimer);
+    endOfTurnTimer = null;
+    hideMovePreview();
+
+    if (cardUiRoot) {
+      cardUiRoot.classList.add('hidden');
+      cardUiRoot.setAttribute('aria-hidden', 'true');
+    }
+
+    updateStatsUi(true);
+    if (gameOverEl) {
+      gameOverEl.classList.remove('hidden');
+      gameOverEl.setAttribute('aria-hidden', 'false');
+    }
+  };
+
+  const resolveEndOfTurn = () => {
+    if (isGameOver || !isAnimatedIn) return;
+    // Wait until every scheduled reward/hand add has landed.
+    if (pendingDrawAdds > 0) return;
+    if (cardHand.cards.length === 0) {
+      triggerGameOver();
+      return;
+    }
+    runStats.markTurnReady();
+    updateStatsUi(false);
+  };
+
+  /** Wait for loot / section draw settle, then check empty hand. */
+  const scheduleEndOfTurnCheck = () => {
+    if (isGameOver) return;
+    clearTimeout(endOfTurnTimer);
+    // Reward draws are queued at 500ms; card adds stagger +150ms each.
+    // If pending adds still remain when this fires, resolveEndOfTurn no-ops
+    // and drawCards calls it again when the last add lands.
+    endOfTurnTimer = setTimeout(() => {
+      endOfTurnTimer = null;
+      resolveEndOfTurn();
+    }, turnMayDraw ? 600 : 80);
+  };
 
   // ── Card hand prototype (renderer-agnostic engine + DOM renderer) ──
   const cardUiRoot = document.getElementById('card-ui');
+  let turnMayDraw = false;
+  let pendingDrawAdds = 0;
+  let nextCardId = 1;
   const cardHand = new CardHand({
     layout: props.handLayout,
     onCardPlayed: (card) => {
+      if (isGameOver) return;
+      runStats.recordCardPlayed(card);
+      turnMayDraw = false;
       const steps = card.type === 'move' ? Math.max(1, card.value | 0) : 1;
       advancePawn(steps);
+      scheduleEndOfTurnCheck();
+      updateStatsUi(false);
     },
-    onCardDragStart: (card) => showMovePreview(card),
+    onCardDragStart: (card) => {
+      if (isGameOver) return;
+      showMovePreview(card);
+    },
     onCardReturned: () => hideMovePreview(),
   });
 
@@ -241,7 +353,6 @@ canvasSketch(({ context }) => {
   let domCardRenderer = null;
   /** Remaining draw pile after the opening hand is dealt. */
   let deck = [];
-  let nextCardId = 1;
 
   const shuffle = (cards) => {
     const next = cards.slice();
@@ -261,17 +372,30 @@ canvasSketch(({ context }) => {
   });
 
   const drawCards = (count) => {
-    if (!count || count < 1) return;
+    if (!count || count < 1) return 0;
+    let drawn = 0;
     for (let i = 0; i < count; i++) {
       const data = deck.length ? deck.shift() : makeMoveCard();
+      drawn += 1;
+      pendingDrawAdds += 1;
       setTimeout(() => {
-        cardHand.addCard(data);
+        // Always deliver rewarded cards even if a premature check raced;
+        // only skip if the run already ended for real.
+        if (!isGameOver) {
+          cardHand.addCard(data);
+        }
+        pendingDrawAdds = Math.max(0, pendingDrawAdds - 1);
+        if (pendingDrawAdds === 0 && endOfTurnTimer === null) {
+          resolveEndOfTurn();
+        }
       }, 150 * i);
     }
+    return drawn;
   };
 
   const applyLoot = (loot) => {
     if (!loot) return;
+    runStats.recordLoot();
     board.setAppliedColor(loot.effect, loot.color);
 
     if (loot.effect === 'path') {
@@ -286,13 +410,14 @@ canvasSketch(({ context }) => {
       outlinePass.setColor(loot.color, 0.333);
     }
 
+    turnMayDraw = true;
     setTimeout(() => {
       drawCards(1);
     }, 500);
   };
 
   const advancePawn = (steps = 1) => {
-    if (!isAnimatedIn || steps < 1) return;
+    if (!isAnimatedIn || isGameOver || steps < 1) return;
     hideMovePreview();
 
     for (let i = 0; i < steps; i++) {
@@ -334,6 +459,10 @@ canvasSketch(({ context }) => {
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
 
+    runStats.start();
+    startDebugStatsLoop();
+    updateStatsUi(false);
+
     setTimeout(() => {
       initCardHandUi();
     }, 500);
@@ -341,13 +470,17 @@ canvasSketch(({ context }) => {
     setTimeout(() => {
       isAnimatedIn = true;
       pawnBoard.show();
+      runStats.markTurnReady();
     }, 1000);
   }
 
   const animateAdvance = (steps) => {
     board.ensureRow(pawnBoard.y);
     grounds.onBoardAdvance();
+    runStats.recordSection();
+    updateStatsUi(false);
 
+    turnMayDraw = true;
     setTimeout(() => {
       drawCards(3);
     }, 500);
@@ -384,6 +517,38 @@ canvasSketch(({ context }) => {
 
     document.getElementById('start-button').addEventListener('click', () => {
       animateIn();
+    });
+
+    document.getElementById('restart-button').addEventListener('click', () => {
+      window.location.reload();
+    });
+
+    document.getElementById('share-button').addEventListener('click', async () => {
+      const text = runStats.formatShareText();
+      const shareData = {
+        title: 'Infinite Board Game',
+        text,
+        // url: window.location.href,
+      };
+      try {
+        if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+          await navigator.share(shareData);
+          return;
+        }
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+      }
+      try {
+        await navigator.clipboard.writeText(`${text}\n${window.location.href}`);
+        const btn = document.getElementById('share-button');
+        if (btn) {
+          const prev = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = prev; }, 1600);
+        }
+      } catch (_) {
+        window.prompt('Copy your run stats:', `${text}\n${window.location.href}`);
+      }
     });
   }, 200);
 
