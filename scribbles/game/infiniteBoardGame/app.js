@@ -296,8 +296,7 @@ canvasSketch(({ context }) => {
       const n = parseInt(String(card.id).replace(/\D/g, ''), 10);
       return Number.isFinite(n) ? Math.max(max, n + 1) : max;
     }, 1);
-    const openingHand = deck.splice(0, props.startingHandSize);
-    cardHand.setCards(openingHand);
+    drawCards(props.startingHandSize);
   };
 
   const animateIn  = () => {
@@ -305,12 +304,15 @@ canvasSketch(({ context }) => {
 
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
-    initCardHandUi();
+
+    setTimeout(() => {
+      initCardHandUi();
+    }, 500);
 
     setTimeout(() => {
       isAnimatedIn = true;
       pawnBoard.show();
-    }, 450);
+    }, 1000);
   }
 
   const animateAdvance = (steps) => {
