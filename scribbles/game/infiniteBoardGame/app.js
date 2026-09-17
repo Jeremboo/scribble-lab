@@ -397,19 +397,6 @@ canvasSketch(({ context }) => {
   const applyLoot = (loot) => {
     if (!loot) return;
     runStats.recordLoot();
-    board.setAppliedColor(loot.effect, loot.color);
-
-    if (loot.effect === 'path') {
-      board.changeColorPath(loot.color, 0.333);
-    } else if (loot.effect === 'pawn') {
-      pawnBoard.changeColor(loot.color, 0.333);
-    } else if (loot.effect === 'neutral') {
-      board.changeColorNeutral(loot.color, 0.333);
-    } else if (loot.effect === 'bg') {
-      grounds.setBgColor(loot.color, 0.333);
-    } else if (loot.effect === 'outline') {
-      outlinePass.setColor(loot.color, 0.333);
-    }
 
     turnMayDraw = true;
     setTimeout(() => {

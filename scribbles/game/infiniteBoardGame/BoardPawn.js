@@ -1,5 +1,4 @@
 import { CylinderBufferGeometry, MeshToonMaterial, Vector3, DataTexture, RGBFormat, NearestFilter } from "three";
-import gsap from 'gsap';
 import Pawn from '../_modules/Pawn';
 import OutlinableMesh from '../../../modules/Three/OutlinePass/OutlinableMesh';
 import props from './props';
@@ -106,13 +105,6 @@ export default class BoardPawn extends Pawn {
 
   setElevation(y) {
     this.targetedPosition.y = this.computeY(y)
-  }
-
-  changeColor(color, duration = 0.75) {
-    const _props = { color: '#' + this.mesh.material.color.getHexString() }
-    gsap.to(_props, { color, duration, onUpdate: () => {
-      this.mesh.material.color.set(_props.color)
-    } })
   }
 
   // jump(to = 0.7) {

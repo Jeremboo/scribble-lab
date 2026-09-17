@@ -78,20 +78,6 @@ export default class BoardCell extends Cell {
     }
   }
 
-  changeColorPath(color, duration = 0.25) {
-    const _props = { color: '#' + PATH_MATERIAL.color.getHexString() }
-    gsap.to(_props, { color, duration, onUpdate: () => {
-      PATH_MATERIAL.color.set(_props.color)
-    } })
-  }
-
-  changeColorNeutral(color, duration = 0.25) {
-    const _props = { color: '#' + NEUTRAL_MATERIAL.color.getHexString() }
-    gsap.to(_props, { color, duration, onUpdate: () => {
-      NEUTRAL_MATERIAL.color.set(_props.color)
-    } })
-  }
-
   update() {
 
   }
