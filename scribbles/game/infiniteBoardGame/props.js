@@ -55,10 +55,12 @@ export default {
   velocity: 0.1,
   nextBoardDuration: 75,
 
-  lootChance: 0.15,
+  lootChance: 0.1,
 
   // cards deck and hand
   startingHandSize: 4,
+  cardDrawnPerSection: 2,
+  cardDrawnPerLoot: 1,
   handLayout: getDefaultLayoutConfig(),
   deckCards: [
     { id: 'c1', value: 1, type: 'move' },

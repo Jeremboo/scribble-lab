@@ -401,7 +401,7 @@ canvasSketch(({ context }) => {
 
     turnMayDraw = true;
     setTimeout(() => {
-      drawCards(1);
+      drawCards(props.cardDrawnPerLoot);
     }, 500);
   };
 
@@ -477,7 +477,7 @@ canvasSketch(({ context }) => {
 
     turnMayDraw = true;
     setTimeout(() => {
-      drawCards(3);
+      drawCards(props.cardDrawnPerSection);
     }, 500);
 
     // Keep pawn's landing row built, then shift the window by `steps`
