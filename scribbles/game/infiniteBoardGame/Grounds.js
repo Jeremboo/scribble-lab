@@ -29,6 +29,14 @@ export default class Grounds {
   }
 
   addTile() {
+    if (this.tiles.size >= MAX_TILES) {
+      const oldest = Math.min(...this.tiles.keys());
+      const removed = this.tiles.get(oldest);
+      this.parent.remove(removed.mesh);
+      removed.dispose();
+      this.tiles.delete(oldest);
+    }
+
     const index = this.nextIndex++;
     const tileZ = index * GROUND_TILE_SIZE;
     const ground = new Ground(tileZ);
@@ -38,14 +46,6 @@ export default class Grounds {
     }
     this.parent.add(ground.mesh);
     this.tiles.set(index, ground);
-
-    if (this.tiles.size > MAX_TILES) {
-      const oldest = Math.min(...this.tiles.keys());
-      const removed = this.tiles.get(oldest);
-      this.parent.remove(removed.mesh);
-      removed.dispose();
-      this.tiles.delete(oldest);
-    }
 
     return ground;
   }

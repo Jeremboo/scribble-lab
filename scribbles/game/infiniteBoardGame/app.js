@@ -328,8 +328,8 @@ canvasSketch(({ context }) => {
     }
     const steps = Math.max(1, card.value | 0);
     const targetY = pawnBoard.y + steps;
-    // Do not ensureRow here — off-board landings only create rows / next
-    // section when the card is actually played (advancePawn / animateAdvance).
+    // Do not create rows here — off-board landings are built staggered by
+    // animateAdvance when the card is actually played.
     const fromCell = board.getCell(pawnBoard.x, pawnBoard.y);
     const toCell = board.getPathPreviewTarget(pawnBoard.x, targetY);
     if (!fromCell || !toCell) {
@@ -405,6 +405,18 @@ canvasSketch(({ context }) => {
     }, 500);
   };
 
+  const placePawnAtCurrentCell = () => {
+    const cell = board.getCell(pawnBoard.x, pawnBoard.y);
+    if (cell) {
+      board.addPawn(pawnBoard);
+      return cell;
+    }
+    // Row not built yet — aim at a stand-in; animateAdvance creates it staggered.
+    const preview = board.getPathPreviewTarget(pawnBoard.x, pawnBoard.y);
+    pawnBoard.applyRulesFromCellLanded(preview);
+    return null;
+  };
+
   const advancePawn = (steps = 1) => {
     if (!isAnimatedIn || isGameOver || steps < 1) return;
     hideMovePreview();
@@ -413,21 +425,21 @@ canvasSketch(({ context }) => {
     for (let i = 0; i < steps; i++) {
       board.removePawn(pawnBoard);
       pawnBoard.moveTo(1);
-      board.ensureRow(pawnBoard.y);
-      board.addPawn(pawnBoard);
+      placePawnAtCurrentCell();
 
       if (pawnBoard.y >= board.startY + pendingAdvance + getSectionTriggerOffset()) {
         shouldAdvance = true;
       }
     }
 
-    // Advance once after the full move so overshoot ensureRow doesn't
-    // permanently grow the visible window past boardHeight.
+    // New section rows are created (staggered) only by animateAdvance — never
+    // ensureRow here, or their animateIn would fire before the stagger.
     if (shouldAdvance) {
       animateAdvance(getSectionStride());
     }
 
-    // Loot only on the card's final landing cell (not cells jumped over)
+    // Loot only on the card's final landing cell (not cells jumped over).
+    // If the landing row is still pending (section advance), collect when it appears.
     applyLoot(board.collectLootAt(pawnBoard.x, pawnBoard.y));
   };
 
@@ -480,25 +492,21 @@ canvasSketch(({ context }) => {
       drawCards(props.cardDrawnPerSection);
     }, 500);
 
-    // Keep pawn's landing row built, then shift the window by `steps`
-    // while restoring visible length to exactly boardHeight.
-    board.ensureRow(pawnBoard.y);
-
     pendingAdvance += steps;
     const targetStartY = board.startY + pendingAdvance;
-    const targetEndY = targetStartY + props.boardHeight;
+    const targetEndY = Math.max(
+      targetStartY + props.boardHeight,
+      pawnBoard.y + 1,
+    );
     animateCameraTarget(targetStartY);
 
     // Fade chevrons from the section just passed; keep the next padding markers.
     board.fadeAdvanceIconsBelow(targetStartY + getSectionTriggerOffset());
 
-    // Drop any rows past the new window (from pawn overshoot ensureRow).
-    board.trimRowsFrom(Math.max(targetEndY, pawnBoard.y + 1));
-
     const rowsToAdd = Math.max(0, targetEndY - board.grid.column);
 
     for (let i = 0; i < steps; i++) {
-      const stepDelay = props.nextBoardDuration * i;
+      const stepDelay = props.cellCreationStagger * i;
       setTimeout(() => {
         if (pawnBoard.y > board.startY) {
           board.removeRowBehind();
@@ -508,9 +516,15 @@ canvasSketch(({ context }) => {
     }
 
     for (let i = 0; i < rowsToAdd; i++) {
-      const stepDelay = props.nextBoardDuration * i;
+      const stepDelay = props.cellCreationStagger * i;
       setTimeout(() => {
+        const y = board.grid.column;
         board.addRowAhead();
+        // Attach pawn (and any loot) once its landing row rises in.
+        if (y === pawnBoard.y) {
+          board.addPawn(pawnBoard);
+          applyLoot(board.collectLootAt(pawnBoard.x, pawnBoard.y));
+        }
       }, stepDelay + 250);
     }
   }

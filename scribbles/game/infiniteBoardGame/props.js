@@ -53,7 +53,7 @@ export default {
   fogFar: 90,
   // animation
   velocity: 0.1,
-  nextBoardDuration: 75,
+  cellCreationStagger: 75,
 
   lootChance: 0.1,
 

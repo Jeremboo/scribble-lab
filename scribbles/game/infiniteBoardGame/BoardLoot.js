@@ -11,6 +11,15 @@ const CARD_WIDTH = 0.35;
 const CARD_HEIGHT = 0.5;
 const CARD_DEPTH = 0.04;
 
+// Shared across all loot — never disposed so three@0.116 keeps the compiled
+// MeshLambert program alive (same fix as Icon materialCache).
+const LOOT_GEOMETRY = new BoxBufferGeometry(CARD_WIDTH, CARD_HEIGHT, CARD_DEPTH);
+const LOOT_MATERIAL = new MeshLambertMaterial({
+  color: CARD_FACE,
+  emissive: CARD_FACE,
+  emissiveIntensity: 0.45,
+});
+
 export default class BoardLoot {
   constructor(cell) {
     this.cell = cell;
@@ -19,12 +28,8 @@ export default class BoardLoot {
     // Lambert (not toon): continuous N·L so lighting eases as the card spins.
     // Emissive lifts the base so it stays cream-bright under ambient 0.5 lighting.
     this.mesh = new OutlinableMesh(
-      new BoxBufferGeometry(CARD_WIDTH, CARD_HEIGHT, CARD_DEPTH),
-      new MeshLambertMaterial({
-        color: CARD_FACE,
-        emissive: CARD_FACE,
-        emissiveIntensity: 0.45,
-      }),
+      LOOT_GEOMETRY,
+      LOOT_MATERIAL,
       1,
     );
     this.mesh.castShadow = true;
@@ -83,8 +88,7 @@ export default class BoardLoot {
       this.mesh.parent.remove(this.mesh);
     }
     this.mesh.disposeSurfaceIds();
-    this.mesh.geometry.dispose();
-    this.mesh.material.dispose();
+    // Geometry + material are shared — do not dispose.
     this.mesh = null;
     if (this.cell && this.cell.loot === this) {
       this.cell.loot = null;

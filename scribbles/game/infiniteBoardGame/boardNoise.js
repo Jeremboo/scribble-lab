@@ -19,7 +19,12 @@ export function getHillElevation(x, y, pathY = 0) {
   ) * props.hillNoiseAmpl;
 }
 
+let sharedPermTexture = null;
+
+/** One permutation texture for all ground materials (seed 0 is fixed). */
 export function createPermTexture() {
+  if (sharedPermTexture) return sharedPermTexture;
+
   const data = new Uint8Array(512);
   for (let i = 0; i < 512; i++) {
     data[i] = boardNoise.perm[i];
@@ -30,7 +35,8 @@ export function createPermTexture() {
   texture.wrapS = ClampToEdgeWrapping;
   texture.wrapT = ClampToEdgeWrapping;
   texture.needsUpdate = true;
-  return texture;
+  sharedPermTexture = texture;
+  return sharedPermTexture;
 }
 
 /**
