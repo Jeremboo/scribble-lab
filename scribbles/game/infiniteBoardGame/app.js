@@ -30,6 +30,7 @@ import { CardHand, DropTarget, getHandSize } from '../_modules/cardEngine';
 import DomCardRenderer from './DomCardRenderer';
 import MovePreview from './MovePreview';
 import RunStats from './RunStats';
+import { getSectionStride, getSectionTriggerOffset } from './BoardCell';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
@@ -408,15 +409,22 @@ canvasSketch(({ context }) => {
     if (!isAnimatedIn || isGameOver || steps < 1) return;
     hideMovePreview();
 
+    let shouldAdvance = false;
     for (let i = 0; i < steps; i++) {
       board.removePawn(pawnBoard);
       pawnBoard.moveTo(1);
-
-      if (pawnBoard.y >= board.startY + pendingAdvance + props.boardHeight - props.boardPadding) {
-        animateAdvance(Math.floor(props.boardHeight - props.boardPadding - 1));
-      }
       board.ensureRow(pawnBoard.y);
       board.addPawn(pawnBoard);
+
+      if (pawnBoard.y >= board.startY + pendingAdvance + getSectionTriggerOffset()) {
+        shouldAdvance = true;
+      }
+    }
+
+    // Advance once after the full move so overshoot ensureRow doesn't
+    // permanently grow the visible window past boardHeight.
+    if (shouldAdvance) {
+      animateAdvance(getSectionStride());
     }
 
     // Loot only on the card's final landing cell (not cells jumped over)
@@ -463,7 +471,6 @@ canvasSketch(({ context }) => {
   }
 
   const animateAdvance = (steps) => {
-    board.ensureRow(pawnBoard.y);
     grounds.onBoardAdvance();
     runStats.recordSection();
     updateStatsUi(false);
@@ -473,25 +480,38 @@ canvasSketch(({ context }) => {
       drawCards(3);
     }, 500);
 
-    pendingAdvance += steps;
-    animateCameraTarget(board.startY + pendingAdvance);
+    // Keep pawn's landing row built, then shift the window by `steps`
+    // while restoring visible length to exactly boardHeight.
+    board.ensureRow(pawnBoard.y);
 
-    const inOutDelay = 100;
+    pendingAdvance += steps;
+    const targetStartY = board.startY + pendingAdvance;
+    const targetEndY = targetStartY + props.boardHeight;
+    animateCameraTarget(targetStartY);
+
+    // Fade chevrons from the section just passed; keep the next padding markers.
+    board.fadeAdvanceIconsBelow(targetStartY + getSectionTriggerOffset());
+
+    // Drop any rows past the new window (from pawn overshoot ensureRow).
+    board.trimRowsFrom(Math.max(targetEndY, pawnBoard.y + 1));
+
+    const rowsToAdd = Math.max(0, targetEndY - board.grid.column);
+
     for (let i = 0; i < steps; i++) {
       const stepDelay = props.nextBoardDuration * i;
-
-      // Remove row
-      if (pawnBoard.y > board.startY + i) {
-        setTimeout(() => {
+      setTimeout(() => {
+        if (pawnBoard.y > board.startY) {
           board.removeRowBehind();
-        }, stepDelay);
-      }
+          pendingAdvance = Math.max(0, pendingAdvance - 1);
+        }
+      }, stepDelay);
+    }
 
-      // Add Row
+    for (let i = 0; i < rowsToAdd; i++) {
+      const stepDelay = props.nextBoardDuration * i;
       setTimeout(() => {
         board.addRowAhead();
-        pendingAdvance -= 1;
-      }, stepDelay + inOutDelay);
+      }, stepDelay + 250);
     }
   }
 

@@ -45,7 +45,7 @@ export default class Board extends Stage {
 
   maybeSpawnLoot(cell) {
     // Skip the first few path cells so the start stays clear
-    if (!cell.isPath || cell.y < 3) return;
+    if (!cell.isPath || cell.y < 3 || cell.isAdvanceTrigger) return;
     if (Math.random() > props.lootChance) return;
 
     const loot = new BoardLoot(cell);
@@ -126,6 +126,42 @@ export default class Board extends Stage {
     while (this.grid.column <= y) {
       this.addRowAhead();
     }
+  }
+
+  /**
+   * Drop rows at the front until column === targetColumn.
+   * Used to keep visible length at boardHeight after overshoot ensureRow.
+   */
+  trimRowsFrom(targetColumn) {
+    while (this.grid.column > targetColumn) {
+      const y = this.grid.column - 1;
+      const row = this.grid.grid[y];
+      if (row) {
+        row.forEach((cell) => {
+          if (!cell || !cell.mesh) return;
+          if (cell.loot) {
+            this.loots = this.loots.filter((loot) => loot !== cell.loot);
+          }
+          this.group.remove(cell.mesh);
+          cell.dispose();
+        });
+        delete this.grid.grid[y];
+      }
+      this.grid.column = y;
+    }
+  }
+
+  get visibleRowCount() {
+    return this.grid.column - this.startY;
+  }
+
+  /** Fade chevrons on rows before yExclusive (passed section markers). */
+  fadeAdvanceIconsBelow(yExclusive, duration = 0.8) {
+    this.parse((cell) => {
+      if (cell && cell.icon && cell.y < yExclusive) {
+        cell.fadeAdvanceIcon(duration);
+      }
+    });
   }
 
   /**

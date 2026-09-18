@@ -34,7 +34,7 @@ export default {
   // board size
   boardWidth: 5,
   boardHeight: 15,
-  boardPadding: 1,
+  boardPadding: 2,
   // initial camera position
   initialCameraProps: {
     y: 0.95,
@@ -53,7 +53,7 @@ export default {
   fogFar: 90,
   // animation
   velocity: 0.1,
-  nextBoardDuration: 50,
+  nextBoardDuration: 75,
 
   lootChance: 0.15,
 
