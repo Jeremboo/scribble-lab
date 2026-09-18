@@ -6,6 +6,41 @@ import {
 } from 'three';
 import gsap from 'gsap';
 
+/** @type {Map<string, import('three').MeshBasicMaterial>} */
+const materialCache = new Map();
+/** @type {Map<number, import('three').PlaneBufferGeometry>} */
+const geometryCache = new Map();
+
+/**
+ * Shared MeshBasicMaterials — never disposed so three@0.116 keeps the
+ * compiled WebGL program alive across board advances.
+ */
+function getSharedMaterial(texture, color) {
+  const key = `${texture.uuid}|${String(color)}`;
+  let material = materialCache.get(key);
+  if (!material) {
+    material = new MeshBasicMaterial({
+      map: texture,
+      color,
+      transparent: true,
+      depthWrite: false,
+      // 0 so opacity fades work without a second ALPHATEST shader variant
+      alphaTest: 0,
+    });
+    materialCache.set(key, material);
+  }
+  return material;
+}
+
+function getSharedGeometry(size) {
+  let geometry = geometryCache.get(size);
+  if (!geometry) {
+    geometry = new PlaneBufferGeometry(size, size);
+    geometryCache.set(size, geometry);
+  }
+  return geometry;
+}
+
 /**
  * Flat textured plane. Use a white (or grayscale) map — tint via material color.
  */
@@ -21,15 +56,10 @@ export default class Icon {
       throw new Error('Icon requires a texture');
     }
 
-    this.material = new MeshBasicMaterial({
-      map: texture,
-      color,
-      transparent: true,
-      depthWrite: false,
-      alphaTest: 0.05,
-    });
-
-    this.mesh = new Mesh(new PlaneBufferGeometry(size, size), this.material);
+    this._color = color;
+    this._ownsMaterial = false;
+    this.material = getSharedMaterial(texture, color);
+    this.mesh = new Mesh(getSharedGeometry(size), this.material);
     // Lie flat on XZ (cell top surface), chevron facing path forward (-Z after flip)
     this.mesh.rotation.x = -Math.PI * 0.5;
     this.mesh.rotation.z = Math.PI;
@@ -39,7 +69,15 @@ export default class Icon {
 
   /** @param {import('three').ColorRepresentation} color */
   setColor(color) {
-    this.material.color.set(color);
+    if (!this.material || this._fading) return;
+    this._color = color;
+    if (this._ownsMaterial) {
+      this.material.color.set(color);
+      return;
+    }
+    const map = this.material.map;
+    this.material = getSharedMaterial(map, color);
+    this.mesh.material = this.material;
   }
 
   /**
@@ -53,15 +91,21 @@ export default class Icon {
   }
 
   /**
-   * Fade opacity to 0, then dispose.
+   * Fade opacity to 0, then dispose mesh resources (shared material stays alive).
    * @param {number} [duration=0.8]
    * @param {() => void} [onComplete]
    */
   fadeOut(duration = 0.8, onComplete) {
     if (!this.material || this._fading) return;
     this._fading = true;
-    // alphaTest would pop the glyph off mid-fade
-    this.material.alphaTest = 0;
+
+    // Per-icon opacity needs a clone; shared material must stay untouched.
+    if (!this._ownsMaterial) {
+      this.material = this.material.clone();
+      this._ownsMaterial = true;
+      this.mesh.material = this.material;
+    }
+
     gsap.killTweensOf(this.material);
     gsap.to(this.material, {
       opacity: 0,
@@ -76,15 +120,19 @@ export default class Icon {
 
   dispose({ disposeTexture = false } = {}) {
     if (!this.mesh) return;
-    gsap.killTweensOf(this.material);
+    if (this.material) {
+      gsap.killTweensOf(this.material);
+    }
     if (this.mesh.parent) {
       this.mesh.parent.remove(this.mesh);
     }
-    this.mesh.geometry.dispose();
-    if (disposeTexture && this.material.map) {
-      this.material.map.dispose();
+    // Geometry is shared — do not dispose.
+    if (this._ownsMaterial && this.material) {
+      if (disposeTexture && this.material.map) {
+        this.material.map.dispose();
+      }
+      this.material.dispose();
     }
-    this.material.dispose();
     this.mesh = null;
     this.material = null;
   }
