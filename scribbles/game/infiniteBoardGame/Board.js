@@ -1,7 +1,7 @@
 import { Group, Vector3 } from "three";
 import gsap from "gsap";
 import Stage from "../_modules/Stage";
-import BoardCell from "./BoardCell";
+import BoardCell, { isAdvanceTriggerRow } from "./BoardCell";
 import BoardLoot from "./BoardLoot";
 import { boardNoise, getHillElevation } from "./boardNoise";
 import props from "./props";
@@ -25,7 +25,15 @@ export default class Board extends Stage {
     this.loots = [];
     /** @type {Set<BoardCell>} cells still owned by this board (incl. mid-exit). */
     this.liveCells = new Set();
-    this.init(row, column, this.initCell);
+
+    /** @type {Map<number, boolean>} */
+    const lootByY = new Map();
+    this.init(row, column, (x, y) => {
+      if (!lootByY.has(y)) lootByY.set(y, this.planPathLoot(y));
+      return this.initCell(x, y, {
+        loot: lootByY.get(y) && x === this.pathX,
+      });
+    });
   }
 
   getElevation(x, y) {
@@ -46,15 +54,33 @@ export default class Board extends Stage {
     return this.getElevation(this.pathX, Math.floor(y)) * 0.5 - CELL_HEIGHT / 2 + CELL_ELEVATION;
   }
 
-  maybeSpawnLoot(cell) {
-    // Skip the first few path cells so the start stays clear
-    if (!cell.isPath || cell.y < 3 || cell.isAdvanceTrigger) return;
-    if (Math.random() > props.lootChance) return;
+  /**
+   * Decide whether the path cell at absolute row y should carry loot.
+   * Same rules as the old per-cell roll: skip early rows + advance triggers,
+   * then lootChance.
+   */
+  planPathLoot(y) {
+    if (y < 3 || isAdvanceTriggerRow(y)) return false;
+    if (Math.random() > props.lootChance) return false;
+    return true;
+  }
 
+  /** Plan loot flags for consecutive rows starting at fromY. */
+  planLootRows(fromY, count) {
+    const plan = [];
+    for (let i = 0; i < count; i++) {
+      plan.push(this.planPathLoot(fromY + i));
+    }
+    return plan;
+  }
+
+  spawnLoot(cell) {
+    if (!cell || !cell.isPath || cell.loot) return null;
     const loot = new BoardLoot(cell);
     cell.loot = loot;
     this.loots.push(loot);
     this.group.add(loot.mesh);
+    return loot;
   }
 
   collectLootAt(x, y) {
@@ -66,13 +92,19 @@ export default class Board extends Stage {
     return loot;
   }
 
-  initCell(x, y) {
+  /**
+   * @param {number} x
+   * @param {number} y
+   * @param {{ loot?: boolean }} [options] - when loot is true and this is the
+   *   path column, attach a BoardLoot (decision must already be planned).
+   */
+  initCell(x, y, { loot = false } = {}) {
     const elevation = this.getElevation(x, y) * 0.5;
     const position = new Vector3(x, elevation, y);
     const isPath = this.pathX === x;
     const cell = new BoardCell(position, isPath);
-    if (isPath) {
-      this.maybeSpawnLoot(cell);
+    if (isPath && loot) {
+      this.spawnLoot(cell);
     }
     this.group.add(cell.mesh);
     this.liveCells.add(cell);
@@ -117,9 +149,12 @@ export default class Board extends Stage {
     this.grid.row = row;
     this.grid.column = originY + column;
     for (let y = originY; y < originY + column; y++) {
+      const withLoot = this.planPathLoot(y);
       this.grid.grid[y] = [];
       for (let x = 0; x < row; x++) {
-        this.grid.grid[y][x] = this.initCell(x, y);
+        this.grid.grid[y][x] = this.initCell(x, y, {
+          loot: withLoot && x === this.pathX,
+        });
       }
     }
   }
@@ -133,11 +168,17 @@ export default class Board extends Stage {
     this.regenerateNoise();
   }
 
-  addRowAhead() {
+  /**
+   * Append one row at the front of the board.
+   * @param {boolean} [withLoot=false] - place loot on the path cell of this row
+   */
+  addRowAhead(withLoot = false) {
     const y = this.grid.column;
     this.grid.grid[y] = [];
     for (let x = 0; x < props.boardWidth; x++) {
-      const cell = this.initCell(x, y);
+      const cell = this.initCell(x, y, {
+        loot: withLoot && x === this.pathX,
+      });
       cell.animateIn();
       this.grid.grid[y][x] = cell;
     }
@@ -166,7 +207,7 @@ export default class Board extends Stage {
   /** Ensure a full row exists at absolute y (for the pawn to land on). */
   ensureRow(y) {
     while (this.grid.column <= y) {
-      this.addRowAhead();
+      this.addRowAhead(this.planPathLoot(this.grid.column));
     }
   }
 
@@ -231,7 +272,7 @@ export default class Board extends Stage {
    */
   advance(steps = 1, removeCount = steps) {
     for (let i = 0; i < steps; i++) {
-      this.addRowAhead();
+      this.addRowAhead(this.planPathLoot(this.grid.column));
     }
     for (let i = 0; i < removeCount; i++) {
       this.removeRowBehind();

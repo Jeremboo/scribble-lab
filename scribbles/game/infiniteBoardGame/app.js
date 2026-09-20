@@ -606,6 +606,9 @@ canvasSketch(({ context }) => {
 
     const rowsToAdd = Math.max(0, targetEndY - board.grid.column);
 
+    // Decide loot before cells exist so addRowAhead can place it on create.
+    const lootPlan = board.planLootRows(board.grid.column, rowsToAdd);
+
     for (let i = 0; i < steps; i++) {
       const stepDelay = props.cellCreationStagger * i;
       setTimeout(() => {
@@ -622,7 +625,7 @@ canvasSketch(({ context }) => {
       setTimeout(() => {
         if (id !== runId) return;
         const y = board.grid.column;
-        board.addRowAhead();
+        board.addRowAhead(lootPlan[i]);
         // Attach pawn (and any loot) once its landing row rises in.
         if (y === pawnBoard.y) {
           board.addPawn(pawnBoard);
