@@ -191,6 +191,8 @@ canvasSketch(({ context }) => {
   let isGameOver = false;
   let endOfTurnTimer = null;
   let debugStatsRaf = 0;
+  /** Bumped on restart so stale advance/draw timeouts no-op. */
+  let runId = 0;
 
   const runStats = new RunStats();
   const debugStatsEl = document.getElementById('run-stats-debug');
@@ -247,10 +249,17 @@ canvasSketch(({ context }) => {
   const triggerGameOver = () => {
     if (isGameOver) return;
     isGameOver = true;
+    // Stop mid-flight section advances so the board freezes at this offset.
+    runId += 1;
+    pendingAdvance = 0;
+    pendingDrawAdds = 0;
     runStats.stop();
     clearTimeout(endOfTurnTimer);
     endOfTurnTimer = null;
     hideMovePreview();
+    // Hide remaining section-advance chevrons under the overlay.
+    board.fadeAdvanceIconsBelow(Infinity, 0.35);
+    pawnBoard.hide();
 
     if (cardUiRoot) {
       cardUiRoot.classList.add('hidden');
@@ -375,12 +384,15 @@ canvasSketch(({ context }) => {
 
   const drawCards = (count) => {
     if (!count || count < 1) return 0;
+    const id = runId;
     let drawn = 0;
     for (let i = 0; i < count; i++) {
       const data = deck.length ? deck.shift() : makeMoveCard();
       drawn += 1;
       pendingDrawAdds += 1;
       setTimeout(() => {
+        // Stale run — leave pendingDrawAdds alone (restart already zeroed it).
+        if (id !== runId) return;
         // Always deliver rewarded cards even if a premature check raced;
         // only skip if the run already ended for real.
         if (!isGameOver) {
@@ -397,10 +409,12 @@ canvasSketch(({ context }) => {
 
   const applyLoot = (loot) => {
     if (!loot) return;
+    const id = runId;
     runStats.recordLoot();
 
     turnMayDraw = true;
     setTimeout(() => {
+      if (id !== runId) return;
       drawCards(props.cardDrawnPerLoot);
     }, 500);
   };
@@ -444,21 +458,106 @@ canvasSketch(({ context }) => {
   };
 
   const initCardHandUi = () => {
-    if (domCardRenderer) return;
-    cardUiRoot.classList.remove('hidden');
-    cardUiRoot.setAttribute('aria-hidden', 'false');
-    domCardRenderer = new DomCardRenderer({
-      root: cardUiRoot,
-      hand: cardHand,
-      renderLabel: (card) => (card.value > 0 ? `+${card.value}` : String(card.value)),
-    });
+    if (!domCardRenderer) {
+      cardUiRoot.classList.remove('hidden');
+      cardUiRoot.setAttribute('aria-hidden', 'false');
+      domCardRenderer = new DomCardRenderer({
+        root: cardUiRoot,
+        hand: cardHand,
+        renderLabel: (card) => (card.value > 0 ? `+${card.value}` : String(card.value)),
+      });
+    } else {
+      cardUiRoot.classList.remove('hidden');
+      cardUiRoot.setAttribute('aria-hidden', 'false');
+    }
 
+    cardHand.setCards([]);
     deck = shuffle(props.deckCards.map((card) => ({ ...card })));
     nextCardId = deck.reduce((max, card) => {
       const n = parseInt(String(card.id).replace(/\D/g, ''), 10);
       return Number.isFinite(n) ? Math.max(max, n + 1) : max;
     }, 1);
     drawCards(props.startingHandSize);
+  };
+
+  const resetWorldForNewRun = () => {
+    hideMovePreview();
+    board.removePawn(pawnBoard);
+
+    // Freeze the camera where it is — no tween back from the final section.
+    gsap.killTweensOf(mainCamera.target);
+    const resumeY = Math.max(0, Math.round(mainCamera.target.z));
+
+    board.reset(props.boardWidth, props.boardHeight, resumeY);
+    if (resumeY === 0) {
+      board.moveTo();
+      grounds.reset();
+      grounds.setPathY(board.pathY);
+    } else {
+      board.regenerateNoise();
+      grounds.setPathY(board.pathY);
+    }
+    // Same as post-advance: passed-section markers sit on the first padding
+    // rows of this window — strip them so only the upcoming chevrons remain.
+    board.fadeAdvanceIconsBelow(resumeY + getSectionTriggerOffset(), 0);
+
+    pawnBoard.x = board.pathX;
+    pawnBoard.y = resumeY;
+    pawnBoard.setJumpPreview(false);
+    pawnBoard.ampl = 0;
+    // Already hidden on game over — keep scale at 0 until show() on restart.
+    pawnBoard.isVisible = false;
+    pawnBoard.targetedScale = 0;
+    pawnBoard.currentScale = 0;
+    pawnBoard.mesh.scale.setScalar(0);
+    board.addPawn(pawnBoard);
+
+    const cell = board.getCell(pawnBoard.x, pawnBoard.y);
+    if (cell) {
+      pawnBoard.applyRulesFromCellLanded(cell);
+      pawnBoard.currentPosition.copy(pawnBoard.targetedPosition);
+    }
+
+    setAtmosphereColor(props.fogNearColor, props.fogFarColor);
+  };
+
+  const restartGame = () => {
+    if (!isGameOver) return;
+
+    runId += 1;
+    isGameOver = false;
+    isAnimatedIn = false;
+    pendingAdvance = 0;
+    pendingDrawAdds = 0;
+    turnMayDraw = false;
+    clearTimeout(endOfTurnTimer);
+    endOfTurnTimer = null;
+
+    if (gameOverEl) {
+      gameOverEl.classList.add('hidden');
+      gameOverEl.setAttribute('aria-hidden', 'true');
+    }
+
+    // Stay on the game page — never return to home.
+    document.getElementById('home-page').classList.add('hidden');
+    document.getElementById('game-page').classList.remove('hidden');
+
+    resetWorldForNewRun();
+
+    runStats.start();
+    startDebugStatsLoop();
+    updateStatsUi(false);
+
+    setTimeout(() => {
+      initCardHandUi();
+    }, 200);
+
+    setTimeout(() => {
+      isAnimatedIn = true;
+      pawnBoard.show();
+      runStats.markTurnReady();
+      updateStatsUi(false);
+    }, 500);
   };
 
   const animateIn  = () => {
@@ -483,12 +582,14 @@ canvasSketch(({ context }) => {
   }
 
   const animateAdvance = (steps) => {
+    const id = runId;
     grounds.onBoardAdvance();
     runStats.recordSection();
     updateStatsUi(false);
 
     turnMayDraw = true;
     setTimeout(() => {
+      if (id !== runId) return;
       drawCards(props.cardDrawnPerSection);
     }, 500);
 
@@ -508,6 +609,7 @@ canvasSketch(({ context }) => {
     for (let i = 0; i < steps; i++) {
       const stepDelay = props.cellCreationStagger * i;
       setTimeout(() => {
+        if (id !== runId) return;
         if (pawnBoard.y > board.startY) {
           board.removeRowBehind();
           pendingAdvance = Math.max(0, pendingAdvance - 1);
@@ -518,6 +620,7 @@ canvasSketch(({ context }) => {
     for (let i = 0; i < rowsToAdd; i++) {
       const stepDelay = props.cellCreationStagger * i;
       setTimeout(() => {
+        if (id !== runId) return;
         const y = board.grid.column;
         board.addRowAhead();
         // Attach pawn (and any loot) once its landing row rises in.
@@ -542,7 +645,7 @@ canvasSketch(({ context }) => {
     });
 
     document.getElementById('restart-button').addEventListener('click', () => {
-      window.location.reload();
+      restartGame();
     });
 
     document.getElementById('share-button').addEventListener('click', async () => {

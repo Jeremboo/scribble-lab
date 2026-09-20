@@ -55,6 +55,18 @@ export default class Grounds {
     this.tiles.forEach((ground) => ground.setPathY(y));
   }
 
+  /** Drop all tiles and rebuild the starting ground strip. */
+  reset() {
+    this.tiles.forEach((ground) => {
+      this.parent.remove(ground.mesh);
+      ground.dispose();
+    });
+    this.tiles.clear();
+    this.nextIndex = 0;
+    this.rounds = GROUND_TILE_BOARD_HEIGHTS / 2;
+    this.addTile();
+  }
+
   syncFromProps() {
     this.tiles.forEach((ground) => ground.syncFromProps());
   }

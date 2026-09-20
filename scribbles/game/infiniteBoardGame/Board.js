@@ -1,4 +1,5 @@
 import { Group, Vector3 } from "three";
+import gsap from "gsap";
 import Stage from "../_modules/Stage";
 import BoardCell from "./BoardCell";
 import BoardLoot from "./BoardLoot";
@@ -22,6 +23,8 @@ export default class Board extends Stage {
     this.initCell = this.initCell.bind(this);
 
     this.loots = [];
+    /** @type {Set<BoardCell>} cells still owned by this board (incl. mid-exit). */
+    this.liveCells = new Set();
     this.init(row, column, this.initCell);
   }
 
@@ -72,6 +75,7 @@ export default class Board extends Stage {
       this.maybeSpawnLoot(cell);
     }
     this.group.add(cell.mesh);
+    this.liveCells.add(cell);
     return cell;
   }
 
@@ -81,6 +85,43 @@ export default class Board extends Stage {
       const newElevation = this.getElevation(cell.x, cell.y) * 0.5;
       cell.setElevation(newElevation);
     });
+  }
+
+  /**
+   * Tear down every cell/loot and rebuild a board segment in place.
+   * @param {number} [row]
+   * @param {number} [column]
+   * @param {number} [startY=0] absolute row where the new segment begins
+   *   (keeps world/camera offset on restart instead of snapping to origin).
+   */
+  reset(row = props.boardWidth, column = props.boardHeight, startY = 0) {
+    for (const cell of [...this.liveCells]) {
+      if (!cell || !cell.mesh) continue;
+      gsap.killTweensOf(cell.mesh.position);
+      if (cell.loot) {
+        gsap.killTweensOf(cell.loot);
+        if (cell.loot.mesh) gsap.killTweensOf(cell.loot.mesh.position);
+      }
+      if (cell.mesh.parent) this.group.remove(cell.mesh);
+      cell.dispose();
+    }
+    this.liveCells.clear();
+    this.loots = [];
+
+    const originY = Math.max(0, startY | 0);
+    this.startY = originY;
+    // Keep pathY when resuming mid-run so noise stays continuous with grounds.
+    if (originY === 0) this.pathY = 0;
+
+    this.grid.grid = [];
+    this.grid.row = row;
+    this.grid.column = originY + column;
+    for (let y = originY; y < originY + column; y++) {
+      this.grid.grid[y] = [];
+      for (let x = 0; x < row; x++) {
+        this.grid.grid[y][x] = this.initCell(x, y);
+      }
+    }
   }
 
   update(time = 0) {
@@ -113,6 +154,7 @@ export default class Board extends Stage {
             this.loots = this.loots.filter((loot) => loot !== cell.loot);
           }
           this.group.remove(cell.mesh);
+          this.liveCells.delete(cell);
           cell.dispose();
         });
       });
@@ -143,6 +185,7 @@ export default class Board extends Stage {
             this.loots = this.loots.filter((loot) => loot !== cell.loot);
           }
           this.group.remove(cell.mesh);
+          this.liveCells.delete(cell);
           cell.dispose();
         });
         delete this.grid.grid[y];
