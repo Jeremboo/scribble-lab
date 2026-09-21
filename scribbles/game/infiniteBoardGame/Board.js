@@ -48,20 +48,70 @@ export default class Board extends Stage {
 
   /**
    * Move values present in the configured deck (unique, ascending).
+   * @param {{ includeNegative?: boolean }} [opts] - when false (default), only forward moves
    * @returns {number[]}
    */
-  deckMoveValues() {
+  deckMoveValues({ includeNegative = false } = {}) {
     const values = [];
     const seen = new Set();
     for (const card of props.deckCards) {
       if (!card || card.type !== 'move') continue;
-      const v = Math.max(0, card.value | 0);
-      if (v < 1 || seen.has(v)) continue;
+      const v = card.value | 0;
+      if (v === 0 || seen.has(v)) continue;
+      if (!includeNegative && v < 1) continue;
       seen.add(v);
       values.push(v);
     }
     values.sort((a, b) => a - b);
     return values;
+  }
+
+  /**
+   * Relative draw weight from a card template (`ratio`, default 1).
+   * Higher = more common.
+   * @param {{ ratio?: number }} card
+   * @returns {number}
+   */
+  cardRatio(card) {
+    const r = card && Number(card.ratio);
+    return Number.isFinite(r) && r > 0 ? r : 1;
+  }
+
+  /**
+   * Weighted pick among configured move-card templates.
+   * @param {{ includeNegative?: boolean }} [opts]
+   * @returns {{ id?: string, value: number, type: string, ratio?: number } | null}
+   */
+  pickWeightedDeckCard({ includeNegative = true } = {}) {
+    /** @type {Array<{ card: object, w: number }>} */
+    const pool = [];
+    let total = 0;
+    for (const card of props.deckCards) {
+      if (!card || card.type !== 'move') continue;
+      const v = card.value | 0;
+      if (v === 0) continue;
+      if (!includeNegative && v < 1) continue;
+      const w = this.cardRatio(card);
+      pool.push({ card, w });
+      total += w;
+    }
+    if (!pool.length || total <= 0) return null;
+    let roll = Math.random() * total;
+    for (let i = 0; i < pool.length; i++) {
+      roll -= pool[i].w;
+      if (roll <= 0) return pool[i].card;
+    }
+    return pool[pool.length - 1].card;
+  }
+
+  /**
+   * Weighted pick of a move value (respects `ratio`).
+   * @param {{ includeNegative?: boolean }} [opts]
+   * @returns {number | null}
+   */
+  pickWeightedMoveValue(opts) {
+    const card = this.pickWeightedDeckCard(opts);
+    return card ? (card.value | 0) : null;
   }
 
   /**
@@ -180,11 +230,11 @@ export default class Board extends Stage {
       return candidates[Math.floor(Math.random() * candidates.length)];
     };
 
-    const randomReward = () => (
-      deckValues.length
-        ? deckValues[Math.floor(Math.random() * deckValues.length)]
-        : 1 + Math.floor(Math.random() * 6)
-    );
+    /** Extra loot respects deck `ratio` (including negatives). */
+    const randomReward = () => {
+      const picked = this.pickWeightedMoveValue({ includeNegative: true });
+      return picked != null ? picked : 1 + Math.floor(Math.random() * 6);
+    };
 
     const eligibleY = (y) => (
       y >= 3 && y < endY && !isAdvanceTriggerRow(y) && !plan.has(y)

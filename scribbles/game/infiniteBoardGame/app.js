@@ -309,8 +309,8 @@ canvasSketch(({ context }) => {
       if (isGameOver) return;
       runStats.recordCardPlayed(card);
       turnMayDraw = false;
-      const steps = card.type === 'move' ? Math.max(1, card.value | 0) : 1;
-      advancePawn(steps);
+      const steps = card.type === 'move' ? (card.value | 0) : 1;
+      if (steps !== 0) advancePawn(steps);
       scheduleEndOfTurnCheck();
       updateStatsUi(false);
     },
@@ -335,8 +335,12 @@ canvasSketch(({ context }) => {
       hideMovePreview();
       return;
     }
-    const steps = Math.max(1, card.value | 0);
-    const targetY = pawnBoard.y + steps;
+    const steps = card.value | 0;
+    if (steps === 0) {
+      hideMovePreview();
+      return;
+    }
+    const targetY = Math.max(board.startY, pawnBoard.y + steps);
     // Do not create rows here — off-board landings are built staggered by
     // animateAdvance when the card is actually played.
     const fromCell = board.getCell(pawnBoard.x, pawnBoard.y);
@@ -349,13 +353,15 @@ canvasSketch(({ context }) => {
     pawnBoard.setJumpPreview(true, { fromCell, toCell, progress: 1 / 5 });
   };
 
+  const formatMoveLabel = (value) => (value > 0 ? `+${value}` : String(value));
+
   const playZone = new DropTarget({
     id: 'play-zone',
     handSize: getHandSize(props.handLayout),
     // debug: props.debug,
     label: (card) => (
       card.type === 'move'
-        ? `Move +${card.value}`
+        ? `Move ${formatMoveLabel(card.value)}`
         : `Play ${card.type}`
     ),
   });
@@ -376,12 +382,43 @@ canvasSketch(({ context }) => {
     return next;
   };
 
-  const makeMoveCard = (value = 1 + Math.floor(Math.random() * 6), extra = {}) => ({
+  /** Pick any configured move value (including negatives), weighted by `ratio`. */
+  const pickDeckMoveValue = () => {
+    const picked = board.pickWeightedMoveValue({ includeNegative: true });
+    return picked != null ? picked : 1 + Math.floor(Math.random() * 6);
+  };
+
+  const makeMoveCard = (value = pickDeckMoveValue(), extra = {}) => ({
     id: `c${nextCardId++}`,
     value,
     type: 'move',
     ...extra,
   });
+
+  /**
+   * Build a draw pile from templates: each card is cloned `ratio` times
+   * (rounded, min 1), then shuffled. Higher ratio → more copies → more common.
+   */
+  const buildWeightedDeck = () => {
+    const bag = [];
+    for (const card of props.deckCards) {
+      if (!card) continue;
+      const copies = Math.max(1, Math.round(board.cardRatio(card)));
+      for (let i = 0; i < copies; i++) {
+        bag.push({
+          id: `c${nextCardId++}`,
+          value: card.value,
+          type: card.type,
+          ratio: card.ratio,
+        });
+      }
+    }
+    return shuffle(bag);
+  };
+
+  const refillDeck = () => {
+    deck = buildWeightedDeck();
+  };
 
   /** Plan + apply section loots from hand reach vs. next trigger. */
   const planAndApplySectionLoots = (cards, pawnY = pawnBoard.y) => {
@@ -394,6 +431,7 @@ canvasSketch(({ context }) => {
   const takeDeckCards = (count) => {
     const taken = [];
     for (let i = 0; i < count; i++) {
+      if (!deck.length) refillDeck();
       taken.push(deck.length ? deck.shift() : makeMoveCard());
     }
     return taken;
@@ -432,23 +470,30 @@ canvasSketch(({ context }) => {
     turnMayDraw = true;
     setTimeout(() => {
       if (id !== runId) return;
+      const drawCount = Math.max(1, props.cardDrawnPerLoot | 0);
+
       if (loot.rewardValue != null) {
+        // Guaranteed reward first (rescue needs this value), then fill from deck.
+        const cards = [makeMoveCard(loot.rewardValue, {
+          isRescue: !!loot.isRescue && props.debugLoot,
+        })];
+        const extras = drawCount - 1;
+        if (extras > 0) cards.push(...takeDeckCards(extras));
         if (props.debugLoot) {
           console.log(
             '[loot collect]',
             loot.isRescue ? 'RESCUE' : 'extra',
             `y=${loot.cell ? loot.cell.y : '?'}`,
-            `→ hand card +${loot.rewardValue}`,
+            `→ ${cards.length} card(s)`,
+            cards.map((c) => (c.value > 0 ? `+${c.value}` : String(c.value))).join(', '),
           );
         }
-        enqueueHandCards([makeMoveCard(loot.rewardValue, {
-          isRescue: !!loot.isRescue && props.debugLoot,
-        })]);
+        enqueueHandCards(cards);
       } else {
         if (props.debugLoot) {
-          console.log('[loot collect] no rewardValue — drawing from deck');
+          console.log('[loot collect] no rewardValue — drawing from deck', drawCount);
         }
-        drawCards(props.cardDrawnPerLoot);
+        drawCards(drawCount);
       }
     }, 500);
   };
@@ -466,16 +511,21 @@ canvasSketch(({ context }) => {
   };
 
   const advancePawn = (steps = 1) => {
-    if (!isAnimatedIn || isGameOver || steps < 1) return;
+    if (!isAnimatedIn || isGameOver || steps === 0) return;
     hideMovePreview();
 
+    const dir = steps > 0 ? 1 : -1;
+    const count = Math.abs(steps | 0);
     let shouldAdvance = false;
-    for (let i = 0; i < steps; i++) {
+
+    for (let i = 0; i < count; i++) {
+      if (dir < 0 && pawnBoard.y <= board.startY) break;
+
       board.removePawn(pawnBoard);
-      pawnBoard.moveTo(1);
+      pawnBoard.moveTo(dir);
       placePawnAtCurrentCell();
 
-      if (pawnBoard.y >= board.startY + pendingAdvance + getSectionTriggerOffset()) {
+      if (dir > 0 && pawnBoard.y >= board.startY + pendingAdvance + getSectionTriggerOffset()) {
         shouldAdvance = true;
       }
     }
@@ -506,11 +556,8 @@ canvasSketch(({ context }) => {
     }
 
     cardHand.setCards([]);
-    deck = shuffle(props.deckCards.map((card) => ({ ...card })));
-    nextCardId = deck.reduce((max, card) => {
-      const n = parseInt(String(card.id).replace(/\D/g, ''), 10);
-      return Number.isFinite(n) ? Math.max(max, n + 1) : max;
-    }, 1);
+    nextCardId = 1;
+    deck = buildWeightedDeck();
     const opening = takeDeckCards(props.startingHandSize);
     // First-section loots use the dealt hand (before cards animate in).
     planAndApplySectionLoots(opening, pawnBoard.y);

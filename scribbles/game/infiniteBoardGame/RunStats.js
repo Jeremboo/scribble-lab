@@ -78,7 +78,9 @@ export default class RunStats {
 
   cardLabel(card) {
     if (!card) return '?';
-    if (card.type === 'move') return `+${card.value}`;
+    if (card.type === 'move') {
+      return card.value > 0 ? `+${card.value}` : String(card.value);
+    }
     return `${card.type}${card.value ? ` ${card.value}` : ''}`;
   }
 
