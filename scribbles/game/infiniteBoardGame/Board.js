@@ -102,10 +102,36 @@ export default class Board extends Stage {
   }
 
   /**
+   * Path offsets reachable by playing exactly 1 or 2 cards from the hand.
+   * @param {number[]} moveValues
+   * @returns {Set<number>}
+   */
+  offsetsWithOneOrTwoCards(moveValues) {
+    const offsets = new Set();
+    for (let i = 0; i < moveValues.length; i++) {
+      const a = moveValues[i];
+      if (a < 1) continue;
+      offsets.add(a);
+      for (let j = i + 1; j < moveValues.length; j++) {
+        const b = moveValues[j];
+        if (b < 1) continue;
+        offsets.add(a + b);
+      }
+    }
+    return offsets;
+  }
+
+  /**
    * Plan path-loot rows from the hand vs. distance to the section end.
-   * - If hand total < distance: one rescue loot on a cell the hand can land on,
-   *   granting the smallest deck card that covers the deficit.
-   * - Then 0–2 extra loots in (pawnY, endY) with random deck values.
+   *
+   * If rescue needed (hand sum < distance):
+   *   1. Rescue loot on a cell reachable with 1 or 2 cards
+   *   2. One extra on any hand-reachable cell
+   *   3. 50% chance of another extra anywhere in the section
+   *
+   * If no rescue:
+   *   1–3 extras anywhere in the section
+   *
    * @param {number} pawnY
    * @param {number} endY - next section trigger
    * @param {number|Array<{ value?: number, type?: string }|number>} hand - total or cards/values
@@ -120,7 +146,6 @@ export default class Board extends Stage {
     /** @type {number[]} */
     let moveValues = [];
     if (typeof hand === 'number') {
-      // Compat: total only — treat as a single virtual card for reachability.
       const totalOnly = Math.max(0, hand | 0);
       if (totalOnly > 0) moveValues = [totalOnly];
     } else if (Array.isArray(hand)) {
@@ -155,66 +180,86 @@ export default class Board extends Stage {
       return candidates[Math.floor(Math.random() * candidates.length)];
     };
 
+    const randomReward = () => (
+      deckValues.length
+        ? deckValues[Math.floor(Math.random() * deckValues.length)]
+        : 1 + Math.floor(Math.random() * 6)
+    );
+
     const eligibleY = (y) => (
       y >= 3 && y < endY && !isAdvanceTriggerRow(y) && !plan.has(y)
     );
 
-    if (needsRescue) {
-      const reachable = this.reachableOffsets(moveValues);
-      const rescueCandidates = [];
-      reachable.forEach((offset) => {
+    const ysFromOffsets = (offsets) => {
+      const list = [];
+      offsets.forEach((offset) => {
         if (offset < 1) return;
         const y = pawnY + offset;
-        if (!eligibleY(y)) return;
-        // Must be within current hand reach.
-        if (offset > total) return;
-        rescueCandidates.push(y);
+        if (eligibleY(y)) list.push(y);
       });
+      return list;
+    };
+
+    const sectionPool = () => {
+      const list = [];
+      for (let y = pawnY + 1; y < endY; y++) {
+        if (eligibleY(y)) list.push(y);
+      }
+      return list;
+    };
+
+    const placeExtra = (y, label) => {
+      if (y == null) {
+        if (log) console.warn(`${label}: no free cell`);
+        return false;
+      }
+      const rewardValue = randomReward();
+      plan.set(y, { isRescue: false, rewardValue });
+      if (log) console.log(`${label} → y=${y}, reward=+${rewardValue}`);
+      return true;
+    };
+
+    if (needsRescue) {
+      const rescueOffsets = this.offsetsWithOneOrTwoCards(moveValues);
+      const rescueCandidates = ysFromOffsets(rescueOffsets);
       rescueCandidates.sort((a, b) => a - b);
       const rescueY = pickFrom(rescueCandidates);
+
       if (rescueY != null) {
         const rewardValue = this.closestDeckReward(deficit);
-        plan.set(rescueY, {
-          isRescue: true,
-          rewardValue,
-        });
+        plan.set(rescueY, { isRescue: true, rewardValue });
         if (log) {
           console.log(
-            `rescue → y=${rescueY} (+${rescueY - pawnY} from pawn), reward=+${rewardValue} (covers deficit ${deficit})`,
+            `rescue → y=${rescueY} (+${rescueY - pawnY}, 1–2 cards), reward=+${rewardValue} (covers deficit ${deficit})`,
           );
           console.log('rescue candidates', rescueCandidates.slice());
         }
       } else if (log) {
-        console.warn(
-          'rescue needed but no landable candidate',
-          { reachable: Array.from(reachable).sort((a, b) => a - b) },
-        );
+        console.warn('rescue needed but no 1–2 card landable cell', {
+          offsets: Array.from(rescueOffsets).sort((a, b) => a - b),
+        });
       }
-    } else if (log) {
-      console.log('skip rescue', total <= 0 ? 'empty hand' : 'hand covers distance');
-    }
 
-    const extraCount = Math.floor(Math.random() * 3); // 0, 1, or 2
-    const extraPool = [];
-    for (let y = pawnY + 1; y < endY; y++) {
-      if (eligibleY(y)) extraPool.push(y);
-    }
-    if (log) {
-      console.log(`extras to place: ${extraCount} (pool size ${extraPool.length})`);
-    }
-    for (let i = 0; i < extraCount; i++) {
-      const remaining = extraPool.filter((row) => !plan.has(row));
-      const y = pickFrom(remaining);
-      if (y == null) {
-        if (log) console.warn(`extra #${i + 1}: no free cell left`);
-        break;
+      // One extra on any full-hand reachable cell.
+      const reachable = this.reachableOffsets(moveValues);
+      const reachableExtra = pickFrom(ysFromOffsets(reachable));
+      placeExtra(reachableExtra, 'extra (reachable)');
+
+      // 50% chance of another extra anywhere in the section.
+      if (Math.random() < 0.5) {
+        placeExtra(pickFrom(sectionPool()), 'extra (section 50%)');
+      } else if (log) {
+        console.log('extra (section 50%): skipped');
       }
-      const rewardValue = deckValues.length
-        ? deckValues[Math.floor(Math.random() * deckValues.length)]
-        : 1 + Math.floor(Math.random() * 6);
-      plan.set(y, { isRescue: false, rewardValue });
+    } else {
       if (log) {
-        console.log(`extra #${i + 1} → y=${y}, reward=+${rewardValue}`);
+        console.log('skip rescue', total <= 0 ? 'empty hand' : 'hand covers distance');
+      }
+      // 1–3 random extras in the section.
+      const extraCount = 1 + Math.floor(Math.random() * 3);
+      if (log) console.log(`extras to place: ${extraCount}`);
+      for (let i = 0; i < extraCount; i++) {
+        placeExtra(pickFrom(sectionPool()), `extra #${i + 1}`);
       }
     }
 

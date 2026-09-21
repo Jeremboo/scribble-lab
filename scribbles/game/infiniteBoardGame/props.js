@@ -4,7 +4,7 @@ import { getDefaultLayoutConfig } from '../_modules/cardEngine';
 export default {
   debug: true,
   /** Tint loot meshes + show reward values (rescue = red). */
-  debugLoot: true,
+  debugLoot: false,
   // colors
   bgColors:       ['#34241F', '#1A322E', '#342C14', '#203226'],
   outlineColors:  ['#B08A78', '#6E9488', '#B09A5C', '#7A9070'],
