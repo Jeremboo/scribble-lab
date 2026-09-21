@@ -93,6 +93,13 @@ body {
   cursor: grab;
 }
 
+.game-card.is-rescue {
+  border-color: #E04E3A;
+  background:
+    linear-gradient(160deg, #f8b4a8 0%, #E04E3A 55%, #b83a2a 100%);
+  color: #fff8ee;
+}
+
 .game-card.is-dragging {
   cursor: grabbing;
   box-shadow:

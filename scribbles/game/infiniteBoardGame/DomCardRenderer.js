@@ -88,6 +88,7 @@ export default class DomCardRenderer {
     el.className = 'game-card';
     el.dataset.cardId = card.id;
     el.setAttribute('aria-label', `Card ${card.type} ${card.value}`);
+    if (card.isRescue) el.classList.add('is-rescue');
 
     const value = document.createElement('span');
     value.className = 'game-card__value';
@@ -217,7 +218,7 @@ export default class DomCardRenderer {
         this.targetElements.set(target.id, el);
       }
 
-      const handSize = Math.max(0, Math.min(1, target.bounds.handSize ?? 0));
+      const handSize = Math.max(0, Math.min(1, target.bounds.handSize != null ? target.bounds.handSize : 0));
       const handSizePct = `${handSize * 100}%`;
       el.style.top = '0';
       el.style.left = '0';

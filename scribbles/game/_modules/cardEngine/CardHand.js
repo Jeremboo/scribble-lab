@@ -330,8 +330,8 @@ export default class CardHand {
     if (card && target && canDrop) {
       this._clearActiveDropTarget(card);
       if (typeof target.onDrop === 'function') target.onDrop(card);
-      if (this.onCardPlayed) this.onCardPlayed(card, target);
       this.removeCard(card.id);
+      if (this.onCardPlayed) this.onCardPlayed(card, target);
       return;
     }
 

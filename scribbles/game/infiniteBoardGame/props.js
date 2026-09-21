@@ -3,6 +3,8 @@ import { getDefaultLayoutConfig } from '../_modules/cardEngine';
 
 export default {
   debug: true,
+  /** Tint loot meshes + show reward values (rescue = red). */
+  debugLoot: true,
   // colors
   bgColors:       ['#34241F', '#1A322E', '#342C14', '#203226'],
   outlineColors:  ['#B08A78', '#6E9488', '#B09A5C', '#7A9070'],
@@ -54,8 +56,6 @@ export default {
   // animation
   velocity: 0.1,
   cellCreationStagger: 75,
-
-  lootChance: 0.1,
 
   // cards deck and hand
   startingHandSize: 4,

@@ -30,7 +30,7 @@ import { CardHand, DropTarget, getHandSize } from '../_modules/cardEngine';
 import DomCardRenderer from './DomCardRenderer';
 import MovePreview from './MovePreview';
 import RunStats from './RunStats';
-import { getSectionStride, getSectionTriggerOffset } from './BoardCell';
+import { getSectionStride, getSectionTriggerOffset, getNextSectionTriggerY } from './BoardCell';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
@@ -376,25 +376,36 @@ canvasSketch(({ context }) => {
     return next;
   };
 
-  const makeMoveCard = (value = 1 + Math.floor(Math.random() * 6)) => ({
+  const makeMoveCard = (value = 1 + Math.floor(Math.random() * 6), extra = {}) => ({
     id: `c${nextCardId++}`,
     value,
     type: 'move',
+    ...extra,
   });
 
-  const drawCards = (count) => {
-    if (!count || count < 1) return 0;
-    const id = runId;
-    let drawn = 0;
+  /** Plan + apply section loots from hand reach vs. next trigger. */
+  const planAndApplySectionLoots = (cards, pawnY = pawnBoard.y) => {
+    const endY = getNextSectionTriggerY(pawnY);
+    const plan = board.planSectionLoots(pawnY, endY, cards);
+    board.spawnLootsAtYs(plan);
+    return plan;
+  };
+
+  const takeDeckCards = (count) => {
+    const taken = [];
     for (let i = 0; i < count; i++) {
-      const data = deck.length ? deck.shift() : makeMoveCard();
-      drawn += 1;
+      taken.push(deck.length ? deck.shift() : makeMoveCard());
+    }
+    return taken;
+  };
+
+  const enqueueHandCards = (cards) => {
+    if (!cards.length) return;
+    const id = runId;
+    cards.forEach((data, i) => {
       pendingDrawAdds += 1;
       setTimeout(() => {
-        // Stale run — leave pendingDrawAdds alone (restart already zeroed it).
         if (id !== runId) return;
-        // Always deliver rewarded cards even if a premature check raced;
-        // only skip if the run already ended for real.
         if (!isGameOver) {
           cardHand.addCard(data);
         }
@@ -403,8 +414,14 @@ canvasSketch(({ context }) => {
           resolveEndOfTurn();
         }
       }, 150 * i);
-    }
-    return drawn;
+    });
+  };
+
+  const drawCards = (count) => {
+    if (!count || count < 1) return 0;
+    const drawn = takeDeckCards(count);
+    enqueueHandCards(drawn);
+    return drawn.length;
   };
 
   const applyLoot = (loot) => {
@@ -415,7 +432,24 @@ canvasSketch(({ context }) => {
     turnMayDraw = true;
     setTimeout(() => {
       if (id !== runId) return;
-      drawCards(props.cardDrawnPerLoot);
+      if (loot.rewardValue != null) {
+        if (props.debugLoot) {
+          console.log(
+            '[loot collect]',
+            loot.isRescue ? 'RESCUE' : 'extra',
+            `y=${loot.cell ? loot.cell.y : '?'}`,
+            `→ hand card +${loot.rewardValue}`,
+          );
+        }
+        enqueueHandCards([makeMoveCard(loot.rewardValue, {
+          isRescue: !!loot.isRescue && props.debugLoot,
+        })]);
+      } else {
+        if (props.debugLoot) {
+          console.log('[loot collect] no rewardValue — drawing from deck');
+        }
+        drawCards(props.cardDrawnPerLoot);
+      }
     }, 500);
   };
 
@@ -477,7 +511,10 @@ canvasSketch(({ context }) => {
       const n = parseInt(String(card.id).replace(/\D/g, ''), 10);
       return Number.isFinite(n) ? Math.max(max, n + 1) : max;
     }, 1);
-    drawCards(props.startingHandSize);
+    const opening = takeDeckCards(props.startingHandSize);
+    // First-section loots use the dealt hand (before cards animate in).
+    planAndApplySectionLoots(opening, pawnBoard.y);
+    enqueueHandCards(opening);
   };
 
   const resetWorldForNewRun = () => {
@@ -587,10 +624,13 @@ canvasSketch(({ context }) => {
     runStats.recordSection();
     updateStatsUi(false);
 
+    // Take section rewards now so loot planning sees the full upcoming hand,
+    // then animate them into the hand after the usual delay.
+    const sectionCards = takeDeckCards(props.cardDrawnPerSection);
     turnMayDraw = true;
     setTimeout(() => {
       if (id !== runId) return;
-      drawCards(props.cardDrawnPerSection);
+      enqueueHandCards(sectionCards);
     }, 500);
 
     pendingAdvance += steps;
@@ -606,8 +646,15 @@ canvasSketch(({ context }) => {
 
     const rowsToAdd = Math.max(0, targetEndY - board.grid.column);
 
-    // Decide loot before cells exist so addRowAhead can place it on create.
-    const lootPlan = board.planLootRows(board.grid.column, rowsToAdd);
+    // Plan with remaining hand + section draws (complete hand for this section).
+    const handForLoot = cardHand.cards.concat(sectionCards);
+    const lootPlanMap = board.planSectionLoots(
+      pawnBoard.y,
+      getNextSectionTriggerY(pawnBoard.y),
+      handForLoot,
+    );
+    board.spawnLootsAtYs(lootPlanMap);
+    const lootPlan = board.lootFlagsForRows(board.grid.column, rowsToAdd, lootPlanMap);
 
     for (let i = 0; i < steps; i++) {
       const stepDelay = props.cellCreationStagger * i;
@@ -690,6 +737,7 @@ canvasSketch(({ context }) => {
     };
 
     const gui = new GUI();
+    gui.add(props, 'debugLoot').name('debug loot');
     gui.add(props, 'noiseX', -50, 50).onChange(regenerateNoise);
     gui.add(props, 'noiseY', -50, 50).onChange(regenerateNoise);
     gui.add(props, 'noiseScaleX', 0.01, 1).onChange(regenerateNoise);

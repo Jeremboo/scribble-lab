@@ -63,6 +63,16 @@ export function isAdvanceTriggerRow(y) {
   return ((y - first) % stride) < padding;
 }
 
+/** Next section-trigger row strictly ahead of fromY (the "end cell" to reach). */
+export function getNextSectionTriggerY(fromY) {
+  const first = getSectionTriggerOffset();
+  const stride = getSectionStride();
+  if (stride <= 0) return first;
+  if (fromY < first) return first;
+  const k = Math.floor((fromY - first) / stride);
+  return first + (k + 1) * stride;
+}
+
 const HEIGHT = 5;
 const ELEVATION = 0.25;
 const RISE_OFFSET = 2;
