@@ -197,11 +197,31 @@ canvasSketch(({ context }) => {
   const runStats = new RunStats();
   const debugStatsEl = document.getElementById('run-stats-debug');
   const gameOverEl = document.getElementById('game-over');
+  /** @type {{ score: number, best: number, previousBest: number, isNewBest: boolean } | null} */
+  let lastBestInfo = null;
 
-  const updateStatsUi = (final = false) => {
+  const setScoreHighlight = (scoreEl, bestEl, { isNewBest, best }) => {
+    if (!scoreEl || !bestEl) return;
+    const scoreRow = scoreEl.closest('li');
+    const bestRow = bestEl.closest('li');
+    if (scoreRow) scoreRow.classList.toggle('is-best', !!isNewBest);
+    if (bestRow) bestRow.classList.toggle('is-best', !isNewBest && best > 0);
+    const badge = document.getElementById('go-new-best');
+    if (badge) badge.hidden = !isNewBest;
+  };
+
+  const updateStatsUi = (final = false, bestInfo = null) => {
     const snap = runStats.snapshot();
     const duration = final ? snap.durationMs : runStats.durationMs;
-    const sectionsLabel = `${snap.sections}`;
+    const score = bestInfo ? bestInfo.score : snap.cells;
+    // During a run, show the stored best as the target to beat.
+    // After game over, use the committed best (may include a new record).
+    const best = bestInfo ? bestInfo.best : snap.bestCells;
+    const isNewBest = bestInfo
+      ? bestInfo.isNewBest
+      : snap.cells > 0 && snap.cells > snap.bestCells;
+    const scoreLabel = runStats.formatCells(score);
+    const bestLabel = best > 0 ? runStats.formatCells(best) : '—';
     const cardsLabel = snap.cardsUsed
       ? `${snap.cardsUsed} · ${snap.cardsSummary}`
       : '0';
@@ -209,8 +229,9 @@ canvasSketch(({ context }) => {
     const thinkLabel = runStats.formatThink(snap.averageThinkMs);
     const lootsLabel = `${snap.loots}`;
 
-    if (props.debug && debugStatsEl) {
-      document.getElementById('debug-sections').textContent = sectionsLabel;
+    if (debugStatsEl) {
+      document.getElementById('debug-score').textContent = scoreLabel;
+      document.getElementById('debug-best').textContent = bestLabel;
       document.getElementById('debug-cards-used').textContent = String(snap.cardsUsed);
       document.getElementById('debug-time').textContent = timeLabel;
       document.getElementById('debug-think').textContent = thinkLabel;
@@ -221,8 +242,11 @@ canvasSketch(({ context }) => {
     }
 
     if (final) {
-      document.getElementById('go-sections').textContent =
-        `${snap.sections} section${snap.sections === 1 ? '' : 's'}`;
+      const goScore = document.getElementById('go-score');
+      const goBest = document.getElementById('go-best');
+      if (goScore) goScore.textContent = scoreLabel;
+      if (goBest) goBest.textContent = bestLabel;
+      setScoreHighlight(goScore, goBest, { isNewBest, best });
       document.getElementById('go-cards').textContent = cardsLabel;
       document.getElementById('go-time').textContent = timeLabel;
       document.getElementById('go-think').textContent = thinkLabel;
@@ -230,13 +254,25 @@ canvasSketch(({ context }) => {
     }
   };
 
+  const collapseStatsDetails = () => {
+    const runDetails = document.getElementById('run-stats-details');
+    const goDetails = document.getElementById('game-over-details');
+    if (runDetails) runDetails.open = false;
+    if (goDetails) goDetails.open = false;
+  };
+
+  const showRunStatsHud = (visible) => {
+    if (!debugStatsEl) return;
+    debugStatsEl.classList.toggle('hidden', !visible);
+    debugStatsEl.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  };
+
   const startDebugStatsLoop = () => {
-    if (!props.debug || !debugStatsEl) return;
-    debugStatsEl.classList.remove('hidden');
-    debugStatsEl.setAttribute('aria-hidden', 'false');
+    if (!debugStatsEl) return;
+    showRunStatsHud(true);
     const tick = () => {
       if (!runStats.isRunning && isGameOver) {
-        updateStatsUi(true);
+        updateStatsUi(true, lastBestInfo);
         return;
       }
       updateStatsUi(false);
@@ -253,20 +289,24 @@ canvasSketch(({ context }) => {
     runId += 1;
     pendingAdvance = 0;
     pendingDrawAdds = 0;
+    runStats.updatePosition(pawnBoard.y);
     runStats.stop();
+    lastBestInfo = runStats.commitBestScore();
     clearTimeout(endOfTurnTimer);
     endOfTurnTimer = null;
     hideMovePreview();
     // Hide remaining section-advance chevrons under the overlay.
     board.fadeAdvanceIconsBelow(Infinity, 0.35);
     pawnBoard.hide();
+    showRunStatsHud(false);
+    collapseStatsDetails();
 
     if (cardUiRoot) {
       cardUiRoot.classList.add('hidden');
       cardUiRoot.setAttribute('aria-hidden', 'true');
     }
 
-    updateStatsUi(true);
+    updateStatsUi(true, lastBestInfo);
     if (gameOverEl) {
       gameOverEl.classList.remove('hidden');
       gameOverEl.setAttribute('aria-hidden', 'false');
@@ -530,6 +570,8 @@ canvasSketch(({ context }) => {
       }
     }
 
+    runStats.updatePosition(pawnBoard.y);
+
     // New section rows are created (staggered) only by animateAdvance — never
     // ensureRow here, or their animateIn would fire before the stagger.
     if (shouldAdvance) {
@@ -628,7 +670,9 @@ canvasSketch(({ context }) => {
 
     resetWorldForNewRun();
 
-    runStats.start();
+    lastBestInfo = null;
+    runStats.start(pawnBoard.y);
+    collapseStatsDetails();
     startDebugStatsLoop();
     updateStatsUi(false);
 
@@ -650,7 +694,9 @@ canvasSketch(({ context }) => {
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
 
-    runStats.start();
+    lastBestInfo = null;
+    runStats.start(pawnBoard.y);
+    collapseStatsDetails();
     startDebugStatsLoop();
     updateStatsUi(false);
 
@@ -746,7 +792,7 @@ canvasSketch(({ context }) => {
     });
 
     document.getElementById('share-button').addEventListener('click', async () => {
-      const text = runStats.formatShareText();
+      const text = runStats.formatShareText(lastBestInfo);
       const shareData = {
         title: 'Infinite Board Game',
         text,

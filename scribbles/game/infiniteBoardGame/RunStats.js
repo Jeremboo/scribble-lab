@@ -1,3 +1,5 @@
+const BEST_CELLS_KEY = 'infiniteBoardGame.bestCells';
+
 /**
  * Tracks a single infinite-board run for the game-over / debug HUD.
  */
@@ -12,18 +14,29 @@ export default class RunStats {
     this.turnReadyAt = 0;
     this.isRunning = false;
 
+    this.originY = 0;
+    this.cells = 0;
     this.sections = 0;
     this.loots = 0;
     this.cardsPlayed = [];
     this.thinkTimesMs = [];
   }
 
-  start() {
+  start(originY = 0) {
     const now = performance.now();
     this.reset();
     this.isRunning = true;
     this.runStartedAt = now;
     this.turnReadyAt = now;
+    this.originY = originY | 0;
+    this.cells = 0;
+  }
+
+  /** Update score from the pawn's absolute path row (high-water cells from run start). */
+  updatePosition(y) {
+    if (!this.isRunning) return;
+    const progressed = Math.max(0, (y | 0) - this.originY);
+    if (progressed > this.cells) this.cells = progressed;
   }
 
   markTurnReady() {
@@ -58,6 +71,38 @@ export default class RunStats {
     if (!this.isRunning) return;
     this.runEndedAt = performance.now();
     this.isRunning = false;
+  }
+
+  getBestCells() {
+    try {
+      const n = parseInt(localStorage.getItem(BEST_CELLS_KEY), 10);
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  /**
+   * Persist a new personal best when this run beats it.
+   * @returns {{ score: number, best: number, previousBest: number, isNewBest: boolean }}
+   */
+  commitBestScore() {
+    const score = this.cells | 0;
+    const previousBest = this.getBestCells();
+    const isNewBest = score > previousBest;
+    if (isNewBest) {
+      try {
+        localStorage.setItem(BEST_CELLS_KEY, String(score));
+      } catch {
+        /* ignore quota / private mode */
+      }
+    }
+    return {
+      score,
+      best: Math.max(score, previousBest),
+      previousBest,
+      isNewBest,
+    };
   }
 
   get durationMs() {
@@ -105,7 +150,10 @@ export default class RunStats {
   }
 
   snapshot() {
+    const bestCells = this.getBestCells();
     return {
+      cells: this.cells,
+      bestCells,
       sections: this.sections,
       cardsUsed: this.cardsUsed,
       cards: this.cardsPlayed.slice(),
@@ -114,6 +162,11 @@ export default class RunStats {
       averageThinkMs: this.averageThinkMs,
       loots: this.loots,
     };
+  }
+
+  formatCells(n = this.cells) {
+    const count = n | 0;
+    return `${count} cell${count === 1 ? '' : 's'}`;
   }
 
   formatDuration(ms = this.durationMs) {
@@ -130,14 +183,21 @@ export default class RunStats {
     return `${(ms / 1000).toFixed(1)}s`;
   }
 
-  formatShareText() {
+  formatShareText(bestInfo) {
     const snap = this.snapshot();
-    return [
-      `Sections: ${snap.sections}`,
+    const best = bestInfo || {
+      score: snap.cells,
+      best: Math.max(snap.cells, snap.bestCells),
+      isNewBest: snap.cells > snap.bestCells,
+    };
+    const lines = [
+      `Score: ${this.formatCells(best.score)}${best.isNewBest ? ' (new best!)' : ''}`,
+      `Best: ${this.formatCells(best.best)}`,
       `Cards used (${snap.cardsUsed}): ${snap.cardsSummary}`,
       `Time: ${this.formatDuration(snap.durationMs)}`,
       `Avg think / turn: ${this.formatThink(snap.averageThinkMs)}`,
       `Loots: ${snap.loots}`,
-    ].join('\n');
+    ];
+    return lines.join('\n');
   }
 }

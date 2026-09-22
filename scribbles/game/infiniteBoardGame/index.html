@@ -253,21 +253,28 @@
       border-color: red;
     }
 
-    /* ── Run stats (debug HUD) ── */
+    /* ── Run stats HUD ── */
     #run-stats-debug {
+      --hud-ink: var(--card-ink);
+      --hud-muted: rgba(28, 24, 20, 0.55);
+      --hud-accent: var(--card-accent);
       position: fixed;
-      top: 12px;
-      left: 12px;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 40;
-      min-width: 180px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      background: rgba(12, 10, 8, 0.72);
-      color: #f4efe6;
+      min-width: 200px;
+      padding: 12px 22px 10px;
+      border-radius: 10px;
+      background: var(--card-face);
+      color: var(--hud-ink);
+      border: 2px solid rgba(28, 24, 20, 0.85);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
       font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
       font-size: 12px;
-      line-height: 1.45;
-      pointer-events: none;
+      line-height: 1.35;
+      text-align: center;
+      pointer-events: auto;
       transition: opacity 0.3s;
     }
 
@@ -276,30 +283,114 @@
       pointer-events: none !important;
     }
 
-    #run-stats-debug h3 {
-      margin: 0 0 6px;
-      font-size: 11px;
-      letter-spacing: 0.12em;
+    .run-stats__primary {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .run-stats__row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .run-stats__row .label {
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      opacity: 0.65;
+      color: var(--hud-muted);
       font-weight: 600;
     }
 
+    .run-stats__row .value {
+      color: var(--hud-ink);
+    }
+
+    .run-stats__row--score .value {
+      font-size: clamp(1.55rem, 4.5vw, 1.9rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--hud-ink);
+      line-height: 1.1;
+    }
+
+    .run-stats__row--best {
+      flex-direction: row;
+      gap: 8px;
+      font-size: 0.85rem;
+      letter-spacing: 0.02em;
+      /* align-items: baseline; */
+      /* padding: 4px 12px; */
+      /* border-radius: 8px; */
+      /* background: rgba(28, 24, 20, 0.06); */
+      /* border: 1px solid rgba(28, 24, 20, 0.12); */
+    }
+
+    .run-stats__row--best .label {
+      /* font-size: 0.6rem; */
+      /* letter-spacing: 0.14em; */
+    }
+
+    .run-stats__row--best .value {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--hud-ink);
+    }
+
+    #run-stats-debug > .stats-details {
+      margin-top: 10px;
+      border-top: 1px solid rgba(28, 24, 20, 0.12);
+      padding-top: 8px;
+    }
+
+    .stats-details > summary {
+      cursor: pointer;
+      list-style: none;
+      color: var(--hud-muted, rgba(244, 239, 230, 0.55));
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      user-select: none;
+      font-weight: 600;
+    }
+
+    .stats-details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .stats-details > summary::after {
+      content: ' ▾';
+      opacity: 0.7;
+    }
+
+    .stats-details[open] > summary::after {
+      content: ' ▴';
+    }
+
+    .stats-details > summary:hover {
+      color: var(--hud-ink, #f4efe6);
+    }
+
     #run-stats-debug dl {
-      margin: 0;
+      margin: 8px 0 0;
       display: grid;
       grid-template-columns: auto 1fr;
-      gap: 2px 10px;
+      gap: 3px 14px;
+      text-align: left;
     }
 
     #run-stats-debug dt {
-      opacity: 0.55;
+      color: var(--hud-muted);
     }
 
     #run-stats-debug dd {
       margin: 0;
       text-align: right;
       font-variant-numeric: tabular-nums;
+      color: var(--hud-ink);
     }
 
     #run-stats-debug .cards-line {
@@ -308,6 +399,7 @@
       opacity: 0.8;
       word-break: break-word;
       text-align: left;
+      color: var(--hud-ink);
     }
 
     /* ── Game over ── */
@@ -320,7 +412,6 @@
       justify-content: center;
       padding: 24px;
       background: rgba(8, 6, 4, 0.72);
-      color: #f4efe6;
       font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
       transition: opacity 0.45s;
       box-sizing: border-box;
@@ -332,28 +423,37 @@
     }
 
     .game-over__panel {
+      --hud-ink: var(--card-ink);
+      --hud-muted: rgba(28, 24, 20, 0.55);
+      --hud-accent: var(--card-accent);
       width: min(420px, 100%);
       padding: 28px 28px 24px;
-      border-radius: 14px;
-      background: linear-gradient(165deg, rgba(40, 32, 24, 0.95), rgba(18, 14, 10, 0.96));
-      border: 1px solid rgba(244, 239, 230, 0.12);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      border-radius: 10px;
+      background: var(--card-face);
+      color: var(--hud-ink);
+      border: 2px solid rgba(28, 24, 20, 0.85);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
     }
 
     .game-over__panel h2 {
-      margin: 0 0 4px;
-      font-size: clamp(1.6rem, 4vw, 2.1rem);
-      letter-spacing: -0.02em;
+      font-size: clamp(2.2rem, 7vw, 3rem);
+      letter-spacing: -0.03em;
+      text-align: center;
+      font-weight: 700;
+      margin: 0;
+      color: var(--hud-ink);
     }
 
     .game-over__panel .subtitle {
-      margin: 0 0 18px;
-      opacity: 0.55;
-      font-size: 0.85rem;
+      margin: 0 0 24px;
+      color: var(--hud-muted);
+      font-size: clamp(1rem, 2.8vw, 1.15rem);
+      text-align: center;
+      letter-spacing: 0.02em;
     }
 
     .game-over__stats {
-      margin: 0 0 22px;
+      margin: 0 0 14px;
       padding: 0;
       list-style: none;
       display: flex;
@@ -367,18 +467,50 @@
       gap: 16px;
       align-items: baseline;
       padding-bottom: 8px;
-      border-bottom: 1px solid rgba(244, 239, 230, 0.08);
+      border-bottom: 1px solid rgba(28, 24, 20, 0.12);
       font-size: 0.95rem;
     }
 
     .game-over__stats li span:first-child {
-      opacity: 0.55;
+      color: var(--hud-muted);
       flex-shrink: 0;
     }
 
     .game-over__stats li span:last-child {
       text-align: right;
       font-variant-numeric: tabular-nums;
+      color: var(--hud-ink);
+    }
+
+    .game-over__value {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      text-align: right;
+    }
+
+    .game-over__badge {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--hud-accent);
+      font-weight: 600;
+    }
+
+    .game-over__stats li.is-best {
+      border-bottom-color: rgba(180, 67, 81, 0.35);
+    }
+
+    .game-over__stats li.is-best > span:first-child {
+      color: var(--hud-accent);
+    }
+
+    .game-over__stats li.is-best > span:last-child,
+    .game-over__stats li.is-best .game-over__value {
+      color: var(--hud-accent);
+      font-weight: 600;
+      font-size: 1.05rem;
     }
 
     .game-over__stats .cards-detail {
@@ -388,9 +520,20 @@
 
     .game-over__stats .cards-detail span:last-child {
       text-align: left;
+      color: var(--hud-ink);
       opacity: 0.85;
       font-size: 0.85rem;
       word-break: break-word;
+    }
+
+    .game-over__panel > .stats-details {
+      margin: 0 0 22px;
+      border-top: 1px solid rgba(28, 24, 20, 0.12);
+      padding-top: 10px;
+    }
+
+    .game-over__panel > .stats-details .game-over__stats {
+      margin: 10px 0 0;
     }
 
     .game-over__actions {
@@ -411,24 +554,24 @@
     }
 
     #restart-button {
-      background: #f4efe6;
-      color: #1c1814;
+      background: var(--card-accent);
+      color: #fff8ee;
     }
 
     #restart-button:hover {
-      background: #b44351;
-      color: #fff;
+      background: #9a3844;
+      color: #fff8ee;
       transform: translateY(-1px);
     }
 
     #share-button {
       background: transparent;
-      color: #f4efe6;
-      box-shadow: inset 0 0 0 1.5px rgba(244, 239, 230, 0.45);
+      color: var(--card-ink);
+      box-shadow: inset 0 0 0 2px rgba(28, 24, 20, 0.85);
     }
 
     #share-button:hover {
-      background: rgba(244, 239, 230, 0.1);
+      background: rgba(28, 24, 20, 0.06);
       transform: translateY(-1px);
     }
 
@@ -454,15 +597,26 @@
   <div id="card-ui" class="card-ui hidden" aria-hidden="true"></div>
 
   <aside id="run-stats-debug" class="hidden" aria-hidden="true">
-    <h3>Run stats</h3>
-    <dl>
-      <dt>Sections</dt><dd id="debug-sections">0</dd>
-      <dt>Cards used</dt><dd id="debug-cards-used">0</dd>
-      <dt>Time</dt><dd id="debug-time">0s</dd>
-      <dt>Avg think</dt><dd id="debug-think">—</dd>
-      <dt>Loots</dt><dd id="debug-loots">0</dd>
-      <dd class="cards-line" id="debug-cards-list"></dd>
-    </dl>
+    <div class="run-stats__primary">
+      <div class="run-stats__row run-stats__row--score">
+        <!-- <span class="label">Score</span> -->
+        <span class="value" id="debug-score">0 cells</span>
+      </div>
+      <div class="run-stats__row run-stats__row--best">
+        <span class="label">Best</span>
+        <span class="value" id="debug-best">—</span>
+      </div>
+    </div>
+    <details class="stats-details" id="run-stats-details">
+      <summary>Details</summary>
+      <dl>
+        <dt>Cards used</dt><dd id="debug-cards-used">0</dd>
+        <dt>Time</dt><dd id="debug-time">0s</dd>
+        <dt>Avg think</dt><dd id="debug-think">—</dd>
+        <dt>Loots</dt><dd id="debug-loots">0</dd>
+        <dd class="cards-line" id="debug-cards-list"></dd>
+      </dl>
+    </details>
   </aside>
 
   <div id="game-over" class="hidden" aria-hidden="true" role="dialog" aria-labelledby="game-over-title">
@@ -470,17 +624,32 @@
       <h2 id="game-over-title">Game over</h2>
       <p class="subtitle">No cards left</p>
       <ul class="game-over__stats">
-        <li><span>Distance</span><span id="go-sections">0 sections</span></li>
-        <li class="cards-detail">
-          <span>Cards used</span>
-          <span id="go-cards">0</span>
+        <li class="game-over__score">
+          <span>Score</span>
+          <span class="game-over__value">
+            <span id="go-score">0 cells</span>
+            <span id="go-new-best" class="game-over__badge" hidden>New best!</span>
+          </span>
         </li>
-        <li><span>Run time</span><span id="go-time">0s</span></li>
-        <li><span>Avg think / turn</span><span id="go-think">—</span></li>
-        <li><span>Loots</span><span id="go-loots">0</span></li>
+        <li class="game-over__best">
+          <span>Best</span>
+          <span id="go-best">—</span>
+        </li>
       </ul>
+      <details class="stats-details" id="game-over-details">
+        <summary>Details</summary>
+        <ul class="game-over__stats">
+          <li class="cards-detail">
+            <span>Cards used</span>
+            <span id="go-cards">0</span>
+          </li>
+          <li><span>Run time</span><span id="go-time">0s</span></li>
+          <li><span>Avg think / turn</span><span id="go-think">—</span></li>
+          <li><span>Loots</span><span id="go-loots">0</span></li>
+        </ul>
+      </details>
       <div class="game-over__actions">
-        <button type="button" id="restart-button">Restart</button>
+        <button type="button" id="restart-button">Continue</button>
         <button type="button" id="share-button">Copy stats</button>
       </div>
     </div>
