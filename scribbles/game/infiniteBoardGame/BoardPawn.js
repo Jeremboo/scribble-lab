@@ -87,6 +87,12 @@ export default class BoardPawn extends Pawn {
     this.direction = move > 0 ? 1 : -1;
   }
 
+  setThemeColor(color) {
+    if (this.mesh && this.mesh.material) {
+      this.mesh.material.color.set(color);
+    }
+  }
+
   computeY(y) {
     return y + 2.08 + PROPS.height;
   }

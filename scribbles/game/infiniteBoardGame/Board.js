@@ -555,6 +555,13 @@ export default class Board extends Stage {
     });
   }
 
+  /** Retint advance chevrons after a palette theme change. */
+  applyThemeIcons() {
+    this.liveCells.forEach((cell) => {
+      if (cell && cell.applyThemeIcon) cell.applyThemeIcon();
+    });
+  }
+
   /**
    * Path landing for move previews when the row is not built yet.
    * Returns a lightweight stand-in (no mesh / no grid mutation).

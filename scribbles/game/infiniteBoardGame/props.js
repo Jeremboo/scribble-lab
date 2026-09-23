@@ -5,7 +5,8 @@ export default {
   debug: true,
   /** Tint loot meshes + show reward values (rescue = red). */
   debugLoot: false,
-  // colors
+  // colors — index into each *Colors array (4 themes)
+  themeIndex: 0,
   bgColors:       ['#34241F', '#1A322E', '#342C14', '#203226'],
   outlineColors:  ['#B08A78', '#6E9488', '#B09A5C', '#7A9070'],
   neutralColors:  ['#F6EFE6', '#E8F0EC', '#F4F0DC', '#ECF0E6'],

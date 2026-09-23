@@ -30,7 +30,7 @@ import { CardHand, DropTarget, getHandSize } from '../_modules/cardEngine';
 import DomCardRenderer from './DomCardRenderer';
 import MovePreview from './MovePreview';
 import RunStats from './RunStats';
-import { getSectionStride, getSectionTriggerOffset, getNextSectionTriggerY } from './BoardCell';
+import { getSectionStride, getSectionTriggerOffset, getNextSectionTriggerY, applyBoardCellTheme } from './BoardCell';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
@@ -822,6 +822,15 @@ canvasSketch(({ context }) => {
 
   // * GUI *******
 
+  const applyTheme = (index, duration = 0.45) => {
+    const i = applyBoardCellTheme(index);
+    props.themeIndex = i;
+    board.applyThemeIcons();
+    pawnBoard.setThemeColor(props.pawnColors[i]);
+    outlinePass.setColor(props.outlineColors[i], duration);
+    grounds.setBgColor(props.bgColors[i], duration);
+  };
+
   if (props.debug) {
     const regenerateNoise = () => {
       board.regenerateNoise();
@@ -830,6 +839,42 @@ canvasSketch(({ context }) => {
     };
 
     const gui = new GUI();
+    const themeGui = gui.addFolder('themes');
+    themeGui.open();
+    const themeLabels = ['1 · crimson', '2 · teal', '3 · gold', '4 · moss'];
+
+    for (let i = 0; i < props.pathColors.length; i++) {
+      const themeIndex = i;
+      const folder = themeGui.addFolder(themeLabels[i] || `theme ${i + 1}`);
+      const colors = {
+        bg: props.bgColors[i],
+        outline: props.outlineColors[i],
+        neutral: props.neutralColors[i],
+        path: props.pathColors[i],
+        pawn: props.pawnColors[i],
+      };
+
+      const syncThemeColors = () => {
+        props.bgColors[themeIndex] = colors.bg;
+        props.outlineColors[themeIndex] = colors.outline;
+        props.neutralColors[themeIndex] = colors.neutral;
+        props.pathColors[themeIndex] = colors.path;
+        props.pawnColors[themeIndex] = colors.pawn;
+        if (props.themeIndex === themeIndex) {
+          applyTheme(themeIndex, 0);
+        }
+      };
+
+      folder.addColor(colors, 'bg').name('ground').onChange(syncThemeColors);
+      folder.addColor(colors, 'outline').name('outline').onChange(syncThemeColors);
+      folder.addColor(colors, 'neutral').name('cells').onChange(syncThemeColors);
+      folder.addColor(colors, 'path').name('path').onChange(syncThemeColors);
+      folder.addColor(colors, 'pawn').name('pawn').onChange(syncThemeColors);
+      folder.add({
+        activate: () => applyTheme(themeIndex),
+      }, 'activate').name('use theme');
+    }
+
     gui.add(props, 'debugLoot').name('debug loot');
     gui.add(props, 'noiseX', -50, 50).onChange(regenerateNoise);
     gui.add(props, 'noiseY', -50, 50).onChange(regenerateNoise);

@@ -40,7 +40,31 @@ function toonMaterial(hex) {
 
 const PATH_MATERIAL = toonMaterial(props.pathColors[0]);
 const NEUTRAL_MATERIAL = toonMaterial(props.neutralColors[0]);
-const ADVANCE_ICON_COLOR = props.neutralColors[0];
+
+/** Current advance-icon tint (shared materials update live; icons need a refresh). */
+let advanceIconColor = props.neutralColors[0];
+
+/** Clamp theme index to the configured palette length. */
+export function getThemeIndex(index = props.themeIndex) {
+  const len = props.pathColors.length;
+  const i = index | 0;
+  if (i < 0) return 0;
+  if (i >= len) return len - 1;
+  return i;
+}
+
+/** Update shared path / neutral cell materials for the active theme. */
+export function applyBoardCellTheme(index = props.themeIndex) {
+  const i = getThemeIndex(index);
+  PATH_MATERIAL.color.set(props.pathColors[i]);
+  NEUTRAL_MATERIAL.color.set(props.neutralColors[i]);
+  advanceIconColor = props.neutralColors[i];
+  return i;
+}
+
+export function getAdvanceIconColor() {
+  return advanceIconColor;
+}
 
 /** Rows shifted when the board advances one section. */
 export function getSectionStride() {
@@ -102,13 +126,18 @@ export default class BoardCell extends Cell {
     if (this.isAdvanceTrigger) {
       this.icon = new Icon({
         texture: getAdvanceChevronTexture(),
-        color: ADVANCE_ICON_COLOR,
+        color: advanceIconColor,
         size: 0.55,
       });
       this.icon.attachToCell(this, { y: HEIGHT / 2 });
     }
 
     this.update = this.update.bind(this);
+  }
+
+  /** Retint the section-advance chevron after a theme change. */
+  applyThemeIcon() {
+    if (this.icon) this.icon.setColor(advanceIconColor);
   }
 
   computeY(y) {

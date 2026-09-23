@@ -126,7 +126,7 @@ export default class GroundPlaneMaterial extends ShaderMaterial {
         UniformsLib.lights,
         {
           uPerm: { value: createPermTexture() },
-          uColor: { value: new Color(props.bgColors[0]) },
+          uColor: { value: new Color(props.bgColors[props.themeIndex | 0]) },
           uNoiseOffset: { value: new Vector2(props.noiseX, props.noiseY) },
           uNoiseScale: { value: new Vector2(props.noiseScaleX, props.noiseScaleY) },
           uNoiseAmpl: { value: props.noiseAmpl },
@@ -156,7 +156,7 @@ export default class GroundPlaneMaterial extends ShaderMaterial {
 
   syncFromProps() {
     gsap.killTweensOf(this._bgColorTween);
-    this.uniforms.uColor.value.set(props.bgColors[0]);
+    this.uniforms.uColor.value.set(props.bgColors[props.themeIndex | 0]);
     this.uniforms.uNoiseOffset.value.set(props.noiseX, props.noiseY);
     this.uniforms.uNoiseScale.value.set(props.noiseScaleX, props.noiseScaleY);
     this.uniforms.uNoiseAmpl.value = props.noiseAmpl;
