@@ -47,20 +47,22 @@ float isDifferentId(vec3 a, vec3 b) {
   return step(0.5, distance(a, b));
 }
 
-// Same reach on axes and diagonals; any ID mismatch counts the same.
+// Same reach on axes and diagonals; soft coverage from how many taps disagree.
 float getSurfaceIdDiff(vec3 surfaceValue) {
   float r = max(thickness, 1.0);
   float d = r * 0.70710678;
   float edge = 0.0;
-  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2( r, 0.0))));
-  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2(-r, 0.0))));
-  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2(0.0,  r))));
-  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2(0.0, -r))));
-  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2( d,  d))));
-  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2( d, -d))));
-  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2(-d,  d))));
-  edge = max(edge, isDifferentId(surfaceValue, getSurfaceValue(vec2(-d, -d))));
-  return edge;
+  edge += isDifferentId(surfaceValue, getSurfaceValue(vec2( r, 0.0)));
+  edge += isDifferentId(surfaceValue, getSurfaceValue(vec2(-r, 0.0)));
+  edge += isDifferentId(surfaceValue, getSurfaceValue(vec2(0.0,  r)));
+  edge += isDifferentId(surfaceValue, getSurfaceValue(vec2(0.0, -r)));
+  edge += isDifferentId(surfaceValue, getSurfaceValue(vec2( d,  d)));
+  edge += isDifferentId(surfaceValue, getSurfaceValue(vec2( d, -d)));
+  edge += isDifferentId(surfaceValue, getSurfaceValue(vec2(-d,  d)));
+  edge += isDifferentId(surfaceValue, getSurfaceValue(vec2(-d, -d)));
+  // Average, then boost so ~2–3 taps reach full strength (silhouettes stay solid;
+  // single-tap jaggies stay soft for the supersample resolve).
+  return clamp(edge * 0.375, 0.0, 1.0);
 }
 
 void main() {

@@ -57,7 +57,7 @@ canvasSketch(({ context }) => {
   const composer = new EffectComposer(renderer);
   const outlinePass = new OutlinePass(renderer.scene, renderer.camera, {
     color: new Color(props.outlineColors[0]),
-    thickness: 1,
+    thickness: 0.5,
   });
   // outlinePass.setDebugMode(true);
   composer.addPass(outlinePass);
@@ -950,6 +950,7 @@ canvasSketch(({ context }) => {
     handGui.add(props.handLayout, 'neighborPush', 0, 0.3).step(0.005).onChange(syncHandLayout);
 
     gui.close();
+    gui.hide();
   }
 
   return {
@@ -961,6 +962,7 @@ canvasSketch(({ context }) => {
       // Pass drawing-buffer size into OutlinePass (CSS size × pixelRatio).
       // updateStyle=false: canvas-sketch owns the canvas CSS size.
       composer.setSize(props.viewportWidth, props.viewportHeight, false);
+      outlinePass.setPixelRatio(props.pixelRatio);
     },
     render(_props) {
       // renderer.update(props);

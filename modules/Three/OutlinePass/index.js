@@ -21,9 +21,9 @@ import SurfaceMaterial from './SurfaceMaterial';
 // device pixel ratio). >1 supersamples surface-ID / outline, then downsamples.
 export const DPR = {
   canvas: 3,
-  passRender: 3,
-  surfaceRender: 3,
-  outlineResolution: 3,
+  passRender: 1,
+  surfaceRender: 2,
+  outlineResolution: 2,
   antialiasing: true,
 };
 
@@ -102,6 +102,8 @@ export default class OutlinePass extends Pass {
 
     this.width = 1;
     this.height = 1;
+    // CSS-pixel thickness scaling (drawing-buffer size = CSS × pixelRatio)
+    this.pixelRatio = 1;
 
     // A buffer to render the lit scene (beauty)
     this.passRender = new WebGLRenderTarget();
@@ -182,9 +184,15 @@ export default class OutlinePass extends Pass {
     this.syncThickness();
   }
 
+  setPixelRatio(pixelRatio) {
+    this.pixelRatio = Math.max(pixelRatio || 1, 1);
+    this.syncThickness();
+  }
+
   syncThickness() {
     const scale = this.surfaceBuffer.width / Math.max(this.width, 1);
-    this.passMaterial.uniforms.thickness.value = this.thickness * scale;
+    this.passMaterial.uniforms.thickness.value =
+      this.thickness * this.pixelRatio * scale;
   }
 
   setDebugMode(isEnabled) {
