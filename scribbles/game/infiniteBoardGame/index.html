@@ -84,7 +84,7 @@
       z-index: 20;
       overflow: hidden;
       container-type: size;
-      /* Scaled to canvas height in app.js resize (12px @ 440px). Children use em. */
+      /* em base capped in app.js resize (12px max; shrinks on short frames). */
       font-size: 12px;
     }
 
@@ -242,6 +242,7 @@
       pointer-events: auto;
       -webkit-appearance: none;
       appearance: none;
+      container-type: size;
     }
 
     .game-card:focus {
@@ -268,14 +269,14 @@
     }
 
     .game-card__value {
-      font-size: 1.65em;
+      font-size: 42cqh;
       font-weight: 700;
       line-height: 1;
       letter-spacing: -0.02em;
     }
 
     .game-card__type {
-      font-size: 0.55em;
+      font-size: 12cqh;
       text-transform: uppercase;
       letter-spacing: 0.14em;
       opacity: 0.65;
@@ -700,7 +701,7 @@
         </details>
         <div class="game-over__actions">
           <button type="button" id="restart-button">Continue</button>
-          <button type="button" id="share-button">Copy stats</button>
+          <!-- <button type="button" id="share-button">Copy stats</button> -->
         </div>
       </div>
     </div>

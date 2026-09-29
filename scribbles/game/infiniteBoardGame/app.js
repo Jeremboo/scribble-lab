@@ -206,6 +206,8 @@ canvasSketch(({ context }) => {
   let lastStyleWidth = 0;
   let lastStyleHeight = 0;
   let mobileLandscapeActive = null;
+  /** Keeps dat.GUI hand sliders aligned with the active desktop/mobile preset. */
+  let refreshHandLayoutGui = null;
 
   const runStats = new RunStats();
   const debugStatsEl = document.getElementById('run-stats-debug');
@@ -845,33 +847,33 @@ canvasSketch(({ context }) => {
       restartGame();
     });
 
-    document.getElementById('share-button').addEventListener('click', async () => {
-      const text = runStats.formatShareText(lastBestInfo);
-      const shareData = {
-        title: 'Infinite Board Game',
-        text,
-        // url: window.location.href,
-      };
-      try {
-        if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
-          await navigator.share(shareData);
-          return;
+    const shareButton = document.getElementById('share-button');
+    if (shareButton) {
+      shareButton.addEventListener('click', async () => {
+        const text = runStats.formatShareText(lastBestInfo);
+        const shareData = {
+          title: 'Infinite Board Game',
+          text,
+          // url: window.location.href,
+        };
+        try {
+          if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+            await navigator.share(shareData);
+            return;
+          }
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
         }
-      } catch (err) {
-        if (err && err.name === 'AbortError') return;
-      }
-      try {
-        await navigator.clipboard.writeText(`${text}\n${window.location.href}`);
-        const btn = document.getElementById('share-button');
-        if (btn) {
-          const prev = btn.textContent;
-          btn.textContent = 'Copied!';
-          setTimeout(() => { btn.textContent = prev; }, 1600);
+        try {
+          await navigator.clipboard.writeText(`${text}\n${window.location.href}`);
+          const prev = shareButton.textContent;
+          shareButton.textContent = 'Copied!';
+          setTimeout(() => { shareButton.textContent = prev; }, 1600);
+        } catch (_) {
+          window.prompt('Copy your run stats:', `${text}\n${window.location.href}`);
         }
-      } catch (_) {
-        window.prompt('Copy your run stats:', `${text}\n${window.location.href}`);
-      }
-    });
+      });
+    }
   }, 200);
 
   // * GUI *******
@@ -985,20 +987,41 @@ canvasSketch(({ context }) => {
 
     const handGui = gui.addFolder('hand layout');
     handGui.open();
+    // Proxy so we always edit the *active* layout (desktop vs mobileLandscape),
+    // not props.handLayout alone — resolveHandLayout would otherwise overwrite
+    // GUI tweaks with mobileLandscape.handLayout and nothing would appear to change.
+    const handLayoutGui = { ...resolveHandLayout(lastStyleWidth, lastStyleHeight) };
+    const handLayoutControllers = [];
+    const getMutableHandLayout = () => (
+      isMobileLandscapeSize(
+        lastStyleWidth,
+        lastStyleHeight,
+        props.mobileLandscape.maxHeight,
+      )
+        ? props.mobileLandscape.handLayout
+        : props.handLayout
+    );
     const syncHandLayout = () => {
+      Object.assign(getMutableHandLayout(), handLayoutGui);
       applyResponsiveHandLayout();
     };
-    handGui.add(props.handLayout, 'handY', -1, 0).step(0.01).onChange(syncHandLayout);
-    handGui.add(props.handLayout, 'handWidth', 0.2, 1.5).step(0.01).onChange(syncHandLayout);
-    handGui.add(props.handLayout, 'cardWidth', 0.05, 0.4).step(0.005).onChange(syncHandLayout);
-    handGui.add(props.handLayout, 'cardHeight', 0.05, 0.5).step(0.005).onChange(syncHandLayout);
-    handGui.add(props.handLayout, 'maxFanAngle', 0, 1).step(0.01).onChange(syncHandLayout);
-    handGui.add(props.handLayout, 'curveAmount', 0, 0.2).step(0.001).onChange(syncHandLayout);
-    handGui.add(props.handLayout, 'maxOverlap', 0, 0.9).step(0.01).onChange(syncHandLayout);
-    handGui.add(props.handLayout, 'minGap', 0.1, 1).step(0.01).onChange(syncHandLayout);
-    handGui.add(props.handLayout, 'hoverRaise', 0, 0.2).step(0.005).onChange(syncHandLayout);
-    handGui.add(props.handLayout, 'hoverScale', 1, 2).step(0.01).onChange(syncHandLayout);
-    handGui.add(props.handLayout, 'neighborPush', 0, 0.3).step(0.005).onChange(syncHandLayout);
+    refreshHandLayoutGui = () => {
+      Object.assign(handLayoutGui, resolveHandLayout(lastStyleWidth, lastStyleHeight));
+      for (const c of handLayoutControllers) c.updateDisplay();
+    };
+    handLayoutControllers.push(
+      handGui.add(handLayoutGui, 'handY', -1, 0).step(0.01).onChange(syncHandLayout),
+      handGui.add(handLayoutGui, 'handWidth', 0.2, 1.5).step(0.01).onChange(syncHandLayout),
+      handGui.add(handLayoutGui, 'cardWidth', 0.05, 0.4).step(0.005).onChange(syncHandLayout),
+      handGui.add(handLayoutGui, 'cardHeight', 0.05, 0.5).step(0.005).onChange(syncHandLayout),
+      handGui.add(handLayoutGui, 'maxFanAngle', 0, 1).step(0.01).onChange(syncHandLayout),
+      handGui.add(handLayoutGui, 'curveAmount', 0, 0.2).step(0.001).onChange(syncHandLayout),
+      handGui.add(handLayoutGui, 'maxOverlap', 0, 0.9).step(0.01).onChange(syncHandLayout),
+      handGui.add(handLayoutGui, 'minGap', 0.1, 1).step(0.01).onChange(syncHandLayout),
+      handGui.add(handLayoutGui, 'hoverRaise', 0, 0.2).step(0.005).onChange(syncHandLayout),
+      handGui.add(handLayoutGui, 'hoverScale', 1, 2).step(0.01).onChange(syncHandLayout),
+      handGui.add(handLayoutGui, 'neighborPush', 0, 0.3).step(0.005).onChange(syncHandLayout),
+    );
 
     gui.close();
     gui.hide();
@@ -1013,8 +1036,9 @@ canvasSketch(({ context }) => {
       if (uiWrapper) {
         uiWrapper.style.width = `${sketchProps.styleWidth}px`;
         uiWrapper.style.height = `${sketchProps.styleHeight}px`;
-        // Base for em fonts: 12px at the sketch's design height (440).
-        uiWrapper.style.fontSize = `${(sketchProps.styleHeight * 12) / 440}px`;
+        // em base: 12px at design height 440; never grow past 12px on large desktops.
+        const uiFont = Math.min(12, (sketchProps.styleHeight * 12) / 440);
+        uiWrapper.style.fontSize = `${Math.max(9, uiFont)}px`;
       }
 
       const nextMobile = isMobileLandscapeSize(
@@ -1026,7 +1050,11 @@ canvasSketch(({ context }) => {
         const wasUnset = mobileLandscapeActive == null;
         mobileLandscapeActive = nextMobile;
         applyResponsiveHandLayout();
-        applyResponsiveCamera(wasUnset ? 0 : 0.45);
+        if (refreshHandLayoutGui) refreshHandLayoutGui();
+        // Skip the first layout: MainCamera starts zoomed out and the intro
+        // timeout owns the first move into initialCameraProps. Snapping here
+        // (duration 0) cancelled that fade-in.
+        if (!wasUnset) applyResponsiveCamera(0.45);
       } else {
         applyResponsiveHandLayout();
       }

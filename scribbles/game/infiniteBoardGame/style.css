@@ -20,7 +20,7 @@ body {
   z-index: 20;
   overflow: hidden;
   container-type: size;
-  /* Scaled to canvas height in app.js resize (12px @ 440px). Children use em. */
+  /* em base capped in app.js resize (12px max; shrinks on short frames). */
   font-size: 12px;
 }
 
@@ -117,6 +117,7 @@ body {
   transform-style: preserve-3d;
   backface-visibility: hidden;
   pointer-events: auto;
+  container-type: size;
 }
 
 .game-card:focus {
@@ -148,14 +149,14 @@ body {
 }
 
 .game-card__value {
-  font-size: 1.65em;
+  font-size: 24cqh;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.02em;
 }
 
 .game-card__type {
-  font-size: 0.55em;
+  font-size: 8cqh;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   opacity: 0.65;

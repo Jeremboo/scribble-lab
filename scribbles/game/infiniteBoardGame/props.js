@@ -103,7 +103,7 @@ const props = {
       distance: 30.9,
     },
     handLayout: {
-      handY: -0.36,
+      handY: -0.41,
       handWidth: 1.15,
       cardWidth: 0.2,
       cardHeight: 0.28,
