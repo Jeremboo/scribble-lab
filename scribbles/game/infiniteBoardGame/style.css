@@ -5,10 +5,23 @@
   --card-face: #f4efe6;
   --card-ink: #1c1814;
   --card-accent: #b44351;
+  --fog-far: #181200;
 }
 
 body {
   background-color: var(--bg-color);
+}
+
+#ui-wrapper {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  pointer-events: none;
+  z-index: 20;
+  overflow: hidden;
+  container-type: size;
+  /* Scaled to canvas height in app.js resize (12px @ 440px). Children use em. */
+  font-size: 12px;
 }
 
 .f {
@@ -21,7 +34,7 @@ body {
 /* ── Card hand overlay ─────────────────────────────────── */
 
 .card-ui {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 20;
   pointer-events: none;
@@ -44,10 +57,37 @@ body {
   -webkit-user-select: none;
 }
 
+/* Soft fog wash under the hand so cards read over board cells. */
+.card-hand-root::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8%;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.85s ease;
+  background: radial-gradient(
+    ellipse 55% 70% at 50% 100%,
+    color-mix(in srgb, var(--fog-far) 72%, transparent) 0%,
+    color-mix(in srgb, var(--fog-far) 42%, transparent) 38%,
+    color-mix(in srgb, var(--fog-far) 12%, transparent) 62%,
+    transparent 78%
+  );
+}
+
+.card-hand-root.card-hand-veil-on::before {
+  opacity: 1;
+}
+
 .card-hand-targets,
 .card-hand-cards {
   position: absolute;
   inset: 0;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -108,14 +148,14 @@ body {
 }
 
 .game-card__value {
-  font-size: clamp(1.4rem, 4.5vh, 2.6rem);
+  font-size: 1.65em;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.02em;
 }
 
 .game-card__type {
-  font-size: clamp(0.55rem, 1.4vh, 0.85rem);
+  font-size: 0.55em;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   opacity: 0.65;
@@ -139,7 +179,7 @@ body {
   --hud-ink: var(--card-ink);
   --hud-muted: rgba(28, 24, 20, 0.55);
   --hud-accent: var(--card-accent);
-  position: fixed;
+  position: absolute;
   top: 14px;
   left: 50%;
   transform: translateX(-50%);
@@ -152,7 +192,7 @@ body {
   border: 2px solid rgba(28, 24, 20, 0.85);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
   font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
-  font-size: 12px;
+  font-size: 1em;
   line-height: 1.35;
   text-align: center;
   pointer-events: auto;
@@ -162,6 +202,13 @@ body {
 #run-stats-debug.hidden {
   opacity: 0 !important;
   pointer-events: none !important;
+}
+
+@container (orientation: landscape) and (max-height: 500px) {
+  #run-stats-debug {
+    left: 14px;
+    transform: none;
+  }
 }
 
 .run-stats__primary {
@@ -180,7 +227,7 @@ body {
 }
 
 .run-stats__row .label {
-  font-size: 0.65rem;
+  font-size: 0.65em;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--hud-muted);
@@ -192,7 +239,7 @@ body {
 }
 
 .run-stats__row--score .value {
-  font-size: clamp(1.55rem, 4.5vw, 1.9rem);
+  font-size: 1.7em;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--hud-ink);
@@ -210,12 +257,12 @@ body {
 }
 
 .run-stats__row--best .label {
-  font-size: 0.6rem;
+  font-size: 0.6em;
   letter-spacing: 0.14em;
 }
 
 .run-stats__row--best .value {
-  font-size: 0.85rem;
+  font-size: 0.85em;
   font-weight: 600;
   color: var(--hud-ink);
 }
@@ -230,7 +277,7 @@ body {
   cursor: pointer;
   list-style: none;
   color: var(--hud-muted, rgba(244, 239, 230, 0.55));
-  font-size: 0.65rem;
+  font-size: 0.65em;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   user-select: none;
@@ -285,7 +332,7 @@ body {
 /* ── Game over ─────────────────────────────────────────── */
 
 #game-over {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 50;
   display: flex;
@@ -296,6 +343,7 @@ body {
   font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
   transition: opacity 0.45s;
   box-sizing: border-box;
+  pointer-events: auto;
 }
 
 #game-over.hidden {
@@ -318,7 +366,7 @@ body {
 
 .game-over__panel h2 {
   margin: 0 0 8px;
-  font-size: clamp(2.2rem, 7vw, 3rem);
+  font-size: 2.5em;
   letter-spacing: -0.03em;
   text-align: center;
   font-weight: 700;
@@ -328,7 +376,7 @@ body {
 .game-over__panel .subtitle {
   margin: 0 0 24px;
   color: var(--hud-muted);
-  font-size: clamp(1rem, 2.8vw, 1.15rem);
+  font-size: 1.05em;
   text-align: center;
   letter-spacing: 0.02em;
 }
@@ -349,7 +397,7 @@ body {
   align-items: baseline;
   padding-bottom: 8px;
   border-bottom: 1px solid rgba(28, 24, 20, 0.12);
-  font-size: 0.95rem;
+  font-size: 0.95em;
 }
 
 .game-over__stats li span:first-child {
@@ -372,7 +420,7 @@ body {
 }
 
 .game-over__badge {
-  font-size: 0.7rem;
+  font-size: 0.7em;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--hud-accent);
@@ -391,7 +439,7 @@ body {
 .game-over__stats li.is-best .game-over__value {
   color: var(--hud-accent);
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 1.05em;
 }
 
 .game-over__stats .cards-detail {
@@ -403,7 +451,7 @@ body {
   text-align: left;
   color: var(--hud-ink);
   opacity: 0.85;
-  font-size: 0.85rem;
+  font-size: 0.85em;
   word-break: break-word;
 }
 
@@ -428,7 +476,7 @@ body {
   border: 0;
   border-radius: 10px;
   padding: 12px 18px;
-  font-size: 1rem;
+  font-size: 1em;
   font-family: inherit;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s, color 0.2s;

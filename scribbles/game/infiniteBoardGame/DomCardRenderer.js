@@ -265,9 +265,10 @@ export default class DomCardRenderer {
    * @param {PointerEvent} event
    */
   _eventToLogical(event) {
+    const rect = this.root.getBoundingClientRect();
     return this.hand.clientToLogical(
-      event.clientX,
-      event.clientY,
+      event.clientX - rect.left,
+      event.clientY - rect.top,
       this.viewportWidth,
       this.viewportHeight,
     );
@@ -328,11 +329,16 @@ export default class DomCardRenderer {
   }
 
   _onResize() {
-    this.viewportWidth = window.innerWidth;
-    this.viewportHeight = window.innerHeight;
+    this.viewportWidth = this.root.clientWidth || window.innerWidth;
+    this.viewportHeight = this.root.clientHeight || window.innerHeight;
     this.hand.setViewport(this.viewportWidth, this.viewportHeight);
     this.refreshCardSizes();
     this.hand.syncRenderer();
+  }
+
+  /** Recompute layout from the root element's current size. */
+  resize() {
+    this._onResize();
   }
 
   refreshCardSizes() {

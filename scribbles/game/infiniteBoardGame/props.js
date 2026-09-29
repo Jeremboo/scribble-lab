@@ -1,7 +1,40 @@
 import { Vector3 } from 'three';
-import { getDefaultLayoutConfig } from '../_modules/cardEngine';
 
-export default {
+/** Matches #ui-wrapper container query: short landscape canvas frame. */
+export const MOBILE_LANDSCAPE_MAX_HEIGHT = 500;
+
+/**
+ * @param {number} styleWidth
+ * @param {number} styleHeight
+ * @param {number} [maxHeight]
+ */
+export function isMobileLandscapeSize(
+  styleWidth,
+  styleHeight,
+  maxHeight = MOBILE_LANDSCAPE_MAX_HEIGHT,
+) {
+  return styleHeight > 0
+    && styleWidth > styleHeight
+    && styleHeight <= maxHeight;
+}
+
+/**
+ * Merge camera prop objects (clones Vector3 offsets).
+ * @param {object} base
+ * @param {object} [override]
+ */
+function mergeCameraProps(base, override = {}) {
+  const next = { ...base, ...override };
+  const offset = override.offset || base.offset;
+  if (offset && typeof offset.clone === 'function') {
+    next.offset = offset.clone();
+  } else if (offset) {
+    next.offset = new Vector3(offset.x, offset.y, offset.z);
+  }
+  return next;
+}
+
+const props = {
   debug: true,
   /** Tint loot meshes + show reward values (rescue = red). */
   debugLoot: false,
@@ -51,6 +84,38 @@ export default {
     distance: 55,
     offset: new Vector3(0, 0.5, 0),
   },
+  /**
+   * Overrides when the canvas CSS box is mobile landscape
+   * (`styleHeight <= maxHeight` and wider than tall).
+   */
+  mobileLandscape: {
+    maxHeight: MOBILE_LANDSCAPE_MAX_HEIGHT,
+    initialCameraProps: {
+      y: 0.751,
+      rotation: -2.546,
+      offset: new Vector3(0, -1.1, 0),
+      distance: 40,
+    },
+    inGameCameraProps: {
+      y: 0.68,
+      rotation: -2.69,
+      offset: new Vector3(0, 1.1, 0),
+      distance: 30.9,
+    },
+    handLayout: {
+      handY: -0.36,
+      handWidth: 1.15,
+      cardWidth: 0.2,
+      cardHeight: 0.28,
+      maxFanAngle: 0.28,
+      curveAmount: 0.03,
+      maxOverlap: 0.6,
+      minGap: 0.3,
+      hoverRaise: 0.04,
+      hoverScale: 1.15,
+      neighborPush: 0.05,
+    },
+  },
   // atmosphere
   fogNear: 70,
   fogFar: 90,
@@ -62,7 +127,19 @@ export default {
   startingHandSize: 4,
   cardDrawnPerSection: 2,
   cardDrawnPerLoot: 1,
-  handLayout: getDefaultLayoutConfig(),
+  handLayout: {
+    handY: -0.4,
+    handWidth: 0.85,
+    cardWidth: 0.14,
+    cardHeight: 0.2,
+    maxFanAngle: 0.38,
+    curveAmount: 0.045,
+    maxOverlap: 0.55,
+    minGap: 0.35,
+    hoverRaise: 0.05,
+    hoverScale: 1.2,
+    neighborPush: 0.06,
+  },
   deckCards: [
     { id: 'c-1', value: -1, type: 'move', ratio: 0.25 },
     { id: 'c1', value: 1, type: 'move', ratio: 2 },
@@ -74,3 +151,41 @@ export default {
     { id: 'c7', value: 7, type: 'move', ratio: 1 },
   ],
 };
+
+/**
+ * @param {number} styleWidth
+ * @param {number} styleHeight
+ */
+export function resolveHandLayout(styleWidth, styleHeight) {
+  const ml = props.mobileLandscape;
+  if (isMobileLandscapeSize(styleWidth, styleHeight, ml.maxHeight)) {
+    return { ...props.handLayout, ...ml.handLayout };
+  }
+  return { ...props.handLayout };
+}
+
+/**
+ * @param {number} styleWidth
+ * @param {number} styleHeight
+ */
+export function resolveCameraProps(styleWidth, styleHeight) {
+  const ml = props.mobileLandscape;
+  if (isMobileLandscapeSize(styleWidth, styleHeight, ml.maxHeight)) {
+    return {
+      initialCameraProps: mergeCameraProps(
+        props.initialCameraProps,
+        ml.initialCameraProps,
+      ),
+      inGameCameraProps: mergeCameraProps(
+        props.inGameCameraProps,
+        ml.inGameCameraProps,
+      ),
+    };
+  }
+  return {
+    initialCameraProps: mergeCameraProps(props.initialCameraProps),
+    inGameCameraProps: mergeCameraProps(props.inGameCameraProps),
+  };
+}
+
+export default props;

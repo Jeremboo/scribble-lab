@@ -23,13 +23,18 @@ import Board from './Board';
 import BoardPawn from './BoardPawn';
 import Grounds from './Grounds';
 import MainCamera from './MainCamera';
-import props from './props';
+import props, {
+  isMobileLandscapeSize,
+  resolveCameraProps,
+  resolveHandLayout,
+} from './props';
 import DOMRenderer from '../../../modules/Three/DOMRenderer.three';
 import gsap from 'gsap';
 import { CardHand, DropTarget, getHandSize } from '../_modules/cardEngine';
 import DomCardRenderer from './DomCardRenderer';
 import MovePreview from './MovePreview';
 import RunStats from './RunStats';
+import { ensurePlayer, submitRun } from './Analytics';
 import { getSectionStride, getSectionTriggerOffset, getNextSectionTriggerY, applyBoardCellTheme } from './BoardCell';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
@@ -51,6 +56,7 @@ canvasSketch(({ context }) => {
 
   // DOM RENDERER
   const wrapper3d = document.getElementById('wrapper-3d');
+  const uiWrapper = document.getElementById('ui-wrapper');
   const domRenderer = new DOMRenderer(wrapper3d, renderer.camera);
   domRenderer.group.position.set(-props.boardWidth * 0.5 - 6, 0, -0.5);
 
@@ -81,6 +87,10 @@ canvasSketch(({ context }) => {
 
     const applyClear = () => {
       renderer.setClearColor(atmosphereFar, 1);
+      document.documentElement.style.setProperty(
+        '--fog-far',
+        `#${atmosphereFar.getHexString()}`,
+      );
     };
 
     if (duration <= 0) {
@@ -193,6 +203,9 @@ canvasSketch(({ context }) => {
   let debugStatsRaf = 0;
   /** Bumped on restart so stale advance/draw timeouts no-op. */
   let runId = 0;
+  let lastStyleWidth = 0;
+  let lastStyleHeight = 0;
+  let mobileLandscapeActive = null;
 
   const runStats = new RunStats();
   const debugStatsEl = document.getElementById('run-stats-debug');
@@ -292,6 +305,7 @@ canvasSketch(({ context }) => {
     runStats.updatePosition(pawnBoard.y);
     runStats.stop();
     lastBestInfo = runStats.commitBestScore();
+    submitRun(runStats.snapshot(), { isNewBest: lastBestInfo.isNewBest });
     clearTimeout(endOfTurnTimer);
     endOfTurnTimer = null;
     hideMovePreview();
@@ -302,6 +316,7 @@ canvasSketch(({ context }) => {
     collapseStatsDetails();
 
     if (cardUiRoot) {
+      cardUiRoot.classList.remove('card-hand-veil-on');
       cardUiRoot.classList.add('hidden');
       cardUiRoot.setAttribute('aria-hidden', 'true');
     }
@@ -360,6 +375,26 @@ canvasSketch(({ context }) => {
     },
     onCardReturned: () => hideMovePreview(),
   });
+
+  const getActiveCameraProps = () => resolveCameraProps(lastStyleWidth, lastStyleHeight);
+
+  const applyResponsiveHandLayout = () => {
+    const layout = resolveHandLayout(lastStyleWidth, lastStyleHeight);
+    cardHand.setLayout(layout);
+    playZone.handSize = getHandSize(layout);
+    if (domCardRenderer) {
+      domCardRenderer.refreshCardSizes();
+      cardHand.syncRenderer();
+    }
+  };
+
+  const applyResponsiveCamera = (duration = 0.45) => {
+    const { initialCameraProps, inGameCameraProps } = getActiveCameraProps();
+    mainCamera.animateCameraProps(
+      isAnimatedIn ? inGameCameraProps : initialCameraProps,
+      duration,
+    );
+  };
 
   const movePreview = new MovePreview(board.group);
 
@@ -583,6 +618,18 @@ canvasSketch(({ context }) => {
     applyLoot(board.collectLootAt(pawnBoard.x, pawnBoard.y));
   };
 
+  const fadeInCardHandVeil = () => {
+    if (!cardUiRoot) return;
+    cardUiRoot.classList.remove('card-hand-veil-on');
+    // Double rAF so the browser commits opacity: 0 before transitioning to 1.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (cardUiRoot.classList.contains('hidden')) return;
+        cardUiRoot.classList.add('card-hand-veil-on');
+      });
+    });
+  };
+
   const initCardHandUi = () => {
     if (!domCardRenderer) {
       cardUiRoot.classList.remove('hidden');
@@ -596,6 +643,7 @@ canvasSketch(({ context }) => {
       cardUiRoot.classList.remove('hidden');
       cardUiRoot.setAttribute('aria-hidden', 'false');
     }
+    fadeInCardHandVeil();
 
     cardHand.setCards([]);
     nextCardId = 1;
@@ -689,7 +737,7 @@ canvasSketch(({ context }) => {
   };
 
   const animateIn  = () => {
-    mainCamera.animateCameraProps(props.inGameCameraProps);
+    mainCamera.animateCameraProps(getActiveCameraProps().inGameCameraProps);
 
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
@@ -777,11 +825,17 @@ canvasSketch(({ context }) => {
 
   // INTRO ANIMATION
   setTimeout(() => {
+    const { initialCameraProps } = getActiveCameraProps();
     mainCamera.animateCameraProps({
-      y: props.initialCameraProps.y,
-      distance: props.initialCameraProps.distance,
+      y: initialCameraProps.y,
+      distance: initialCameraProps.distance,
+      offset: initialCameraProps.offset,
+      rotation: initialCameraProps.rotation,
     }, 1.5);
     gsap.to(document.body.querySelectorAll('#home-page > *'), { autoAlpha: 1, duration: 0.5, y: 0, delay: 0.5, stagger: 0.15 });
+
+    // Anonymous player doc in Atlas (no-op until ANALYTICS_API_URL is set).
+    ensurePlayer();
 
     document.getElementById('start-button').addEventListener('click', () => {
       animateIn();
@@ -932,10 +986,7 @@ canvasSketch(({ context }) => {
     const handGui = gui.addFolder('hand layout');
     handGui.open();
     const syncHandLayout = () => {
-      cardHand.setLayout(props.handLayout);
-      if (domCardRenderer) {
-        domCardRenderer.refreshCardSizes();
-      }
+      applyResponsiveHandLayout();
     };
     handGui.add(props.handLayout, 'handY', -1, 0).step(0.01).onChange(syncHandLayout);
     handGui.add(props.handLayout, 'handWidth', 0.2, 1.5).step(0.01).onChange(syncHandLayout);
@@ -954,15 +1005,39 @@ canvasSketch(({ context }) => {
   }
 
   return {
-    resize(props) {
-      wrapper3d.style.width = `${props.styleWidth}px`;
-      wrapper3d.style.height = `${props.styleHeight}px`;
-      domRenderer.resize(props);
-      renderer.resize(props);
+    resize(sketchProps) {
+      wrapper3d.style.width = `${sketchProps.styleWidth}px`;
+      wrapper3d.style.height = `${sketchProps.styleHeight}px`;
+      lastStyleWidth = sketchProps.styleWidth;
+      lastStyleHeight = sketchProps.styleHeight;
+      if (uiWrapper) {
+        uiWrapper.style.width = `${sketchProps.styleWidth}px`;
+        uiWrapper.style.height = `${sketchProps.styleHeight}px`;
+        // Base for em fonts: 12px at the sketch's design height (440).
+        uiWrapper.style.fontSize = `${(sketchProps.styleHeight * 12) / 440}px`;
+      }
+
+      const nextMobile = isMobileLandscapeSize(
+        sketchProps.styleWidth,
+        sketchProps.styleHeight,
+        props.mobileLandscape.maxHeight,
+      );
+      if (mobileLandscapeActive !== nextMobile) {
+        const wasUnset = mobileLandscapeActive == null;
+        mobileLandscapeActive = nextMobile;
+        applyResponsiveHandLayout();
+        applyResponsiveCamera(wasUnset ? 0 : 0.45);
+      } else {
+        applyResponsiveHandLayout();
+      }
+
+      if (domCardRenderer) domCardRenderer.resize();
+      domRenderer.resize(sketchProps);
+      renderer.resize(sketchProps);
       // Pass drawing-buffer size into OutlinePass (CSS size × pixelRatio).
       // updateStyle=false: canvas-sketch owns the canvas CSS size.
-      composer.setSize(props.viewportWidth, props.viewportHeight, false);
-      outlinePass.setPixelRatio(props.pixelRatio);
+      composer.setSize(sketchProps.viewportWidth, sketchProps.viewportHeight, false);
+      outlinePass.setPixelRatio(sketchProps.pixelRatio);
     },
     render(_props) {
       // renderer.update(props);
@@ -983,7 +1058,7 @@ canvasSketch(({ context }) => {
 }, {
   // fps: 15,
   // duration: 4,
-  // dimensions: [2048, 2048],
+  // dimensions: [956, 440],
   scaleToView: true,
   animate: true,
   context: 'webgl',
