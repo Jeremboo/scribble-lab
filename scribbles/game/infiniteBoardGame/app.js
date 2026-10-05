@@ -24,11 +24,11 @@ import BoardPawn from './BoardPawn';
 import Grounds from './Grounds';
 import MainCamera from './MainCamera';
 import props, {
+  GameState,
   isMobileLandscapeSize,
-  resolveCameraProps,
   resolveHandLayout,
+  resolveView,
 } from './props';
-import DOMRenderer from '../../../modules/Three/DOMRenderer.three';
 import gsap from 'gsap';
 import { CardHand, DropTarget, getHandSize } from '../_modules/cardEngine';
 import DomCardRenderer from './DomCardRenderer';
@@ -54,11 +54,7 @@ canvasSketch(({ context }) => {
 
   const mainCamera = new MainCamera(renderer.camera);
 
-  // DOM RENDERER
-  const wrapper3d = document.getElementById('wrapper-3d');
   const uiWrapper = document.getElementById('ui-wrapper');
-  const domRenderer = new DOMRenderer(wrapper3d, renderer.camera);
-  domRenderer.group.position.set(-props.boardWidth * 0.5 - 6, 0, -0.5);
 
   const composer = new EffectComposer(renderer);
   const outlinePass = new OutlinePass(renderer.scene, renderer.camera, {
@@ -72,7 +68,11 @@ canvasSketch(({ context }) => {
   const depthPass = new DepthPass(renderer.scene, renderer.camera);
   composer.addPass(depthPass);
 
-  const fogPass = new AtmosphereFogPass(renderer.camera, props);
+  const fogPass = new AtmosphereFogPass(renderer.camera, {
+    ...props,
+    fogNear: props.views[GameState.INTRO].fogNear,
+    fogFar: props.views[GameState.INTRO].fogFar,
+  });
   fogPass.setDepthTexture(depthPass.getDepthTexture());
   composer.addPass(fogPass);
   if (!DPR.antialiasing) {
@@ -169,10 +169,12 @@ canvasSketch(({ context }) => {
   const board = new Board(props.boardWidth, props.boardHeight);
   renderer.add(board.group);
 
-  const pawnBoard = new BoardPawn({ x: board.pathX, y: board.pathY });
+  const START_PAWN_Y = 3; // 5th path cell (0-indexed)
+  const pawnBoard = new BoardPawn({ x: board.pathX, y: START_PAWN_Y });
   renderer.add(pawnBoard.mesh);
 
   board.addPawn(pawnBoard);
+  pawnBoard.currentPosition.copy(pawnBoard.targetedPosition);
 
   const animateCameraTarget = (cellNbr, duration = 1.5, delay = 0.25) => {
     const pos = new Vector3(
@@ -187,7 +189,7 @@ canvasSketch(({ context }) => {
     );
   };
 
-  // Bake noise pathY once at init (pawn already placed on row 0).
+  // Bake noise pathY once at init (pawn already placed on START_PAWN_Y).
   // Doing this in animateIn used to snap the heightfield; with the diagonal
   // camera that read as a lateral jump on the ground.
   board.moveTo();
@@ -199,6 +201,7 @@ canvasSketch(({ context }) => {
   let pendingAdvance = 0;
   let isAnimatedIn = false;
   let isGameOver = false;
+  let gameState = GameState.INTRO;
   let endOfTurnTimer = null;
   let debugStatsRaf = 0;
   /** Bumped on restart so stale advance/draw timeouts no-op. */
@@ -316,6 +319,7 @@ canvasSketch(({ context }) => {
     pawnBoard.hide();
     showRunStatsHud(false);
     collapseStatsDetails();
+    applyView(GameState.GAME_OVER);
 
     if (cardUiRoot) {
       cardUiRoot.classList.remove('card-hand-veil-on');
@@ -355,7 +359,7 @@ canvasSketch(({ context }) => {
     }, turnMayDraw ? 600 : 80);
   };
 
-  // ── Card hand prototype (renderer-agnostic engine + DOM renderer) ──
+  // ── Card hand (renderer-agnostic engine + DomCardRenderer) ──
   const cardUiRoot = document.getElementById('card-ui');
   let turnMayDraw = false;
   let pendingDrawAdds = 0;
@@ -378,7 +382,19 @@ canvasSketch(({ context }) => {
     onCardReturned: () => hideMovePreview(),
   });
 
-  const getActiveCameraProps = () => resolveCameraProps(lastStyleWidth, lastStyleHeight);
+  const getActiveView = (state = gameState) => resolveView(state, lastStyleWidth, lastStyleHeight);
+
+  const applyView = (state, { cameraDuration = 0.45, applyFog = true } = {}) => {
+    gameState = state;
+    const view = getActiveView(state);
+    if (cameraDuration != null) {
+      mainCamera.animateCameraProps(view.camera, cameraDuration);
+    }
+    if (applyFog) {
+      fogPass.animateFogRange(view.fogNear, view.fogFar, cameraDuration || 0);
+    }
+    return view;
+  };
 
   const applyResponsiveHandLayout = () => {
     const layout = resolveHandLayout(lastStyleWidth, lastStyleHeight);
@@ -391,11 +407,7 @@ canvasSketch(({ context }) => {
   };
 
   const applyResponsiveCamera = (duration = 0.45) => {
-    const { initialCameraProps, inGameCameraProps } = getActiveCameraProps();
-    mainCamera.animateCameraProps(
-      isAnimatedIn ? inGameCameraProps : initialCameraProps,
-      duration,
-    );
+    applyView(gameState, { cameraDuration: duration });
   };
 
   const movePreview = new MovePreview(board.group);
@@ -735,11 +747,12 @@ canvasSketch(({ context }) => {
       pawnBoard.show();
       runStats.markTurnReady();
       updateStatsUi(false);
+      // applyView(GameState.IN_GAME);
     }, 500);
   };
 
   const animateIn  = () => {
-    mainCamera.animateCameraProps(getActiveCameraProps().inGameCameraProps);
+    applyView(GameState.IN_GAME, { cameraDuration: 2 });
 
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
@@ -756,7 +769,6 @@ canvasSketch(({ context }) => {
 
     setTimeout(() => {
       isAnimatedIn = true;
-      pawnBoard.show();
       runStats.markTurnReady();
     }, 1000);
   }
@@ -827,14 +839,13 @@ canvasSketch(({ context }) => {
 
   // INTRO ANIMATION
   setTimeout(() => {
-    const { initialCameraProps } = getActiveCameraProps();
-    mainCamera.animateCameraProps({
-      y: initialCameraProps.y,
-      distance: initialCameraProps.distance,
-      offset: initialCameraProps.offset,
-      rotation: initialCameraProps.rotation,
-    }, 1.5);
+    applyView(GameState.INTRO, { cameraDuration: 1.5 });
     gsap.to(document.body.querySelectorAll('#home-page > *'), { autoAlpha: 1, duration: 0.5, y: 0, delay: 0.5, stagger: 0.15 });
+
+    setTimeout(() => {
+      isAnimatedIn = true;
+      pawnBoard.show();
+    }, 1000);
 
     // Anonymous player doc in Atlas (no-op until ANALYTICS_API_URL is set).
     ensurePlayer();
@@ -932,6 +943,15 @@ canvasSketch(({ context }) => {
     }
 
     gui.add(props, 'debugLoot').name('debug loot');
+    const debugGridEl = document.getElementById('debug-grid-3x3');
+    const syncDebugGrid = (visible = props.debugGrid) => {
+      if (!debugGridEl) return;
+      props.debugGrid = !!visible;
+      debugGridEl.classList.toggle('hidden', !props.debugGrid);
+      debugGridEl.setAttribute('aria-hidden', props.debugGrid ? 'false' : 'true');
+    };
+    syncDebugGrid();
+    gui.add(props, 'debugGrid').name('debug grid').onChange(syncDebugGrid);
     gui.add(props, 'noiseX', -50, 50).onChange(regenerateNoise);
     gui.add(props, 'noiseY', -50, 50).onChange(regenerateNoise);
     gui.add(props, 'noiseScaleX', 0.01, 1).onChange(regenerateNoise);
@@ -954,9 +974,9 @@ canvasSketch(({ context }) => {
     cameraGui.add(mainCamera.camera, 'fov', 1, 120).onChange((fov) => {
       renderer.setFov(fov);
     }).step(0.001);
-    cameraGui.add(mainCamera.props, 'y', 0, 1.5).onChange(mainCamera.update).step(0.001);
+    cameraGui.add(mainCamera.props, 'y', 0, 1.5).onChange(mainCamera.update).step(0.001).listen();
     cameraGui.add(mainCamera.props, 'rotation', -Math.PI, Math.PI).onChange(mainCamera.update).step(0.001);
-    cameraGui.add(mainCamera.props, 'distance', 0, 100).onChange(mainCamera.update).step(0.1);
+    cameraGui.add(mainCamera.props, 'distance', 0, 100).onChange(mainCamera.update).step(0.1).listen();
     cameraGui.add(mainCamera.props.offset, 'x', -10, 10).name('offsetX').onChange(mainCamera.update).step(0.01);
     cameraGui.add(mainCamera.props.offset, 'y', -10, 10).name('offsetY').onChange(mainCamera.update).step(0.01);
     cameraGui.add(mainCamera.props.offset, 'z', -10, 10).name('offsetZ').onChange(mainCamera.update).step(0.01);
@@ -978,11 +998,12 @@ canvasSketch(({ context }) => {
       props.fogFarColor = v;
       setAtmosphereColor(null, v, 0);
     });
-    fogGui.add(props, 'fogNear', 0, 100).onChange((v) => {
-      fogPass.setFogRange(v, props.fogFar);
+    const fogRangeGui = props.views[GameState.IN_GAME];
+    fogGui.add(fogRangeGui, 'fogNear', 0, 100).onChange((v) => {
+      fogPass.animateFogRange(v, fogRangeGui.fogFar);
     });
-    fogGui.add(props, 'fogFar', 0, 100).onChange((v) => {
-      fogPass.setFogRange(props.fogNear, v);
+    fogGui.add(fogRangeGui, 'fogFar', 0, 100).onChange((v) => {
+      fogPass.animateFogRange(fogRangeGui.fogNear, v);
     });
 
     const handGui = gui.addFolder('hand layout');
@@ -1029,8 +1050,6 @@ canvasSketch(({ context }) => {
 
   return {
     resize(sketchProps) {
-      wrapper3d.style.width = `${sketchProps.styleWidth}px`;
-      wrapper3d.style.height = `${sketchProps.styleHeight}px`;
       lastStyleWidth = sketchProps.styleWidth;
       lastStyleHeight = sketchProps.styleHeight;
       if (uiWrapper) {
@@ -1052,7 +1071,7 @@ canvasSketch(({ context }) => {
         applyResponsiveHandLayout();
         if (refreshHandLayoutGui) refreshHandLayoutGui();
         // Skip the first layout: MainCamera starts zoomed out and the intro
-        // timeout owns the first move into initialCameraProps. Snapping here
+        // timeout owns the first move into INTRO view. Snapping here
         // (duration 0) cancelled that fade-in.
         if (!wasUnset) applyResponsiveCamera(0.45);
       } else {
@@ -1060,7 +1079,6 @@ canvasSketch(({ context }) => {
       }
 
       if (domCardRenderer) domCardRenderer.resize();
-      domRenderer.resize(sketchProps);
       renderer.resize(sketchProps);
       // Pass drawing-buffer size into OutlinePass (CSS size × pixelRatio).
       // updateStyle=false: canvas-sketch owns the canvas CSS size.
@@ -1070,8 +1088,6 @@ canvasSketch(({ context }) => {
     render(_props) {
       // renderer.update(props);
       composer.render();
-
-      domRenderer._render();
 
       board.update(_props.time);
       pawnBoard.update();

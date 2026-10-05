@@ -12,6 +12,45 @@ body {
   background-color: var(--bg-color);
 }
 
+a {
+  text-decoration: none;
+  color: white;
+  display: block;
+  cursor: pointer;
+  transition: color 250ms;
+}
+
+a:hover {
+  color: #B44351;
+}
+
+button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+.page {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+
+.hidden,
+.hidden button,
+.hidden a {
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+p {
+  margin: 5px;
+  color: white;
+}
+
 #ui-wrapper {
   position: absolute;
   inset: 0;
@@ -22,6 +61,92 @@ body {
   container-type: size;
   /* em base capped in app.js resize (12px max; shrinks on short frames). */
   font-size: 12px;
+}
+
+#home-page {
+  position: absolute;
+  width: 500px;
+  inset: 0;
+  z-index: 20;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 12% 10%;
+}
+
+#home-page > * {
+  opacity: 0;
+  transform: translateY(50px);
+  pointer-events: auto;
+}
+
+#home-page h1 {
+  font-size: 4.5em;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  color: white;
+}
+
+#home-page a {
+  font-size: 1.8em;
+  line-height: 1.2;
+  margin-top: 0.4em;
+  width: fit-content;
+}
+
+#home-page button {
+  font-size: 2.2em;
+  font-family: inherit;
+  transform: translate(0, 0);
+  border: 0;
+  cursor: pointer;
+  background-color: white;
+  color: #1c1814;
+  transition: background-color 0.25s, transform 0.25s, color 0.25s;
+  border-radius: 0.35em;
+  margin-top: 1.2em;
+  padding: 0.35em 1.1em;
+  pointer-events: auto;
+}
+
+#home-page button:hover {
+  transform: translate(0.4em, 0);
+  background-color: #B44351;
+  color: #fff8ee;
+}
+
+/* Debug 3×3 composition grid */
+#debug-grid-3x3 {
+  position: absolute;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+#debug-grid-3x3.hidden {
+  display: none !important;
+}
+
+.debug-grid-3x3__line {
+  position: absolute;
+  background: red;
+}
+
+.debug-grid-3x3__line--v {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+.debug-grid-3x3__line--h {
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
 }
 
 .f {

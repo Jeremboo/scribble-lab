@@ -1,6 +1,6 @@
 import { Vector3 } from 'three';
 import gsap from 'gsap';
-import props from './props';
+import props, { GameState } from './props';
 
 export default class MainCamera {
   constructor(camera) {
@@ -10,11 +10,12 @@ export default class MainCamera {
     this.lookAtTarget = new Vector3(); // Offset from target — drives lookAt independently
     this._lookAt = new Vector3();
 
+    const introCamera = props.views[GameState.INTRO].camera;
     this.props = {
-      y: props.initialCameraProps.y * 1.25,
-      rotation: props.initialCameraProps.rotation,
-      distance: props.initialCameraProps.distance * 1.2,
-      offset: props.initialCameraProps.offset.clone(),
+      y: introCamera.y * 1.25,
+      rotation: introCamera.rotation,
+      distance: introCamera.distance * 1.2,
+      offset: introCamera.offset.clone(),
     }
 
     this.update = this.update.bind(this);

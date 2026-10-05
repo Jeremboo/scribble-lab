@@ -3,6 +3,13 @@ import { Vector3 } from 'three';
 /** Matches #ui-wrapper container query: short landscape canvas frame. */
 export const MOBILE_LANDSCAPE_MAX_HEIGHT = 500;
 
+/** Camera + atmosphere presets keyed by gameplay phase. */
+export const GameState = {
+  INTRO: 'INTRO',
+  IN_GAME: 'IN_GAME',
+  GAME_OVER: 'GAME_OVER',
+};
+
 /**
  * @param {number} styleWidth
  * @param {number} styleHeight
@@ -34,10 +41,24 @@ function mergeCameraProps(base, override = {}) {
   return next;
 }
 
+/**
+ * @param {object} base
+ * @param {object} [override]
+ */
+function mergeViewProps(base, override = {}) {
+  return {
+    camera: mergeCameraProps(base.camera, override.camera),
+    fogNear: override.fogNear != null ? override.fogNear : base.fogNear,
+    fogFar: override.fogFar != null ? override.fogFar : base.fogFar,
+  };
+}
+
 const props = {
   debug: true,
   /** Tint loot meshes + show reward values (rescue = red). */
   debugLoot: false,
+  /** Show absolute 3×3 composition grid overlay. */
+  debugGrid: false,
   // colors — index into each *Colors array (4 themes)
   themeIndex: 0,
   bgColors:       ['#34241F', '#1A322E', '#342C14', '#203226'],
@@ -48,7 +69,7 @@ const props = {
   fogNearColor: '#4d3207',
   fogFarColor: '#181200',
   // board noise
-  noiseX: 0,
+  noiseX: 22,
   noiseY: 4.5,
   noiseScaleX: 0.1,
   noiseScaleY: 0.1,
@@ -71,18 +92,41 @@ const props = {
   boardWidth: 5,
   boardHeight: 15,
   boardPadding: 2,
-  // initial camera position
-  initialCameraProps: {
-    y: 0.95,
-    offset: new Vector3(0, -2, 0),
-    rotation: -Math.PI * 0.75,
-    distance: 45,
-  },
-  inGameCameraProps: {
-    y: 0.62,
-    rotation: -Math.PI * 0.75,
-    distance: 55,
-    offset: new Vector3(0, 0.5, 0),
+  /**
+   * Per-state camera + fog range. Colors stay global (`fogNearColor` / `fogFarColor`).
+   * Mobile landscape may override any subset under `mobileLandscape.views`.
+   */
+  views: {
+    [GameState.INTRO]: {
+      camera: {
+        y: 0.24,
+        rotation: -1.9,
+        distance: 25,
+        offset: new Vector3(2.7, 3, 0),
+      },
+      fogNear: 20,
+      fogFar: 28,
+    },
+    [GameState.IN_GAME]: {
+      camera: {
+        y: 0.62,
+        rotation: -Math.PI * 0.75,
+        distance: 55,
+        offset: new Vector3(0, 0.5, 0),
+      },
+      fogNear: 65,
+      fogFar: 77,
+    },
+    [GameState.GAME_OVER]: {
+      camera: {
+        y: 0.62,
+        rotation: -Math.PI * 0.75,
+        distance: 55,
+        offset: new Vector3(0, 0.5, 0),
+      },
+      fogNear: 65,
+      fogFar: 77,
+    },
   },
   /**
    * Overrides when the canvas CSS box is mobile landscape
@@ -90,17 +134,31 @@ const props = {
    */
   mobileLandscape: {
     maxHeight: MOBILE_LANDSCAPE_MAX_HEIGHT,
-    initialCameraProps: {
-      y: 0.751,
-      rotation: -2.546,
-      offset: new Vector3(0, -1.1, 0),
-      distance: 40,
-    },
-    inGameCameraProps: {
-      y: 0.68,
-      rotation: -2.69,
-      offset: new Vector3(0, 1.1, 0),
-      distance: 30.9,
+    views: {
+      [GameState.INTRO]: {
+        camera: {
+          y: 0.3,
+          rotation: -2,
+          distance: 25.3,
+          offset: new Vector3(2.94, 2.27, 0),
+        },
+      },
+      [GameState.IN_GAME]: {
+        camera: {
+          y: 0.68,
+          rotation: -2.69,
+          offset: new Vector3(0, 1.1, 0),
+          distance: 30.9,
+        },
+      },
+      [GameState.GAME_OVER]: {
+        camera: {
+          y: 0.68,
+          rotation: -2.69,
+          offset: new Vector3(0, 1.1, 0),
+          distance: 30.9,
+        },
+      },
     },
     handLayout: {
       handY: -0.41,
@@ -116,9 +174,6 @@ const props = {
       neighborPush: 0.05,
     },
   },
-  // atmosphere
-  fogNear: 70,
-  fogFar: 90,
   // animation
   velocity: 0.1,
   cellCreationStagger: 75,
@@ -165,27 +220,21 @@ export function resolveHandLayout(styleWidth, styleHeight) {
 }
 
 /**
+ * Resolved camera + fog range for a game state (desktop or mobile landscape).
+ * @param {keyof typeof GameState | string} state
  * @param {number} styleWidth
  * @param {number} styleHeight
  */
-export function resolveCameraProps(styleWidth, styleHeight) {
+export function resolveView(state, styleWidth, styleHeight) {
+  const base = props.views[state];
+  if (!base) {
+    throw new Error(`Unknown game view state: ${state}`);
+  }
   const ml = props.mobileLandscape;
   if (isMobileLandscapeSize(styleWidth, styleHeight, ml.maxHeight)) {
-    return {
-      initialCameraProps: mergeCameraProps(
-        props.initialCameraProps,
-        ml.initialCameraProps,
-      ),
-      inGameCameraProps: mergeCameraProps(
-        props.inGameCameraProps,
-        ml.inGameCameraProps,
-      ),
-    };
+    return mergeViewProps(base, ml.views[state]);
   }
-  return {
-    initialCameraProps: mergeCameraProps(props.initialCameraProps),
-    inGameCameraProps: mergeCameraProps(props.inGameCameraProps),
-  };
+  return mergeViewProps(base);
 }
 
 export default props;

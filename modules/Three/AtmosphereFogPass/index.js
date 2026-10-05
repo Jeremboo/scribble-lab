@@ -136,9 +136,31 @@ export default class AtmosphereFogPass extends Pass {
     }
   }
 
-  setFogRange(near, far) {
-    this.material.uniforms.fogNear.value = near;
-    this.material.uniforms.fogFar.value = far;
+  animateFogRange(near, far, duration = 0) {
+    const uniforms = this.material.uniforms;
+    gsap.killTweensOf(uniforms.fogNear);
+    gsap.killTweensOf(uniforms.fogFar);
+
+    if (duration <= 0) {
+      if (near != null) uniforms.fogNear.value = near;
+      if (far != null) uniforms.fogFar.value = far;
+      return;
+    }
+
+    if (near != null) {
+      gsap.to(uniforms.fogNear, {
+        value: near,
+        duration,
+        ease: 'power2.out',
+      });
+    }
+    if (far != null) {
+      gsap.to(uniforms.fogFar, {
+        value: far,
+        duration,
+        ease: 'power2.out',
+      });
+    }
   }
 
   getFogColorFar() {
