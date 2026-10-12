@@ -65,7 +65,12 @@ const props = {
   outlineColors:  ['#B08A78', '#6E9488', '#B09A5C', '#7A9070'],
   neutralColors:  ['#F6EFE6', '#E8F0EC', '#F4F0DC', '#ECF0E6'],
   pathColors:     ['#E04E3A', '#2A8F7E', '#E0A820', '#6B8F3E'],
+  /** Path cells that kill on landing — darker hazard tone per theme. */
+  forbiddenColors: ['#3A1A16', '#14241F', '#3A2A10', '#1A2414'],
   pawnColors:     ['#6ED4C4', '#F0D060', '#9ED46E', '#8EB4E8'],
+  /** How many forbidden path cells to place per section (inclusive range). */
+  forbiddenPerSectionMin: 3,
+  forbiddenPerSectionMax: 6,
   fogNearColor: '#4d3207',
   fogFarColor: '#181200',
   // board noise

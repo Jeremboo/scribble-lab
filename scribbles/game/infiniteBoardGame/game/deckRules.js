@@ -278,3 +278,63 @@ export function lootFlagsForRows(fromY, count, plan) {
   }
   return flags;
 }
+
+/**
+ * Random forbidden path rows for the current section window.
+ * Skips advance-trigger rows and any Ys in `excludeYs` (e.g. loot).
+ *
+ * @param {number} pawnY
+ * @param {number} endY - next section trigger
+ * @param {Iterable<number>|Set<number>|Map<number, unknown>} [excludeYs]
+ * @returns {Set<number>}
+ */
+export function planSectionForbidden(pawnY, endY, excludeYs) {
+  /** @type {Set<number>} */
+  const forbidden = new Set();
+  const excluded = excludeYs instanceof Set
+    ? excludeYs
+    : excludeYs instanceof Map
+      ? new Set(excludeYs.keys())
+      : new Set(excludeYs || []);
+
+  const pool = [];
+  for (let y = pawnY + 1; y < endY; y++) {
+    if (y < 3) continue;
+    if (isAdvanceTriggerRow(y)) continue;
+    if (excluded.has(y)) continue;
+    pool.push(y);
+  }
+  if (!pool.length) return forbidden;
+
+  const min = Math.max(0, props.forbiddenPerSectionMin | 0);
+  const max = Math.max(min, props.forbiddenPerSectionMax | 0);
+  const count = Math.min(
+    pool.length,
+    min + Math.floor(Math.random() * (max - min + 1)),
+  );
+
+  for (let i = 0; i < count; i++) {
+    const idx = Math.floor(Math.random() * pool.length);
+    forbidden.add(pool.splice(idx, 1)[0]);
+  }
+  return forbidden;
+}
+
+/**
+ * Per-row forbidden flag for rows [fromY, fromY + count).
+ * @param {number} fromY
+ * @param {number} count
+ * @param {Set<number>|Map<number, unknown>|Iterable<number>} forbidden
+ */
+export function forbiddenFlagsForRows(fromY, count, forbidden) {
+  const set = forbidden instanceof Set
+    ? forbidden
+    : forbidden instanceof Map
+      ? new Set(forbidden.keys())
+      : new Set(forbidden || []);
+  const flags = [];
+  for (let i = 0; i < count; i++) {
+    flags.push(set.has(fromY + i));
+  }
+  return flags;
+}

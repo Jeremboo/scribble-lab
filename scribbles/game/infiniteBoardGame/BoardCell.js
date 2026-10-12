@@ -11,7 +11,7 @@ import Cell from "../_modules/Cell";
 import props from './props';
 import OutlinableMesh from "../../../modules/Three/OutlinePass/OutlinableMesh";
 import gsap from "gsap";
-import Icon, { getAdvanceChevronTexture } from './Icon';
+import Icon, { getAdvanceChevronTexture, getForbiddenXTexture } from './Icon';
 export {
   getSectionStride,
   getSectionTriggerOffset,
@@ -22,6 +22,7 @@ import { isAdvanceTriggerRow } from './game/section';
 
 const ENTER_DURATION = 0.45;
 const EXIT_DURATION = 0.4;
+const FORBIDDEN_ICON_COLOR = '#E8A090';
 
 function createToonGradient() {
   const data = new Uint8Array([
@@ -47,6 +48,7 @@ function toonMaterial(hex) {
 
 const PATH_MATERIAL = toonMaterial(props.pathColors[0]);
 const NEUTRAL_MATERIAL = toonMaterial(props.neutralColors[0]);
+const FORBIDDEN_MATERIAL = toonMaterial(props.forbiddenColors[0]);
 
 /** Current advance-icon tint (shared materials update live; icons need a refresh). */
 let advanceIconColor = props.neutralColors[0];
@@ -60,11 +62,13 @@ export function getThemeIndex(index = props.themeIndex) {
   return i;
 }
 
-/** Update shared path / neutral cell materials for the active theme. */
+/** Update shared path / neutral / forbidden cell materials for the active theme. */
 export function applyBoardCellTheme(index = props.themeIndex) {
   const i = getThemeIndex(index);
   PATH_MATERIAL.color.set(props.pathColors[i]);
   NEUTRAL_MATERIAL.color.set(props.neutralColors[i]);
+  const forbiddenHex = props.forbiddenColors[i] || props.forbiddenColors[0];
+  FORBIDDEN_MATERIAL.color.set(forbiddenHex);
   advanceIconColor = props.neutralColors[i];
   return i;
 }
@@ -78,10 +82,16 @@ const ELEVATION = 0.25;
 const RISE_OFFSET = 2;
 
 export default class BoardCell extends Cell {
-  constructor(position, isPath) {
+  /**
+   * @param {import('three').Vector3} position
+   * @param {boolean} isPath
+   * @param {{ forbidden?: boolean }} [opts]
+   */
+  constructor(position, isPath, { forbidden = false } = {}) {
     super(position.x, position.z);
 
     this.isPath = isPath;
+    this.isForbidden = false;
     this.isAdvanceTrigger = isPath && isAdvanceTriggerRow(position.z);
     this.isExiting = false;
     this.loot = null;
@@ -108,12 +118,48 @@ export default class BoardCell extends Cell {
       this.icon.attachToCell(this, { y: HEIGHT / 2 });
     }
 
+    if (forbidden && isPath) {
+      this.setForbidden(true);
+    }
+
     this.update = this.update.bind(this);
+  }
+
+  /** Mark / unmark this path cell as a lethal forbidden tile. */
+  setForbidden(forbidden = true) {
+    if (!this.isPath || this.isExiting) return;
+    const next = !!forbidden;
+    if (this.isForbidden === next) return;
+    this.isForbidden = next;
+
+    if (next) {
+      this.mesh.material = FORBIDDEN_MATERIAL;
+      if (this.isAdvanceTrigger && this.icon) {
+        this.fadeAdvanceIcon(0);
+      }
+      if (!this.icon) {
+        this.icon = new Icon({
+          texture: getForbiddenXTexture(),
+          color: FORBIDDEN_ICON_COLOR,
+          size: 0.5,
+        });
+        this.icon.attachToCell(this, { y: HEIGHT / 2 });
+      }
+    } else {
+      this.mesh.material = PATH_MATERIAL;
+      if (this.icon && !this.isAdvanceTrigger) {
+        const icon = this.icon;
+        this.icon = null;
+        icon.dispose();
+      }
+    }
   }
 
   /** Retint the section-advance chevron after a theme change. */
   applyThemeIcon() {
-    if (this.icon) this.icon.setColor(advanceIconColor);
+    if (!this.icon) return;
+    if (this.isForbidden) this.icon.setColor(FORBIDDEN_ICON_COLOR);
+    else this.icon.setColor(advanceIconColor);
   }
 
   computeY(y) {

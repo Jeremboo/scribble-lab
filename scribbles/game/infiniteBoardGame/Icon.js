@@ -167,3 +167,30 @@ export function getAdvanceChevronTexture() {
   advanceChevronTexture.needsUpdate = true;
   return advanceChevronTexture;
 }
+
+/** Shared white X for forbidden / hazard cells. */
+let forbiddenXTexture = null;
+
+export function getForbiddenXTexture() {
+  if (forbiddenXTexture) return forbiddenXTexture;
+
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, size, size);
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 18;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(size * 0.28, size * 0.28);
+  ctx.lineTo(size * 0.72, size * 0.72);
+  ctx.moveTo(size * 0.72, size * 0.28);
+  ctx.lineTo(size * 0.28, size * 0.72);
+  ctx.stroke();
+
+  forbiddenXTexture = new CanvasTexture(canvas);
+  forbiddenXTexture.needsUpdate = true;
+  return forbiddenXTexture;
+}

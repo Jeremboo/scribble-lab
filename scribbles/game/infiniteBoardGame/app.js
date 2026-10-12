@@ -35,7 +35,18 @@ import DomCardRenderer from './DomCardRenderer';
 import MovePreview from './MovePreview';
 import { ensurePlayer, submitRun } from './Analytics';
 import { applyBoardCellTheme } from './BoardCell';
-import { GameController, GameEvents, getSectionTriggerOffset } from './game';
+import { GameController, GameEvents, EndReason, getSectionTriggerOffset } from './game';
+
+const GAME_OVER_COPY = {
+  [EndReason.EMPTY_HAND]: {
+    title: 'Game over',
+    subtitle: 'No cards left',
+  },
+  [EndReason.FORBIDDEN]: {
+    title: 'Game over',
+    subtitle: 'Forbidden cell',
+  },
+};
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
@@ -215,6 +226,8 @@ canvasSketch(({ context }) => {
   const runStats = game.stats;
   const debugStatsEl = document.getElementById('run-stats-debug');
   const gameOverEl = document.getElementById('game-over');
+  const gameOverTitleEl = document.getElementById('game-over-title');
+  const gameOverSubtitleEl = document.getElementById('game-over-subtitle');
   /** @type {{ score: number, best: number, previousBest: number, isNewBest: boolean } | null} */
   let lastBestInfo = null;
 
@@ -335,7 +348,7 @@ canvasSketch(({ context }) => {
     }
   };
 
-  const presentGameOver = () => {
+  const presentGameOver = (endReason = EndReason.EMPTY_HAND) => {
     runId += 1;
     setViewBusy(false);
     clearTimeout(unlockTimer);
@@ -352,6 +365,10 @@ canvasSketch(({ context }) => {
       cardUiRoot.classList.add('hidden');
       cardUiRoot.setAttribute('aria-hidden', 'true');
     }
+
+    const copy = GAME_OVER_COPY[endReason] || GAME_OVER_COPY[EndReason.EMPTY_HAND];
+    if (gameOverTitleEl) gameOverTitleEl.textContent = copy.title;
+    if (gameOverSubtitleEl) gameOverSubtitleEl.textContent = copy.subtitle;
 
     updateStatsUi(true, lastBestInfo);
     if (gameOverEl) {
@@ -499,12 +516,15 @@ canvasSketch(({ context }) => {
       sectionCards,
       lootPlan,
       lootPlanFlags,
+      forbiddenPlan,
+      forbiddenPlanFlags,
     } = section;
 
     presentHandCards(sectionCards, { delay: 500, staggerMs: 200 });
     animateCameraTarget(targetStartY);
     board.fadeAdvanceIconsBelow(targetStartY + getSectionTriggerOffset());
     board.spawnLootsAtYs(lootPlan);
+    board.markForbiddenAtYs(forbiddenPlan);
 
     for (let i = 0; i < steps; i++) {
       const stepDelay = props.cellCreationStagger * i;
@@ -522,7 +542,8 @@ canvasSketch(({ context }) => {
         if (id !== runId) return;
         const y = board.grid.column;
         const flag = (lootPlanFlags && lootPlanFlags[i]) || false;
-        board.addRowAhead(flag);
+        const forbidden = !!(forbiddenPlanFlags && forbiddenPlanFlags[i]);
+        board.addRowAhead(flag, forbidden);
         if (y === game.pawn.y) {
           syncPawnMesh();
           refreshDragPreviewIfNeeded();
@@ -561,17 +582,18 @@ canvasSketch(({ context }) => {
     fadeInCardHandVeil();
   };
 
-  const beginRunPresentation = ({ opening, lootPlan }) => {
+  const beginRunPresentation = ({ opening, lootPlan, forbiddenPlan }) => {
     ensureDomCardRenderer();
     cardHand.setCards([]);
     board.spawnLootsAtYs(lootPlan);
+    board.markForbiddenAtYs(forbiddenPlan);
     presentHandCards(opening);
   };
 
   // Controller → view bindings
-  game.on(GameEvents.RUN_STARTED, ({ opening, lootPlan, snapshot }) => {
+  game.on(GameEvents.RUN_STARTED, ({ opening, lootPlan, forbiddenPlan, snapshot }) => {
     lastBestInfo = null;
-    beginRunPresentation({ opening, lootPlan });
+    beginRunPresentation({ opening, lootPlan, forbiddenPlan });
     updateStatsUi(false);
   });
 
@@ -603,10 +625,10 @@ canvasSketch(({ context }) => {
     }
   });
 
-  game.on(GameEvents.GAME_OVER, ({ lastBest, snapshot }) => {
+  game.on(GameEvents.GAME_OVER, ({ lastBest, endReason, snapshot }) => {
     lastBestInfo = lastBest || (snapshot && snapshot.lastBest) || null;
     submitRun(runStats.snapshot(), { isNewBest: !!(lastBestInfo && lastBestInfo.isNewBest) });
-    presentGameOver();
+    presentGameOver(endReason || (snapshot && snapshot.endReason) || EndReason.EMPTY_HAND);
   });
 
   const resetWorldForNewRun = () => {

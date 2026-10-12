@@ -100,6 +100,7 @@
             <li>Reach a section marker to draw new cards.</li>
             <li>Pick up loot for extra moves — rescue cards are rare and powerful.</li>
             <li>Run out of cards and the run ends.</li>
+            <li>Landing on a forbidden cell ends the run.</li>
           </ul>
           <button type="button" id="howto-close">Close</button>
         </div>
@@ -144,7 +145,7 @@
     <div id="game-over" class="hidden" aria-hidden="true" role="dialog" aria-labelledby="game-over-title">
       <div class="game-over__panel">
         <h2 id="game-over-title">Game over</h2>
-        <p class="subtitle">No cards left</p>
+        <p id="game-over-subtitle" class="subtitle">No cards left</p>
         <ul class="game-over__stats">
           <li class="game-over__score">
             <span>Score</span>

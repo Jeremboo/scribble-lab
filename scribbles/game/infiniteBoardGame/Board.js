@@ -131,15 +131,30 @@ export default class Board extends Stage {
   }
 
   /**
+   * Mark path cells as forbidden when those rows already exist.
+   * @param {Iterable<number>|Set<number>|Array<number>} ys
+   */
+  markForbiddenAtYs(ys) {
+    if (!ys) return;
+    const list = ys instanceof Set ? ys : ys;
+    for (const y of list) {
+      const cell = this.getCell(this.pathX, y);
+      if (cell) cell.setForbidden(true);
+    }
+  }
+
+  /**
    * @param {number} x
    * @param {number} y
-   * @param {{ loot?: false | true | { isRescue?: boolean, rewardValue?: number } }} [options]
+   * @param {{ loot?: false | true | { isRescue?: boolean, rewardValue?: number }, forbidden?: boolean }} [options]
    */
-  initCell(x, y, { loot = false } = {}) {
+  initCell(x, y, { loot = false, forbidden = false } = {}) {
     const elevation = this.getElevation(x, y) * 0.5;
     const position = new Vector3(x, elevation, y);
     const isPath = this.pathX === x;
-    const cell = new BoardCell(position, isPath);
+    const cell = new BoardCell(position, isPath, {
+      forbidden: isPath && !!forbidden,
+    });
     if (isPath && loot) {
       this.spawnLoot(cell, loot === true ? {} : loot);
     }
@@ -205,13 +220,15 @@ export default class Board extends Stage {
   /**
    * Append one row at the front of the board.
    * @param {boolean | { isRescue?: boolean, rewardValue?: number }} [loot=false]
+   * @param {boolean} [forbidden=false]
    */
-  addRowAhead(loot = false) {
+  addRowAhead(loot = false, forbidden = false) {
     const y = this.grid.column;
     this.grid.grid[y] = [];
     for (let x = 0; x < props.boardWidth; x++) {
       const cell = this.initCell(x, y, {
         loot: x === this.pathX ? loot : false,
+        forbidden: x === this.pathX && !!forbidden,
       });
       cell.animateIn();
       this.grid.grid[y][x] = cell;

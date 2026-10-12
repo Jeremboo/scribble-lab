@@ -3,9 +3,20 @@ import RunStats from '../RunStats';
 import GridModel from './GridModel';
 import PawnModel from './PawnModel';
 import CardsController from './CardsController';
-import { planSectionLoots, lootFlagsForRows } from './deckRules';
+import {
+  planSectionLoots,
+  lootFlagsForRows,
+  planSectionForbidden,
+  forbiddenFlagsForRows,
+} from './deckRules';
 import { getNextSectionTriggerY, getSectionStride } from './section';
 import { GameEvents } from './events';
+
+/** Why the run ended. */
+export const EndReason = {
+  EMPTY_HAND: 'emptyHand',
+  FORBIDDEN: 'forbidden',
+};
 
 /**
  * Framework-agnostic gameplay controller.
@@ -24,8 +35,12 @@ export default class GameController {
     this.stats = new RunStats();
     /** @type {Map<number, { isRescue: boolean, rewardValue: number }>} */
     this.loots = new Map();
+    /** @type {Set<number>} absolute path rows that kill on landing */
+    this.forbidden = new Set();
     /** @type {'idle' | 'playing' | 'gameOver'} */
     this.phase = 'idle';
+    /** @type {typeof EndReason[keyof typeof EndReason] | null} */
+    this.endReason = null;
     /** @type {{ score: number, best: number, previousBest: number, isNewBest: boolean } | null} */
     this.lastBest = null;
     /** @type {Map<string, Set<Function>>} */
@@ -68,6 +83,7 @@ export default class GameController {
     const cardsSnap = this.cards.snapshot();
     return {
       phase: this.phase,
+      endReason: this.endReason,
       pawn: this.pawn.snapshot(),
       grid: this.grid.snapshot(),
       hand: cardsSnap.hand,
@@ -77,6 +93,7 @@ export default class GameController {
         isRescue: !!meta.isRescue,
         rewardValue: meta.rewardValue,
       })),
+      forbidden: Array.from(this.forbidden).sort((a, b) => a - b),
       stats: this.stats.snapshot(),
       lastBest: this.lastBest,
     };
@@ -107,7 +124,9 @@ export default class GameController {
 
     this.phase = 'playing';
     this.lastBest = null;
+    this.endReason = null;
     this.loots.clear();
+    this.forbidden.clear();
     this.grid.reset(props.boardWidth, props.boardHeight, resumeY != null ? originY : 0);
     if (pathX != null) this.grid.pathX = px;
     this.pawn.set(this.grid.pathX, originY);
@@ -118,6 +137,7 @@ export default class GameController {
     this.cards.setHand(opening);
 
     const lootPlan = this._planAndStoreLoots(opening, this.pawn.y);
+    const forbiddenPlan = this._planAndStoreForbidden(this.pawn.y, lootPlan);
     this.stats.start(this.pawn.y);
     this.stats.markTurnReady();
 
@@ -125,6 +145,7 @@ export default class GameController {
     this.emit(GameEvents.RUN_STARTED, {
       opening,
       lootPlan: this._planToObject(lootPlan),
+      forbiddenPlan: Array.from(forbiddenPlan),
       snapshot,
     });
     this.emit(GameEvents.HAND_CHANGED, {
@@ -172,6 +193,7 @@ export default class GameController {
       section: null,
       loot: null,
       cardsGranted: [],
+      hitForbidden: false,
       gameOver: false,
     };
 
@@ -181,14 +203,18 @@ export default class GameController {
       result.section = moveResult.section;
       result.loot = moveResult.loot;
       result.cardsGranted = moveResult.cardsGranted;
+      result.hitForbidden = !!moveResult.hitForbidden;
     }
 
     const snapshot = this.getSnapshot();
     this.emit(GameEvents.CARD_PLAYED, { ...result, snapshot });
     this.emit(GameEvents.STATS_CHANGED, { snapshot });
 
-    if (this.cards.hand.length === 0) {
-      this._triggerGameOver();
+    if (result.hitForbidden) {
+      this._triggerGameOver(EndReason.FORBIDDEN);
+      result.gameOver = true;
+    } else if (this.cards.hand.length === 0) {
+      this._triggerGameOver(EndReason.EMPTY_HAND);
       result.gameOver = true;
     } else {
       this.stats.markTurnReady();
@@ -208,18 +234,22 @@ export default class GameController {
     let section = null;
     /** @type {object[]} */
     let cardsGranted = [];
+    let loot = null;
+    const hitForbidden = this.forbidden.has(this.pawn.y);
 
-    if (move.direction > 0 && this.grid.shouldAdvanceSection(this.pawn.y, 0)) {
-      section = this._advanceSection();
-      if (section && section.sectionCards) {
-        cardsGranted = cardsGranted.concat(section.sectionCards);
+    if (!hitForbidden) {
+      if (move.direction > 0 && this.grid.shouldAdvanceSection(this.pawn.y, 0)) {
+        section = this._advanceSection();
+        if (section && section.sectionCards) {
+          cardsGranted = cardsGranted.concat(section.sectionCards);
+        }
       }
-    }
 
-    const loot = this._collectLootAt(this.pawn.x, this.pawn.y);
-    if (loot) {
-      const lootCards = this._grantLootCards(loot);
-      cardsGranted = cardsGranted.concat(lootCards);
+      loot = this._collectLootAt(this.pawn.x, this.pawn.y);
+      if (loot) {
+        const lootCards = this._grantLootCards(loot);
+        cardsGranted = cardsGranted.concat(lootCards);
+      }
     }
 
     const snapshot = this.getSnapshot();
@@ -228,10 +258,11 @@ export default class GameController {
       section,
       loot,
       cardsGranted,
+      hitForbidden,
       snapshot,
     });
 
-    return { move, section, loot, cardsGranted };
+    return { move, section, loot, cardsGranted, hitForbidden };
   }
 
   _advanceSection() {
@@ -244,10 +275,16 @@ export default class GameController {
     const advance = this.grid.applySectionAdvance(steps, this.pawn.y);
     const handForLoot = this.cards.hand.slice();
     const lootPlan = this._planAndStoreLoots(handForLoot, this.pawn.y);
+    const forbiddenPlan = this._planAndStoreForbidden(this.pawn.y, lootPlan);
     const lootPlanFlags = lootFlagsForRows(
       advance.fromColumn,
       advance.rowsToAdd,
       lootPlan,
+    );
+    const forbiddenPlanFlags = forbiddenFlagsForRows(
+      advance.fromColumn,
+      advance.rowsToAdd,
+      forbiddenPlan,
     );
 
     const section = {
@@ -255,6 +292,8 @@ export default class GameController {
       sectionCards,
       lootPlan: this._planToObject(lootPlan),
       lootPlanFlags,
+      forbiddenPlan: Array.from(forbiddenPlan),
+      forbiddenPlanFlags,
     };
 
     const snapshot = this.getSnapshot();
@@ -280,6 +319,19 @@ export default class GameController {
     const plan = planSectionLoots(pawnY, endY, hand);
     for (const [y, meta] of plan) {
       this.loots.set(y, { ...meta });
+    }
+    return plan;
+  }
+
+  /**
+   * @param {number} pawnY
+   * @param {Map<number, unknown>|Set<number>} [excludeYs]
+   */
+  _planAndStoreForbidden(pawnY, excludeYs) {
+    const endY = getNextSectionTriggerY(pawnY);
+    const plan = planSectionForbidden(pawnY, endY, excludeYs);
+    for (const y of plan) {
+      this.forbidden.add(y);
     }
     return plan;
   }
@@ -349,15 +401,20 @@ export default class GameController {
     return cards;
   }
 
-  _triggerGameOver() {
+  /**
+   * @param {typeof EndReason[keyof typeof EndReason]} [reason=EndReason.EMPTY_HAND]
+   */
+  _triggerGameOver(reason = EndReason.EMPTY_HAND) {
     if (this.phase === 'gameOver') return;
     this.phase = 'gameOver';
+    this.endReason = reason;
     this.stats.updatePosition(this.pawn.y);
     this.stats.stop();
     this.lastBest = this.stats.commitBestScore();
     const snapshot = this.getSnapshot();
     this.emit(GameEvents.GAME_OVER, {
       lastBest: this.lastBest,
+      endReason: this.endReason,
       snapshot,
     });
     this.emit(GameEvents.STATS_CHANGED, { snapshot });
