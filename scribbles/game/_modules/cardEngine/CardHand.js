@@ -322,6 +322,9 @@ export default class CardHand {
     if (!this.draggingCardId) return;
 
     const card = this.getCard(this.draggingCardId);
+    // Re-evaluate at release position so a mid-drag unlock / layout change
+    // cannot leave a stale canDrop=false from an earlier move.
+    if (card) this._updateActiveDropTarget(card);
     const target = this.activeDropTarget;
     const canDrop = this.canDropOnActive;
 

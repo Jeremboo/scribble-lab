@@ -33,9 +33,9 @@ import gsap from 'gsap';
 import { CardHand, DropTarget, getHandSize } from '../_modules/cardEngine';
 import DomCardRenderer from './DomCardRenderer';
 import MovePreview from './MovePreview';
-import RunStats from './RunStats';
 import { ensurePlayer, submitRun } from './Analytics';
-import { getSectionStride, getSectionTriggerOffset, getNextSectionTriggerY, applyBoardCellTheme } from './BoardCell';
+import { applyBoardCellTheme } from './BoardCell';
+import { GameController, GameEvents, getSectionTriggerOffset } from './game';
 
 //  https://www.freepik.com/free-vector/board-game-collection-isometric-design_10363610.htm
 canvasSketch(({ context }) => {
@@ -170,6 +170,7 @@ canvasSketch(({ context }) => {
   renderer.add(board.group);
 
   const START_PAWN_Y = 3; // 5th path cell (0-indexed)
+  const game = new GameController({ startPawnY: START_PAWN_Y });
   const pawnBoard = new BoardPawn({ x: board.pathX, y: START_PAWN_Y });
   renderer.add(pawnBoard.mesh);
 
@@ -198,21 +199,20 @@ canvasSketch(({ context }) => {
   animateCameraTarget(0, 0, 0);
   setAtmosphereColor(props.fogNearColor, props.fogFarColor);
 
-  let pendingAdvance = 0;
   let isAnimatedIn = false;
-  let isGameOver = false;
   let gameState = GameState.INTRO;
-  let endOfTurnTimer = null;
-  let debugStatsRaf = 0;
-  /** Bumped on restart so stale advance/draw timeouts no-op. */
+  /** View-only input lock while section / card presentation animates. */
+  let viewBusy = false;
+  /** Bumped on restart / game-over so stale view timeouts no-op. */
   let runId = 0;
   let lastStyleWidth = 0;
   let lastStyleHeight = 0;
   let mobileLandscapeActive = null;
   /** Keeps dat.GUI hand sliders aligned with the active desktop/mobile preset. */
   let refreshHandLayoutGui = null;
+  let unlockTimer = null;
 
-  const runStats = new RunStats();
+  const runStats = game.stats;
   const debugStatsEl = document.getElementById('run-stats-debug');
   const gameOverEl = document.getElementById('game-over');
   /** @type {{ score: number, best: number, previousBest: number, isNewBest: boolean } | null} */
@@ -232,8 +232,6 @@ canvasSketch(({ context }) => {
     const snap = runStats.snapshot();
     const duration = final ? snap.durationMs : runStats.durationMs;
     const score = bestInfo ? bestInfo.score : snap.cells;
-    // During a run, show the stored best as the target to beat.
-    // After game over, use the committed best (may include a new record).
     const best = bestInfo ? bestInfo.best : snap.bestCells;
     const isNewBest = bestInfo
       ? bestInfo.isNewBest
@@ -289,7 +287,7 @@ canvasSketch(({ context }) => {
     if (!debugStatsEl) return;
     showRunStatsHud(true);
     const tick = () => {
-      if (!runStats.isRunning && isGameOver) {
+      if (game.phase === 'gameOver') {
         updateStatsUi(true, lastBestInfo);
         return;
       }
@@ -300,21 +298,49 @@ canvasSketch(({ context }) => {
     debugStatsRaf = requestAnimationFrame(tick);
   };
 
-  const triggerGameOver = () => {
-    if (isGameOver) return;
-    isGameOver = true;
-    // Stop mid-flight section advances so the board freezes at this offset.
+  let debugStatsRaf = 0;
+
+  const setViewBusy = (busy) => {
+    viewBusy = !!busy;
+  };
+
+  /** If a drag is in progress, rebuild the move preview (e.g. after section unlock). */
+  const refreshDragPreviewIfNeeded = () => {
+    if (!cardHand || !cardHand.draggingCardId) return;
+    const card = cardHand.getCard(cardHand.draggingCardId);
+    if (card) showMovePreview(card);
+  };
+
+  const scheduleViewUnlock = (delayMs) => {
+    clearTimeout(unlockTimer);
+    const id = runId;
+    unlockTimer = setTimeout(() => {
+      if (id !== runId) return;
+      setViewBusy(false);
+      unlockTimer = null;
+      refreshDragPreviewIfNeeded();
+    }, Math.max(0, delayMs));
+  };
+
+  const syncPawnMesh = () => {
+    pawnBoard.x = game.pawn.x;
+    pawnBoard.y = game.pawn.y;
+    const cell = board.getCell(pawnBoard.x, pawnBoard.y);
+    if (cell) {
+      board.addPawn(pawnBoard);
+      pawnBoard.applyRulesFromCellLanded(cell);
+    } else {
+      const preview = board.getPathPreviewTarget(pawnBoard.x, pawnBoard.y);
+      pawnBoard.applyRulesFromCellLanded(preview);
+    }
+  };
+
+  const presentGameOver = () => {
     runId += 1;
-    pendingAdvance = 0;
-    pendingDrawAdds = 0;
-    runStats.updatePosition(pawnBoard.y);
-    runStats.stop();
-    lastBestInfo = runStats.commitBestScore();
-    submitRun(runStats.snapshot(), { isNewBest: lastBestInfo.isNewBest });
-    clearTimeout(endOfTurnTimer);
-    endOfTurnTimer = null;
+    setViewBusy(false);
+    clearTimeout(unlockTimer);
+    unlockTimer = null;
     hideMovePreview();
-    // Hide remaining section-advance chevrons under the overlay.
     board.fadeAdvanceIconsBelow(Infinity, 0.35);
     pawnBoard.hide();
     showRunStatsHud(false);
@@ -334,49 +360,33 @@ canvasSketch(({ context }) => {
     }
   };
 
-  const resolveEndOfTurn = () => {
-    if (isGameOver || !isAnimatedIn) return;
-    // Wait until every scheduled reward/hand add has landed.
-    if (pendingDrawAdds > 0) return;
-    if (cardHand.cards.length === 0) {
-      triggerGameOver();
-      return;
-    }
-    runStats.markTurnReady();
-    updateStatsUi(false);
-  };
-
-  /** Wait for loot / section draw settle, then check empty hand. */
-  const scheduleEndOfTurnCheck = () => {
-    if (isGameOver) return;
-    clearTimeout(endOfTurnTimer);
-    // Reward draws are queued at 500ms; card adds stagger +150ms each.
-    // If pending adds still remain when this fires, resolveEndOfTurn no-ops
-    // and drawCards calls it again when the last add lands.
-    endOfTurnTimer = setTimeout(() => {
-      endOfTurnTimer = null;
-      resolveEndOfTurn();
-    }, turnMayDraw ? 600 : 80);
-  };
-
   // ── Card hand (renderer-agnostic engine + DomCardRenderer) ──
   const cardUiRoot = document.getElementById('card-ui');
-  let turnMayDraw = false;
-  let pendingDrawAdds = 0;
-  let nextCardId = 1;
+  let domCardRenderer = null;
+
   const cardHand = new CardHand({
     layout: props.handLayout,
     onCardPlayed: (card) => {
-      if (isGameOver) return;
-      runStats.recordCardPlayed(card);
-      turnMayDraw = false;
-      const steps = card.type === 'move' ? (card.value | 0) : 1;
-      if (steps !== 0) advancePawn(steps);
-      scheduleEndOfTurnCheck();
-      updateStatsUi(false);
+      if (!isAnimatedIn || game.phase !== 'playing') {
+        // CardHand already removed it — put it back if the play is rejected.
+        if (card && card.data) cardHand.addCard(card.data, { animate: false });
+        else if (card) cardHand.addCard(card, { animate: false });
+        return;
+      }
+      hideMovePreview();
+      const result = game.playCard(card);
+      if (!result) {
+        if (card && card.data) cardHand.addCard(card.data, { animate: false });
+        else if (card) cardHand.addCard(card, { animate: false });
+        return;
+      }
+      syncPawnMesh();
+      if (result.section) {
+        setViewBusy(true);
+      }
     },
     onCardDragStart: (card) => {
-      if (isGameOver) return;
+      if (!isAnimatedIn || game.phase !== 'playing') return;
       showMovePreview(card);
     },
     onCardReturned: () => hideMovePreview(),
@@ -424,16 +434,15 @@ canvasSketch(({ context }) => {
       hideMovePreview();
       return;
     }
-    const steps = card.value | 0;
-    if (steps === 0) {
+    const landing = game.getMoveLanding(card);
+    if (!landing) {
       hideMovePreview();
       return;
     }
-    const targetY = Math.max(board.startY, pawnBoard.y + steps);
-    // Do not create rows here — off-board landings are built staggered by
-    // animateAdvance when the card is actually played.
-    const fromCell = board.getCell(pawnBoard.x, pawnBoard.y);
-    const toCell = board.getPathPreviewTarget(pawnBoard.x, targetY);
+    // Prefer live cells; fall back to stand-ins while section rows are still rising.
+    const fromCell = board.getCell(landing.x, landing.fromY)
+      || board.getPathPreviewTarget(landing.x, landing.fromY);
+    const toCell = board.getPathPreviewTarget(landing.x, landing.toY);
     if (!fromCell || !toCell) {
       hideMovePreview();
       return;
@@ -447,195 +456,87 @@ canvasSketch(({ context }) => {
   const playZone = new DropTarget({
     id: 'play-zone',
     handSize: getHandSize(props.handLayout),
-    // debug: props.debug,
     label: (card) => (
       card.type === 'move'
         ? `Move ${formatMoveLabel(card.value)}`
         : `Play ${card.type}`
     ),
+    canAccept: () => isAnimatedIn && game.phase === 'playing',
   });
   cardHand.addDropTarget(playZone);
 
-  let domCardRenderer = null;
-  /** Remaining draw pile after the opening hand is dealt. */
-  let deck = [];
-
-  const shuffle = (cards) => {
-    const next = cards.slice();
-    for (let i = next.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const tmp = next[i];
-      next[i] = next[j];
-      next[j] = tmp;
-    }
-    return next;
-  };
-
-  /** Pick any configured move value (including negatives), weighted by `ratio`. */
-  const pickDeckMoveValue = () => {
-    const picked = board.pickWeightedMoveValue({ includeNegative: true });
-    return picked != null ? picked : 1 + Math.floor(Math.random() * 6);
-  };
-
-  const makeMoveCard = (value = pickDeckMoveValue(), extra = {}) => ({
-    id: `c${nextCardId++}`,
-    value,
-    type: 'move',
-    ...extra,
-  });
-
   /**
-   * Build a draw pile from templates: each card is cloned `ratio` times
-   * (rounded, min 1), then shuffled. Higher ratio → more copies → more common.
+   * Present granted cards in the DOM hand after an optional delay,
+   * then staggered. Each card becomes playable as soon as it is added.
    */
-  const buildWeightedDeck = () => {
-    const bag = [];
-    for (const card of props.deckCards) {
-      if (!card) continue;
-      const copies = Math.max(1, Math.round(board.cardRatio(card)));
-      for (let i = 0; i < copies; i++) {
-        bag.push({
-          id: `c${nextCardId++}`,
-          value: card.value,
-          type: card.type,
-          ratio: card.ratio,
-        });
-      }
-    }
-    return shuffle(bag);
-  };
-
-  const refillDeck = () => {
-    deck = buildWeightedDeck();
-  };
-
-  /** Plan + apply section loots from hand reach vs. next trigger. */
-  const planAndApplySectionLoots = (cards, pawnY = pawnBoard.y) => {
-    const endY = getNextSectionTriggerY(pawnY);
-    const plan = board.planSectionLoots(pawnY, endY, cards);
-    board.spawnLootsAtYs(plan);
-    return plan;
-  };
-
-  const takeDeckCards = (count) => {
-    const taken = [];
-    for (let i = 0; i < count; i++) {
-      if (!deck.length) refillDeck();
-      taken.push(deck.length ? deck.shift() : makeMoveCard());
-    }
-    return taken;
-  };
-
-  const enqueueHandCards = (cards) => {
-    if (!cards.length) return;
+  const presentHandCards = (cards, { delay = 0, staggerMs = 175 } = {}) => {
+    if (!cards || !cards.length) return;
     const id = runId;
-    cards.forEach((data, i) => {
-      pendingDrawAdds += 1;
+    const start = () => {
+      if (id !== runId) return;
+      cards.forEach((data, i) => {
+        const add = () => {
+          if (id !== runId || game.phase === 'gameOver') return;
+          cardHand.addCard(data);
+        };
+        if (i === 0 || staggerMs <= 0) add();
+        else setTimeout(add, staggerMs * i);
+      });
+    };
+    if (delay > 0) setTimeout(start, delay);
+    else start();
+  };
+
+  const presentSectionAdvance = (section) => {
+    if (!section) return;
+    const id = runId;
+    grounds.onBoardAdvance();
+
+    const {
+      steps,
+      targetStartY,
+      rowsToAdd,
+      sectionCards,
+      lootPlan,
+      lootPlanFlags,
+    } = section;
+
+    presentHandCards(sectionCards, { delay: 500, staggerMs: 200 });
+    animateCameraTarget(targetStartY);
+    board.fadeAdvanceIconsBelow(targetStartY + getSectionTriggerOffset());
+    board.spawnLootsAtYs(lootPlan);
+
+    for (let i = 0; i < steps; i++) {
+      const stepDelay = props.cellCreationStagger * i;
       setTimeout(() => {
         if (id !== runId) return;
-        if (!isGameOver) {
-          cardHand.addCard(data);
+        if (board.startY < targetStartY) {
+          board.removeRowBehind();
         }
-        pendingDrawAdds = Math.max(0, pendingDrawAdds - 1);
-        if (pendingDrawAdds === 0 && endOfTurnTimer === null) {
-          resolveEndOfTurn();
-        }
-      }, 150 * i);
-    });
-  };
-
-  const drawCards = (count) => {
-    if (!count || count < 1) return 0;
-    const drawn = takeDeckCards(count);
-    enqueueHandCards(drawn);
-    return drawn.length;
-  };
-
-  const applyLoot = (loot) => {
-    if (!loot) return;
-    const id = runId;
-    runStats.recordLoot();
-
-    turnMayDraw = true;
-    setTimeout(() => {
-      if (id !== runId) return;
-      const drawCount = Math.max(1, props.cardDrawnPerLoot | 0);
-
-      if (loot.rewardValue != null) {
-        // Guaranteed reward first (rescue needs this value), then fill from deck.
-        const cards = [makeMoveCard(loot.rewardValue, {
-          isRescue: !!loot.isRescue && props.debugLoot,
-        })];
-        const extras = drawCount - 1;
-        if (extras > 0) cards.push(...takeDeckCards(extras));
-        if (props.debugLoot) {
-          console.log(
-            '[loot collect]',
-            loot.isRescue ? 'RESCUE' : 'extra',
-            `y=${loot.cell ? loot.cell.y : '?'}`,
-            `→ ${cards.length} card(s)`,
-            cards.map((c) => (c.value > 0 ? `+${c.value}` : String(c.value))).join(', '),
-          );
-        }
-        enqueueHandCards(cards);
-      } else {
-        if (props.debugLoot) {
-          console.log('[loot collect] no rewardValue — drawing from deck', drawCount);
-        }
-        drawCards(drawCount);
-      }
-    }, 500);
-  };
-
-  const placePawnAtCurrentCell = () => {
-    const cell = board.getCell(pawnBoard.x, pawnBoard.y);
-    if (cell) {
-      board.addPawn(pawnBoard);
-      return cell;
-    }
-    // Row not built yet — aim at a stand-in; animateAdvance creates it staggered.
-    const preview = board.getPathPreviewTarget(pawnBoard.x, pawnBoard.y);
-    pawnBoard.applyRulesFromCellLanded(preview);
-    return null;
-  };
-
-  const advancePawn = (steps = 1) => {
-    if (!isAnimatedIn || isGameOver || steps === 0) return;
-    hideMovePreview();
-
-    const dir = steps > 0 ? 1 : -1;
-    const count = Math.abs(steps | 0);
-    let shouldAdvance = false;
-
-    for (let i = 0; i < count; i++) {
-      if (dir < 0 && pawnBoard.y <= board.startY) break;
-
-      board.removePawn(pawnBoard);
-      pawnBoard.moveTo(dir);
-      placePawnAtCurrentCell();
-
-      if (dir > 0 && pawnBoard.y >= board.startY + pendingAdvance + getSectionTriggerOffset()) {
-        shouldAdvance = true;
-      }
+      }, stepDelay);
     }
 
-    runStats.updatePosition(pawnBoard.y);
-
-    // New section rows are created (staggered) only by animateAdvance — never
-    // ensureRow here, or their animateIn would fire before the stagger.
-    if (shouldAdvance) {
-      animateAdvance(getSectionStride());
+    for (let i = 0; i < rowsToAdd; i++) {
+      const stepDelay = props.cellCreationStagger * i;
+      setTimeout(() => {
+        if (id !== runId) return;
+        const y = board.grid.column;
+        const flag = (lootPlanFlags && lootPlanFlags[i]) || false;
+        board.addRowAhead(flag);
+        if (y === game.pawn.y) {
+          syncPawnMesh();
+          refreshDragPreviewIfNeeded();
+        }
+      }, stepDelay + 250);
     }
 
-    // Loot only on the card's final landing cell (not cells jumped over).
-    // If the landing row is still pending (section advance), collect when it appears.
-    applyLoot(board.collectLootAt(pawnBoard.x, pawnBoard.y));
+    const unlockAfter = props.cellCreationStagger * Math.max(steps, rowsToAdd) + 250 + 80;
+    scheduleViewUnlock(unlockAfter);
   };
 
   const fadeInCardHandVeil = () => {
     if (!cardUiRoot) return;
     cardUiRoot.classList.remove('card-hand-veil-on');
-    // Double rAF so the browser commits opacity: 0 before transitioning to 1.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (cardUiRoot.classList.contains('hidden')) return;
@@ -644,7 +545,7 @@ canvasSketch(({ context }) => {
     });
   };
 
-  const initCardHandUi = () => {
+  const ensureDomCardRenderer = () => {
     if (!domCardRenderer) {
       cardUiRoot.classList.remove('hidden');
       cardUiRoot.setAttribute('aria-hidden', 'false');
@@ -658,21 +559,60 @@ canvasSketch(({ context }) => {
       cardUiRoot.setAttribute('aria-hidden', 'false');
     }
     fadeInCardHandVeil();
-
-    cardHand.setCards([]);
-    nextCardId = 1;
-    deck = buildWeightedDeck();
-    const opening = takeDeckCards(props.startingHandSize);
-    // First-section loots use the dealt hand (before cards animate in).
-    planAndApplySectionLoots(opening, pawnBoard.y);
-    enqueueHandCards(opening);
   };
+
+  const beginRunPresentation = ({ opening, lootPlan }) => {
+    ensureDomCardRenderer();
+    cardHand.setCards([]);
+    board.spawnLootsAtYs(lootPlan);
+    presentHandCards(opening);
+  };
+
+  // Controller → view bindings
+  game.on(GameEvents.RUN_STARTED, ({ opening, lootPlan, snapshot }) => {
+    lastBestInfo = null;
+    beginRunPresentation({ opening, lootPlan });
+    updateStatsUi(false);
+  });
+
+  game.on(GameEvents.SECTION_ADVANCED, (payload) => {
+    presentSectionAdvance(payload);
+    updateStatsUi(false);
+  });
+
+  game.on(GameEvents.PAWN_MOVED, () => {
+    syncPawnMesh();
+  });
+
+  game.on(GameEvents.LOOT_COLLECTED, ({ loot }) => {
+    if (!loot) return;
+    board.collectLootAt(loot.x, loot.y);
+  });
+
+  game.on(GameEvents.HAND_CHANGED, ({ added, reason }) => {
+    // Opening is presented from RUN_STARTED; section cards from presentSectionAdvance.
+    if (reason === 'opening' || reason === 'section') return;
+    presentHandCards(added, { delay: 250 });
+  });
+
+  game.on(GameEvents.STATS_CHANGED, ({ snapshot }) => {
+    if (snapshot && snapshot.phase === 'gameOver') {
+      updateStatsUi(true, snapshot.lastBest || lastBestInfo);
+    } else {
+      updateStatsUi(false);
+    }
+  });
+
+  game.on(GameEvents.GAME_OVER, ({ lastBest, snapshot }) => {
+    lastBestInfo = lastBest || (snapshot && snapshot.lastBest) || null;
+    submitRun(runStats.snapshot(), { isNewBest: !!(lastBestInfo && lastBestInfo.isNewBest) });
+    presentGameOver();
+  });
 
   const resetWorldForNewRun = () => {
     hideMovePreview();
     board.removePawn(pawnBoard);
 
-    // Freeze the camera where it is — no tween back from the final section.
     gsap.killTweensOf(mainCamera.target);
     const resumeY = Math.max(0, Math.round(mainCamera.target.z));
 
@@ -685,15 +625,12 @@ canvasSketch(({ context }) => {
       board.regenerateNoise();
       grounds.setPathY(board.pathY);
     }
-    // Same as post-advance: passed-section markers sit on the first padding
-    // rows of this window — strip them so only the upcoming chevrons remain.
     board.fadeAdvanceIconsBelow(resumeY + getSectionTriggerOffset(), 0);
 
     pawnBoard.x = board.pathX;
     pawnBoard.y = resumeY;
     pawnBoard.setJumpPreview(false);
     pawnBoard.ampl = 0;
-    // Already hidden on game over — keep scale at 0 until show() on restart.
     pawnBoard.isVisible = false;
     pawnBoard.targetedScale = 0;
     pawnBoard.currentScale = 0;
@@ -707,135 +644,64 @@ canvasSketch(({ context }) => {
     }
 
     setAtmosphereColor(props.fogNearColor, props.fogFarColor);
+    return resumeY;
   };
 
   const restartGame = () => {
-    if (!isGameOver) return;
+    if (game.phase !== 'gameOver') return;
 
     runId += 1;
-    isGameOver = false;
     isAnimatedIn = false;
-    pendingAdvance = 0;
-    pendingDrawAdds = 0;
-    turnMayDraw = false;
-    clearTimeout(endOfTurnTimer);
-    endOfTurnTimer = null;
+    setViewBusy(false);
+    clearTimeout(unlockTimer);
+    unlockTimer = null;
 
     if (gameOverEl) {
       gameOverEl.classList.add('hidden');
       gameOverEl.setAttribute('aria-hidden', 'true');
     }
 
-    // Stay on the game page — never return to home.
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
 
-    resetWorldForNewRun();
+    const resumeY = resetWorldForNewRun();
 
     lastBestInfo = null;
-    runStats.start(pawnBoard.y);
     collapseStatsDetails();
     startDebugStatsLoop();
-    updateStatsUi(false);
 
     setTimeout(() => {
-      initCardHandUi();
+      game.restartRun({ resumeY, pathX: board.pathX });
     }, 200);
 
     setTimeout(() => {
       isAnimatedIn = true;
       pawnBoard.show();
-      runStats.markTurnReady();
       updateStatsUi(false);
-      // applyView(GameState.IN_GAME);
     }, 500);
   };
 
-  const animateIn  = () => {
+  const animateIn = () => {
     applyView(GameState.IN_GAME, { cameraDuration: 3 });
 
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
 
     lastBestInfo = null;
-    runStats.start(pawnBoard.y);
     collapseStatsDetails();
     startDebugStatsLoop();
     updateStatsUi(false);
 
     setTimeout(() => {
-      initCardHandUi();
+      game.startRun({ pathX: board.pathX });
+      // Keep visual pawn aligned with logical start.
+      syncPawnMesh();
     }, 500);
 
     setTimeout(() => {
       isAnimatedIn = true;
-      runStats.markTurnReady();
     }, 1000);
-  }
-
-  const animateAdvance = (steps) => {
-    const id = runId;
-    grounds.onBoardAdvance();
-    runStats.recordSection();
-    updateStatsUi(false);
-
-    // Take section rewards now so loot planning sees the full upcoming hand,
-    // then animate them into the hand after the usual delay.
-    const sectionCards = takeDeckCards(props.cardDrawnPerSection);
-    turnMayDraw = true;
-    setTimeout(() => {
-      if (id !== runId) return;
-      enqueueHandCards(sectionCards);
-    }, 500);
-
-    pendingAdvance += steps;
-    const targetStartY = board.startY + pendingAdvance;
-    const targetEndY = Math.max(
-      targetStartY + props.boardHeight,
-      pawnBoard.y + 1,
-    );
-    animateCameraTarget(targetStartY);
-
-    // Fade chevrons from the section just passed; keep the next padding markers.
-    board.fadeAdvanceIconsBelow(targetStartY + getSectionTriggerOffset());
-
-    const rowsToAdd = Math.max(0, targetEndY - board.grid.column);
-
-    // Plan with remaining hand + section draws (complete hand for this section).
-    const handForLoot = cardHand.cards.concat(sectionCards);
-    const lootPlanMap = board.planSectionLoots(
-      pawnBoard.y,
-      getNextSectionTriggerY(pawnBoard.y),
-      handForLoot,
-    );
-    board.spawnLootsAtYs(lootPlanMap);
-    const lootPlan = board.lootFlagsForRows(board.grid.column, rowsToAdd, lootPlanMap);
-
-    for (let i = 0; i < steps; i++) {
-      const stepDelay = props.cellCreationStagger * i;
-      setTimeout(() => {
-        if (id !== runId) return;
-        if (pawnBoard.y > board.startY) {
-          board.removeRowBehind();
-          pendingAdvance = Math.max(0, pendingAdvance - 1);
-        }
-      }, stepDelay);
-    }
-
-    for (let i = 0; i < rowsToAdd; i++) {
-      const stepDelay = props.cellCreationStagger * i;
-      setTimeout(() => {
-        if (id !== runId) return;
-        const y = board.grid.column;
-        board.addRowAhead(lootPlan[i]);
-        // Attach pawn (and any loot) once its landing row rises in.
-        if (y === pawnBoard.y) {
-          board.addPawn(pawnBoard);
-          applyLoot(board.collectLootAt(pawnBoard.x, pawnBoard.y));
-        }
-      }, stepDelay + 250);
-    }
-  }
+  };
 
   // INTRO ANIMATION
   setTimeout(() => {
@@ -1116,7 +982,6 @@ canvasSketch(({ context }) => {
       cardHand.update(_props.deltaTime);
     },
     unload() {
-      controls.dispose();
       renderer.dispose();
     }
   };

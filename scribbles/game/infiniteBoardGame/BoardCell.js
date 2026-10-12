@@ -12,6 +12,13 @@ import props from './props';
 import OutlinableMesh from "../../../modules/Three/OutlinePass/OutlinableMesh";
 import gsap from "gsap";
 import Icon, { getAdvanceChevronTexture } from './Icon';
+export {
+  getSectionStride,
+  getSectionTriggerOffset,
+  isAdvanceTriggerRow,
+  getNextSectionTriggerY,
+} from './game/section';
+import { isAdvanceTriggerRow } from './game/section';
 
 const ENTER_DURATION = 0.45;
 const EXIT_DURATION = 0.4;
@@ -64,37 +71,6 @@ export function applyBoardCellTheme(index = props.themeIndex) {
 
 export function getAdvanceIconColor() {
   return advanceIconColor;
-}
-
-/** Rows shifted when the board advances one section. */
-export function getSectionStride() {
-  return Math.floor(props.boardHeight - props.boardPadding);
-}
-
-/** First padding cell offset from section start (triggers animateAdvance). */
-export function getSectionTriggerOffset() {
-  return Math.floor(props.boardHeight - props.boardPadding);
-}
-
-/**
- * Path rows in each section's padding zone (the last boardPadding cells).
- */
-export function isAdvanceTriggerRow(y) {
-  const stride = getSectionStride();
-  const padding = Math.max(0, Math.floor(props.boardPadding));
-  const first = getSectionTriggerOffset();
-  if (stride <= 0 || padding <= 0 || y < first) return false;
-  return ((y - first) % stride) < padding;
-}
-
-/** Next section-trigger row strictly ahead of fromY (the "end cell" to reach). */
-export function getNextSectionTriggerY(fromY) {
-  const first = getSectionTriggerOffset();
-  const stride = getSectionStride();
-  if (stride <= 0) return first;
-  if (fromY < first) return first;
-  const k = Math.floor((fromY - first) / stride);
-  return first + (k + 1) * stride;
 }
 
 const HEIGHT = 5;

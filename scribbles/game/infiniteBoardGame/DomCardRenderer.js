@@ -288,10 +288,11 @@ export default class DomCardRenderer {
     if (handled) {
       event.preventDefault();
       event.stopPropagation();
-      const captureEl = cardEl || (event.target instanceof Element ? event.target : this.root);
+      // Capture on the root so hand DOM inserts/removes mid-drag cannot
+      // cancel the pointer (which would bounce the card home).
       try {
-        captureEl.setPointerCapture(event.pointerId);
-        this._captureEl = captureEl;
+        this.root.setPointerCapture(event.pointerId);
+        this._captureEl = this.root;
       } catch (_) {
         this._captureEl = null;
       }
