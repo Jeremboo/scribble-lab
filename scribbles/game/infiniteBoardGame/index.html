@@ -62,11 +62,48 @@
   <!-- DOM UI overlays, sized/centered to match the canvas (see app.js resize). -->
   <div id="ui-wrapper">
     <header id="home-page">
-      <h1>Infinite board game</h1>
-      <a href="https://www.jeremieboulay.fr" target="_blank">@jeremboo</a>
-      <div>
-        <button type="button" id="start-button">Start</button>
+      <div class="home-brand">
+        <h1>
+          <img src="logo.png" alt="Infinite Board Game" width="335" height="159">
+        </h1>
+        <!-- <p class="home-tagline">
+          Keep moving.<br>
+          The world <span class="accent">won't.</span>
+        </p> -->
       </div>
+
+      <nav class="home-nav" aria-label="Main">
+        <button type="button" id="start-button">
+          Start <span class="home-nav__arrow" aria-hidden="true">→</span>
+        </button>
+        <!-- <button type="button" class="home-nav__link" id="howto-button">
+          <svg class="home-nav__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 4.5h5.2c1.3 0 2.3.7 2.8 1.2.5-.5 1.5-1.2 2.8-1.2H21v14.2h-5.2c-1.1 0-2 .3-2.8.9-.8-.6-1.7-.9-2.8-.9H5V4.5zm2 2v10.2h4.2c.9 0 1.7.2 2.3.6V7.3c-.6-.5-1.4-.8-2.3-.8H7zm10 10.2V6.5h-2.2c-.9 0-1.7.3-2.3.8v10c.6-.4 1.4-.6 2.3-.6H17z"/>
+          </svg>
+          How to play
+        </button>
+        <button type="button" class="home-nav__link" id="settings-button">
+          <svg class="home-nav__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.2 19.2 7v10L12 20.8 4.8 17V7L12 3.2zm0 2.3L7 8v8l5 2.5L17 16V8l-5-2.5zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+          </svg>
+          Settings
+        </button> -->
+      </nav>
+
+      <!-- <p class="home-footer">Keep moving. <br /> The world won't.</p> -->
+
+      <aside id="howto-panel" class="howto-panel hidden" aria-hidden="true" role="dialog" aria-labelledby="howto-title">
+        <div class="howto-panel__inner">
+          <h2 id="howto-title">How to play</h2>
+          <ul>
+            <li>Play move cards to advance along the path.</li>
+            <li>Reach a section marker to draw new cards.</li>
+            <li>Pick up loot for extra moves — rescue cards are rare and powerful.</li>
+            <li>Run out of cards and the run ends.</li>
+          </ul>
+          <button type="button" id="howto-close">Close</button>
+        </div>
+      </aside>
     </header>
     <div id="game-page" class="page hidden"></div>
 

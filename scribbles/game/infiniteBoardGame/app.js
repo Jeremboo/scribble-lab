@@ -179,7 +179,7 @@ canvasSketch(({ context }) => {
   const animateCameraTarget = (cellNbr, duration = 1.5, delay = 0.25) => {
     const pos = new Vector3(
       0,
-      board.getPathWorldY(cellNbr + props.boardHeight / 2),
+      board.getAverageWorldY(cellNbr, cellNbr + props.boardHeight),
       cellNbr
     );
     mainCamera.animateCameraTarget(
@@ -752,7 +752,7 @@ canvasSketch(({ context }) => {
   };
 
   const animateIn  = () => {
-    applyView(GameState.IN_GAME, { cameraDuration: 2 });
+    applyView(GameState.IN_GAME, { cameraDuration: 3 });
 
     document.getElementById('home-page').classList.add('hidden');
     document.getElementById('game-page').classList.remove('hidden');
@@ -840,7 +840,10 @@ canvasSketch(({ context }) => {
   // INTRO ANIMATION
   setTimeout(() => {
     applyView(GameState.INTRO, { cameraDuration: 1.5 });
-    gsap.to(document.body.querySelectorAll('#home-page > *'), { autoAlpha: 1, duration: 0.5, y: 0, delay: 0.5, stagger: 0.15 });
+    gsap.to(
+      document.body.querySelectorAll('#home-page > .home-brand, #home-page > .home-nav, #home-page > .home-footer'),
+      { autoAlpha: 1, duration: 0.75, y: 0, delay: 0.5, stagger: 0.2 },
+    );
 
     setTimeout(() => {
       isAnimatedIn = true;
@@ -850,7 +853,25 @@ canvasSketch(({ context }) => {
     // Anonymous player doc in Atlas (no-op until ANALYTICS_API_URL is set).
     ensurePlayer();
 
+    const howtoPanel = document.getElementById('howto-panel');
+    const openHowto = () => {
+      if (!howtoPanel) return;
+      howtoPanel.classList.remove('hidden');
+      howtoPanel.setAttribute('aria-hidden', 'false');
+    };
+    const closeHowto = () => {
+      if (!howtoPanel) return;
+      howtoPanel.classList.add('hidden');
+      howtoPanel.setAttribute('aria-hidden', 'true');
+    };
+    // document.getElementById('howto-button').addEventListener('click', openHowto);
+    // document.getElementById('howto-close').addEventListener('click', closeHowto);
+    // howtoPanel.addEventListener('click', (event) => {
+    //   if (event.target === howtoPanel) closeHowto();
+    // });
+
     document.getElementById('start-button').addEventListener('click', () => {
+      closeHowto();
       animateIn();
     });
 
@@ -1102,7 +1123,7 @@ canvasSketch(({ context }) => {
 }, {
   // fps: 15,
   // duration: 4,
-  // dimensions: [956, 440],
+  dimensions: [960, 540],
   scaleToView: true,
   animate: true,
   context: 'webgl',

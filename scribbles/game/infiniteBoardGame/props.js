@@ -99,10 +99,10 @@ const props = {
   views: {
     [GameState.INTRO]: {
       camera: {
-        y: 0.24,
-        rotation: -1.9,
-        distance: 25,
-        offset: new Vector3(2.7, 3, 0),
+        y: 0.195,
+        rotation: -1.979,
+        distance: 20.8,
+        offset: new Vector3(2.8, 2.5, 0),
       },
       fogNear: 20,
       fogFar: 28,
@@ -112,7 +112,7 @@ const props = {
         y: 0.62,
         rotation: -Math.PI * 0.75,
         distance: 55,
-        offset: new Vector3(0, 0.5, 0),
+        offset: new Vector3(0, 2.2, 0),
       },
       fogNear: 65,
       fogFar: 77,

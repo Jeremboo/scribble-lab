@@ -41,9 +41,33 @@ export default class Board extends Stage {
     return getHillElevation(this.pathX, y, this.pathY) * 0.5;
   }
 
+  /** World-space Y of a cell surface at grid (x, y). */
+  getCellWorldY(x, y) {
+    return this.getElevation(x, Math.floor(y)) * 0.5 - CELL_HEIGHT / 2 + CELL_ELEVATION;
+  }
+
   /** World-space Y of the path cell surface at absolute row y. */
   getPathWorldY(y) {
-    return this.getElevation(this.pathX, Math.floor(y)) * 0.5 - CELL_HEIGHT / 2 + CELL_ELEVATION;
+    return this.getCellWorldY(this.pathX, y);
+  }
+
+  /**
+   * Average cell-surface world Y over [fromY, toYExclusive) × full board width.
+   * Used to keep the camera vertically centered on the visible board mass.
+   */
+  getAverageWorldY(fromY, toYExclusive = fromY + props.boardHeight) {
+    const y0 = Math.floor(fromY);
+    const y1 = Math.max(y0 + 1, Math.floor(toYExclusive));
+    const width = this.grid.row || props.boardWidth;
+    let sum = 0;
+    let count = 0;
+    for (let y = y0; y < y1; y++) {
+      for (let x = 0; x < width; x++) {
+        sum += this.getCellWorldY(x, y);
+        count += 1;
+      }
+    }
+    return count > 0 ? sum / count : 0;
   }
 
   /**
