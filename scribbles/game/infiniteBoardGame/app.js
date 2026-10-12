@@ -44,7 +44,7 @@ const GAME_OVER_COPY = {
   },
   [EndReason.FORBIDDEN]: {
     title: 'Game over',
-    subtitle: 'Forbidden cell',
+    subtitle: 'You fall in the void',
   },
 };
 

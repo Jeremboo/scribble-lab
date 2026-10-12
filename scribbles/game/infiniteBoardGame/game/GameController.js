@@ -137,7 +137,10 @@ export default class GameController {
     this.cards.setHand(opening);
 
     const lootPlan = this._planAndStoreLoots(opening, this.pawn.y);
-    const forbiddenPlan = this._planAndStoreForbidden(this.pawn.y, lootPlan);
+    const forbiddenPlan = this._planAndStoreForbidden(this.pawn.y, lootPlan, [
+      ...this.cards.hand,
+      ...this.cards.deck,
+    ]);
     this.stats.start(this.pawn.y);
     this.stats.markTurnReady();
 
@@ -275,7 +278,10 @@ export default class GameController {
     const advance = this.grid.applySectionAdvance(steps, this.pawn.y);
     const handForLoot = this.cards.hand.slice();
     const lootPlan = this._planAndStoreLoots(handForLoot, this.pawn.y);
-    const forbiddenPlan = this._planAndStoreForbidden(this.pawn.y, lootPlan);
+    const forbiddenPlan = this._planAndStoreForbidden(this.pawn.y, lootPlan, [
+      ...this.cards.hand,
+      ...this.cards.deck,
+    ]);
     const lootPlanFlags = lootFlagsForRows(
       advance.fromColumn,
       advance.rowsToAdd,
@@ -326,10 +332,11 @@ export default class GameController {
   /**
    * @param {number} pawnY
    * @param {Map<number, unknown>|Set<number>} [excludeYs]
+   * @param {Array<object>} [availableCards]
    */
-  _planAndStoreForbidden(pawnY, excludeYs) {
+  _planAndStoreForbidden(pawnY, excludeYs, availableCards) {
     const endY = getNextSectionTriggerY(pawnY);
-    const plan = planSectionForbidden(pawnY, endY, excludeYs);
+    const plan = planSectionForbidden(pawnY, endY, excludeYs, availableCards);
     for (const y of plan) {
       this.forbidden.add(y);
     }

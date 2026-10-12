@@ -69,8 +69,8 @@ const props = {
   forbiddenColors: ['#3A1A16', '#14241F', '#3A2A10', '#1A2414'],
   pawnColors:     ['#6ED4C4', '#F0D060', '#9ED46E', '#8EB4E8'],
   /** How many forbidden path cells to place per section (inclusive range). */
-  forbiddenPerSectionMin: 3,
-  forbiddenPerSectionMax: 6,
+  forbiddenPerSectionMin: 2,
+  forbiddenPerSectionMax: 5,
   fogNearColor: '#4d3207',
   fogFarColor: '#181200',
   // board noise

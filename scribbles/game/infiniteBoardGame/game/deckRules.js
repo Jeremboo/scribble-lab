@@ -280,15 +280,71 @@ export function lootFlagsForRows(fromY, count, plan) {
 }
 
 /**
+ * Positive move values from a card list (hand / remaining deck).
+ * Falls back to configured deck templates when empty.
+ *
+ * @param {Array<{ value?: number, type?: string }|number>|null|undefined} cards
+ * @returns {number[]}
+ */
+export function availableMoveValues(cards) {
+  /** @type {number[]} */
+  const values = [];
+  const seen = new Set();
+  if (Array.isArray(cards)) {
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i];
+      let v = 0;
+      if (typeof card === 'number') v = card | 0;
+      else if (card && card.type === 'move') v = card.value | 0;
+      else continue;
+      if (v < 1 || seen.has(v)) continue;
+      seen.add(v);
+      values.push(v);
+    }
+  }
+  if (!values.length) return deckMoveValues();
+  values.sort((a, b) => a - b);
+  return values;
+}
+
+/**
+ * Single-card landings from `pawnY` that sit inside the section window
+ * (eligible as normal path cells — not advance-trigger padding).
+ *
+ * @param {number} pawnY
+ * @param {number} endY
+ * @param {number[]} moveValues
+ * @returns {number[]}
+ */
+export function singleCardLandings(pawnY, endY, moveValues) {
+  const ys = [];
+  const seen = new Set();
+  for (let i = 0; i < moveValues.length; i++) {
+    const v = moveValues[i] | 0;
+    if (v < 1) continue;
+    const y = pawnY + v;
+    if (y <= pawnY || y >= endY || y < 3) continue;
+    if (isAdvanceTriggerRow(y)) continue;
+    if (seen.has(y)) continue;
+    seen.add(y);
+    ys.push(y);
+  }
+  return ys;
+}
+
+/**
  * Random forbidden path rows for the current section window.
  * Skips advance-trigger rows and any Ys in `excludeYs` (e.g. loot).
+ * Always leaves at least one safe single-card landing from `availableCards`
+ * (hand + remaining deck), so a legal move still exists at section start.
  *
  * @param {number} pawnY
  * @param {number} endY - next section trigger
  * @param {Iterable<number>|Set<number>|Map<number, unknown>} [excludeYs]
+ * @param {Array<{ value?: number, type?: string }|number>} [availableCards]
  * @returns {Set<number>}
  */
-export function planSectionForbidden(pawnY, endY, excludeYs) {
+export function planSectionForbidden(pawnY, endY, excludeYs, availableCards) {
   /** @type {Set<number>} */
   const forbidden = new Set();
   const excluded = excludeYs instanceof Set
@@ -297,11 +353,28 @@ export function planSectionForbidden(pawnY, endY, excludeYs) {
       ? new Set(excludeYs.keys())
       : new Set(excludeYs || []);
 
+  const landings = singleCardLandings(
+    pawnY,
+    endY,
+    availableMoveValues(availableCards),
+  );
+
+  // Loot / already-excluded landings stay safe — no need to reserve another.
+  const hasGuaranteedSafe = landings.some((y) => excluded.has(y));
+  let reservedY = null;
+  if (!hasGuaranteedSafe && landings.length) {
+    const reservable = landings.filter((y) => !excluded.has(y));
+    if (reservable.length) {
+      reservedY = reservable[Math.floor(Math.random() * reservable.length)];
+    }
+  }
+
   const pool = [];
   for (let y = pawnY + 1; y < endY; y++) {
     if (y < 3) continue;
     if (isAdvanceTriggerRow(y)) continue;
     if (excluded.has(y)) continue;
+    if (y === reservedY) continue;
     pool.push(y);
   }
   if (!pool.length) return forbidden;
