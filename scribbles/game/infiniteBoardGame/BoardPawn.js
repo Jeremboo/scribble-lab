@@ -1,4 +1,5 @@
 import { CylinderBufferGeometry, MeshToonMaterial, Vector3, DataTexture, RGBFormat, NearestFilter } from "three";
+import gsap from "gsap";
 import Pawn from '../_modules/Pawn';
 import OutlinableMesh from '../../../modules/Three/OutlinePass/OutlinableMesh';
 import props from './props';
@@ -45,6 +46,66 @@ export default class BoardPawn extends Pawn {
     /** When true, ampl eases toward previewAmpl and holds (mid-air jump preview). */
     this.jumpPreview = false;
     this.previewAmpl = 0;
+
+    this._awaitingArrival = false;
+    this._onArrived = null;
+    this.falling = false;
+  }
+
+  /**
+   * Fire `onArrived` once the spring has settled on the targeted cell.
+   * @param {() => void} onArrived
+   */
+  awaitArrival(onArrived) {
+    this._onArrived = onArrived;
+    this._awaitingArrival = true;
+  }
+
+  cancelArrival() {
+    this._awaitingArrival = false;
+    this._onArrived = null;
+  }
+
+  finishArrival() {
+    if (!this._awaitingArrival) return;
+    const callback = this._onArrived;
+    this.cancelArrival();
+    if (callback) callback();
+  }
+
+  /**
+   * Drop the pawn through the board, then call onComplete.
+   * @param {() => void} [onComplete]
+   */
+  fallIntoVoid(onComplete) {
+    this.cancelArrival();
+    this.falling = true;
+    gsap.killTweensOf(this.mesh.position);
+    gsap.killTweensOf(this.mesh.rotation);
+    gsap.killTweensOf(this.mesh.scale);
+    gsap.to(this.mesh.position, {
+      y: this.mesh.position.y - 8,
+      duration: 0.9,
+      ease: 'power2.in',
+    });
+    gsap.to(this.mesh.rotation, {
+      x: Math.PI * 0.85,
+      duration: 0.9,
+      ease: 'power2.in',
+    });
+    gsap.to(this.mesh.scale, {
+      x: 0,
+      y: 0,
+      z: 0,
+      duration: 0.9,
+      ease: 'power2.in',
+      onComplete: () => {
+        this.mesh.visible = false;
+        this.falling = false;
+        this.hide();
+        if (onComplete) onComplete();
+      },
+    });
   }
 
   /**
@@ -125,6 +186,15 @@ export default class BoardPawn extends Pawn {
   // }
 
   show() {
+    this.falling = false;
+    this.cancelArrival();
+    if (this.mesh) {
+      this.mesh.visible = true;
+      this.mesh.rotation.x = 0;
+      gsap.killTweensOf(this.mesh.position);
+      gsap.killTweensOf(this.mesh.rotation);
+      gsap.killTweensOf(this.mesh.scale);
+    }
     this.isVisible = true;
     this.currentPosition.y += 2;
     this.targetedScale = 1;
@@ -133,12 +203,14 @@ export default class BoardPawn extends Pawn {
   }
 
   hide() {
+    this.cancelArrival();
     this.isVisible = false;
     this.targetedScale = 0;
     this.direction = -1;
   }
 
   update() {
+    if (this.falling) return;
     // Position
     const force = this.targetedPosition.clone().sub(this.currentPosition);
     this.currentPosition.add(force.multiplyScalar(props.velocity));
@@ -158,6 +230,15 @@ export default class BoardPawn extends Pawn {
       this.ampl += (this.previewAmpl - this.ampl) * 0.18;
     } else {
       this.ampl *= this.velocity;
+    }
+
+    if (this._awaitingArrival && !this.jumpPreview) {
+      const dx = this.targetedPosition.x - this.currentPosition.x;
+      const dy = this.targetedPosition.y - this.currentPosition.y;
+      const dz = this.targetedPosition.z - this.currentPosition.z;
+      if (dx * dx + dy * dy + dz * dz < 0.0025 && Math.abs(this.ampl) < 0.06) {
+        this.finishArrival();
+      }
     }
   }
 }

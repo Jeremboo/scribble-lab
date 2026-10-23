@@ -9,4 +9,5 @@ export const GameEvents = {
   TURN_READY: 'turnReady',
   GAME_OVER: 'gameOver',
   STATS_CHANGED: 'statsChanged',
+  FORBIDDEN_SPREAD: 'forbiddenSpread',
 };

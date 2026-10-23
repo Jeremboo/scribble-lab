@@ -8,6 +8,9 @@ import {
   lootFlagsForRows,
   planSectionForbidden,
   forbiddenFlagsForRows,
+  cellKey,
+  parseCellKey,
+  warnFrontier,
 } from './deckRules';
 import { getNextSectionTriggerY, getSectionStride } from './section';
 import { GameEvents } from './events';
@@ -35,8 +38,19 @@ export default class GameController {
     this.stats = new RunStats();
     /** @type {Map<number, { isRescue: boolean, rewardValue: number }>} */
     this.loots = new Map();
-    /** @type {Set<number>} absolute path rows that kill on landing */
+    /** @type {Set<number>} path rows that kill on landing */
     this.forbidden = new Set();
+    /** @type {Set<string>} lethal cells, any column ("x,y") */
+    this.dead = new Set();
+    /** @type {Set<string>} silent stage — one card before the warning appears */
+    this.warned = new Set();
+    /**
+     * Turn −1: warning is visible. Becomes dead after the pawn lands.
+     * @type {Set<string>}
+     */
+    this.imminent = new Set();
+    /** True while the pawn mesh is still traveling to the landing cell. */
+    this.landingPending = false;
     /** @type {'idle' | 'playing' | 'gameOver'} */
     this.phase = 'idle';
     /** @type {typeof EndReason[keyof typeof EndReason] | null} */
@@ -94,6 +108,9 @@ export default class GameController {
         rewardValue: meta.rewardValue,
       })),
       forbidden: Array.from(this.forbidden).sort((a, b) => a - b),
+      dead: Array.from(this.dead).sort(),
+      warned: Array.from(this.warned).sort(),
+      imminent: Array.from(this.imminent).sort(),
       stats: this.stats.snapshot(),
       lastBest: this.lastBest,
     };
@@ -127,6 +144,10 @@ export default class GameController {
     this.endReason = null;
     this.loots.clear();
     this.forbidden.clear();
+    this.dead.clear();
+    this.warned.clear();
+    this.imminent.clear();
+    this.landingPending = false;
     this.grid.reset(props.boardWidth, props.boardHeight, resumeY != null ? originY : 0);
     if (pathX != null) this.grid.pathX = px;
     this.pawn.set(this.grid.pathX, originY);
@@ -141,6 +162,7 @@ export default class GameController {
       ...this.cards.hand,
       ...this.cards.deck,
     ]);
+    this._recomputeWarned();
     this.stats.start(this.pawn.y);
     this.stats.markTurnReady();
 
@@ -175,6 +197,7 @@ export default class GameController {
    */
   playCard(cardOrId) {
     if (this.phase !== 'playing') return null;
+    if (this.landingPending) return null;
 
     const id = typeof cardOrId === 'string' ? cardOrId : cardOrId && cardOrId.id;
     let card = id != null ? this.cards.removeFromHand(id) : null;
@@ -201,6 +224,7 @@ export default class GameController {
     };
 
     if (steps !== 0) {
+      this.landingPending = true;
       const moveResult = this._advancePawn(steps);
       result.move = moveResult.move;
       result.section = moveResult.section;
@@ -213,18 +237,98 @@ export default class GameController {
     this.emit(GameEvents.CARD_PLAYED, { ...result, snapshot });
     this.emit(GameEvents.STATS_CHANGED, { snapshot });
 
-    if (result.hitForbidden) {
-      this._triggerGameOver(EndReason.FORBIDDEN);
-      result.gameOver = true;
-    } else if (this.cards.hand.length === 0) {
-      this._triggerGameOver(EndReason.EMPTY_HAND);
-      result.gameOver = true;
-    } else {
-      this.stats.markTurnReady();
-      this.emit(GameEvents.TURN_READY, { snapshot: this.getSnapshot() });
-    }
+    if (!this.landingPending) this._finishLanding();
 
     return result;
+  }
+
+  /**
+   * Pawn mesh has reached the landing cell.
+   * Spread runs first, then a pawn standing on a dead path cell ends the run.
+   */
+  resolveLanding() {
+    if (!this.landingPending) return null;
+    this.landingPending = false;
+    this._finishLanding();
+    return this.getSnapshot();
+  }
+
+  /** Death check after the delayed spread, once the pawn is visually there. */
+  _finishLanding() {
+    if (this.phase !== 'playing') return;
+
+    const spread = this._ageHazards();
+    const snapshot = this.getSnapshot();
+    this.emit(GameEvents.FORBIDDEN_SPREAD, {
+      spread,
+      warned: Array.from(this.imminent),
+      snapshot,
+    });
+    this.emit(GameEvents.STATS_CHANGED, { snapshot });
+
+    if (this.forbidden.has(this.pawn.y)) {
+      this._triggerGameOver(EndReason.FORBIDDEN);
+      return;
+    }
+    if (this.cards.hand.length === 0) {
+      this._triggerGameOver(EndReason.EMPTY_HAND);
+      return;
+    }
+    this.stats.markTurnReady();
+    this.emit(GameEvents.TURN_READY, { snapshot: this.getSnapshot() });
+  }
+
+  /**
+   * Imminent cells die, the silent ring becomes the visible warning,
+   * and a new silent ring is drawn around everything now dead.
+   * @returns {string[]} keys that just died
+   */
+  _ageHazards() {
+    /** @type {string[]} */
+    const spread = [];
+    for (const key of this.imminent) {
+      const { x, y } = parseCellKey(key);
+      if (this._killCell(x, y)) spread.push(key);
+    }
+    this.imminent.clear();
+
+    const nextImminent = new Set();
+    for (const key of this.warned) {
+      if (this.dead.has(key)) continue;
+      nextImminent.add(key);
+    }
+    this.warned.clear();
+    this.imminent = nextImminent;
+    this._recomputeWarned();
+    return spread;
+  }
+
+  /** Silent neighbors of dead cells, excluding the visible warning ring. */
+  _recomputeWarned() {
+    const frontier = warnFrontier(this.dead, {
+      width: this.grid.width,
+      minY: 0,
+    });
+    this.warned = new Set();
+    for (const key of frontier) {
+      if (this.dead.has(key) || this.imminent.has(key)) continue;
+      this.warned.add(key);
+    }
+  }
+
+  /**
+   * @param {number} x
+   * @param {number} y
+   * @returns {boolean} true when the cell was newly killed
+   */
+  _killCell(x, y) {
+    const key = cellKey(x, y);
+    if (this.dead.has(key)) return false;
+    this.dead.add(key);
+    this.warned.delete(key);
+    this.imminent.delete(key);
+    if ((x | 0) === this.grid.pathX) this.forbidden.add(y | 0);
+    return true;
   }
 
   /**
@@ -291,6 +395,7 @@ export default class GameController {
       advance.fromColumn,
       advance.rowsToAdd,
       forbiddenPlan,
+      this.grid.pathX,
     );
 
     const section = {
@@ -336,9 +441,17 @@ export default class GameController {
    */
   _planAndStoreForbidden(pawnY, excludeYs, availableCards) {
     const endY = getNextSectionTriggerY(pawnY);
-    const plan = planSectionForbidden(pawnY, endY, excludeYs, availableCards);
-    for (const y of plan) {
-      this.forbidden.add(y);
+    const plan = planSectionForbidden(
+      pawnY,
+      endY,
+      excludeYs,
+      availableCards,
+      this.grid.width,
+      this.grid.pathX,
+    );
+    for (const key of plan) {
+      const { x, y } = parseCellKey(key);
+      this._killCell(x, y);
     }
     return plan;
   }

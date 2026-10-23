@@ -332,21 +332,73 @@ export function singleCardLandings(pawnY, endY, moveValues) {
   return ys;
 }
 
+/** @param {number} x @param {number} y */
+export function cellKey(x, y) {
+  return `${x | 0},${y | 0}`;
+}
+
+/** @param {string} key */
+export function parseCellKey(key) {
+  const raw = String(key);
+  const comma = raw.indexOf(',');
+  return {
+    x: Number(raw.slice(0, comma)),
+    y: Number(raw.slice(comma + 1)),
+  };
+}
+
+const WARN_DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+
 /**
- * Random forbidden path rows for the current section window.
- * Skips advance-trigger rows and any Ys in `excludeYs` (e.g. loot).
- * Always leaves at least one safe single-card landing from `availableCards`
- * (hand + remaining deck), so a legal move still exists at section start.
+ * 4-connected neighbors of dead cells that are not themselves dead.
+ * @param {Set<string>|Iterable<string>} dead
+ * @param {{ width: number, minY?: number }} opts
+ * @returns {Set<string>}
+ */
+export function warnFrontier(dead, { width, minY = 0 } = {}) {
+  const warned = new Set();
+  const w = width | 0;
+  const floor = minY | 0;
+  for (const key of dead) {
+    const { x, y } = parseCellKey(key);
+    for (let i = 0; i < WARN_DIRS.length; i++) {
+      const nx = x + WARN_DIRS[i][0];
+      const ny = y + WARN_DIRS[i][1];
+      if (nx < 0 || nx >= w || ny < floor) continue;
+      const next = cellKey(nx, ny);
+      if (dead.has(next)) continue;
+      warned.add(next);
+    }
+  }
+  return warned;
+}
+
+/**
+ * Random forbidden cells for the current section window, on any column.
+ * Path cells skip advance-trigger rows, loot rows, and one reserved
+ * single-card landing so a legal move still exists. Off-path cells on
+ * those rows can still be seeded.
  *
  * @param {number} pawnY
  * @param {number} endY - next section trigger
  * @param {Iterable<number>|Set<number>|Map<number, unknown>} [excludeYs]
  * @param {Array<{ value?: number, type?: string }|number>} [availableCards]
- * @returns {Set<number>}
+ * @param {number} [width]
+ * @param {number} [pathX]
+ * @returns {Set<string>}
  */
-export function planSectionForbidden(pawnY, endY, excludeYs, availableCards) {
-  /** @type {Set<number>} */
+export function planSectionForbidden(
+  pawnY,
+  endY,
+  excludeYs,
+  availableCards,
+  width = props.boardWidth,
+  pathX,
+) {
+  /** @type {Set<string>} */
   const forbidden = new Set();
+  const boardWidth = Math.max(1, width | 0);
+  const px = pathX != null ? pathX | 0 : Math.floor(boardWidth / 2);
   const excluded = excludeYs instanceof Set
     ? excludeYs
     : excludeYs instanceof Map
@@ -359,7 +411,6 @@ export function planSectionForbidden(pawnY, endY, excludeYs, availableCards) {
     availableMoveValues(availableCards),
   );
 
-  // Loot / already-excluded landings stay safe — no need to reserve another.
   const hasGuaranteedSafe = landings.some((y) => excluded.has(y));
   let reservedY = null;
   if (!hasGuaranteedSafe && landings.length) {
@@ -372,10 +423,13 @@ export function planSectionForbidden(pawnY, endY, excludeYs, availableCards) {
   const pool = [];
   for (let y = pawnY + 1; y < endY; y++) {
     if (y < 3) continue;
-    if (isAdvanceTriggerRow(y)) continue;
-    if (excluded.has(y)) continue;
-    if (y === reservedY) continue;
-    pool.push(y);
+    for (let x = 0; x < boardWidth; x++) {
+      const onPath = x === px;
+      if (onPath && isAdvanceTriggerRow(y)) continue;
+      if (onPath && excluded.has(y)) continue;
+      if (onPath && y === reservedY) continue;
+      pool.push(cellKey(x, y));
+    }
   }
   if (!pool.length) return forbidden;
 
@@ -394,20 +448,24 @@ export function planSectionForbidden(pawnY, endY, excludeYs, availableCards) {
 }
 
 /**
- * Per-row forbidden flag for rows [fromY, fromY + count).
+ * Per-row path forbidden flag for rows [fromY, fromY + count).
+ * Accepts path row numbers or "x,y" cell keys.
  * @param {number} fromY
  * @param {number} count
- * @param {Set<number>|Map<number, unknown>|Iterable<number>} forbidden
+ * @param {Set<number|string>|Map<number, unknown>|Iterable<number|string>} forbidden
+ * @param {number} [pathX]
  */
-export function forbiddenFlagsForRows(fromY, count, forbidden) {
+export function forbiddenFlagsForRows(fromY, count, forbidden, pathX) {
   const set = forbidden instanceof Set
     ? forbidden
     : forbidden instanceof Map
       ? new Set(forbidden.keys())
       : new Set(forbidden || []);
+  const px = pathX == null ? null : pathX | 0;
   const flags = [];
   for (let i = 0; i < count; i++) {
-    flags.push(set.has(fromY + i));
+    const y = fromY + i;
+    flags.push(set.has(y) || (px != null && set.has(cellKey(px, y))));
   }
   return flags;
 }

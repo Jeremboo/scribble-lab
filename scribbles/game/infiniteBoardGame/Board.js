@@ -5,6 +5,7 @@ import BoardCell from "./BoardCell";
 import BoardLoot from "./BoardLoot";
 import { boardNoise, getHillElevation } from "./boardNoise";
 import props from "./props";
+import { cellKey } from "./game/deckRules";
 
 const CELL_HEIGHT = 5;
 const CELL_ELEVATION = 0.25;
@@ -140,6 +141,23 @@ export default class Board extends Stage {
     for (const y of list) {
       const cell = this.getCell(this.pathX, y);
       if (cell) cell.setForbidden(true);
+    }
+  }
+
+  /**
+   * Paint dead cells and the turn−1 warning. Earlier rings stay unmarked.
+   * @param {Set<string>|Iterable<string>} dead
+   * @param {Set<string>|Iterable<string>} _warned silent stage, not drawn
+   * @param {Set<string>|Iterable<string>} [imminent]
+   */
+  syncHazards(dead, _warned, imminent) {
+    const deadSet = dead instanceof Set ? dead : new Set(dead || []);
+    const imminentSet = imminent instanceof Set ? imminent : new Set(imminent || []);
+    for (const cell of this.liveCells) {
+      if (!cell || cell.isExiting || !cell.setForbidden) continue;
+      const key = cellKey(cell.x, cell.y);
+      if (deadSet.has(key)) cell.setForbidden(true);
+      else cell.setWarned(imminentSet.has(key));
     }
   }
 

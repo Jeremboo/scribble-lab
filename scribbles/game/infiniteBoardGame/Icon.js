@@ -194,3 +194,34 @@ export function getForbiddenXTexture() {
   forbiddenXTexture.needsUpdate = true;
   return forbiddenXTexture;
 }
+
+/** Shared white warning mark (triangle + exclamation) for cells about to die. */
+let warningTexture = null;
+
+export function getWarningTexture() {
+  if (warningTexture) return warningTexture;
+
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, size, size);
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.moveTo(size * 0.5, size * 0.14);
+  ctx.lineTo(size * 0.88, size * 0.84);
+  ctx.lineTo(size * 0.12, size * 0.84);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(size * 0.46, size * 0.38, size * 0.08, size * 0.24);
+  ctx.beginPath();
+  ctx.arc(size * 0.5, size * 0.72, size * 0.045, 0, Math.PI * 2);
+  ctx.fill();
+
+  warningTexture = new CanvasTexture(canvas);
+  warningTexture.needsUpdate = true;
+  return warningTexture;
+}

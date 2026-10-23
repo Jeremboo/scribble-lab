@@ -348,23 +348,11 @@ canvasSketch(({ context }) => {
     }
   };
 
-  const presentGameOver = (endReason = EndReason.EMPTY_HAND) => {
-    runId += 1;
-    setViewBusy(false);
-    clearTimeout(unlockTimer);
-    unlockTimer = null;
-    hideMovePreview();
-    board.fadeAdvanceIconsBelow(Infinity, 0.35);
+  const revealGameOver = (endReason) => {
     pawnBoard.hide();
     showRunStatsHud(false);
     collapseStatsDetails();
     applyView(GameState.GAME_OVER);
-
-    if (cardUiRoot) {
-      cardUiRoot.classList.remove('card-hand-veil-on');
-      cardUiRoot.classList.add('hidden');
-      cardUiRoot.setAttribute('aria-hidden', 'true');
-    }
 
     const copy = GAME_OVER_COPY[endReason] || GAME_OVER_COPY[EndReason.EMPTY_HAND];
     if (gameOverTitleEl) gameOverTitleEl.textContent = copy.title;
@@ -375,6 +363,28 @@ canvasSketch(({ context }) => {
       gameOverEl.classList.remove('hidden');
       gameOverEl.setAttribute('aria-hidden', 'false');
     }
+  };
+
+  const presentGameOver = (endReason = EndReason.EMPTY_HAND) => {
+    runId += 1;
+    setViewBusy(false);
+    clearTimeout(unlockTimer);
+    unlockTimer = null;
+    hideMovePreview();
+    board.fadeAdvanceIconsBelow(Infinity, 0.35);
+
+    if (cardUiRoot) {
+      cardUiRoot.classList.remove('card-hand-veil-on');
+      cardUiRoot.classList.add('hidden');
+      cardUiRoot.setAttribute('aria-hidden', 'true');
+    }
+
+    if (endReason === EndReason.FORBIDDEN) {
+      pawnBoard.fallIntoVoid(() => revealGameOver(endReason));
+      return;
+    }
+
+    revealGameOver(endReason);
   };
 
   // ── Card hand (renderer-agnostic engine + DomCardRenderer) ──
@@ -524,7 +534,7 @@ canvasSketch(({ context }) => {
     animateCameraTarget(targetStartY);
     board.fadeAdvanceIconsBelow(targetStartY + getSectionTriggerOffset());
     board.spawnLootsAtYs(lootPlan);
-    board.markForbiddenAtYs(forbiddenPlan);
+    board.syncHazards(game.dead, game.warned, game.imminent);
 
     for (let i = 0; i < steps; i++) {
       const stepDelay = props.cellCreationStagger * i;
@@ -544,6 +554,7 @@ canvasSketch(({ context }) => {
         const flag = (lootPlanFlags && lootPlanFlags[i]) || false;
         const forbidden = !!(forbiddenPlanFlags && forbiddenPlanFlags[i]);
         board.addRowAhead(flag, forbidden);
+        board.syncHazards(game.dead, game.warned, game.imminent);
         if (y === game.pawn.y) {
           syncPawnMesh();
           refreshDragPreviewIfNeeded();
@@ -582,11 +593,11 @@ canvasSketch(({ context }) => {
     fadeInCardHandVeil();
   };
 
-  const beginRunPresentation = ({ opening, lootPlan, forbiddenPlan }) => {
+  const beginRunPresentation = ({ opening, lootPlan }) => {
     ensureDomCardRenderer();
     cardHand.setCards([]);
     board.spawnLootsAtYs(lootPlan);
-    board.markForbiddenAtYs(forbiddenPlan);
+    board.syncHazards(game.dead, game.warned, game.imminent);
     presentHandCards(opening);
   };
 
@@ -602,8 +613,23 @@ canvasSketch(({ context }) => {
     updateStatsUi(false);
   });
 
+  game.on(GameEvents.FORBIDDEN_SPREAD, () => {
+    board.syncHazards(game.dead, game.warned, game.imminent);
+  });
+
   game.on(GameEvents.PAWN_MOVED, () => {
     syncPawnMesh();
+    const id = runId;
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(fallback);
+      if (id !== runId) return;
+      game.resolveLanding();
+    };
+    const fallback = setTimeout(finish, 2500);
+    pawnBoard.awaitArrival(finish);
   });
 
   game.on(GameEvents.LOOT_COLLECTED, ({ loot }) => {
