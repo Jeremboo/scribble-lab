@@ -713,6 +713,7 @@ canvasSketch(({ context }) => {
     document.getElementById('game-page').classList.remove('hidden');
 
     const resumeY = resetWorldForNewRun();
+    applyView(GameState.IN_GAME, { cameraDuration: 1 });
 
     lastBestInfo = null;
     collapseStatsDetails();

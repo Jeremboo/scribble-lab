@@ -27,6 +27,7 @@ export default class MainCamera {
     const tweenProps = {
       duration,
       ease: 'power2.out',
+      overwrite: 'auto',
     };
 
     gsap.to(this.props, {
