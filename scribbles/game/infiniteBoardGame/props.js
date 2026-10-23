@@ -93,6 +93,9 @@ const props = {
   groundCurveRadiusRight: 2,
   groundNoiseAmplSideLeft: 2.8,
   groundNoiseAmplSideRight: 3.3,
+  // void — extra height where a cell is dead
+  voidHeight: 0.9,
+  voidRadius: 1.2,
   // board size
   boardWidth: 5,
   boardHeight: 15,
