@@ -93,9 +93,14 @@ const props = {
   groundCurveRadiusRight: 2,
   groundNoiseAmplSideLeft: 2.8,
   groundNoiseAmplSideRight: 3.3,
-  // void — extra height where a cell is dead
+  // void — dead-cell mounds, plus a wake that grows behind the pawn
   voidHeight: 0.9,
   voidRadius: 1.2,
+  voidWakeHeight: 3.4,
+  voidWakeSpread: 1.6,
+  voidWakeRise: 7,
+  /** Cells of board left clear behind the leading dead cell. */
+  voidFrontOffset: 13,
   // board size
   boardWidth: 5,
   boardHeight: 15,

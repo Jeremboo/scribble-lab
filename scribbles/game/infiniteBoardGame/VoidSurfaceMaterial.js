@@ -26,6 +26,10 @@ uniform vec2 uHillNoiseScale;
 uniform float uHillNoiseAmpl;
 uniform float uVoidHeight;
 uniform float uVoidRadius;
+uniform float uFrontY;
+uniform float uWakeHeight;
+uniform float uWakeSpread;
+uniform float uWakeRise;
 
 attribute float surfaceId;
 varying float vSurfaceId;
@@ -100,6 +104,10 @@ export default class VoidSurfaceMaterial extends ShaderMaterial {
         uHillNoiseAmpl: voidUniforms.uHillNoiseAmpl,
         uVoidHeight: voidUniforms.uVoidHeight,
         uVoidRadius: voidUniforms.uVoidRadius,
+        uFrontY: voidUniforms.uFrontY,
+        uWakeHeight: voidUniforms.uWakeHeight,
+        uWakeSpread: voidUniforms.uWakeSpread,
+        uWakeRise: voidUniforms.uWakeRise,
         uVoidCutoff: voidUniforms.uVoidCutoff,
         maxSurfaceId: { value: 1 },
       },

@@ -31,6 +31,10 @@ uniform vec2 uHillNoiseScale;
 uniform float uHillNoiseAmpl;
 uniform float uVoidHeight;
 uniform float uVoidRadius;
+uniform float uFrontY;
+uniform float uWakeHeight;
+uniform float uWakeSpread;
+uniform float uWakeRise;
 
 varying vec3 vNormal;
 varying vec3 vViewPosition;
@@ -106,8 +110,9 @@ export default class VoidPlaneMaterial extends ShaderMaterial {
   /**
    * @param {number} tileZ
    * @param {import('./VoidField').default} field
+   * @param {{ value: number }} frontUniform
    */
-  constructor(tileZ, field) {
+  constructor(tileZ, field, frontUniform) {
     super({
       uniforms: {
         uPerm: { value: createPermTexture() },
@@ -136,6 +141,10 @@ export default class VoidPlaneMaterial extends ShaderMaterial {
         uHillNoiseAmpl: { value: props.hillNoiseAmpl },
         uVoidHeight: { value: props.voidHeight },
         uVoidRadius: { value: props.voidRadius },
+        uFrontY: frontUniform,
+        uWakeHeight: { value: props.voidWakeHeight },
+        uWakeSpread: { value: props.voidWakeSpread },
+        uWakeRise: { value: props.voidWakeRise },
         uVoidCutoff: { value: 0.07 },
       },
       vertexShader,
@@ -162,6 +171,9 @@ export default class VoidPlaneMaterial extends ShaderMaterial {
     this.uniforms.uHillNoiseAmpl.value = props.hillNoiseAmpl;
     this.uniforms.uVoidHeight.value = props.voidHeight;
     this.uniforms.uVoidRadius.value = props.voidRadius;
+    this.uniforms.uWakeHeight.value = props.voidWakeHeight;
+    this.uniforms.uWakeSpread.value = props.voidWakeSpread;
+    this.uniforms.uWakeRise.value = props.voidWakeRise;
   }
 
   setPathY(y) {

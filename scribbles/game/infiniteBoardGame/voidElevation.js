@@ -35,14 +35,37 @@ float deadInfluence(vec2 grid) {
   return clamp(influence, 0.0, 1.0);
 }
 
+float wakeInfluence(vec2 grid) {
+  float behind = uFrontY - grid.y;
+  float front = smoothstep(0.15, 3.8, behind);
+  float dist = abs(grid.x - uPathX);
+  float reach = uBoardHalfWidth + max(behind, 0.0) * uWakeSpread;
+  float lateral = 1.0 - smoothstep(reach * 0.42, reach, dist);
+  float wake = front * lateral;
+  float edge = noisejsPerlin2(grid * vec2(0.31, 0.24));
+  wake += edge * 0.16 * (1.0 - smoothstep(0.4, 0.95, wake));
+  return clamp(wake, 0.0, 1.0);
+}
+
 vec3 voidDisplaced(vec2 localXY) {
   vec3 pos = vec3(localXY.x, localXY.y, 0.0);
   vec2 worldXZ = vec2(pos.x, -pos.y);
   vec2 grid = worldXZ + uBoardOffset + vec2(0.0, uTileZ);
   gGrid = grid;
-  gInfluence = deadInfluence(grid);
-  float swell = noisejsPerlin2(grid * vec2(0.73, 0.81));
-  pos.z += getGroundElevation(grid) * 0.5 + gInfluence * uVoidHeight * (1.0 + swell * 0.1);
+
+  float dead = 0.0;
+  if (abs(grid.x - uPathX) < uBoardHalfWidth + uVoidRadius + 2.0) {
+    dead = deadInfluence(grid);
+  }
+  float wake = wakeInfluence(grid);
+  gInfluence = max(dead, wake);
+
+  float behind = max(uFrontY - grid.y, 0.0);
+  float rise = smoothstep(0.0, max(uWakeRise, 0.001), behind);
+  float swell = noisejsPerlin2(grid * vec2(0.17, 0.13));
+  float mound = dead * uVoidHeight;
+  float blanket = wake * uVoidHeight * (mix(0.7, uWakeHeight, rise) + behind * 0.045);
+  pos.z += getGroundElevation(grid) * 0.5 + max(mound, blanket) * (1.0 + swell * 0.12);
   return pos;
 }
 `;

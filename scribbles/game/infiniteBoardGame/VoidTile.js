@@ -4,10 +4,8 @@ import surfaceFinder from '../../../modules/Three/OutlinePass/surfaceFinder';
 import VoidPlaneMaterial from './VoidPlaneMaterial';
 import VoidSurfaceMaterial from './VoidSurfaceMaterial';
 import { GROUND_TILE_SIZE } from './Ground';
-import props from './props';
 
-const CELL_SUBDIV = 4;
-const VOID_MARGIN = 4;
+const SEGMENTS = 160;
 
 /** One surface id for every void tile, so mounds don't outline against each other. */
 const VOID_SURFACE_ID = surfaceFinder.allocate();
@@ -19,26 +17,27 @@ const materialPool = [];
 
 function getSharedGeometry() {
   if (!sharedGeometry) {
-    const span = props.boardWidth + VOID_MARGIN * 2;
     sharedGeometry = new PlaneBufferGeometry(
-      span,
       GROUND_TILE_SIZE,
-      Math.round(span * CELL_SUBDIV),
-      Math.round(GROUND_TILE_SIZE * CELL_SUBDIV),
+      GROUND_TILE_SIZE,
+      SEGMENTS,
+      SEGMENTS,
     );
   }
   return sharedGeometry;
 }
 
-function acquireMaterials(tileZ, field) {
+function acquireMaterials(tileZ, field, frontUniform) {
   const pooled = materialPool.pop();
   if (pooled) {
     pooled.material.uniforms.uTileZ.value = tileZ;
     pooled.material.uniforms.uDead.value = field.texture;
+    pooled.material.uniforms.uFrontY = frontUniform;
+    pooled.customSurfaceMaterial.uniforms.uFrontY = frontUniform;
     pooled.material.syncFromProps();
     return pooled;
   }
-  const material = new VoidPlaneMaterial(tileZ, field);
+  const material = new VoidPlaneMaterial(tileZ, field, frontUniform);
   return {
     material,
     customSurfaceMaterial: new VoidSurfaceMaterial(material.uniforms),
@@ -53,10 +52,11 @@ export default class VoidTile {
   /**
    * @param {number} tileZ
    * @param {import('./VoidField').default} field
+   * @param {{ value: number }} frontUniform
    */
-  constructor(tileZ, field) {
+  constructor(tileZ, field, frontUniform) {
     this.tileZ = tileZ;
-    const mats = acquireMaterials(tileZ, field);
+    const mats = acquireMaterials(tileZ, field, frontUniform);
     this.material = mats.material;
     this.mesh = new OutlinableMesh(getSharedGeometry(), this.material, VOID_SURFACE_ID);
     this.mesh.rotation.x = -Math.PI * 0.5;

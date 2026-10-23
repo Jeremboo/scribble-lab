@@ -207,9 +207,9 @@ canvasSketch(({ context }) => {
   // camera that read as a lateral jump on the ground.
   board.moveTo();
   const grounds = new Grounds(renderer.scene);
-  const voidLayer = new Void(renderer.scene);
+  // const voidLayer = new Void(renderer.scene);
   grounds.setPathY(board.pathY);
-  voidLayer.setPathY(board.pathY);
+  // voidLayer.setPathY(board.pathY);
   animateCameraTarget(0, 0, 0);
   setAtmosphereColor(props.fogNearColor, props.fogFarColor);
 
@@ -519,14 +519,14 @@ canvasSketch(({ context }) => {
 
   const syncBoardHazards = () => {
     board.syncHazards(game.dead, game.warned, game.imminent);
-    voidLayer.syncDead(game.dead);
+    // voidLayer.syncDead(game.dead);
   };
 
   const presentSectionAdvance = (section) => {
     if (!section) return;
     const id = runId;
     grounds.onBoardAdvance();
-    voidLayer.onBoardAdvance();
+    // voidLayer.onBoardAdvance();
 
     const {
       steps,
@@ -678,13 +678,13 @@ canvasSketch(({ context }) => {
       board.moveTo();
       grounds.reset();
       grounds.setPathY(board.pathY);
-      voidLayer.reset();
-      voidLayer.setPathY(board.pathY);
+      // voidLayer.reset();
+      // voidLayer.setPathY(board.pathY);
     } else {
       board.regenerateNoise();
       grounds.setPathY(board.pathY);
-      voidLayer.setPathY(board.pathY);
-      voidLayer.clearDead();
+      // voidLayer.setPathY(board.pathY);
+      // voidLayer.clearDead();
     }
     board.fadeAdvanceIconsBelow(resumeY + getSectionTriggerOffset(), 0);
 
@@ -851,7 +851,7 @@ canvasSketch(({ context }) => {
     const regenerateNoise = () => {
       board.regenerateNoise();
       grounds.syncFromProps();
-      voidLayer.syncFromProps();
+      // voidLayer.syncFromProps();
       animateCameraTarget(board.startY);
     };
 
@@ -919,9 +919,13 @@ canvasSketch(({ context }) => {
     gui.add(props, 'groundCurveRadiusRight', 1, 40).onChange(regenerateNoise);
     gui.add(props, 'groundNoiseAmplSideLeft', 1, 8).onChange(regenerateNoise);
     gui.add(props, 'groundNoiseAmplSideRight', 1, 8).onChange(regenerateNoise);
-    const voidGui = gui.addFolder('void');
-    voidGui.add(props, 'voidHeight', 0.2, 6).step(0.05).onChange(() => voidLayer.syncFromProps());
-    voidGui.add(props, 'voidRadius', 0.4, 3).step(0.05).onChange(() => voidLayer.syncFromProps());
+    // const voidGui = gui.addFolder('void');
+    // voidGui.add(props, 'voidHeight', 0.2, 6).step(0.05).onChange(() => voidLayer.syncFromProps());
+    // voidGui.add(props, 'voidRadius', 0.4, 3).step(0.05).onChange(() => voidLayer.syncFromProps());
+    // voidGui.add(props, 'voidWakeHeight', 1, 8).step(0.05).name('wake height').onChange(() => voidLayer.syncFromProps());
+    // voidGui.add(props, 'voidWakeSpread', 0.2, 4).step(0.05).name('wake spread').onChange(() => voidLayer.syncFromProps());
+    // voidGui.add(props, 'voidWakeRise', 2, 24).step(0.5).name('wake rise').onChange(() => voidLayer.syncFromProps());
+    // voidGui.add(props, 'voidFrontOffset', 0, 30).step(1).name('front offset').onChange(() => voidLayer.setFrontOffset());
     const cameraGui = gui.addFolder('camera');
     cameraGui.open();
     cameraGui.add(mainCamera.camera, 'fov', 1, 120).onChange((fov) => {
@@ -1039,7 +1043,6 @@ canvasSketch(({ context }) => {
       outlinePass.setPixelRatio(sketchProps.pixelRatio);
     },
     render(_props) {
-      // renderer.update(props);
       composer.render();
 
       board.update(_props.time);
